@@ -9,7 +9,8 @@
   "scripts": {
     "build": "rimraf ./build && tsc",
     "dev": "tsc -w",
-    "prepublish": "rimraf ./build && tsc"
+    "prepublish": "rimraf ./build && tsc",
+    "precommit": "rimraf ./build && tsc"
   },
   "peerDependencies": {
     "svelte": "^3.24.0"

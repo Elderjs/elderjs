@@ -10,7 +10,6 @@ function routes(settings: ConfigOptions) {
     console.log(
       `debug.automagic::
 --------- routes.ts -----------
-    
     `,
     );
 
@@ -133,7 +132,6 @@ function routes(settings: ConfigOptions) {
     console.log(
       `debug.automagic::
 --------- end routes.ts -----------
-  
   `,
     );
   }
