@@ -174,7 +174,7 @@ async function build(): Promise<void> {
       clearInterval(barInterval);
       if (multiLine) {
         multibar.stop();
-        console.log(`Builds finished, shutting down workers`);
+        // console.log(`Builds finished, shutting down workers`);
       } else {
         singlebar.stop();
       }
