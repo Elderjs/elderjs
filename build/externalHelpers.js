@@ -44,7 +44,7 @@ async function helpers({ settings, query, helpers }) {
     else {
         userHelpers = cache[helperFilePath];
     }
-    if (Object.keys(userHelpers).length > 0) {
+    if (userHelpers && Object.keys(userHelpers).length > 0) {
         if (settings.debug.automagic) {
             console.log(`We're add in helpers to the helpers object from the file at: ${helperFilePath}.`);
         }
