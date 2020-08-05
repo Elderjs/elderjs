@@ -1,0 +1,39 @@
+{
+  "name": "@elderjs/elderjs",
+  "version": "0.0.0",
+  "main": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "engines": {
+    "node": ">=12.16.1"
+  },
+  "scripts": {
+    "build": "rimraf ./build && tsc",
+    "dev": "tsc -w"
+  },
+  "peerDependencies": {
+    "svelte": "^3.24.0"
+  },
+  "dependencies": {
+    "cli-progress": "^3.8.2",
+    "cosmiconfig": "^6.0.0",
+    "fs-extra": "^9.0.1",
+    "glob": "^7.1.6",
+    "intersection-observer": "^0.11.0",
+    "lodash.defaultsdeep": "^4.6.1",
+    "nanoid": "^2.1.11",
+    "systemjs": "^6.3.3",
+    "yup": "^0.29.1"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^9.0.1",
+    "@types/node": "^12.7.2",
+    "@typescript-eslint/eslint-plugin": "^3.7.1",
+    "@typescript-eslint/parser": "^3.7.1",
+    "eslint-plugin-prettier": "^3.1.4",
+    "prettier": "^2.0.5",
+    "rimraf": "^3.0.0",
+    "ts-node": "^8.3.0",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.9.7"
+  }
+}
