@@ -35,5 +35,25 @@
     "ts-node": "^8.3.0",
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.9.7"
-  }
+  },
+  "description": "Elder.js is an opinionated static site generator and web framework built with SEO in mind.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Elderjs/elderjs.git"
+  },
+  "keywords": [
+    "svelte",
+    "seo",
+    "static",
+    "site",
+    "generator",
+    "ssg",
+    "sveltejs"
+  ],
+  "author": "Nick Reese",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Elderjs/elderjs/issues"
+  },
+  "homepage": "https://github.com/Elderjs/elderjs#readme"
 }
