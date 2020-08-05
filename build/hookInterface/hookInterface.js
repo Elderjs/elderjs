@@ -125,7 +125,7 @@ exports.hookInterface = [
         use: `<p>This hook gives access to the entire state of a request lifecycle before it starts.</p>
     <ul>
       <li>If you have helper functions that need a closure isolated to a specific page generation lifecycle here is where you should attach them. </li>
-      <li>If you need to programatically change the route, you can do so here. This is how the elderjs-plugin-random works.</li>
+      <li>If you need to programmatically change the route, you can do so here. This is how the elderjs-plugin-random works.</li>
     </ul>
     `,
         location: 'Page.ts',
@@ -135,7 +135,7 @@ exports.hookInterface = [
         props: ['helpers', 'data', 'settings', 'request', 'query', 'errors'],
         mutable: ['errors', 'data'],
         context: "This is executed just be for a route's data file",
-        use: '<p>This hook is commonly uses by plugins that need to add route level data that is dependent on the request to poluate.</p>',
+        use: '<p>This hook is commonly uses by plugins that need to add route level data that is dependent on the request to populate.</p>',
         location: 'Page.ts',
     },
     {
@@ -187,7 +187,7 @@ exports.hookInterface = [
         context: 'Executed after the cssStack has been compiled and before the styleTag is added to the head. ',
         use: `<p>This hook receives the &lt;style&gt; tag and the cssString from the cssStack for modification before it is written to the head.</p>
     <ul>
-    <li>Possible location for css minification.</li>
+    <li>Possible location for css minimization.</li>
     <li>Critical Path Css styles could be added here.</li>
     </ul>`,
         location: 'Page.ts',
@@ -241,7 +241,7 @@ exports.hookInterface = [
         use: `<p>This hook receives the full html of the document. With great power comes great responsibility.</p>
     <ul>
     <li>Can be used to compress the html/css/js.</li>
-    <li>Could be used to programatically extract h2/h3 tags and build/inject a table of contents with something like Cheeriojs.</li>
+    <li>Could be used to programmatically extract h2/h3 tags and build/inject a table of contents with something like Cheeriojs.</li>
     <li>If you need to modify the final html output, here is where you can do it.</li>
     </ul>`,
         location: 'Page.ts',
@@ -283,7 +283,7 @@ exports.hookInterface = [
         hook: 'buildComplete',
         props: ['helpers', 'data', 'settings', 'timings', 'query', 'errors', 'routes'],
         mutable: [],
-        context: 'Exctued after a build is complete',
+        context: 'Executed after a build is complete',
         use: `<p>Contains whether the build was successful. If not it contains errors for the entire build. Also includes
       average performance details, and a granular performance object. Could be used to fire off additional scripts such as generating a sitemap or copying asset files to the public folder.</p>`,
         location: 'build.ts',

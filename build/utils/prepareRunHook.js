@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.prepareRunHook = void 0;
 const createReadOnlyProxy_1 = require("./createReadOnlyProxy");
-// todo: How do we get types to the user when they are writing plugins, etc?
+// TODO: How do we get types to the user when they are writing plugins, etc?
 function prepareRunHook({ hooks, allSupportedHooks, settings }) {
     return async function processHook(hookName, props = {}) {
         if (props.perf)

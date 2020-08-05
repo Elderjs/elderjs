@@ -24,5 +24,6 @@ declare const hookEntityDefinitions: {
     timings: string;
     req: string;
     next: string;
+    res: string;
 };
 export { hookEntityDefinitions };

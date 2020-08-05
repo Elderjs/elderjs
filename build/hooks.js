@@ -21,12 +21,14 @@ const hooks = [
             catch (err) {
                 console.error(err);
             }
-            return {
-                helpers: {
-                    ...helpers,
-                    ...additionalHelpers,
-                },
-            };
+            if (additionalHelpers) {
+                return {
+                    helpers: {
+                        ...helpers,
+                        ...additionalHelpers,
+                    },
+                };
+            }
         },
     },
     // {
@@ -41,7 +43,7 @@ const hooks = [
     // },
     {
         hook: 'initStacks',
-        name: 'elderAddDefaulIntersectionObserver',
+        name: 'elderAddDefaultIntersectionObserver',
         description: 'Sets up the default polyfill for the intersection observer',
         priority: 1,
         run: async ({ beforeHydrateStack, settings }) => {
