@@ -7,7 +7,7 @@
  */
 const permalinks = ({ routes, settings }) =>
   Object.keys(routes).reduce((out, cv) => {
-    const prefix = settings.server && settings.server.perfix ? settings.server.perfix : '';
+    const prefix = settings.server && settings.server.prefix ? settings.server.prefix : '';
     out[cv] = (data) => `${prefix}${routes[cv].permalink({ request: data, settings })}`;
     return out;
   }, {});
