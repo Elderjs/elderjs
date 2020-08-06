@@ -36,7 +36,7 @@ async function helpers({ settings, query, helpers }) {
             }
             if (err.code === 'ENOENT') {
                 if (settings.debug.automagic) {
-                    console.log(`We attempted to automatically add in helpers, but we couldn't find the file at ${srcHelpers}.`);
+                    console.log(`debug.automagic:: We attempted to automatically add in helpers, but we couldn't find the file at ${srcHelpers}.`);
                 }
             }
         }
@@ -46,7 +46,7 @@ async function helpers({ settings, query, helpers }) {
     }
     if (userHelpers && Object.keys(userHelpers).length > 0) {
         if (settings.debug.automagic) {
-            console.log(`We're add in helpers to the helpers object from the file at: ${helperFilePath}.`);
+            console.log(`debug.automagic:: We're add in helpers to the helpers object from the file at: ${helperFilePath}.`);
         }
     }
     return userHelpers;

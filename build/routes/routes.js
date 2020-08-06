@@ -10,7 +10,6 @@ function routes(settings) {
     if (settings.debug.automagic)
         console.log(`debug.automagic::
 --------- routes.ts -----------
-    
     `);
     const srcFolder = path_1.default.join(process.cwd(), settings.locations.srcFolder);
     const buildFolder = path_1.default.join(process.cwd(), settings.locations.buildFolder);
@@ -105,7 +104,6 @@ function routes(settings) {
     if (settings.debug.automagic) {
         console.log(`debug.automagic::
 --------- end routes.ts -----------
-  
   `);
     }
     return output;

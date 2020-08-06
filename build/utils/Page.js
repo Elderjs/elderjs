@@ -27,11 +27,11 @@ const buildPage = async (page) => {
         else if (typeof page.route.data === 'function') {
             const dataResponse = await page.route.data({
                 data: page.data,
-                query: createReadOnlyProxy_1.createReadOnlyProxy(page.query, 'query', 'data.js'),
+                query: page.query,
                 helpers: page.helpers,
                 settings: createReadOnlyProxy_1.createReadOnlyProxy(page.settings, 'settings', 'data.js'),
                 request: createReadOnlyProxy_1.createReadOnlyProxy(page.request, 'request', 'data.js'),
-                errors: createReadOnlyProxy_1.createReadOnlyProxy(page.errors, 'errors', 'data.js'),
+                errors: page.errors,
                 perf: page.perf,
                 allRequests: createReadOnlyProxy_1.createReadOnlyProxy(page.allRequests, 'allRequests', 'data.js'),
             });
