@@ -11,8 +11,8 @@ async function helpers({ settings, query, helpers }) {
     const srcFolder = path_1.default.join(process.cwd(), settings.locations.srcFolder);
     const buildFolder = path_1.default.join(process.cwd(), settings.locations.buildFolder);
     const helperFilePath = `helpers/index.js`;
-    const srcHelpers = `${srcFolder}${helperFilePath}`;
-    const buildHelpers = `${buildFolder}${helperFilePath}`;
+    const srcHelpers = path_1.default.join(srcFolder, helperFilePath);
+    const buildHelpers = path_1.default.join(buildFolder, helperFilePath);
     if (!cache[helperFilePath]) {
         try {
             fs_1.default.statSync(srcHelpers);

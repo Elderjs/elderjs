@@ -12,8 +12,8 @@ async function helpers({ settings, query, helpers }: ExternalHelperRequestOption
   const buildFolder = path.join(process.cwd(), settings.locations.buildFolder);
   const helperFilePath = `helpers/index.js`;
 
-  const srcHelpers = `${srcFolder}${helperFilePath}`;
-  const buildHelpers = `${buildFolder}${helperFilePath}`;
+  const srcHelpers = path.join(srcFolder, helperFilePath);
+  const buildHelpers = path.join(buildFolder, helperFilePath);
   if (!cache[helperFilePath]) {
     try {
       fs.statSync(srcHelpers);
