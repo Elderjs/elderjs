@@ -185,9 +185,6 @@ async function build() {
             await mElder.runHook('buildComplete', { success, ...mElder, timings });
             if (settings.debug.build) {
                 console.log('Build complete. Workers:', cluster_1.default.workers);
-
-                console.log(process._getActiveHandles(),
-                process._getActiveRequests())
             }
         }
         else {
