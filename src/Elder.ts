@@ -284,7 +284,6 @@ class Elder {
     try {
       const hookSrcFile: Array<HookOptions> = config.typescript ? require(hookSrcPath).default : require(hookSrcPath);
 
-      console.log(hookSrcFile, 'hookSrcFile');
       hooksJs = hookSrcFile.map((hook) => ({
         ...hook,
         $$meta: {
@@ -306,16 +305,18 @@ class Elder {
                 addedBy: 'hooks.js',
               },
             }));
-          } catch (err) {}
+          } catch (err2) {
+            if (err2.code !== 'MODULE_NOT_FOUND') {
+              console.error(err);
+            }
+          }
         } else {
-          console.log(err);
-        }
-      } else {
-        if (err.code === 'MODULE_NOT_FOUND') {
           if (this.settings.debug.automagic) {
             console.log(`No luck finding that hooks file. You can add one at ${hookSrcPath}`);
           }
         }
+      } else {
+        console.error(err);
       }
     }
 
