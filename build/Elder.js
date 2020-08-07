@@ -100,9 +100,11 @@ class Elder {
                             const pluginResp = await hook.run(payload);
                             if (pluginResp) {
                                 if (pluginResp.plugin) {
+                                    const { plugin, ...rest } = pluginResp;
                                     // while objects are pass by reference, the pattern we encourage is to return the mutation of state.
                                     // if users followed this pattern for plugins, we may not be mutating the plugin definition, so this is added.
-                                    pluginDefinition = pluginResp.plugin;
+                                    pluginDefinition = plugin;
+                                    return rest;
                                 }
                                 return pluginResp;
                             }
