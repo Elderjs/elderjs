@@ -39,7 +39,7 @@ const hooks: Array<HookOptions> = [
   // },
 
   {
-    hook: 'initStacks',
+    hook: 'stacks',
     name: 'elderAddDefaultIntersectionObserver',
     description: 'Sets up the default polyfill for the intersection observer',
     priority: 1,
@@ -72,10 +72,10 @@ const hooks: Array<HookOptions> = [
     },
   },
   {
-    hook: 'initStacks',
+    hook: 'stacks',
     name: 'elderAddSystemJs',
     description: 'AddsSystemJs',
-    priority: 2,
+    priority: 1,
     run: async ({ beforeHydrateStack, settings }) => {
       if (settings && settings.locations && {}.hasOwnProperty.call(settings.locations, 'systemJs')) {
         if (settings.locations.systemJs) {
@@ -108,7 +108,7 @@ const hooks: Array<HookOptions> = [
     },
   },
   {
-    hook: 'writeFile',
+    hook: 'requestComplete',
     name: 'elderWriteHtmlFileToPublic',
     description: 'Write the html output to public.',
     priority: 100,
@@ -127,7 +127,7 @@ const hooks: Array<HookOptions> = [
     },
   },
   {
-    hook: 'timings',
+    hook: 'requestComplete',
     name: 'elderDisplayRequestTime',
     description: 'Page generating timings and logging.',
     priority: 50,

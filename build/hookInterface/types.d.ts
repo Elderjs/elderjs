@@ -5,4 +5,6 @@ export declare type HookInterface = {
     use: string;
     location: string;
     context: string;
+    experimental: boolean;
+    advanced: boolean;
 };

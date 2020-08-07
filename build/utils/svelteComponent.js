@@ -48,7 +48,7 @@ const svelteComponent = (componentName) => ({ page, props, hydrate = 0 }) => {
                     name: `${cleanComponentName.toLowerCase()}`,
                     loaded: `init${cleanComponentName.toLowerCase()}${id}();`,
                     notLoaded: `init${cleanComponentName.toLowerCase()}${id}();`,
-                })};
+                })}
       `,
             });
         }
