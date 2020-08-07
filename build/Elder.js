@@ -195,6 +195,7 @@ class Elder {
         }
         try {
             const hookSrcFile = config.typescript ? require(hookSrcPath).default : require(hookSrcPath);
+            console.log(hookSrcFile, 'hookSrcFile');
             hooksJs = hookSrcFile.map((hook) => ({
                 ...hook,
                 $$meta: {
@@ -204,20 +205,25 @@ class Elder {
             }));
         }
         catch (err) {
-            if (buildFolder && buildFolder.length > 0) {
-                try {
-                    const hookBuildFile = config.typescript
-                        ? require(hookBuildPath).default
-                        : require(hookBuildPath);
-                    hooksJs = hookBuildFile.map((hook) => ({
-                        ...hook,
-                        $$meta: {
-                            type: 'hooks.js',
-                            addedBy: 'hooks.js',
-                        },
-                    }));
+            if (err.code === 'MODULE_NOT_FOUND') {
+                if (buildFolder && buildFolder.length > 0) {
+                    try {
+                        const hookBuildFile = config.typescript
+                            ? require(hookBuildPath).default
+                            : require(hookBuildPath);
+                        hooksJs = hookBuildFile.map((hook) => ({
+                            ...hook,
+                            $$meta: {
+                                type: 'hooks.js',
+                                addedBy: 'hooks.js',
+                            },
+                        }));
+                    }
+                    catch (err) { }
                 }
-                catch (err) { }
+                else {
+                    console.log(err);
+                }
             }
             else {
                 if (err.code === 'MODULE_NOT_FOUND') {
