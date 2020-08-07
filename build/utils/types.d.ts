@@ -23,6 +23,7 @@ export declare type ConfigOptions = {
         disable?: string[];
     };
     typescript: boolean;
+    worker: boolean;
 };
 declare type ServerOptions = {
     prefix: string;

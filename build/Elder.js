@@ -19,7 +19,7 @@ const createReadOnlyProxy_1 = require("./utils/createReadOnlyProxy");
 const getElderConfig = utils_1.getConfig;
 exports.getElderConfig = getElderConfig;
 class Elder {
-    constructor({ context }) {
+    constructor({ context, worker = false }) {
         this.bootstrapComplete = new Promise((resolve) => {
             this.markBootstrapComplete = resolve;
         });
@@ -33,6 +33,9 @@ class Elder {
                 hashedComponents: utils_1.getHashedSvelteComponents(config),
             },
         };
+        if (context === 'build' && worker) {
+            this.settings.worker = worker;
+        }
         if (!context || context === 'build') {
             this.settings.debug.automagic = false;
         }

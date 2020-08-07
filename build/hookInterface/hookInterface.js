@@ -250,7 +250,8 @@ exports.hookInterface = [
         mutable: [],
         context: 'Executed after a build is complete',
         use: `<p>Contains whether the build was successful. If not it contains errors for the entire build. Also includes
-      average performance details, and a granular performance object. Could be used to fire off additional scripts such as generating a sitemap or copying asset files to the public folder.</p>`,
+      average performance details, and a granular performance object. Could be used to fire off additional scripts such as generating a sitemap or copying asset files to the public folder.</p>
+      <p><strong>Plugins: </strong> Because builds are split across processes, a plugin doesn't not have a shared memory space across all processes.</p>`,
         location: 'build.ts',
         experimental: false,
         advanced: false,

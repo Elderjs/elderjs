@@ -26,6 +26,7 @@ export type ConfigOptions = {
     disable?: string[];
   };
   typescript: boolean;
+  worker: boolean;
 };
 
 type ServerOptions = {

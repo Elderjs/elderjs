@@ -22,8 +22,9 @@ declare class Elder {
     helpers: {};
     server: any;
     builder: any;
-    constructor({ context }: {
+    constructor({ context, worker }: {
         context: any;
+        worker?: boolean;
     });
     cluster(): Promise<any>;
     worker(workerRequests: any): Promise<any[]>;

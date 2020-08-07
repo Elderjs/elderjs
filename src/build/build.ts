@@ -155,6 +155,18 @@ async function build(): Promise<void> {
       for (const id in cluster.workers) {
         const workerId = `worker-${id}`;
 
+        if (settings.debug.build) {
+          cluster.workers[id].on('exit', (code, signal) => {
+            if (signal) {
+              console.log(`worker-${id} was killed by signal: ${signal}`);
+            } else if (code !== 0) {
+              console.log(`worker-${id} exited with error code: ${code}`);
+            } else {
+              console.log(`worker-${id} successfully exited!`, code, signal);
+            }
+          });
+        }
+
         const msgHandler = prepareWorkerMessageHandler(workerId);
         cluster.workers[id].on('message', msgHandler);
 
@@ -202,16 +214,23 @@ async function build(): Promise<void> {
       }
 
       await mElder.runHook('buildComplete', { success, ...mElder, timings });
+
+      if (settings.debug.build) {
+        console.log('Build complete. Workers:', cluster.workers);
+      }
     } else {
       process.on('message', async (msg) => {
         if (msg.cmd === 'start') {
-          const wElder = new Elder({ context: 'build' });
+          const wElder = new Elder({ context: 'build', worker: true });
 
           const timings: Array<Timing> = await wElder.worker(msg.workerRequests);
 
           process.send(['done', timings]);
+
+          setTimeout(() => {
+            process.kill(process.pid);
+          }, 2000);
         }
-        // process.send(msg);
       });
     }
   } catch (e) {

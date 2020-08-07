@@ -56,7 +56,7 @@ class Elder {
   server: any;
   builder: any;
 
-  constructor({ context }) {
+  constructor({ context, worker = false }) {
     this.bootstrapComplete = new Promise((resolve) => {
       this.markBootstrapComplete = resolve;
     });
@@ -73,6 +73,10 @@ class Elder {
         hashedComponents: getHashedSvelteComponents(config),
       },
     };
+
+    if (context === 'build' && worker) {
+      this.settings.worker = worker;
+    }
 
     if (!context || context === 'build') {
       this.settings.debug.automagic = false;

@@ -131,6 +131,19 @@ async function build() {
             }
             for (const id in cluster_1.default.workers) {
                 const workerId = `worker-${id}`;
+                if (settings.debug.build) {
+                    cluster_1.default.workers[id].on('exit', (code, signal) => {
+                        if (signal) {
+                            console.log(`worker-${id} was killed by signal: ${signal}`);
+                        }
+                        else if (code !== 0) {
+                            console.log(`worker-${id} exited with error code: ${code}`);
+                        }
+                        else {
+                            console.log(`worker-${id} successfully exited!`, code, signal);
+                        }
+                    });
+                }
                 const msgHandler = prepareWorkerMessageHandler(workerId);
                 cluster_1.default.workers[id].on('message', msgHandler);
                 const workerRequests = requestsToSplit.splice(0, requestsPerWorker);
@@ -170,15 +183,23 @@ async function build() {
                 success = false;
             }
             await mElder.runHook('buildComplete', { success, ...mElder, timings });
+            if (settings.debug.build) {
+                console.log('Build complete. Workers:', cluster_1.default.workers);
+
+                console.log(process._getActiveHandles(),
+                process._getActiveRequests())
+            }
         }
         else {
             process.on('message', async (msg) => {
                 if (msg.cmd === 'start') {
-                    const wElder = new Elder_1.Elder({ context: 'build' });
+                    const wElder = new Elder_1.Elder({ context: 'build', worker: true });
                     const timings = await wElder.worker(msg.workerRequests);
                     process.send(['done', timings]);
+                    setTimeout(() => {
+                        process.kill(process.pid);
+                    }, 2000);
                 }
-                // process.send(msg);
             });
         }
     }
