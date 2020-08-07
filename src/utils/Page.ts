@@ -16,11 +16,7 @@ const buildPage = async (page) => {
     page.customJsStack = [];
     page.footerStack = [];
 
-    await page.runHook('initStacks', page);
-
-    await page.runHook('requestStart', page);
-
-    await page.runHook('dataStart', page);
+    await page.runHook('request', page);
 
     page.perf.start('data');
     if (typeof page.route.data === 'object') {
@@ -41,7 +37,7 @@ const buildPage = async (page) => {
       }
     }
     page.perf.end('data');
-    await page.runHook('dataComplete', page);
+    await page.runHook('data', page);
 
     // start building templates
     page.perf.start('html.template');
@@ -71,39 +67,23 @@ const buildPage = async (page) => {
         templateHTML,
       },
     });
-
     page.perf.end('html.layout');
 
     // Run header hooks / stacks to make headString
-    await page.runHook('headStack', page);
+    await page.runHook('stacks', page);
     page.head = page.processStack('headStack');
-
-    await page.runHook('cssStack', page);
     page.cssString = '';
     page.cssString = page.processStack('cssStack');
-
     page.styleTag = `<style data-name="cssStack">${page.cssString}</style>`;
-    await page.runHook('style', page);
-
     page.headString = `${page.head}${page.styleTag}`;
+    page.beforeHydrate = page.processStack('beforeHydrateStack');
+    page.hydrate = `<script data-name="hydrateStack">${page.processStack('hydrateStack')}</script>`;
+    page.customJs = page.processStack('customJsStack');
+    page.footer = page.processStack('footerStack');
 
     await page.runHook('head', page);
 
-    // Run footer hooks / stacks to make footer strings
-    await page.runHook('beforeHydrateStack', page);
-    page.beforeHydrate = page.processStack('beforeHydrateStack');
-
-    await page.runHook('hydrateStack', page);
-    page.hydrate = `<script data-name="hydrateStack">${page.processStack('hydrateStack')}</script>`;
-
-    await page.runHook('customJsStack', page);
-    page.customJs = page.processStack('customJsStack');
-
-    await page.runHook('footerStack', page);
-    page.footer = page.processStack('footerStack');
-
     page.perf.start('html.createHtmlString');
-
     page.htmlString = `<!DOCTYPE html>
       <html lang="en">
         <head>
@@ -113,10 +93,10 @@ const buildPage = async (page) => {
         </head>
         <body class="${page.request.route}">
           ${layoutHtml}
-          ${page.beforeHydrate}
-          ${page.hydrate}
-          ${page.customJs}
-          ${page.footer}
+          ${page.hydrateStack.length > 0 ? page.beforeHydrate : ''}
+          ${page.hydrateStack.length > 0 ? page.hydrate : ''}
+          ${page.customJsStack.length > 0 ? page.customJs : ''}
+          ${page.footerStack.length > 0 ? page.footer : ''}
         </body>
       </html>
     `;
@@ -124,21 +104,17 @@ const buildPage = async (page) => {
 
     await page.runHook('html', page);
 
-    await page.runHook('writeFile', page);
-
-    await page.runHook('requestComplete', page);
-
-    if (page.errors.length > 0) {
-      await page.runHook('error', page);
-    }
-
     // disconnect timings so we don't get duplicates on next use of page.
     page.perf.end('page');
     page.perf.stop();
 
     page.timings = page.perf.timings;
 
-    await page.runHook('timings', page);
+    await page.runHook('requestComplete', page);
+
+    if (page.errors.length > 0) {
+      await page.runHook('error', page);
+    }
 
     return page;
   } catch (err) {
