@@ -1,6 +1,4 @@
 import cliProgress from 'cli-progress';
-import fs from 'fs-extra';
-import path from 'path';
 import os from 'os';
 import cluster from 'cluster';
 
@@ -34,6 +32,15 @@ async function build(): Promise<void> {
       } else if (settings.build.numberOfWorkers > 0) {
         maxNumberOfWorkers = settings.build.numberOfWorkers;
       }
+
+      if (
+        process.env.ELDER_BUILD_NUMBER_OF_WORKERS &&
+        Number(process.env.ELDER_BUILD_NUMBER_OF_WORKERS) > 0 &&
+        !isNaN(Number(process.env.ELDER_BUILD_NUMBER_OF_WORKERS))
+      ) {
+        maxNumberOfWorkers = Number(process.env.ELDER_BUILD_NUMBER_OF_WORKERS);
+      }
+
       let numberOfWorkers = maxNumberOfWorkers;
 
       let markWorkersComplete;

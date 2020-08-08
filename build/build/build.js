@@ -28,6 +28,11 @@ async function build() {
             else if (settings.build.numberOfWorkers > 0) {
                 maxNumberOfWorkers = settings.build.numberOfWorkers;
             }
+            if (process.env.ELDER_BUILD_NUMBER_OF_WORKERS &&
+                Number(process.env.ELDER_BUILD_NUMBER_OF_WORKERS) > 0 &&
+                !isNaN(Number(process.env.ELDER_BUILD_NUMBER_OF_WORKERS))) {
+                maxNumberOfWorkers = Number(process.env.ELDER_BUILD_NUMBER_OF_WORKERS);
+            }
             let numberOfWorkers = maxNumberOfWorkers;
             let markWorkersComplete;
             const workersComplete = new Promise((resolve) => {
