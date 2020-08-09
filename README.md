@@ -2,6 +2,8 @@
 
 Elder.js is an opinionated static site generator and web framework built with SEO in mind.
 
+**Not stable yet, APIs in flux. Approaching v1 shortly.**
+
 ## Features:
 * Svelte on the server and the client. (Full SSR support or Static Export)
 * Dead simple data flow.

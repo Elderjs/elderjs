@@ -44,7 +44,7 @@ const buildPage = async (page) => {
 
     // template building starts here
 
-    const templateHTML = page.route.templateComponent({
+    const routeHTML = page.route.templateComponent({
       page,
       props: {
         data: page.data,
@@ -64,7 +64,7 @@ const buildPage = async (page) => {
         helpers: page.helpers,
         settings: page.settings,
         page,
-        templateHTML,
+        routeHTML,
       },
     });
     page.perf.end('html.layout');
