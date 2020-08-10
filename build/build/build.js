@@ -127,7 +127,7 @@ async function build() {
             numberOfWorkers = Math.ceil(totalRequests / requestsPerWorker);
             if (numberOfWorkers > maxNumberOfWorkers)
                 numberOfWorkers = maxNumberOfWorkers;
-            for (let i = 0; i < numberOfWorkers; i++) {
+            for (let i = 0; i < numberOfWorkers; i += 1) {
                 cluster_1.default.fork();
             }
             const counts = {};

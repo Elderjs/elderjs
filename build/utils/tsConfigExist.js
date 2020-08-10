@@ -4,8 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.tsConfigExist = void 0;
+/* eslint-disable import/prefer-default-export */
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
+// eslint-disable-next-line consistent-return
 function tsConfigExist() {
     const tsConfigPath = path_1.default.join(process.cwd(), 'tsconfig.json');
     try {

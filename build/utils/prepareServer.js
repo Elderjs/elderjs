@@ -6,17 +6,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.prepareServer = void 0;
 const Page_1 = __importDefault(require("./Page"));
 function prepareServer({ bootstrapComplete }) {
-    return async function (req, res, next) {
+    // eslint-disable-next-line consistent-return
+    return async function prepServer(req, res, next) {
         const { serverLookupObject, settings, query, helpers, data, routes, allRequests, runHook, errors, customProps, } = await bootstrapComplete;
         if (req.path) {
-            let path = req.path;
+            let { path } = req;
             if (settings.server.prefix && settings.server.prefix.length > 0) {
                 if (path.indexOf(settings.server.prefix) !== 0) {
                     return next();
                 }
             }
             if (path[path.length - 1] !== '/') {
-                path = path + '/';
+                path += '/';
             }
             const requestObject = serverLookupObject[path];
             // if we have a requestObject then we know it is for ElderGuide

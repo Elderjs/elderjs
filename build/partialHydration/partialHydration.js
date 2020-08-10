@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const partialHydration = {
-    markup: async ({ content, filename }) => {
+    markup: async ({ content /* , filename */ }) => {
         // there are limitations to this regex. Like you can't have an object {key:{key:val}} as a prop.
         const matches = content.matchAll(/<([a-zA-Z]+)\s+hydrate-client={([^]*?})}/gim);
         for (const match of matches) {

@@ -36,10 +36,8 @@ function getConfig(context) {
                             console.log(`debug.automagic:: Automatically setting your location.buildFolder = "${config.locations.buildFolder} 'in your elder.config.js file as we detected it from your tsconfig.json`);
                         }
                     }
-                    else {
-                        if (config.debug.automagic && (!context || context !== 'build')) {
-                            console.log(`debug.automagic:: Unable to automatically set your build folder from your tsconfig. Please add it to your elder.config.js. We saw ${tsConfig.compilerOptions.outDir} and didn't know how to parse it as we're still typescript newbies. Want to help us? We'd love a PR to make this more robust.`);
-                        }
+                    else if (config.debug.automagic && (!context || context !== 'build')) {
+                        console.log(`debug.automagic:: Unable to automatically set your build folder from your tsconfig. Please add it to your elder.config.js. We saw ${tsConfig.compilerOptions.outDir} and didn't know how to parse it as we're still typescript newbies. Want to help us? We'd love a PR to make this more robust.`);
                     }
                 }
             }

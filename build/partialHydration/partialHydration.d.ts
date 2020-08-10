@@ -1,7 +1,6 @@
 declare const partialHydration: {
-    markup: ({ content, filename }: {
+    markup: ({ content }: {
         content: any;
-        filename: any;
     }) => Promise<{
         code: any;
     }>;
