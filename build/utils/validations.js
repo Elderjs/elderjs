@@ -91,7 +91,7 @@ const configSchema = yup.object().shape({
         automagic: yup
             .boolean()
             .notRequired()
-            .default(true)
+            .default(false)
             .label('Displays settings or actions that are automagically done to help with debugging..'),
     })
         .label('Offers various levels of debug logging.'),
