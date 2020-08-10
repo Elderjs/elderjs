@@ -169,7 +169,9 @@ class Elder {
                 }
             });
             if (Object.hasOwnProperty.call(plugin, 'routes')) {
-                for (const routeName in plugin.routes) {
+                const routeNames = Object.keys(plugin.routes);
+                // eslint-disable-next-line no-loop-func
+                routeNames.forEach((routeName) => {
                     // don't allow plugins to add hooks via the routes definitions like users can.
                     if (plugin.routes[routeName].hooks)
                         console.error(`WARN: Plugin ${routeName} is trying to register a hooks via a the 'hooks' array on a route. This is not supported. Plugins must define the 'hooks' array at the plugin level.`);
@@ -185,52 +187,51 @@ class Elder {
                         }
                         plugin.routes[routeName].templateComponent = utils_1.svelteComponent(templateName);
                     }
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     const { hooks: pluginRouteHooks, ...sanitizedRouteDeets } = plugin.routes[routeName];
                     const sanitizedRoute = {};
                     sanitizedRoute[routeName] = { ...sanitizedRouteDeets, $$meta: { type: 'plugin', addedBy: pluginName } };
                     pluginRoutes = { ...pluginRoutes, ...sanitizedRoute };
-                }
+                });
             }
         }
         // add meta to routes and collect hooks from routes
         const userRoutesJsFile = routes_1.default(this.settings);
         const routeHooks = [];
-        for (const routeName in userRoutesJsFile) {
-            if (Object.hasOwnProperty.call(userRoutesJsFile, routeName)) {
-                userRoutesJsFile[routeName] = {
-                    ...userRoutesJsFile[routeName],
-                    $$meta: {
-                        type: 'route',
-                        addedBy: 'routejs',
-                    },
-                };
-                const processedRoute = userRoutesJsFile[routeName];
-                if (processedRoute.hooks && Array.isArray(processedRoute.hooks)) {
-                    processedRoute.hooks.forEach((hook) => {
-                        const hookWithMeta = {
-                            ...hook,
-                            $$meta: {
-                                type: 'route',
-                                addedBy: routeName,
-                            },
-                        };
-                        routeHooks.push(hookWithMeta);
-                    });
-                }
+        const userRoutes = Object.keys(userRoutesJsFile);
+        userRoutes.forEach((routeName) => {
+            userRoutesJsFile[routeName] = {
+                ...userRoutesJsFile[routeName],
+                $$meta: {
+                    type: 'route',
+                    addedBy: 'routejs',
+                },
+            };
+            const processedRoute = userRoutesJsFile[routeName];
+            if (processedRoute.hooks && Array.isArray(processedRoute.hooks)) {
+                processedRoute.hooks.forEach((hook) => {
+                    const hookWithMeta = {
+                        ...hook,
+                        $$meta: {
+                            type: 'route',
+                            addedBy: routeName,
+                        },
+                    };
+                    routeHooks.push(hookWithMeta);
+                });
             }
-        }
+        });
         // plugins should never overwrite user routes.
         const collectedRoutes = { ...pluginRoutes, ...userRoutesJsFile };
         const validatedRoutes = {};
-        for (const collectedRouteName in collectedRoutes) {
-            if ({}.hasOwnProperty.call(collectedRoutes, collectedRouteName)) {
-                const collectedRoute = collectedRoutes[collectedRouteName];
-                const validated = utils_1.validateRoute(collectedRoute, collectedRouteName);
-                if (validated) {
-                    validatedRoutes[collectedRouteName] = validated;
-                }
+        const collectedRouteNames = Object.keys(collectedRoutes);
+        collectedRouteNames.forEach((collectedRouteName) => {
+            const collectedRoute = collectedRoutes[collectedRouteName];
+            const validated = utils_1.validateRoute(collectedRoute, collectedRouteName);
+            if (validated) {
+                validatedRoutes[collectedRouteName] = validated;
             }
-        }
+        });
         this.routes = validatedRoutes;
         let hooksJs = [];
         const hookSrcPath = path_1.default.resolve(process.cwd(), srcFolder, './hooks.js');

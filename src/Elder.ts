@@ -252,7 +252,9 @@ class Elder {
       });
 
       if (Object.hasOwnProperty.call(plugin, 'routes')) {
-        for (const routeName in plugin.routes) {
+        const routeNames = Object.keys(plugin.routes);
+        // eslint-disable-next-line no-loop-func
+        routeNames.forEach((routeName) => {
           // don't allow plugins to add hooks via the routes definitions like users can.
           if (plugin.routes[routeName].hooks)
             console.error(
@@ -282,12 +284,13 @@ class Elder {
             plugin.routes[routeName].templateComponent = svelteComponent(templateName);
           }
 
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { hooks: pluginRouteHooks, ...sanitizedRouteDeets } = plugin.routes[routeName];
           const sanitizedRoute = {};
           sanitizedRoute[routeName] = { ...sanitizedRouteDeets, $$meta: { type: 'plugin', addedBy: pluginName } };
 
           pluginRoutes = { ...pluginRoutes, ...sanitizedRoute };
-        }
+        });
       }
     }
 
@@ -295,46 +298,44 @@ class Elder {
     const userRoutesJsFile = routes(this.settings);
 
     const routeHooks: Array<HookOptions> = [];
-    for (const routeName in userRoutesJsFile) {
-      if (Object.hasOwnProperty.call(userRoutesJsFile, routeName)) {
-        userRoutesJsFile[routeName] = {
-          ...userRoutesJsFile[routeName],
-          $$meta: {
-            type: 'route',
-            addedBy: 'routejs',
-          },
-        };
-        const processedRoute = userRoutesJsFile[routeName];
+    const userRoutes = Object.keys(userRoutesJsFile);
 
-        if (processedRoute.hooks && Array.isArray(processedRoute.hooks)) {
-          processedRoute.hooks.forEach((hook) => {
-            const hookWithMeta: HookOptions = {
-              ...hook,
-              $$meta: {
-                type: 'route',
-                addedBy: routeName,
-              },
-            };
-            routeHooks.push(hookWithMeta);
-          });
-        }
+    userRoutes.forEach((routeName) => {
+      userRoutesJsFile[routeName] = {
+        ...userRoutesJsFile[routeName],
+        $$meta: {
+          type: 'route',
+          addedBy: 'routejs',
+        },
+      };
+      const processedRoute = userRoutesJsFile[routeName];
+
+      if (processedRoute.hooks && Array.isArray(processedRoute.hooks)) {
+        processedRoute.hooks.forEach((hook) => {
+          const hookWithMeta: HookOptions = {
+            ...hook,
+            $$meta: {
+              type: 'route',
+              addedBy: routeName,
+            },
+          };
+          routeHooks.push(hookWithMeta);
+        });
       }
-    }
+    });
 
     // plugins should never overwrite user routes.
     const collectedRoutes: RoutesOptions = { ...pluginRoutes, ...userRoutesJsFile };
     const validatedRoutes = {};
+    const collectedRouteNames = Object.keys(collectedRoutes);
+    collectedRouteNames.forEach((collectedRouteName) => {
+      const collectedRoute = collectedRoutes[collectedRouteName];
 
-    for (const collectedRouteName in collectedRoutes) {
-      if ({}.hasOwnProperty.call(collectedRoutes, collectedRouteName)) {
-        const collectedRoute = collectedRoutes[collectedRouteName];
-
-        const validated = validateRoute(collectedRoute, collectedRouteName);
-        if (validated) {
-          validatedRoutes[collectedRouteName] = validated;
-        }
+      const validated = validateRoute(collectedRoute, collectedRouteName);
+      if (validated) {
+        validatedRoutes[collectedRouteName] = validated;
       }
-    }
+    });
 
     this.routes = validatedRoutes;
 
