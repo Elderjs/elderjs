@@ -13,6 +13,7 @@
     "precommit": "rimraf ./build && tsc",
     "test": "jest",
     "test:watch": "jest --watch",
+    "test:coverage": "jest --collect-coverage",
     "eslint": "eslint --ext .ts .",
     "eslint:fix": "eslint --fix --ext .ts ."
   },
