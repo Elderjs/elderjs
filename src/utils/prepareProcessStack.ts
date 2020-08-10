@@ -21,4 +21,5 @@ function prepareProcessStack(page) {
   };
 }
 
+// eslint-disable-next-line import/prefer-default-export
 export { prepareProcessStack };

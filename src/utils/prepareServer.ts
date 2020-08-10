@@ -1,7 +1,8 @@
 import Page from './Page';
 
 function prepareServer({ bootstrapComplete }) {
-  return async function (req, res, next) {
+  // eslint-disable-next-line consistent-return
+  return async function prepServer(req, res, next) {
     const {
       serverLookupObject,
       settings,
@@ -65,4 +66,6 @@ function prepareServer({ bootstrapComplete }) {
     }
   };
 }
+
+// eslint-disable-next-line import/prefer-default-export
 export { prepareServer };

@@ -99,4 +99,5 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
   };
 }
 
+// eslint-disable-next-line import/prefer-default-export
 export { prepareRunHook };

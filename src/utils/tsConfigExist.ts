@@ -1,7 +1,8 @@
+/* eslint-disable import/prefer-default-export */
 import path from 'path';
 import fs from 'fs';
 
-// eslint-disable-next-line import/prefer-default-export
+// eslint-disable-next-line consistent-return
 export function tsConfigExist() {
   const tsConfigPath = path.join(process.cwd(), 'tsconfig.json');
   try {

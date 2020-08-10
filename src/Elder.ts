@@ -16,7 +16,7 @@ import {
   validateRoute,
   validatePlugin,
   permalinks,
-  getUniqueId,
+  // getUniqueId,
   Page,
   asyncForEach,
   getHashedSvelteComponents,
@@ -36,6 +36,52 @@ import {
 import { createReadOnlyProxy } from './utils/createReadOnlyProxy';
 
 const getElderConfig = getConfig;
+
+async function workerBuild({ bootstrapComplete, workerRequests }) {
+  const { settings, query, helpers, data, runHook, routes, errors, customProps } = await bootstrapComplete;
+
+  // potential issue that since builds are split across processes,
+  // some plugins may need all requests of the same category to be passed at the same time.
+
+  process.send(['start', workerRequests.length]);
+
+  let i = 0;
+  let errs = 0;
+  const bTimes = [];
+  const bErrors = [];
+
+  await asyncForEach(workerRequests, async (request) => {
+    const page = new Page({
+      allRequests: workerRequests,
+      request,
+      settings,
+      query,
+      helpers,
+      data,
+      route: routes[request.route],
+      runHook,
+      routes,
+      errors,
+      customProps,
+    });
+    const { errors: buildErrors, timings } = await page.build();
+    i += 1;
+    bTimes.push(timings);
+
+    const response: any = ['html', i];
+    if (buildErrors && buildErrors.length > 0) {
+      errs += 1;
+      response.push(errs);
+      response.push({ request, errors: buildErrors });
+      bErrors.push({ request, errors: buildErrors });
+    } else {
+      response.push(errs);
+    }
+
+    process.send(response);
+  });
+  return bTimes;
+}
 
 class Elder {
   bootstrapComplete: Promise<any>;
@@ -438,8 +484,8 @@ class Elder {
 
       if (this.allRequests.length !== new Set(this.allRequests.map((r) => r.permalink)).size) {
         // useful error logging for when there are duplicate permalinks.
-        for (let i = 0, l = this.allRequests.length; i < l; i++) {
-          for (let ii = 0, li = this.allRequests.length; ii < li; ii++) {
+        for (let i = 0, l = this.allRequests.length; i < l; i += 1) {
+          for (let ii = 0, li = this.allRequests.length; ii < li; ii += 1) {
             if (i !== ii && this.allRequests[i].permalink === this.allRequests[ii].permalink) {
               throw new Error(
                 `Duplicate permalinks detected. Here are the relevant requests: ${JSON.stringify(
@@ -466,52 +512,6 @@ class Elder {
   build() {
     return this.builder;
   }
-}
-
-async function workerBuild({ bootstrapComplete, workerRequests }) {
-  const { settings, query, helpers, data, runHook, routes, errors, customProps } = await bootstrapComplete;
-
-  // potential issue that since builds are split across processes,
-  // some plugins may need all requests of the same category to be passed at the same time.
-
-  process.send(['start', workerRequests.length]);
-
-  let i = 0;
-  let errs = 0;
-  const bTimes = [];
-  const bErrors = [];
-
-  await asyncForEach(workerRequests, async (request) => {
-    const page = new Page({
-      allRequests: workerRequests,
-      request,
-      settings,
-      query,
-      helpers,
-      data,
-      route: routes[request.route],
-      runHook,
-      routes,
-      errors,
-      customProps,
-    });
-    const { errors: buildErrors, timings } = await page.build();
-    i += 1;
-    bTimes.push(timings);
-
-    const response: any = ['html', i];
-    if (buildErrors && buildErrors.length > 0) {
-      errs += 1;
-      response.push(errs);
-      response.push({ request, errors: buildErrors });
-      bErrors.push({ request, errors: buildErrors });
-    } else {
-      response.push(errs);
-    }
-
-    process.send(response);
-  });
-  return bTimes;
 }
 
 export { Elder, getElderConfig, build, partialHydration };

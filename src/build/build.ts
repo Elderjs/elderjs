@@ -150,7 +150,7 @@ async function build(): Promise<void> {
       numberOfWorkers = Math.ceil(totalRequests / requestsPerWorker);
       if (numberOfWorkers > maxNumberOfWorkers) numberOfWorkers = maxNumberOfWorkers;
 
-      for (let i = 0; i < numberOfWorkers; i++) {
+      for (let i = 0; i < numberOfWorkers; i += 1) {
         cluster.fork();
       }
 

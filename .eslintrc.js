@@ -28,26 +28,17 @@ module.exports = {
         ts: 'never',
       },
     ],
-    semi: ['error', 'always'],
-    'no-var': ['error'],
+
+    // avoid having warnings when we import types and they are detected as unused imports
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': ['error'],
+
+    // <temporarily allowed until fixed>
+    'no-param-reassign': ['warn'],
+    'global-require': ['warn'],
+
+    // -- OVERRIDES by choice --
+    // allow console logs
     'no-console': ['off'],
-    'no-unused-vars': ['warn'],
-    'no-mixed-spaces-and-tabs': ['warn'],
-    'node/no-unpublished-require': ['off'],
   },
 };
-
-// module.exports = {
-//   root: true,
-//   plugins: ['@typescript-eslint', 'jest', 'prettier'],
-//   extends: [
-//     'eslint:recommended',
-//     'plugin:@typescript-eslint/recommended',
-//     'plugin:jest/recommended',
-//     'plugin:prettier/recommended',
-//   ],
-//   env: {
-//     'jest/globals': true,
-//   },
-//   rules: {},
-// };
