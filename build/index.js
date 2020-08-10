@@ -12,6 +12,9 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var validations_1 = require("./utils/validations");
 Object.defineProperty(exports, "configSchema", { enumerable: true, get: function () { return validations_1.configSchema; } });
+Object.defineProperty(exports, "hookSchema", { enumerable: true, get: function () { return validations_1.hookSchema; } });
+Object.defineProperty(exports, "routeSchema", { enumerable: true, get: function () { return validations_1.routeSchema; } });
+Object.defineProperty(exports, "pluginSchema", { enumerable: true, get: function () { return validations_1.pluginSchema; } });
 var Elder_1 = require("./Elder");
 Object.defineProperty(exports, "Elder", { enumerable: true, get: function () { return Elder_1.Elder; } });
 Object.defineProperty(exports, "getElderConfig", { enumerable: true, get: function () { return Elder_1.getElderConfig; } });

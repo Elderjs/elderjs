@@ -4,10 +4,9 @@ import type { RouteOptions } from '../routes/types';
 import type { HookOptions } from '../hooks/types';
 import hookInterface from '../hookInterface/hookInterface';
 
-const configSchema = yup.object().shape({
+const configSchema = yup.object({
   locations: yup
-    .object()
-    .shape({
+    .object({
       assets: yup
         .string()
         .notRequired()
@@ -85,10 +84,10 @@ const configSchema = yup.object().shape({
         .boolean()
         .notRequired()
         .default(false)
-        .label('Displays settings or actions that are automagically done to help with debugging..'),
+        .label('Displays settings or actions that are automagically done to help with debugging.'),
     })
     .label('Offers various levels of debug logging.'),
-  hooks: yup.object().shape({
+  hooks: yup.object({
     disable: yup
       .array()
       .of(yup.string())
@@ -98,10 +97,10 @@ const configSchema = yup.object().shape({
         'This is an array of hooks to be excluded from execution. To be clear, this isn\'t the "hook" name found in the "hookInterface.ts" file but instead the name of the system, user, plugin, or route hook that is defined.  For instance if you wanted to by name to prevent the system hook that writes html to the public folder during builds from being run, you would add "internalWriteFile" to this array.',
       ),
   }),
-  server: yup.object().shape({
+  server: yup.object({
     prefix: yup.string().notRequired().default('').label(`If Elder.js should serve all pages with a prefix.`),
   }),
-  build: yup.object().shape({
+  build: yup.object({
     numberOfWorkers: yup
       .number()
       .notRequired()
@@ -118,10 +117,11 @@ const configSchema = yup.object().shape({
       ),
   }),
   typescript: yup.boolean().default(false).label('This causes Elder.js to look in the /build/ folder '),
+  plugins: yup.object().default({}).label('Used to define Elder.js plugins.'),
 });
 
 const routeSchema = yup.object({
-  template: yup.string().required(),
+  template: yup.string().required().label('Svelte file for your route. Defaults to RouteName.svelte if not defined.'),
   all: yup
     .mixed()
     .required()
@@ -129,7 +129,8 @@ const routeSchema = yup.object({
       'isFunction',
       'all() should be a function or async function',
       (value) => typeof value === 'function' || (typeof value === 'object' && value.then === 'function'),
-    ),
+    )
+    .label(`A sync/async function that returns an array of all of the 'request objects' for this route.`),
   permalink: yup
     .mixed()
     .required()
@@ -137,23 +138,38 @@ const routeSchema = yup.object({
       'isFunction',
       'Permalink should be a function or async function',
       (value) => typeof value === 'function' || (typeof value === 'object' && value.then === 'function'),
+    )
+    .label(
+      'Sync function that turns request objects from the all() function into permalinks which are relative to the site root',
     ),
-  hooks: yup.array().notRequired(),
+  hooks: yup
+    .array()
+    .notRequired()
+    .default([])
+    .label('An array of hooks. NOTE/TODO: These run on all routes, not just the one defined on.'),
 });
 
 const pluginSchema = yup.object({
-  name: yup.string(),
-  description: yup.string(),
+  name: yup.string().default('').label('The name of the plugin.'),
+  description: yup.string().default('').label('A description of the plugin.'),
   init: yup
     .mixed()
     .notRequired()
+    .label(
+      `A sync function that handles the plugin init. Receives plugin definition. plugin.settings contains Elder.js config. plugin.config contains plugin config`,
+    )
     .test(
       'isFunction',
       'Run should be a function or async function',
       (value) => typeof value === 'function' || (typeof value === 'object' && value.then === 'function'),
     ),
-  routes: yup.mixed().notRequired(),
-  hooks: yup.array().required(),
+  routes: yup.object().notRequired().default({}).label('(optional) Any routes the plugin is adding.'),
+  hooks: yup.array().required().default([]).label('An array of hooks.'),
+  config: yup
+    .object({})
+    .default({})
+    .notRequired()
+    .label('(optional) An object of default configs. These will be used when none are set in their elder.config.js.'),
 });
 
 const hookSchema = yup
@@ -163,21 +179,32 @@ const hookSchema = yup
       .required()
       .test('valid-hook', 'This is not a supported hook.', (value) =>
         hookInterface.find((supportedHook) => supportedHook.hook === value),
+      )
+      .label('The hook the defined "run" function should be executed on.'),
+    name: yup.string().required().label('A user friendly name of the function to be run.'),
+    description: yup.string().required().label('A description of what the function does.'),
+    priority: yup
+      .number()
+      .positive()
+      .integer()
+      .max(100)
+      .optional()
+      .default(50)
+      .label(
+        'The priority level a hook should run at. Elder.js hooks run at 1 or 100 where 1 is the highest priorty and 100 is the lowest priority.',
       ),
-    name: yup.string().required(),
-    description: yup.string().required(),
-    priority: yup.number().positive().integer().max(100).optional().default(50),
     run: yup
       .mixed()
       .defined()
+      .label('The function to be run on the hook.')
       .test(
         'isFunction',
         'Run should be a function or async function',
         (value) => typeof value === 'function' || (typeof value === 'object' && value.then === 'function'),
       ),
     $$meta: yup.object({
-      type: yup.string().required(),
-      addedBy: yup.string().required(),
+      type: yup.string().required().label('What type of hook this is. Defined by Elder.js for debugging.'),
+      addedBy: yup.string().required().label('Where the hook was added from. Defined by Elder.js for debugging.'),
     }),
   })
   .noUnknown(true);
