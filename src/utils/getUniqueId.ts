@@ -1,10 +1,6 @@
 import generate from 'nanoid/non-secure/generate';
 
-/**
- * Used to generate a 10 digit unique ID
- *
- * @returns {String}
- */
+// generate a 10 digit unique ID
 const getUniqueId = () => {
   return generate('bcdfgjklmnpqrstvwxyzVCDFGJKLMNQRSTVWXYZ', 10);
 };

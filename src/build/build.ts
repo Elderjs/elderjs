@@ -3,7 +3,7 @@ import os from 'os';
 import cluster from 'cluster';
 
 import { Elder, getElderConfig } from '../Elder';
-import { shuffleArray } from '../utils/shuffleArray';
+import shuffleArray from '../utils/shuffleArray';
 import { Timing, BuildResult } from '../utils/types';
 
 function getWorkerCounts(counts) {

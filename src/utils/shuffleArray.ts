@@ -6,5 +6,4 @@ function shuffleArray(a) {
   return a;
 }
 
-// eslint-disable-next-line import/prefer-default-export
-export { shuffleArray };
+export default shuffleArray;
