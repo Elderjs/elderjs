@@ -15,7 +15,7 @@ import { prepareServer } from './prepareServer';
 
 import { validateHook, validateRoute, validatePlugin } from './validations';
 import prepareProcessStack from './prepareProcessStack';
-import { getConfig } from './getConfig';
+import getConfig from './getConfig';
 
 export {
   asyncForEach,

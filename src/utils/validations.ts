@@ -119,6 +119,42 @@ const configSchema = yup.object().shape({
   typescript: yup.boolean().default(false).label('This causes Elder.js to look in the /build/ folder '),
 });
 
+const routeSchema = yup.object({
+  template: yup.string().required(),
+  all: yup
+    .mixed()
+    .required()
+    .test(
+      'isFunction',
+      'all() should be a function or async function',
+      (value) => typeof value === 'function' || (typeof value === 'object' && value.then === 'function'),
+    ),
+  permalink: yup
+    .mixed()
+    .required()
+    .test(
+      'isFunction',
+      'Permalink should be a function or async function',
+      (value) => typeof value === 'function' || (typeof value === 'object' && value.then === 'function'),
+    ),
+  hooks: yup.array().notRequired(),
+});
+
+const pluginSchema = yup.object({
+  name: yup.string(),
+  description: yup.string(),
+  init: yup
+    .mixed()
+    .notRequired()
+    .test(
+      'isFunction',
+      'Run should be a function or async function',
+      (value) => typeof value === 'function' || (typeof value === 'object' && value.then === 'function'),
+    ),
+  routes: yup.mixed().notRequired(),
+  hooks: yup.array().required(),
+});
+
 function getDefaultConfig(): ConfigOptions {
   const validated = configSchema.cast();
 
@@ -137,26 +173,6 @@ function validateConfig(config = {}) {
 
 function validateRoute(route, routeName: string): RouteOptions | false {
   try {
-    const routeSchema = yup.object({
-      template: yup.string().required(),
-      all: yup
-        .mixed()
-        .required()
-        .test(
-          'isFunction',
-          'all() should be a function or async function',
-          (value) => typeof value === 'function' || (typeof value === 'object' && value.then === 'function'),
-        ),
-      permalink: yup
-        .mixed()
-        .required()
-        .test(
-          'isFunction',
-          'Permalink should be a function or async function',
-          (value) => typeof value === 'function' || (typeof value === 'object' && value.then === 'function'),
-        ),
-      hooks: yup.array().notRequired(),
-    });
     routeSchema.validateSync(route);
     const validated = routeSchema.cast(route);
     return validated;
@@ -172,20 +188,6 @@ function validateRoute(route, routeName: string): RouteOptions | false {
 
 function validatePlugin(plugin): PluginOptions | false {
   try {
-    const pluginSchema = yup.object({
-      name: yup.string(),
-      description: yup.string(),
-      init: yup
-        .mixed()
-        .notRequired()
-        .test(
-          'isFunction',
-          'Run should be a function or async function',
-          (value) => typeof value === 'function' || (typeof value === 'object' && value.then === 'function'),
-        ),
-      routes: yup.mixed().notRequired(),
-      hooks: yup.array().required(),
-    });
     pluginSchema.validateSync(plugin);
     const validated: PluginOptions = pluginSchema.cast(plugin);
     return validated;

@@ -36,5 +36,5 @@ Object.defineProperty(exports, "validateRoute", { enumerable: true, get: functio
 Object.defineProperty(exports, "validatePlugin", { enumerable: true, get: function () { return validations_1.validatePlugin; } });
 const prepareProcessStack_1 = __importDefault(require("./prepareProcessStack"));
 exports.prepareProcessStack = prepareProcessStack_1.default;
-const getConfig_1 = require("./getConfig");
-Object.defineProperty(exports, "getConfig", { enumerable: true, get: function () { return getConfig_1.getConfig; } });
+const getConfig_1 = __importDefault(require("./getConfig"));
+exports.getConfig = getConfig_1.default;

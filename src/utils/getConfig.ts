@@ -10,10 +10,10 @@ function getConfig(context?: string): ConfigOptions {
   const explorerSync = cosmiconfigSync('elder');
   const explorerSearch: any = explorerSync.search();
   if (!explorerSearch.config) console.error(`Unable to find your elder.this.settings.js file. Setting defaults.`);
-  const { config: loadedConfig, filePath: configPath } = explorerSearch;
+  const { config: loadedConfig } = explorerSearch;
 
   const defaultConfig = getDefaultConfig();
-  const config: ConfigOptions = defaultsDeep(loadedConfig, defaultConfig);
+  const config: ConfigOptions = defaultsDeep(loadedConfig || {}, defaultConfig);
 
   if (config.debug.automagic && (!context || context !== 'build')) {
     console.log(
@@ -59,4 +59,4 @@ function getConfig(context?: string): ConfigOptions {
   return config;
 }
 
-export { getConfig };
+export default getConfig;

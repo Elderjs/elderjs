@@ -13,5 +13,5 @@ import shuffleArray from './shuffleArray';
 import { prepareServer } from './prepareServer';
 import { validateHook, validateRoute, validatePlugin } from './validations';
 import prepareProcessStack from './prepareProcessStack';
-import { getConfig } from './getConfig';
+import getConfig from './getConfig';
 export { asyncForEach, capitalizeFirstLetter, svelteComponent, getHashedSvelteComponents, getUniqueId, IntersectionObserver, Page, parseBuildPerf, perf, permalinks, prepareRunHook, validateHook, validateRoute, validatePlugin, shuffleArray, prepareServer, prepareProcessStack, getConfig, };
