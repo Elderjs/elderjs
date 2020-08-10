@@ -1,4 +1,4 @@
-import { HookInterface } from './types';
+import type { HookInterface } from './types';
 // Notes:
 
 // plugins automatically have the object returned from their init() function added to the props/mutable arrays of each hook.

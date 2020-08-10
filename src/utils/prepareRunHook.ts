@@ -40,7 +40,9 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
       // lower priority is more important.
       const hookList = theseHooks.sort((a, b) => a.priority - b.priority);
 
-      settings && settings.debug && settings.debug.hooks && console.log(`Hooks registered on ${hookName}:`, hookList);
+      if (settings && settings.debug && settings.debug.hooks) {
+        console.log(`Hooks registered on ${hookName}:`, hookList);
+      }
 
       const hookOutput = {};
 
@@ -51,7 +53,9 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
 
         if (!hookResponse) hookResponse = {};
 
-        if (settings.debug.hooks) console.log(`${hook.name} ran on ${hookName} and returned`, hookResponse);
+        if (settings && settings.debug && settings.debug.hooks) {
+          console.log(`${hook.name} ran on ${hookName} and returned`, hookResponse);
+        }
 
         Object.keys(hookResponse).forEach((key) => {
           if (hookDefinition.mutable && hookDefinition.mutable.includes(key)) {
@@ -84,20 +88,18 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
         });
       }
 
-      settings && settings.debug && settings.debug.hooks && console.log(`${hookName} finished`);
+      if (settings && settings.debug && settings.debug.hooks) console.log(`${hookName} finished`);
 
       if (props.perf) props.perf.end(`hook.${hookName}`);
       return hookOutput;
     }
-    settings &&
-      settings.debug &&
-      settings.debug.hooks &&
+    if (settings && settings.debug && settings.debug.hooks) {
       console.log(`${hookName} finished without executing any hooks`);
+    }
 
     if (props.perf) props.perf.end(`hook.${hookName}`);
     return props;
   };
 }
 
-// eslint-disable-next-line import/prefer-default-export
-export { prepareRunHook };
+export default prepareRunHook;
