@@ -163,7 +163,7 @@ class Elder {
                 };
             });
             pluginHooksArray.forEach((hook) => {
-                const validatedHook = utils_1.validateHook(hook, hookInterface_1.hookInterface);
+                const validatedHook = utils_1.validateHook(hook);
                 if (validatedHook) {
                     pluginHooks.push(validatedHook);
                 }
@@ -287,7 +287,7 @@ class Elder {
         }));
         const allSupportedHooks = hookInterface_1.hookInterface;
         this.hooks = [...elderJsHooks, ...pluginHooks, ...routeHooks, ...hooksJs]
-            .map((hook) => utils_1.validateHook(hook, hookInterface_1.hookInterface))
+            .map((hook) => utils_1.validateHook(hook))
             .filter(Boolean);
         if (this.settings.hooks.disable && this.settings.hooks.disable.length > 0) {
             this.hooks = this.hooks.filter((h) => !this.settings.hooks.disable.includes(h.name));

@@ -18,9 +18,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDefaultConfig = exports.validateConfig = exports.validateHook = exports.validatePlugin = exports.validateRoute = void 0;
+exports.pluginSchema = exports.routeSchema = exports.hookSchema = exports.configSchema = exports.getDefaultConfig = exports.validateConfig = exports.validateHook = exports.validatePlugin = exports.validateRoute = void 0;
 const yup = __importStar(require("yup"));
+const hookInterface_1 = __importDefault(require("../hookInterface/hookInterface"));
 const configSchema = yup.object().shape({
     locations: yup
         .object()
@@ -100,7 +104,7 @@ const configSchema = yup.object().shape({
             .label('This is an array of hooks to be excluded from execution. To be clear, this isn\'t the "hook" name found in the "hookInterface.ts" file but instead the name of the system, user, plugin, or route hook that is defined.  For instance if you wanted to by name to prevent the system hook that writes html to the public folder during builds from being run, you would add "internalWriteFile" to this array.'),
     }),
     server: yup.object().shape({
-        prefix: yup.string().notRequired().default(''),
+        prefix: yup.string().notRequired().default('').label(`If Elder.js should serve all pages with a prefix.`),
     }),
     build: yup.object().shape({
         numberOfWorkers: yup
@@ -116,6 +120,7 @@ const configSchema = yup.object().shape({
     }),
     typescript: yup.boolean().default(false).label('This causes Elder.js to look in the /build/ folder '),
 });
+exports.configSchema = configSchema;
 const routeSchema = yup.object({
     template: yup.string().required(),
     all: yup
@@ -128,6 +133,7 @@ const routeSchema = yup.object({
         .test('isFunction', 'Permalink should be a function or async function', (value) => typeof value === 'function' || (typeof value === 'object' && value.then === 'function')),
     hooks: yup.array().notRequired(),
 });
+exports.routeSchema = routeSchema;
 const pluginSchema = yup.object({
     name: yup.string(),
     description: yup.string(),
@@ -138,6 +144,27 @@ const pluginSchema = yup.object({
     routes: yup.mixed().notRequired(),
     hooks: yup.array().required(),
 });
+exports.pluginSchema = pluginSchema;
+const hookSchema = yup
+    .object({
+    hook: yup
+        .string()
+        .required()
+        .test('valid-hook', 'This is not a supported hook.', (value) => hookInterface_1.default.find((supportedHook) => supportedHook.hook === value)),
+    name: yup.string().required(),
+    description: yup.string().required(),
+    priority: yup.number().positive().integer().max(100).optional().default(50),
+    run: yup
+        .mixed()
+        .defined()
+        .test('isFunction', 'Run should be a function or async function', (value) => typeof value === 'function' || (typeof value === 'object' && value.then === 'function')),
+    $$meta: yup.object({
+        type: yup.string().required(),
+        addedBy: yup.string().required(),
+    }),
+})
+    .noUnknown(true);
+exports.hookSchema = hookSchema;
 function getDefaultConfig() {
     const validated = configSchema.cast();
     return validated;
@@ -178,27 +205,8 @@ function validatePlugin(plugin) {
     }
 }
 exports.validatePlugin = validatePlugin;
-function validateHook(hook, allSupportedHooks) {
+function validateHook(hook) {
     try {
-        const hookSchema = yup
-            .object({
-            hook: yup
-                .string()
-                .required()
-                .test('valid-hook', 'This is not a supported hook.', (value) => allSupportedHooks.find((supportedHook) => supportedHook.hook === value)),
-            name: yup.string().required(),
-            description: yup.string().required(),
-            priority: yup.number().positive().integer().max(100).optional().default(50),
-            run: yup
-                .mixed()
-                .defined()
-                .test('isFunction', 'Run should be a function or async function', (value) => typeof value === 'function' || (typeof value === 'object' && value.then === 'function')),
-            $$meta: yup.object({
-                type: yup.string().required(),
-                addedBy: yup.string().required(),
-            }),
-        })
-            .noUnknown(true);
         hookSchema.validateSync(hook);
         const validated = hookSchema.cast(hook);
         return validated;

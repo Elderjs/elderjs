@@ -10,6 +10,8 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var validations_1 = require("./utils/validations");
+Object.defineProperty(exports, "configSchema", { enumerable: true, get: function () { return validations_1.configSchema; } });
 var Elder_1 = require("./Elder");
 Object.defineProperty(exports, "Elder", { enumerable: true, get: function () { return Elder_1.Elder; } });
 Object.defineProperty(exports, "getElderConfig", { enumerable: true, get: function () { return Elder_1.getElderConfig; } });

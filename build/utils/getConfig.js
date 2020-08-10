@@ -12,11 +12,12 @@ const tsConfigExist_1 = require("./tsConfigExist");
 function getConfig(context) {
     const explorerSync = cosmiconfig_1.cosmiconfigSync('elder');
     const explorerSearch = explorerSync.search();
-    if (!explorerSearch.config)
-        console.error(`Unable to find your elder.this.settings.js file. Setting defaults.`);
-    const { config: loadedConfig } = explorerSearch;
+    let loadedConfig = {};
+    if (explorerSearch && explorerSearch.config) {
+        loadedConfig = explorerSearch.config;
+    }
     const defaultConfig = validations_1.getDefaultConfig();
-    const config = lodash_defaultsdeep_1.default(loadedConfig || {}, defaultConfig);
+    const config = lodash_defaultsdeep_1.default(loadedConfig, defaultConfig);
     if (config.debug.automagic && (!context || context !== 'build')) {
         console.log(`debug.automagic:: Your elder.config.js has debug.automagic = true. We call this chatty mode, but it is designed to show you the things we're doing automatically so you're aware. To turn it off set debug.automagic = 'false'`);
     }

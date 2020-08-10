@@ -9,11 +9,13 @@ import { tsConfigExist } from './tsConfigExist';
 function getConfig(context?: string): ConfigOptions {
   const explorerSync = cosmiconfigSync('elder');
   const explorerSearch: any = explorerSync.search();
-  if (!explorerSearch.config) console.error(`Unable to find your elder.this.settings.js file. Setting defaults.`);
-  const { config: loadedConfig } = explorerSearch;
+  let loadedConfig = {};
+  if (explorerSearch && explorerSearch.config) {
+    loadedConfig = explorerSearch.config;
+  }
 
   const defaultConfig = getDefaultConfig();
-  const config: ConfigOptions = defaultsDeep(loadedConfig || {}, defaultConfig);
+  const config: ConfigOptions = defaultsDeep(loadedConfig, defaultConfig);
 
   if (config.debug.automagic && (!context || context !== 'build')) {
     console.log(

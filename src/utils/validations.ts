@@ -2,6 +2,7 @@ import * as yup from 'yup';
 import type { ConfigOptions, PluginOptions } from './types';
 import type { RouteOptions } from '../routes/types';
 import type { HookOptions } from '../hooks/types';
+import hookInterface from '../hookInterface/hookInterface';
 
 const configSchema = yup.object().shape({
   locations: yup
@@ -98,7 +99,7 @@ const configSchema = yup.object().shape({
       ),
   }),
   server: yup.object().shape({
-    prefix: yup.string().notRequired().default(''),
+    prefix: yup.string().notRequired().default('').label(`If Elder.js should serve all pages with a prefix.`),
   }),
   build: yup.object().shape({
     numberOfWorkers: yup
@@ -155,6 +156,32 @@ const pluginSchema = yup.object({
   hooks: yup.array().required(),
 });
 
+const hookSchema = yup
+  .object({
+    hook: yup
+      .string()
+      .required()
+      .test('valid-hook', 'This is not a supported hook.', (value) =>
+        hookInterface.find((supportedHook) => supportedHook.hook === value),
+      ),
+    name: yup.string().required(),
+    description: yup.string().required(),
+    priority: yup.number().positive().integer().max(100).optional().default(50),
+    run: yup
+      .mixed()
+      .defined()
+      .test(
+        'isFunction',
+        'Run should be a function or async function',
+        (value) => typeof value === 'function' || (typeof value === 'object' && value.then === 'function'),
+      ),
+    $$meta: yup.object({
+      type: yup.string().required(),
+      addedBy: yup.string().required(),
+    }),
+  })
+  .noUnknown(true);
+
 function getDefaultConfig(): ConfigOptions {
   const validated = configSchema.cast();
 
@@ -201,33 +228,8 @@ function validatePlugin(plugin): PluginOptions | false {
   }
 }
 
-function validateHook(hook, allSupportedHooks): HookOptions | false {
+function validateHook(hook): HookOptions | false {
   try {
-    const hookSchema = yup
-      .object({
-        hook: yup
-          .string()
-          .required()
-          .test('valid-hook', 'This is not a supported hook.', (value) =>
-            allSupportedHooks.find((supportedHook) => supportedHook.hook === value),
-          ),
-        name: yup.string().required(),
-        description: yup.string().required(),
-        priority: yup.number().positive().integer().max(100).optional().default(50),
-        run: yup
-          .mixed()
-          .defined()
-          .test(
-            'isFunction',
-            'Run should be a function or async function',
-            (value) => typeof value === 'function' || (typeof value === 'object' && value.then === 'function'),
-          ),
-        $$meta: yup.object({
-          type: yup.string().required(),
-          addedBy: yup.string().required(),
-        }),
-      })
-      .noUnknown(true);
     hookSchema.validateSync(hook);
     const validated = hookSchema.cast(hook);
     return validated;
@@ -245,4 +247,14 @@ function validateHook(hook, allSupportedHooks): HookOptions | false {
   }
 }
 
-export { validateRoute, validatePlugin, validateHook, validateConfig, getDefaultConfig };
+export {
+  validateRoute,
+  validatePlugin,
+  validateHook,
+  validateConfig,
+  getDefaultConfig,
+  configSchema,
+  hookSchema,
+  routeSchema,
+  pluginSchema,
+};

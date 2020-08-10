@@ -245,7 +245,7 @@ class Elder {
       );
 
       pluginHooksArray.forEach((hook) => {
-        const validatedHook = validateHook(hook, hookInterface);
+        const validatedHook = validateHook(hook);
         if (validatedHook) {
           pluginHooks.push(validatedHook);
         }
@@ -398,7 +398,7 @@ class Elder {
     const allSupportedHooks = hookInterface;
 
     this.hooks = [...elderJsHooks, ...pluginHooks, ...routeHooks, ...hooksJs]
-      .map((hook) => validateHook(hook, hookInterface))
+      .map((hook) => validateHook(hook))
       .filter((Boolean as any) as ExcludesFalse);
 
     if (this.settings.hooks.disable && this.settings.hooks.disable.length > 0) {
