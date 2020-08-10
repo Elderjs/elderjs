@@ -7,7 +7,7 @@ const cli_progress_1 = __importDefault(require("cli-progress"));
 const os_1 = __importDefault(require("os"));
 const cluster_1 = __importDefault(require("cluster"));
 const Elder_1 = require("../Elder");
-const shuffleArray_1 = require("../utils/shuffleArray");
+const shuffleArray_1 = __importDefault(require("../utils/shuffleArray"));
 function getWorkerCounts(counts) {
     return Object.keys(counts).reduce((out, cv) => {
         out.count += counts[cv].count;
@@ -119,7 +119,7 @@ async function build() {
             totalRequests = mElderResults.allRequests.length;
             let requestsToSplit = [...mElderResults.allRequests];
             if (settings.build.shuffleRequests) {
-                requestsToSplit = shuffleArray_1.shuffleArray(requestsToSplit);
+                requestsToSplit = shuffleArray_1.default(requestsToSplit);
             }
             let requestsPerWorker = Math.ceil(requestsToSplit.length / numberOfWorkers);
             if (requestsPerWorker < 100)

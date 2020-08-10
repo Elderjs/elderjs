@@ -15,7 +15,7 @@ exports.build = build_1.default;
 const partialHydration_1 = __importDefault(require("./partialHydration/partialHydration"));
 exports.partialHydration = partialHydration_1.default;
 const utils_1 = require("./utils");
-const createReadOnlyProxy_1 = require("./utils/createReadOnlyProxy");
+const createReadOnlyProxy_1 = __importDefault(require("./utils/createReadOnlyProxy"));
 const getElderConfig = utils_1.getConfig;
 exports.getElderConfig = getElderConfig;
 async function workerBuild({ bootstrapComplete, workerRequests }) {
@@ -117,7 +117,7 @@ class Elder {
                     plugin.init({
                         ...plugin,
                         config: lodash_defaultsdeep_1.default(pluginConfigFromConfig, plugin.config),
-                        settings: createReadOnlyProxy_1.createReadOnlyProxy(this.settings, 'Settings', 'plugin init()'),
+                        settings: createReadOnlyProxy_1.default(this.settings, 'Settings', 'plugin init()'),
                     }) || plugin;
                 const validatedPlugin = utils_1.validatePlugin(plugin);
                 if (!validatedPlugin)

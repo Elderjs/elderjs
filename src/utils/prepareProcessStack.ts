@@ -10,7 +10,7 @@ function prepareProcessStack(page) {
           console.log(cv);
         }
         if (cv.string && cv.string.length > 0) {
-          out = cv.string + out;
+          out = `${cv.string}${out}`;
         }
 
         return out;
@@ -21,5 +21,4 @@ function prepareProcessStack(page) {
   };
 }
 
-// eslint-disable-next-line import/prefer-default-export
-export { prepareProcessStack };
+export default prepareProcessStack;

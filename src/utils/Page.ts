@@ -1,6 +1,6 @@
 import getUniqueId from './getUniqueId';
 import perf from './perf';
-import { prepareProcessStack } from './prepareProcessStack';
+import prepareProcessStack from './prepareProcessStack';
 import { QueryOptions, SettingOptions, ConfigOptions, RequestOptions } from './types';
 import { RoutesOptions } from '../routes/types';
 import createReadOnlyProxy from './createReadOnlyProxy';

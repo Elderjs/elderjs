@@ -5,8 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const getUniqueId_1 = __importDefault(require("./getUniqueId"));
 const perf_1 = __importDefault(require("./perf"));
-const prepareProcessStack_1 = require("./prepareProcessStack");
-const createReadOnlyProxy_1 = require("./createReadOnlyProxy");
+const prepareProcessStack_1 = __importDefault(require("./prepareProcessStack"));
+const createReadOnlyProxy_1 = __importDefault(require("./createReadOnlyProxy"));
 const buildPage = async (page) => {
     try {
         page.perf.end('initToBuildGap');
@@ -27,11 +27,11 @@ const buildPage = async (page) => {
                 data: page.data,
                 query: page.query,
                 helpers: page.helpers,
-                settings: createReadOnlyProxy_1.createReadOnlyProxy(page.settings, 'settings', 'data.js'),
-                request: createReadOnlyProxy_1.createReadOnlyProxy(page.request, 'request', 'data.js'),
+                settings: createReadOnlyProxy_1.default(page.settings, 'settings', 'data.js'),
+                request: createReadOnlyProxy_1.default(page.request, 'request', 'data.js'),
                 errors: page.errors,
                 perf: page.perf,
-                allRequests: createReadOnlyProxy_1.createReadOnlyProxy(page.allRequests, 'allRequests', 'data.js'),
+                allRequests: createReadOnlyProxy_1.default(page.allRequests, 'allRequests', 'data.js'),
             });
             if (dataResponse) {
                 page.data = dataResponse;
@@ -129,7 +129,7 @@ class Page {
         this.routes = routes;
         this.customProps = customProps;
         this.htmlString = '';
-        this.processStack = prepareProcessStack_1.prepareProcessStack(this);
+        this.processStack = prepareProcessStack_1.default(this);
         this.runHook('modifyCustomProps', this);
         this.perf.end('constructor');
         this.perf.start('initToBuildGap');

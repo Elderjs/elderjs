@@ -1,7 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.prepareRunHook = void 0;
-const createReadOnlyProxy_1 = require("./createReadOnlyProxy");
+const createReadOnlyProxy_1 = __importDefault(require("./createReadOnlyProxy"));
 // TODO: How do we get types to the user when they are writing plugins, etc?
 function prepareRunHook({ hooks, allSupportedHooks, settings }) {
     return async function processHook(hookName, props = {}) {
@@ -16,7 +19,7 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
         const hookProps = hookDefinition.props.reduce((out, cv) => {
             if (Object.hasOwnProperty.call(props, cv)) {
                 if (!hookDefinition.mutable.includes(cv)) {
-                    out[cv] = createReadOnlyProxy_1.createReadOnlyProxy(props[cv], cv, hookName);
+                    out[cv] = createReadOnlyProxy_1.default(props[cv], cv, hookName);
                 }
                 else {
                     out[cv] = props[cv];
@@ -24,7 +27,7 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
             }
             else if (typeof props.customProps === 'object' && props.customProps[cv]) {
                 if (!hookDefinition.mutable.includes(cv)) {
-                    out[cv] = createReadOnlyProxy_1.createReadOnlyProxy(props.customProps[cv], cv, hookName);
+                    out[cv] = createReadOnlyProxy_1.default(props.customProps[cv], cv, hookName);
                 }
                 else {
                     out[cv] = props.customProps[cv];
