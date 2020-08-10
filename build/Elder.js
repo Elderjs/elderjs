@@ -86,104 +86,109 @@ class Elder {
          */
         let pluginRoutes = {};
         const pluginHooks = [];
-        for (const pluginName in this.settings.plugins) {
-            if (Object.hasOwnProperty.call(this.settings.plugins, pluginName)) {
-                const pluginConfigFromConfig = this.settings.plugins[pluginName];
-                let plugin;
-                const pluginPath = `./plugins/${pluginName}/index.js`;
-                const srcPlugin = path_1.default.resolve(process.cwd(), srcFolder, pluginPath);
-                if (fs_extra_1.default.existsSync(srcPlugin)) {
-                    plugin = require(srcPlugin).default || require(srcPlugin);
+        const pluginNames = Object.keys(this.settings.plugins);
+        for (let i = 0; i < pluginNames.length; i += 1) {
+            const pluginName = pluginNames[i];
+            const pluginConfigFromConfig = this.settings.plugins[pluginName];
+            let plugin;
+            const pluginPath = `./plugins/${pluginName}/index.js`;
+            const srcPlugin = path_1.default.resolve(process.cwd(), srcFolder, pluginPath);
+            if (fs_extra_1.default.existsSync(srcPlugin)) {
+                // eslint-disable-next-line import/no-dynamic-require
+                plugin = require(srcPlugin).default || require(srcPlugin);
+            }
+            if (!plugin && buildFolder.length > 0) {
+                const buildPlugin = path_1.default.resolve(process.cwd(), buildFolder, pluginPath);
+                if (fs_extra_1.default.existsSync(buildPlugin)) {
+                    // eslint-disable-next-line import/no-dynamic-require
+                    plugin = require(buildPlugin).default || require(buildPlugin);
                 }
-                if (!plugin && buildFolder.length > 0) {
-                    const buildPlugin = path_1.default.resolve(process.cwd(), buildFolder, pluginPath);
-                    if (fs_extra_1.default.existsSync(buildPlugin)) {
-                        plugin = require(buildPlugin).default || require(buildPlugin);
-                    }
+            }
+            if (!plugin) {
+                const pkgPath = path_1.default.resolve(process.cwd(), './node_modules/', pluginName);
+                if (fs_extra_1.default.existsSync(pkgPath)) {
+                    // eslint-disable-next-line import/no-dynamic-require
+                    const pluginPackageJson = require(path_1.default.resolve(pkgPath, './package.json'));
+                    const pluginPkgPath = path_1.default.resolve(pkgPath, pluginPackageJson.main);
+                    // eslint-disable-next-line import/no-dynamic-require
+                    plugin = require(pluginPkgPath).default || require(pluginPkgPath);
                 }
-                if (!plugin) {
-                    // TODO: Test this functionality!
-                    const pkgPath = path_1.default.resolve(process.cwd(), './node_modules/', pluginName, './index.js');
-                    if (fs_extra_1.default.existsSync(pkgPath)) {
-                        const pluginPackageJson = require(path_1.default.resolve(pkgPath, './package.json'));
-                        const pluginPath = path_1.default.resolve(pkgPath, pluginPackageJson.main);
-                        plugin = require(pluginPath).default || require(pluginPath);
-                    }
-                }
-                if (!plugin) {
-                    throw new Error(`Plugin ${pluginName} not found in plugins or node_modules folder.`);
-                }
-                plugin =
-                    plugin.init({
-                        ...plugin,
-                        config: lodash_defaultsdeep_1.default(pluginConfigFromConfig, plugin.config),
-                        settings: createReadOnlyProxy_1.default(this.settings, 'Settings', 'plugin init()'),
-                    }) || plugin;
-                const validatedPlugin = utils_1.validatePlugin(plugin);
-                if (!validatedPlugin)
-                    return;
-                plugin = validatedPlugin;
-                // clean props the plugin shouldn't be able to change between hook... specifically their hooks;
-                let { hooks: pluginHooksArray } = plugin;
-                const { init, ...sanitizedPlugin } = plugin;
-                pluginHooksArray = pluginHooksArray.map((hook) => {
-                    return {
-                        ...hook,
-                        $$meta: {
-                            type: 'plugin',
-                            addedBy: pluginName,
-                        },
-                        run: async (payload = {}) => {
-                            // pass the plugin definition into the closure of every hook.
-                            let pluginDefinition = sanitizedPlugin;
-                            // TODO: In a future release add in specific helpers to allow plugins to implement the
-                            // same hook signature as we use on plugin.helpers; Plugin defined hooks will basically "shadow"
-                            // system hooks.
-                            payload.plugin = pluginDefinition;
-                            const pluginResp = await hook.run(payload);
-                            if (pluginResp) {
-                                if (pluginResp.plugin) {
-                                    const { plugin, ...rest } = pluginResp;
-                                    // while objects are pass by reference, the pattern we encourage is to return the mutation of state.
-                                    // if users followed this pattern for plugins, we may not be mutating the plugin definition, so this is added.
-                                    pluginDefinition = plugin;
-                                    return rest;
-                                }
-                                return pluginResp;
+            }
+            if (!plugin) {
+                throw new Error(`Plugin ${pluginName} not found in plugins or node_modules folder.`);
+            }
+            plugin =
+                plugin.init({
+                    ...plugin,
+                    config: lodash_defaultsdeep_1.default(pluginConfigFromConfig, plugin.config),
+                    settings: createReadOnlyProxy_1.default(this.settings, 'Settings', 'plugin init()'),
+                }) || plugin;
+            const validatedPlugin = utils_1.validatePlugin(plugin);
+            if (!validatedPlugin)
+                return;
+            plugin = validatedPlugin;
+            // clean props the plugin shouldn't be able to change between hook... specifically their hooks;
+            let { hooks: pluginHooksArray } = plugin;
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { init, ...sanitizedPlugin } = plugin;
+            pluginHooksArray = pluginHooksArray.map((hook) => {
+                return {
+                    ...hook,
+                    $$meta: {
+                        type: 'plugin',
+                        addedBy: pluginName,
+                    },
+                    run: async (payload = {}) => {
+                        // pass the plugin definition into the closure of every hook.
+                        let pluginDefinition = sanitizedPlugin;
+                        // TODO: In a future release add in specific helpers to allow plugins to implement the
+                        // same hook signature as we use on plugin.helpers; Plugin defined hooks will basically "shadow"
+                        // system hooks.
+                        // eslint-disable-next-line no-param-reassign
+                        payload.plugin = pluginDefinition;
+                        const pluginResp = await hook.run(payload);
+                        if (pluginResp) {
+                            if (pluginResp.plugin) {
+                                const { plugin: newPluginDef, ...rest } = pluginResp;
+                                // while objects are pass by reference, the pattern we encourage is to return the mutation of state.
+                                // if users followed this pattern for plugins, we may not be mutating the plugin definition, so this is added.
+                                pluginDefinition = newPluginDef;
+                                return rest;
                             }
-                            // return the hook's result.
-                            return {};
-                        },
-                    };
-                });
-                pluginHooksArray.forEach((hook) => {
-                    const validatedHook = utils_1.validateHook(hook, hookInterface_1.hookInterface);
-                    if (validatedHook) {
-                        pluginHooks.push(validatedHook);
-                    }
-                });
-                if (Object.hasOwnProperty.call(plugin, 'routes')) {
-                    for (const routeName in plugin.routes) {
-                        // don't allow plugins to add hooks via the routes definitions like users can.
-                        if (plugin.routes[routeName].hooks)
-                            console.error(`WARN: Plugin ${routeName} is trying to register a hooks via a the 'hooks' array on a route. This is not supported. Plugins must define the 'hooks' array at the plugin level.`);
-                        if (!plugin.routes[routeName].data) {
-                            plugin.routes[routeName].data = () => ({});
+                            return pluginResp;
                         }
-                        if (typeof plugin.routes[routeName].template === 'string' &&
-                            plugin.routes[routeName].template.endsWith('.svelte')) {
-                            const templateName = plugin.routes[routeName].template.replace('.svelte', '');
-                            const ssrComponent = path_1.default.resolve(process.cwd(), this.settings.locations.svelte.ssrComponents, `${templateName}.js`);
-                            if (!fs_extra_1.default.existsSync(ssrComponent)) {
-                                console.warn(`Plugin Route: ${routeName} has an error. No SSR svelte compontent found ${templateName} which was added by ${pluginName}. This may cause unexpected outcomes. If you believe this should be working, make sure rollup has run before this file is initialized. If the issue persists, please contact the plugin author. Expected location \`${ssrComponent}\``);
-                            }
-                            plugin.routes[routeName].templateComponent = utils_1.svelteComponent(templateName);
-                        }
-                        const { hooks: pluginRouteHooks, ...sanitizedRouteDeets } = plugin.routes[routeName];
-                        const sanitizedRoute = {};
-                        sanitizedRoute[routeName] = { ...sanitizedRouteDeets, $$meta: { type: 'plugin', addedBy: pluginName } };
-                        pluginRoutes = { ...pluginRoutes, ...sanitizedRoute };
+                        // make sure something is returned
+                        return {};
+                    },
+                };
+            });
+            pluginHooksArray.forEach((hook) => {
+                const validatedHook = utils_1.validateHook(hook, hookInterface_1.hookInterface);
+                if (validatedHook) {
+                    pluginHooks.push(validatedHook);
+                }
+            });
+            if (Object.hasOwnProperty.call(plugin, 'routes')) {
+                for (const routeName in plugin.routes) {
+                    // don't allow plugins to add hooks via the routes definitions like users can.
+                    if (plugin.routes[routeName].hooks)
+                        console.error(`WARN: Plugin ${routeName} is trying to register a hooks via a the 'hooks' array on a route. This is not supported. Plugins must define the 'hooks' array at the plugin level.`);
+                    if (!plugin.routes[routeName].data) {
+                        plugin.routes[routeName].data = () => ({});
                     }
+                    if (typeof plugin.routes[routeName].template === 'string' &&
+                        plugin.routes[routeName].template.endsWith('.svelte')) {
+                        const templateName = plugin.routes[routeName].template.replace('.svelte', '');
+                        const ssrComponent = path_1.default.resolve(process.cwd(), this.settings.locations.svelte.ssrComponents, `${templateName}.js`);
+                        if (!fs_extra_1.default.existsSync(ssrComponent)) {
+                            console.warn(`Plugin Route: ${routeName} has an error. No SSR svelte compontent found ${templateName} which was added by ${pluginName}. This may cause unexpected outcomes. If you believe this should be working, make sure rollup has run before this file is initialized. If the issue persists, please contact the plugin author. Expected location \`${ssrComponent}\``);
+                        }
+                        plugin.routes[routeName].templateComponent = utils_1.svelteComponent(templateName);
+                    }
+                    const { hooks: pluginRouteHooks, ...sanitizedRouteDeets } = plugin.routes[routeName];
+                    const sanitizedRoute = {};
+                    sanitizedRoute[routeName] = { ...sanitizedRouteDeets, $$meta: { type: 'plugin', addedBy: pluginName } };
+                    pluginRoutes = { ...pluginRoutes, ...sanitizedRoute };
                 }
             }
         }
