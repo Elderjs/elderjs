@@ -1,5 +1,4 @@
-// eslint-disable-next-line import/prefer-default-export
-export function createReadOnlyProxy(obj: object, objName: string, location: string) {
+function createReadOnlyProxy(obj: object, objName: string, location: string) {
   // proxies only work on objects/arrays.
   try {
     if (typeof obj !== 'object' && !Array.isArray(obj)) return obj;
@@ -15,3 +14,5 @@ export function createReadOnlyProxy(obj: object, objName: string, location: stri
     return obj;
   }
 }
+
+export default createReadOnlyProxy;

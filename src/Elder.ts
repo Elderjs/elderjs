@@ -33,7 +33,7 @@ import {
   PluginOptions,
   ExcludesFalse,
 } from './utils/types';
-import { createReadOnlyProxy } from './utils/createReadOnlyProxy';
+import createReadOnlyProxy from './utils/createReadOnlyProxy';
 
 const getElderConfig = getConfig;
 
