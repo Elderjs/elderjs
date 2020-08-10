@@ -8,7 +8,7 @@ import parseBuildPerf from '../build/parseBuildPerf';
 import perf from './perf';
 import permalinks from './permalinks';
 import svelteComponent from './svelteComponent';
-import { prepareRunHook } from './prepareRunHook';
+import prepareRunHook from './prepareRunHook';
 import shuffleArray from './shuffleArray';
 import { prepareServer } from './prepareServer';
 import { validateHook, validateRoute, validatePlugin } from './validations';
