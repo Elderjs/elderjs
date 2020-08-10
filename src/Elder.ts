@@ -39,21 +39,35 @@ const getElderConfig = getConfig;
 
 class Elder {
   bootstrapComplete: Promise<any>;
+
   markBootstrapComplete: (Object) => void;
+
   settings: ConfigOptions & SettingOptions;
+
   routes: RoutesOptions;
+
   hooks: Array<HookOptions>;
+
   data: Object;
+
   runHook: (string, Object) => Promise<any>;
+
   hookInterface: any;
+
   customProps: any;
 
   query: QueryOptions;
+
   allRequests: Array<RequestOptions>;
+
   serverLookupObject: RequestsOptions;
+
   errors: any[];
+
   helpers: {};
+
   server: any;
+
   builder: any;
 
   constructor({ context, worker = false }) {
@@ -310,10 +324,8 @@ class Elder {
               console.error(err);
             }
           }
-        } else {
-          if (this.settings.debug.automagic) {
-            console.log(`No luck finding that hooks file. You can add one at ${hookSrcPath}`);
-          }
+        } else if (this.settings.debug.automagic) {
+          console.log(`No luck finding that hooks file. You can add one at ${hookSrcPath}`);
         }
       } else {
         console.error(err);

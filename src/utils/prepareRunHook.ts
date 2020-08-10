@@ -88,15 +88,15 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
 
       if (props.perf) props.perf.end(`hook.${hookName}`);
       return hookOutput;
-    } else {
-      settings &&
-        settings.debug &&
-        settings.debug.hooks &&
-        console.log(`${hookName} finished without executing any hooks`);
-
-      if (props.perf) props.perf.end(`hook.${hookName}`);
-      return props;
     }
+    settings &&
+      settings.debug &&
+      settings.debug.hooks &&
+      console.log(`${hookName} finished without executing any hooks`);
+
+    if (props.perf) props.perf.end(`hook.${hookName}`);
+    return props;
   };
 }
+
 export { prepareRunHook };
