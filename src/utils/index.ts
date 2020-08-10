@@ -9,12 +9,12 @@ import perf from './perf';
 import permalinks from './permalinks';
 
 import svelteComponent from './svelteComponent';
-import { prepareRunHook } from './prepareRunHook';
-import { shuffleArray } from './shuffleArray';
+import prepareRunHook from './prepareRunHook';
+import shuffleArray from './shuffleArray';
 import { prepareServer } from './prepareServer';
 
 import { validateHook, validateRoute, validatePlugin } from './validations';
-import { prepareProcessStack } from './prepareProcessStack';
+import prepareProcessStack from './prepareProcessStack';
 import { getConfig } from './getConfig';
 
 export {

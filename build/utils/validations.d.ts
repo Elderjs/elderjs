@@ -1,6 +1,6 @@
-import { ConfigOptions, PluginOptions } from './types';
-import { RouteOptions } from '../routes/types';
-import { HookOptions } from '../hooks/types';
+import type { ConfigOptions, PluginOptions } from './types';
+import type { RouteOptions } from '../routes/types';
+import type { HookOptions } from '../hooks/types';
 declare function getDefaultConfig(): ConfigOptions;
 declare function validateConfig(config?: {}): false | ConfigOptions;
 declare function validateRoute(route: any, routeName: string): RouteOptions | false;

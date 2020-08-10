@@ -1,7 +1,7 @@
 import * as yup from 'yup';
-import { ConfigOptions, PluginOptions } from './types';
-import { RouteOptions } from '../routes/types';
-import { HookOptions } from '../hooks/types';
+import type { ConfigOptions, PluginOptions } from './types';
+import type { RouteOptions } from '../routes/types';
+import type { HookOptions } from '../hooks/types';
 
 const configSchema = yup.object().shape({
   locations: yup

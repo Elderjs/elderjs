@@ -3,4 +3,4 @@ declare function prepareRunHook({ hooks, allSupportedHooks, settings }: {
     allSupportedHooks: any;
     settings: any;
 }): (hookName: any, props?: any) => Promise<any>;
-export { prepareRunHook };
+export default prepareRunHook;

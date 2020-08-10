@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.prepareProcessStack = void 0;
 function prepareProcessStack(page) {
     return function processStack(name) {
         page.perf.start(`stack.${name}`);
@@ -13,7 +12,7 @@ function prepareProcessStack(page) {
                 console.log(cv);
             }
             if (cv.string && cv.string.length > 0) {
-                out = cv.string + out;
+                out = `${cv.string}${out}`;
             }
             return out;
         }, '');
@@ -21,4 +20,4 @@ function prepareProcessStack(page) {
         return str;
     };
 }
-exports.prepareProcessStack = prepareProcessStack;
+exports.default = prepareProcessStack;

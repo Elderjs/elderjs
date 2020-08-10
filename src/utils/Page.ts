@@ -1,9 +1,9 @@
 import getUniqueId from './getUniqueId';
 import perf from './perf';
-import { prepareProcessStack } from './prepareProcessStack';
+import prepareProcessStack from './prepareProcessStack';
 import { QueryOptions, SettingOptions, ConfigOptions, RequestOptions } from './types';
 import { RoutesOptions } from '../routes/types';
-import { createReadOnlyProxy } from './createReadOnlyProxy';
+import createReadOnlyProxy from './createReadOnlyProxy';
 
 const buildPage = async (page) => {
   try {
@@ -126,20 +126,35 @@ const buildPage = async (page) => {
 
 class Page {
   uid: string;
+
   runHook: (string, Object) => Promise<any>;
+
   allRequests: Array<RequestOptions>;
+
   request: RequestOptions;
+
   settings: ConfigOptions & SettingOptions;
+
   helpers: {};
+
   data: Object;
+
   route: any;
+
   query: QueryOptions;
+
   errors: any[];
+
   routes: RoutesOptions;
+
   processStack: any;
+
   perf: any;
+
   customProps: any;
+
   htmlString: string;
+
   constructor({
     request,
     settings,

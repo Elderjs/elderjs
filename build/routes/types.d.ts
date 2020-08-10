@@ -1,4 +1,4 @@
-import { HookOptions } from '../hooks/types';
+import type { HookOptions } from '../hooks/types';
 export declare type RouteOptions = {
     template?: string;
     templateComponent?: (string: any) => Object;

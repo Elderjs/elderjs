@@ -1,4 +1,4 @@
-import { createReadOnlyProxy } from './createReadOnlyProxy';
+import createReadOnlyProxy from './createReadOnlyProxy';
 
 // TODO: How do we get types to the user when they are writing plugins, etc?
 function prepareRunHook({ hooks, allSupportedHooks, settings }) {
@@ -40,7 +40,9 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
       // lower priority is more important.
       const hookList = theseHooks.sort((a, b) => a.priority - b.priority);
 
-      settings && settings.debug && settings.debug.hooks && console.log(`Hooks registered on ${hookName}:`, hookList);
+      if (settings && settings.debug && settings.debug.hooks) {
+        console.log(`Hooks registered on ${hookName}:`, hookList);
+      }
 
       const hookOutput = {};
 
@@ -51,7 +53,9 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
 
         if (!hookResponse) hookResponse = {};
 
-        if (settings.debug.hooks) console.log(`${hook.name} ran on ${hookName} and returned`, hookResponse);
+        if (settings && settings.debug && settings.debug.hooks) {
+          console.log(`${hook.name} ran on ${hookName} and returned`, hookResponse);
+        }
 
         Object.keys(hookResponse).forEach((key) => {
           if (hookDefinition.mutable && hookDefinition.mutable.includes(key)) {
@@ -84,19 +88,18 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
         });
       }
 
-      settings && settings.debug && settings.debug.hooks && console.log(`${hookName} finished`);
+      if (settings && settings.debug && settings.debug.hooks) console.log(`${hookName} finished`);
 
       if (props.perf) props.perf.end(`hook.${hookName}`);
       return hookOutput;
-    } else {
-      settings &&
-        settings.debug &&
-        settings.debug.hooks &&
-        console.log(`${hookName} finished without executing any hooks`);
-
-      if (props.perf) props.perf.end(`hook.${hookName}`);
-      return props;
     }
+    if (settings && settings.debug && settings.debug.hooks) {
+      console.log(`${hookName} finished without executing any hooks`);
+    }
+
+    if (props.perf) props.perf.end(`hook.${hookName}`);
+    return props;
   };
 }
-export { prepareRunHook };
+
+export default prepareRunHook;

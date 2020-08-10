@@ -1,6 +1,8 @@
 import Page from './Page';
+
 function prepareServer({ bootstrapComplete }) {
-  return async function (req, res, next) {
+  // eslint-disable-next-line consistent-return
+  return async function prepServer(req, res, next) {
     const {
       serverLookupObject,
       settings,
@@ -15,7 +17,7 @@ function prepareServer({ bootstrapComplete }) {
     } = await bootstrapComplete;
 
     if (req.path) {
-      let path = req.path;
+      let { path } = req;
 
       if (settings.server.prefix && settings.server.prefix.length > 0) {
         if (path.indexOf(settings.server.prefix) !== 0) {
@@ -24,7 +26,7 @@ function prepareServer({ bootstrapComplete }) {
       }
 
       if (path[path.length - 1] !== '/') {
-        path = path + '/';
+        path += '/';
       }
 
       const requestObject = serverLookupObject[path];
@@ -64,4 +66,6 @@ function prepareServer({ bootstrapComplete }) {
     }
   };
 }
+
+// eslint-disable-next-line import/prefer-default-export
 export { prepareServer };

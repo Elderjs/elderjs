@@ -15,8 +15,8 @@ const getHashedSvelteCompontents = (config) => {
   if (!ready) {
     ready = true;
 
-    const ssrFiles = glob.sync(path.resolve(process.cwd(), config.locations.svelte.ssrComponents) + '/*.js', {});
-    const clientFiles = glob.sync(path.resolve(process.cwd(), config.locations.svelte.clientComponents) + '/*.js', {});
+    const ssrFiles = glob.sync(`${path.resolve(process.cwd(), config.locations.svelte.ssrComponents)}/*.js`, {});
+    const clientFiles = glob.sync(`${path.resolve(process.cwd(), config.locations.svelte.clientComponents)}/*.js`, {});
 
     // get an array with jus the file name before .js;
     // CityResults.js => CityResults
@@ -33,8 +33,7 @@ const getHashedSvelteCompontents = (config) => {
     }, {});
 
     return results;
-  } else {
-    return results;
   }
+  return results;
 };
 export default getHashedSvelteCompontents;

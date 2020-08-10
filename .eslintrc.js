@@ -1,16 +1,44 @@
 module.exports = {
-  root: true,
+  env: {
+    browser: true,
+    es2020: true,
+    'jest/globals': true,
+  },
+  extends: ['airbnb-base', 'plugin:jest/recommended', 'prettier/@typescript-eslint', 'plugin:prettier/recommended'],
+  settings: {
+    'import/resolver': {
+      node: {
+        extensions: ['.js', '.ts'],
+      },
+    },
+  },
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint', 'prettier'],
-  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
-
+  parserOptions: {
+    ecmaVersion: 11,
+    sourceType: 'module',
+  },
+  plugins: ['@typescript-eslint', 'jest', 'prettier'],
   rules: {
     'prettier/prettier': 'error',
-    semi: ['error', 'always'],
-    'no-var': ['error'],
+    // do not require ext. when importing file
+    'import/extensions': [
+      'error',
+      'ignorePackages',
+      {
+        ts: 'never',
+      },
+    ],
+
+    // avoid having warnings when we import types and they are detected as unused imports
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': ['error'],
+
+    // <temporarily allowed until fixed>
+    'no-param-reassign': ['warn'],
+    'global-require': ['warn'],
+
+    // -- OVERRIDES by choice --
+    // allow console logs
     'no-console': ['off'],
-    'no-unused-vars': ['warn'],
-    'no-mixed-spaces-and-tabs': ['warn'],
-    'node/no-unpublished-require': ['off'],
   },
 };

@@ -1,4 +1,4 @@
-import { StateSlug, RoutesOptions } from '../routes/types';
+import type { StateSlug, RoutesOptions } from '../routes/types';
 export declare type HookOptions = {
     hook: string;
     name: string;

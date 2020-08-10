@@ -1,7 +1,9 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.prepareRunHook = void 0;
-const createReadOnlyProxy_1 = require("./createReadOnlyProxy");
+const createReadOnlyProxy_1 = __importDefault(require("./createReadOnlyProxy"));
 // TODO: How do we get types to the user when they are writing plugins, etc?
 function prepareRunHook({ hooks, allSupportedHooks, settings }) {
     return async function processHook(hookName, props = {}) {
@@ -16,7 +18,7 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
         const hookProps = hookDefinition.props.reduce((out, cv) => {
             if (Object.hasOwnProperty.call(props, cv)) {
                 if (!hookDefinition.mutable.includes(cv)) {
-                    out[cv] = createReadOnlyProxy_1.createReadOnlyProxy(props[cv], cv, hookName);
+                    out[cv] = createReadOnlyProxy_1.default(props[cv], cv, hookName);
                 }
                 else {
                     out[cv] = props[cv];
@@ -24,7 +26,7 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
             }
             else if (typeof props.customProps === 'object' && props.customProps[cv]) {
                 if (!hookDefinition.mutable.includes(cv)) {
-                    out[cv] = createReadOnlyProxy_1.createReadOnlyProxy(props.customProps[cv], cv, hookName);
+                    out[cv] = createReadOnlyProxy_1.default(props.customProps[cv], cv, hookName);
                 }
                 else {
                     out[cv] = props.customProps[cv];
@@ -40,7 +42,9 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
         if (theseHooks && Array.isArray(theseHooks) && theseHooks.length > 0) {
             // lower priority is more important.
             const hookList = theseHooks.sort((a, b) => a.priority - b.priority);
-            settings && settings.debug && settings.debug.hooks && console.log(`Hooks registered on ${hookName}:`, hookList);
+            if (settings && settings.debug && settings.debug.hooks) {
+                console.log(`Hooks registered on ${hookName}:`, hookList);
+            }
             const hookOutput = {};
             // loop through the hooks, updating the output and the props in order
             for (const hook of hookList) {
@@ -49,8 +53,9 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
                 let hookResponse = await hook.run(hookProps);
                 if (!hookResponse)
                     hookResponse = {};
-                if (settings.debug.hooks)
+                if (settings && settings.debug && settings.debug.hooks) {
                     console.log(`${hook.name} ran on ${hookName} and returned`, hookResponse);
+                }
                 Object.keys(hookResponse).forEach((key) => {
                     if (hookDefinition.mutable && hookDefinition.mutable.includes(key)) {
                         hookOutput[key] = hookResponse[key];
@@ -78,20 +83,18 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
                     }
                 });
             }
-            settings && settings.debug && settings.debug.hooks && console.log(`${hookName} finished`);
+            if (settings && settings.debug && settings.debug.hooks)
+                console.log(`${hookName} finished`);
             if (props.perf)
                 props.perf.end(`hook.${hookName}`);
             return hookOutput;
         }
-        else {
-            settings &&
-                settings.debug &&
-                settings.debug.hooks &&
-                console.log(`${hookName} finished without executing any hooks`);
-            if (props.perf)
-                props.perf.end(`hook.${hookName}`);
-            return props;
+        if (settings && settings.debug && settings.debug.hooks) {
+            console.log(`${hookName} finished without executing any hooks`);
         }
+        if (props.perf)
+            props.perf.end(`hook.${hookName}`);
+        return props;
     };
 }
-exports.prepareRunHook = prepareRunHook;
+exports.default = prepareRunHook;

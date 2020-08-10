@@ -16,8 +16,8 @@ let ready = false;
 const getHashedSvelteCompontents = (config) => {
     if (!ready) {
         ready = true;
-        const ssrFiles = glob_1.default.sync(path_1.default.resolve(process.cwd(), config.locations.svelte.ssrComponents) + '/*.js', {});
-        const clientFiles = glob_1.default.sync(path_1.default.resolve(process.cwd(), config.locations.svelte.clientComponents) + '/*.js', {});
+        const ssrFiles = glob_1.default.sync(`${path_1.default.resolve(process.cwd(), config.locations.svelte.ssrComponents)}/*.js`, {});
+        const clientFiles = glob_1.default.sync(`${path_1.default.resolve(process.cwd(), config.locations.svelte.clientComponents)}/*.js`, {});
         // get an array with jus the file name before .js;
         // CityResults.js => CityResults
         const ssr = ssrFiles.map((s) => s.split('/').pop().split('.')[0]);
@@ -32,8 +32,6 @@ const getHashedSvelteCompontents = (config) => {
         }, {});
         return results;
     }
-    else {
-        return results;
-    }
+    return results;
 };
 exports.default = getHashedSvelteCompontents;

@@ -1,6 +1,6 @@
 import glob from 'glob';
 import path from 'path';
-import { RouteOptions } from './types';
+import type { RouteOptions } from './types';
 
 import { svelteComponent, capitalizeFirstLetter } from '../utils';
 import { ConfigOptions } from '../utils/types';
