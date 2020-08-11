@@ -1,6 +1,6 @@
 {
   "name": "@elderjs/elderjs",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
   "engines": {
@@ -9,14 +9,16 @@
   "scripts": {
     "build": "rimraf ./build && tsc",
     "dev": "tsc -w",
-    "prepublish": "rimraf ./build && tsc",
-    "precommit": "rimraf ./build && tsc",
+    "prepare": "npm run build",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --collect-coverage",
     "eslint": "eslint --ext .ts .",
     "eslint:fix": "eslint --fix --ext .ts ."
   },
+  "files": [
+    "build/**/*"
+  ],
   "peerDependencies": {
     "svelte": "^3.24.0"
   },
