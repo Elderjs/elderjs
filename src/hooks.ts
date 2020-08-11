@@ -25,6 +25,7 @@ const hooks: Array<HookOptions> = [
           },
         };
       }
+      return null;
     },
   },
   // {
@@ -69,6 +70,7 @@ const hooks: Array<HookOptions> = [
           'Not injecting intersection observer polyfill. To not see this warning set locations.intersectionObserverPoly = false in elder.config.js.',
         );
       }
+      return null;
     },
   },
   {
@@ -96,6 +98,7 @@ const hooks: Array<HookOptions> = [
           'Not injecting systemjs. To not see this warning set locations.systemJs = false in elder.config.js.',
         );
       }
+      return null;
     },
   },
   {
@@ -124,6 +127,7 @@ const hooks: Array<HookOptions> = [
           };
         }
       }
+      return null;
     },
   },
   {
@@ -131,7 +135,7 @@ const hooks: Array<HookOptions> = [
     name: 'elderDisplayRequestTime',
     description: 'Page generating timings and logging.',
     priority: 50,
-    run: async ({ timings, helpers, request, settings }) => {
+    run: async ({ timings, request, settings }) => {
       if (!settings.build && process.env.NODE_ENV !== 'production') {
         console.log(`${Math.round(timings.slice(-1)[0].duration * 10) / 10}ms: \t ${request.permalink}`);
         if (settings.debug.performance) {

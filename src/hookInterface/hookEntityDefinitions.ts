@@ -35,4 +35,5 @@ const hookEntityDefinitions = {
   res: "The 'res' object from Express or Polka when Elder.js is being used as a server.",
 };
 
+// eslint-disable-next-line import/prefer-default-export
 export { hookEntityDefinitions };

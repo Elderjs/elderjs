@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { Timing } from '../utils/types';
 
 function parseBuildPerf(timings: Array<Timing[]>): any {

@@ -1,3 +1,5 @@
+/* eslint-disable global-require */
+/* eslint-disable import/no-dynamic-require */
 import glob from 'glob';
 import path from 'path';
 import type { RouteOptions } from './types';
@@ -102,7 +104,9 @@ function routes(settings: ConfigOptions) {
           );
         }
       } else {
-        route.data = (page) => (page.data = {});
+        route.data = (page) => {
+          page.data = {};
+        };
         if (settings.debug.automagic) {
           console.warn(
             `debug.automagic:: We couldn't find a data file at /routes/${routeName}/data.js. This route won't receive any data props.`,
