@@ -119,9 +119,6 @@ const hooks: Array<HookOptions> = [
       if (settings.build) {
         const file = path.resolve(process.cwd(), `${settings.locations.public}${request.permalink}/index.html`);
         try {
-          if (settings.debug.build) {
-            console.log(`Writing html file to ${file}.`);
-          }
           fs.outputFileSync(file, htmlString);
         } catch (e) {
           console.log(e);
