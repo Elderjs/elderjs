@@ -122,7 +122,7 @@ const hooks: Array<HookOptions> = [
           if (settings.debug.build) {
             console.log(`Writing html file to ${file}.`);
           }
-          fs.outputFile(file, htmlString);
+          fs.outputFileSync(file, htmlString);
         } catch (e) {
           console.log(e);
           return {
