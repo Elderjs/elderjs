@@ -1,6 +1,6 @@
 # Elder.js: An Opinionated, SEO focused, Svelte Framework. Supports SSR and Static Site Generation.
 
-![Elder.js CI](https://github.com/Elderjs/elderjs/workflows/Elder.js-CI/badge.svg)
+![Elder.js CI](https://github.com/Elderjs/elderjs/workflows/node.js.yml/badge.svg)
 
 [![npm](https://img.shields.io/npm/v/@elderjs/elderjs.svg)](https://www.npmjs.com/package/@elderjs/elderjs)
 
