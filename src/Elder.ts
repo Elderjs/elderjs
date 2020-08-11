@@ -82,7 +82,7 @@ async function workerBuild({ bootstrapComplete, workerRequests }) {
     i += 1;
     bTimes.push(timings);
 
-    const response: any = ['html', i];
+    const response: any = ['requestComplete', i];
     if (buildErrors && buildErrors.length > 0) {
       errs += 1;
       response.push(errs);

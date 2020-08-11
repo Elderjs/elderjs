@@ -107,35 +107,34 @@ async function build(): Promise<void> {
         singlebar.start(requestsToSplit.length, 0, { pagesPerSecond: 0, errors: 0 });
       }
 
+      let requestsProcessed = 0;
+
       // eslint-disable-next-line no-inner-declarations
       function prepareWorkerMessageHandler(workerId: string) {
         return function messageHandler(msg: Array<any>) {
-          if (msg[0] === 'html') {
+          if (msg[0] === 'requestComplete') {
+            requestsProcessed += 1;
             counts[workerId].count = msg[1];
             counts[workerId].errCount = msg[2];
             if (msg[4]) {
               errors.push(msg[4]);
             }
+            if (totalRequests === requestsProcessed) {
+              markWorkersComplete({ errors, timings });
+            }
           } else if (msg[0] === 'done') {
             timings = timings.concat(msg[1]);
             workersProcessing -= 1;
-            const reduced = getWorkerCounts(counts);
-            if (workersProcessing === 0 && totalRequests === reduced.count) {
-              markWorkersComplete({ errors, timings });
-            } else {
-              console.error(
-                `All workers marked complete but reduced.count (${reduced.count}) !== totalRequests (${totalRequests})`,
-              );
-            }
           } else if (msg[0] === 'start') {
+            workersProcessing += 1;
+            counts[workerId].startTime = Date.now();
+
             if (multiLine) {
               counts[workerId].bar = multibar.create(msg[1], 0, {
                 avgRequestTime: 'Pending',
                 errors: 0,
               });
             }
-            workersProcessing += 1;
-            counts[workerId].startTime = Date.now();
 
             if (numberOfWorkers === workersProcessing) {
               barInterval = setInterval(() => {
@@ -240,10 +239,6 @@ async function build(): Promise<void> {
           const results = await wElder.worker(msg.workerRequests);
 
           process.send(['done', results.timings]);
-
-          setTimeout(() => {
-            process.kill(process.pid);
-          }, 2000);
         }
       });
     }
