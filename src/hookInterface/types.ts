@@ -1,5 +1,20 @@
+export type Hook =
+  | 'customizeHooks'
+  | 'bootstrap'
+  | 'allRequests'
+  | 'middleware'
+  | 'modifyCustomProps'
+  | 'request'
+  | 'data'
+  | 'stacks'
+  | 'head'
+  | 'html'
+  | 'requestComplete'
+  | 'error'
+  | 'buildComplete';
+
 export type HookInterface = {
-  hook: string;
+  hook: Hook;
   props: Array<string>;
   mutable: Array<string>;
   use: string;
@@ -8,3 +23,19 @@ export type HookInterface = {
   experimental: boolean;
   advanced: boolean;
 };
+
+export type HookOptions = {
+  hook: Hook;
+  name: string;
+  description: string;
+  priority: Number;
+  run: Run;
+  $$meta?: {
+    type: string;
+    addedBy: string;
+  };
+};
+
+interface Run {
+  (input: any): any | Promise<any>;
+}

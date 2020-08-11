@@ -1,3 +1,5 @@
+/* eslint-disable global-require */
+/* eslint-disable import/no-dynamic-require */
 import path from 'path';
 import fs from 'fs-extra';
 import defaultsDeep from 'lodash.defaultsdeep';
@@ -23,7 +25,7 @@ import {
   getConfig,
 } from './utils';
 import { RoutesOptions } from './routes/types';
-import { HookOptions } from './hooks/types';
+import { HookOptions } from './hookInterface/types';
 import {
   ConfigOptions,
   SettingOptions,
@@ -475,8 +477,16 @@ class Elder {
       await this.runHook('allRequests', this);
 
       await asyncForEach(this.allRequests, async (request) => {
-        if (!this.routes[request.route] || !this.routes[request.route].permalink) console.log(request);
-        request.type = context === 'server' ? 'server' : context === 'build' ? 'build' : 'unknown';
+        if (!this.routes[request.route] || !this.routes[request.route].permalink) {
+          console.log(request);
+        }
+        if (context === 'server') {
+          request.type = 'server';
+        } else if (context === 'build') {
+          request.type = 'build';
+        } else {
+          request.type = 'unknown';
+        }
         request.permalink = await this.routes[request.route].permalink({
           request,
           settings: { ...this.settings },

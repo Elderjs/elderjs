@@ -1,6 +1,6 @@
 import type { ConfigOptions, PluginOptions } from './types';
 import type { RouteOptions } from '../routes/types';
-import type { HookOptions } from '../hooks/types';
+import type { HookOptions } from '../hookInterface/types';
 declare const configSchema: any;
 declare const routeSchema: any;
 declare const pluginSchema: any;

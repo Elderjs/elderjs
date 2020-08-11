@@ -6,6 +6,7 @@ const hooks = [
     name: 'checkRequiredSettings',
     priority: 1,
     run: async ({ settings }) => {
+      await new Promise((resolve) => setTimeout(resolve, 50));
       if (!settings.magicNumber) {
         throw new Error();
       }
@@ -16,6 +17,7 @@ const hooks = [
     name: 'pushError',
     priority: 2,
     run: async ({ errors }) => {
+      await new Promise((resolve) => setTimeout(resolve, 10));
       errors.push('something bad happened');
     },
   },
@@ -24,6 +26,7 @@ const hooks = [
     name: 'attempt to mutate settings',
     priority: 3,
     run: async ({ settings }) => {
+      await new Promise((resolve) => setTimeout(resolve, 100));
       settings.injection = 666;
     },
   },

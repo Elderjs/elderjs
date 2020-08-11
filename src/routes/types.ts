@@ -1,5 +1,5 @@
 // import { Interface } from 'readline';
-import type { HookOptions } from '../hooks/types';
+import type { HookOptions } from '../hookInterface/types';
 
 export type RouteOptions = {
   template?: string;

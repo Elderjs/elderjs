@@ -2,7 +2,7 @@ import build from './build/build';
 import partialHydration from './partialHydration/partialHydration';
 import { getConfig } from './utils';
 import { RoutesOptions } from './routes/types';
-import { HookOptions } from './hooks/types';
+import { HookOptions } from './hookInterface/types';
 import { ConfigOptions, SettingOptions, QueryOptions, RequestOptions, RequestsOptions } from './utils/types';
 declare const getElderConfig: typeof getConfig;
 declare class Elder {

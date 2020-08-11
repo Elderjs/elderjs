@@ -1,3 +1,5 @@
+/* eslint-disable global-require */
+/* eslint-disable import/no-dynamic-require */
 import path from 'path';
 import fs from 'fs';
 
@@ -7,7 +9,7 @@ let userHelpers;
 
 const cache = {};
 
-async function helpers({ settings, query, helpers }: ExternalHelperRequestOptions) {
+async function externalHelpers({ settings, query, helpers }: ExternalHelperRequestOptions) {
   const srcFolder = path.join(process.cwd(), settings.locations.srcFolder);
   const buildFolder = path.join(process.cwd(), settings.locations.buildFolder);
   const helperFilePath = `helpers/index.js`;
@@ -32,7 +34,9 @@ async function helpers({ settings, query, helpers }: ExternalHelperRequestOption
             userHelpers = await userHelpers({ settings, query, helpers });
           }
           cache[helperFilePath] = userHelpers;
-        } catch (e) {}
+        } catch (e) {
+          console.error(e);
+        }
       }
 
       if (err.code === 'ENOENT') {
@@ -55,4 +59,5 @@ async function helpers({ settings, query, helpers }: ExternalHelperRequestOption
 
   return userHelpers;
 }
-export default helpers;
+
+export default externalHelpers;

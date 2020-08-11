@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import getUniqueId from './getUniqueId';
 import perf from './perf';
 import prepareProcessStack from './prepareProcessStack';
@@ -115,13 +116,12 @@ const buildPage = async (page) => {
     if (page.errors.length > 0) {
       await page.runHook('error', page);
     }
-
-    return page;
   } catch (err) {
     console.log(err, page.permalink);
     page.errors.push(err);
     await page.runHook('error', page);
   }
+  return page;
 };
 
 class Page {

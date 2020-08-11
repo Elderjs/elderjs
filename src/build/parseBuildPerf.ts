@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { Timing } from '../utils/types';
 
 function parseBuildPerf(timings: Array<Timing[]>): any {
@@ -71,8 +72,6 @@ function parseBuildPerf(timings: Array<Timing[]>): any {
         out[root][subkey] = Math.round((sum / count) * 1000) / 1000;
       } else if (root) {
         if (!out[root]) out[root] = Math.round((sum / count) * 1000) / 100;
-      } else {
-        // console.log([root, subkey, detail, more]);
       }
 
       return out;

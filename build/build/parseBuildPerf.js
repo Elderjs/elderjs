@@ -75,9 +75,6 @@ function parseBuildPerf(timings) {
             if (!out[root])
                 out[root] = Math.round((sum / count) * 1000) / 100;
         }
-        else {
-            // console.log([root, subkey, detail, more]);
-        }
         return out;
     }, {});
 }
