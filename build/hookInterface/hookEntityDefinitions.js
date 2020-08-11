@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.hookEntityDefinitions = void 0;
 const hookEntityDefinitions = {
-    allRequests: `Every request object collected during bootstrap and after the 'allRequests' hook is run. It is important to note that 'allRequests' will be different at the 'requestStart' hook during a build because the requests are split between different processes during build time using the allRequests object.`,
+    allRequests: `Every request object collected from all routes during bootstrap. It is important to note that 'allRequests' will be different at the 'request' hook during a build because the requests are split between different processes during build time using the allRequests object.`,
     hookInterface: 'The hook interface is what defines the "contract" for each hook. It includes what properties the hook has access to and which of those properties can be mutated.',
     customProps: 'An object that represents any custom props added during the "customizeHook" hook',
     errors: 'An array of errors collected during the build process.',
