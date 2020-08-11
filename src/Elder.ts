@@ -25,7 +25,7 @@ import {
   getConfig,
 } from './utils';
 import { RoutesOptions } from './routes/types';
-import { HookOptions } from './hooks/types';
+import { HookOptions } from './hookInterface/types';
 import {
   ConfigOptions,
   SettingOptions,

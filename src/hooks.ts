@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import { parseBuildPerf } from './utils';
 import externalHelpers from './externalHelpers';
-import { HookOptions } from './hooks/types';
+import { HookOptions } from './hookInterface/types';
 
 const hooks: Array<HookOptions> = [
   {

@@ -3,11 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+/* eslint-disable global-require */
+/* eslint-disable import/no-dynamic-require */
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 let userHelpers;
 const cache = {};
-async function helpers({ settings, query, helpers }) {
+async function externalHelpers({ settings, query, helpers }) {
     const srcFolder = path_1.default.join(process.cwd(), settings.locations.srcFolder);
     const buildFolder = path_1.default.join(process.cwd(), settings.locations.buildFolder);
     const helperFilePath = `helpers/index.js`;
@@ -32,7 +34,9 @@ async function helpers({ settings, query, helpers }) {
                     }
                     cache[helperFilePath] = userHelpers;
                 }
-                catch (e) { }
+                catch (e) {
+                    console.error(e);
+                }
             }
             if (err.code === 'ENOENT') {
                 if (settings.debug.automagic) {
@@ -51,4 +55,4 @@ async function helpers({ settings, query, helpers }) {
     }
     return userHelpers;
 }
-exports.default = helpers;
+exports.default = externalHelpers;

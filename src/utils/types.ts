@@ -1,20 +1,5 @@
 import type { StateSlug, RoutesOptions } from '../routes/types';
-
-export type HookOptions = {
-  hook: string;
-  name: string;
-  description: string;
-  priority: Number;
-  run: Run;
-  $$meta?: {
-    type: string;
-    addedBy: string;
-  };
-};
-
-interface Run {
-  (input: any): any | Promise<any>;
-}
+import type { HookOptions } from '../hookInterface/types';
 
 export type ConfigOptions = {
   server: ServerOptions;

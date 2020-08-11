@@ -1,3 +1,3 @@
 import { ExternalHelperRequestOptions } from './utils/types';
-declare function helpers({ settings, query, helpers }: ExternalHelperRequestOptions): Promise<any>;
-export default helpers;
+declare function externalHelpers({ settings, query, helpers }: ExternalHelperRequestOptions): Promise<any>;
+export default externalHelpers;

@@ -3,6 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+/* eslint-disable global-require */
+/* eslint-disable import/no-dynamic-require */
 const glob_1 = __importDefault(require("glob"));
 const path_1 = __importDefault(require("path"));
 const utils_1 = require("../utils");
@@ -80,7 +82,9 @@ function routes(settings) {
                 }
             }
             else {
-                route.data = (page) => (page.data = {});
+                route.data = (page) => {
+                    page.data = {};
+                };
                 if (settings.debug.automagic) {
                     console.warn(`debug.automagic:: We couldn't find a data file at /routes/${routeName}/data.js. This route won't receive any data props.`);
                 }

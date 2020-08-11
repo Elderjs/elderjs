@@ -47,27 +47,29 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
             }
             const hookOutput = {};
             // loop through the hooks, updating the output and the props in order
-            for (const hook of hookList) {
-                if (props.perf)
-                    props.perf.start(`hook.${hookName}.${hook.name}`);
-                let hookResponse = await hook.run(hookProps);
-                if (!hookResponse)
-                    hookResponse = {};
-                if (settings && settings.debug && settings.debug.hooks) {
-                    console.log(`${hook.name} ran on ${hookName} and returned`, hookResponse);
-                }
-                Object.keys(hookResponse).forEach((key) => {
-                    if (hookDefinition.mutable && hookDefinition.mutable.includes(key)) {
-                        hookOutput[key] = hookResponse[key];
-                        hookProps[key] = hookResponse[key];
+            await hookList.reduce((p, hook) => {
+                return p.then(async () => {
+                    if (props.perf)
+                        props.perf.start(`hook.${hookName}.${hook.name}`);
+                    let hookResponse = await hook.run(hookProps);
+                    if (!hookResponse)
+                        hookResponse = {};
+                    if (settings && settings.debug && settings.debug.hooks) {
+                        console.log(`${hook.name} ran on ${hookName} and returned`, hookResponse);
                     }
-                    else {
-                        console.error(`Received attempted mutation on "${hookName}" from "${hook.name}" on the object "${key}". ${key} is not mutable on this hook `, hook.$$meta);
-                    }
+                    Object.keys(hookResponse).forEach((key) => {
+                        if (hookDefinition.mutable && hookDefinition.mutable.includes(key)) {
+                            hookOutput[key] = hookResponse[key];
+                            hookProps[key] = hookResponse[key];
+                        }
+                        else {
+                            console.error(`Received attempted mutation on "${hookName}" from "${hook.name}" on the object "${key}". ${key} is not mutable on this hook `, hook.$$meta);
+                        }
+                    });
+                    if (props.perf)
+                        props.perf.end(`hook.${hookName}.${hook.name}`);
                 });
-                if (props.perf)
-                    props.perf.end(`hook.${hookName}.${hook.name}`);
-            }
+            }, Promise.resolve());
             // this actually mutates the props.
             if (Object.keys(hookOutput).length > 0 &&
                 Array.isArray(hookDefinition.mutable) &&

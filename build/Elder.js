@@ -4,6 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.partialHydration = exports.build = exports.getElderConfig = exports.Elder = void 0;
+/* eslint-disable global-require */
+/* eslint-disable import/no-dynamic-require */
 const path_1 = __importDefault(require("path"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const lodash_defaultsdeep_1 = __importDefault(require("lodash.defaultsdeep"));
@@ -350,9 +352,18 @@ class Elder {
             });
             await this.runHook('allRequests', this);
             await utils_1.asyncForEach(this.allRequests, async (request) => {
-                if (!this.routes[request.route] || !this.routes[request.route].permalink)
+                if (!this.routes[request.route] || !this.routes[request.route].permalink) {
                     console.log(request);
-                request.type = context === 'server' ? 'server' : context === 'build' ? 'build' : 'unknown';
+                }
+                if (context === 'server') {
+                    request.type = 'server';
+                }
+                else if (context === 'build') {
+                    request.type = 'build';
+                }
+                else {
+                    request.type = 'unknown';
+                }
                 request.permalink = await this.routes[request.route].permalink({
                     request,
                     settings: { ...this.settings },

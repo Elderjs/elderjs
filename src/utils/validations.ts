@@ -1,7 +1,7 @@
 import * as yup from 'yup';
 import type { ConfigOptions, PluginOptions } from './types';
 import type { RouteOptions } from '../routes/types';
-import type { HookOptions } from '../hooks/types';
+import type { HookOptions } from '../hookInterface/types';
 import hookInterface from '../hookInterface/hookInterface';
 
 const configSchema = yup.object({

@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+/* eslint-disable no-param-reassign */
 const getUniqueId_1 = __importDefault(require("./getUniqueId"));
 const perf_1 = __importDefault(require("./perf"));
 const prepareProcessStack_1 = __importDefault(require("./prepareProcessStack"));
@@ -103,13 +104,13 @@ const buildPage = async (page) => {
         if (page.errors.length > 0) {
             await page.runHook('error', page);
         }
-        return page;
     }
     catch (err) {
         console.log(err, page.permalink);
         page.errors.push(err);
         await page.runHook('error', page);
     }
+    return page;
 };
 class Page {
     constructor({ request, settings, query, helpers, data, route, runHook, allRequests, routes, errors, customProps = {}, }) {
