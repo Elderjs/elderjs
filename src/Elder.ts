@@ -40,12 +40,24 @@ import createReadOnlyProxy from './utils/createReadOnlyProxy';
 const getElderConfig = getConfig;
 
 async function workerBuild({ bootstrapComplete, workerRequests }) {
-  const { settings, query, helpers, data, runHook, routes, errors, customProps } = await bootstrapComplete;
+  const {
+    settings,
+    query,
+    helpers,
+    data,
+    runHook,
+    routes: workerRoutes,
+    errors,
+    customProps,
+    allRequests,
+  } = await bootstrapComplete;
 
   // potential issue that since builds are split across processes,
   // some plugins may need all requests of the same category to be passed at the same time.
 
-  process.send(['start', workerRequests.length]);
+  if (process.send) {
+    process.send(['start', workerRequests.length]);
+  }
 
   let i = 0;
   let errs = 0;
@@ -54,15 +66,15 @@ async function workerBuild({ bootstrapComplete, workerRequests }) {
 
   await asyncForEach(workerRequests, async (request) => {
     const page = new Page({
-      allRequests: workerRequests,
+      allRequests: workerRequests || allRequests,
       request,
       settings,
       query,
       helpers,
       data,
-      route: routes[request.route],
+      route: workerRoutes[request.route],
       runHook,
-      routes,
+      routes: workerRoutes,
       errors,
       customProps,
     });
@@ -80,9 +92,11 @@ async function workerBuild({ bootstrapComplete, workerRequests }) {
       response.push(errs);
     }
 
-    process.send(response);
+    if (process.send) {
+      process.send(response);
+    }
   });
-  return bTimes;
+  return { timings: bTimes, errors: bErrors };
 }
 
 class Elder {
@@ -520,16 +534,12 @@ class Elder {
     });
   }
 
-  cluster() {
+  bootstrap() {
     return this.bootstrapComplete;
   }
 
   worker(workerRequests) {
     return workerBuild({ bootstrapComplete: this.bootstrapComplete, workerRequests });
-  }
-
-  build() {
-    return this.builder;
   }
 }
 

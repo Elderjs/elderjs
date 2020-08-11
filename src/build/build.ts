@@ -4,7 +4,7 @@ import cluster from 'cluster';
 
 import { Elder, getElderConfig } from '../Elder';
 import shuffleArray from '../utils/shuffleArray';
-import { Timing, BuildResult } from '../utils/types';
+import { BuildResult } from '../utils/types';
 
 function getWorkerCounts(counts) {
   return Object.keys(counts).reduce(
@@ -27,10 +27,12 @@ async function build(): Promise<void> {
       const start = Date.now();
 
       let maxNumberOfWorkers = os.cpus().length;
-      if (settings.build.numberOfWorkers < 0) {
-        maxNumberOfWorkers = os.cpus().length + settings.build.numberOfWorkers;
-      } else if (settings.build.numberOfWorkers > 0) {
-        maxNumberOfWorkers = settings.build.numberOfWorkers;
+      if (maxNumberOfWorkers > 1) {
+        if (settings.build.numberOfWorkers < 0) {
+          maxNumberOfWorkers = os.cpus().length + settings.build.numberOfWorkers;
+        } else if (settings.build.numberOfWorkers > 1) {
+          maxNumberOfWorkers = settings.build.numberOfWorkers;
+        }
       }
 
       if (
@@ -79,64 +81,10 @@ async function build(): Promise<void> {
       let workersProcessing: number = 0;
       let barInterval;
       let totalRequests: number = Infinity;
-      // eslint-disable-next-line no-inner-declarations
-      function prepareWorkerMessageHandler(workerId: string) {
-        return function messageHandler(msg: Array<any>) {
-          if (msg[0] === 'html') {
-            counts[workerId].count = msg[1];
-            counts[workerId].errCount = msg[2];
-            if (msg[4]) {
-              errors.push(msg[4]);
-            }
-          } else if (msg[0] === 'done') {
-            timings = timings.concat(msg[1]);
-            workersProcessing -= 1;
-            const reduced = getWorkerCounts(counts);
-            if (workersProcessing === 0 && totalRequests === reduced.count) {
-              markWorkersComplete({ errors, timings });
-            }
-          } else if (msg[0] === 'start') {
-            if (multiLine) {
-              counts[workerId].bar = multibar.create(msg[1], 0, {
-                avgRequestTime: 'Pending',
-                errors: 0,
-              });
-            }
-            workersProcessing += 1;
-            counts[workerId].startTime = Date.now();
-
-            if (numberOfWorkers === workersProcessing) {
-              barInterval = setInterval(() => {
-                if (multiLine) {
-                  Object.keys(counts).forEach((workerId) => {
-                    if (counts[workerId].bar) {
-                      counts[workerId].bar.update(counts[workerId].count, {
-                        errors: counts[workerId].errCount,
-                        avgRequestTime: `${
-                          Math.round(((Date.now() - counts[workerId].startTime) / counts[workerId].count) * 100) / 100
-                        }ms`,
-                      });
-                    }
-                  });
-                } else {
-                  const reduced = getWorkerCounts(counts);
-                  const pps = Math.round((reduced.count / Math.round((Date.now() - start) / 1000)) * 100) / 100;
-                  // console.log(reduced, pps);
-
-                  singlebar.update(reduced.count, {
-                    errors: reduced.errors,
-                    pagesPerSecond: pps,
-                  });
-                }
-              }, 300);
-            }
-          }
-        };
-      }
 
       const mElder = new Elder({ context: 'build' });
 
-      const mElderResults = await mElder.cluster();
+      const mElderResults = await mElder.bootstrap();
 
       totalRequests = mElderResults.allRequests.length;
       let requestsToSplit = [...mElderResults.allRequests];
@@ -157,6 +105,65 @@ async function build(): Promise<void> {
       const counts = {};
       if (!multiLine) {
         singlebar.start(requestsToSplit.length, 0, { pagesPerSecond: 0, errors: 0 });
+      }
+
+      // eslint-disable-next-line no-inner-declarations
+      function prepareWorkerMessageHandler(workerId: string) {
+        return function messageHandler(msg: Array<any>) {
+          if (msg[0] === 'html') {
+            counts[workerId].count = msg[1];
+            counts[workerId].errCount = msg[2];
+            if (msg[4]) {
+              errors.push(msg[4]);
+            }
+          } else if (msg[0] === 'done') {
+            timings = timings.concat(msg[1]);
+            workersProcessing -= 1;
+            const reduced = getWorkerCounts(counts);
+            if (workersProcessing === 0 && totalRequests === reduced.count) {
+              markWorkersComplete({ errors, timings });
+            } else {
+              console.error(
+                `All workers marked complete but reduced.count (${reduced.count}) !== totalRequests (${totalRequests})`,
+              );
+            }
+          } else if (msg[0] === 'start') {
+            if (multiLine) {
+              counts[workerId].bar = multibar.create(msg[1], 0, {
+                avgRequestTime: 'Pending',
+                errors: 0,
+              });
+            }
+            workersProcessing += 1;
+            counts[workerId].startTime = Date.now();
+
+            if (numberOfWorkers === workersProcessing) {
+              barInterval = setInterval(() => {
+                if (multiLine) {
+                  Object.keys(counts).forEach((id) => {
+                    if (counts[id].bar) {
+                      counts[id].bar.update(counts[id].count, {
+                        errors: counts[id].errCount,
+                        avgRequestTime: `${
+                          Math.round(((Date.now() - counts[id].startTime) / counts[id].count) * 100) / 100
+                        }ms`,
+                      });
+                    }
+                  });
+                } else {
+                  const reduced = getWorkerCounts(counts);
+                  const pps = Math.round((reduced.count / Math.round((Date.now() - start) / 1000)) * 100) / 100;
+                  // console.log(reduced, pps);
+
+                  singlebar.update(reduced.count, {
+                    errors: reduced.errors,
+                    pagesPerSecond: pps,
+                  });
+                }
+              }, 300);
+            }
+          }
+        };
       }
 
       for (const id in cluster.workers) {
@@ -230,9 +237,9 @@ async function build(): Promise<void> {
         if (msg.cmd === 'start') {
           const wElder = new Elder({ context: 'build', worker: true });
 
-          const timings: Array<Timing> = await wElder.worker(msg.workerRequests);
+          const results = await wElder.worker(msg.workerRequests);
 
-          process.send(['done', timings]);
+          process.send(['done', results.timings]);
 
           setTimeout(() => {
             process.kill(process.pid);
