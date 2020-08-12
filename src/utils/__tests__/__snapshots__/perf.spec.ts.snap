@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`#perf works 1`] = `
+MockPage {
+  "htmlString": "",
+  "perf": Object {
+    "end": [Function],
+    "start": [Function],
+    "stop": [Function],
+    "timings": Array [],
+  },
+  "uid": "xxxxxxxx",
+}
+`;
