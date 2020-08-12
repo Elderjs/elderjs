@@ -1,0 +1,672 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`#Page initialize and build 1`] = `
+Page {
+  "allRequests": Array [
+    Object {
+      "permalink": "/arkansas/ash-flat-nursing-homes/",
+      "random": 94,
+      "route": "cityNursingHomes",
+      "slug": "ash-flat",
+      "state": Object {
+        "id": 6,
+        "slug": "arkansas",
+      },
+      "type": "build",
+    },
+    Object {
+      "permalink": "/alabama/albertville-nursing-homes/",
+      "random": 33,
+      "route": "cityNursingHomes",
+      "slug": "albertville",
+      "state": Object {
+        "id": 4,
+        "slug": "alabama",
+      },
+      "type": "build",
+    },
+  ],
+  "customProps": Object {},
+  "data": Object {},
+  "errors": Array [],
+  "helpers": Object {
+    "metersInAMile": 0.00062137119224,
+    "permalinks": Object {},
+  },
+  "htmlString": "",
+  "perf": Object {
+    "end": [MockFunction] {
+      "calls": Array [
+        Array [
+          "constructor",
+        ],
+      ],
+      "results": Array [
+        Object {
+          "type": "return",
+          "value": undefined,
+        },
+      ],
+    },
+    "start": [MockFunction] {
+      "calls": Array [
+        Array [
+          "page",
+        ],
+        Array [
+          "constructor",
+        ],
+        Array [
+          "initToBuildGap",
+        ],
+      ],
+      "results": Array [
+        Object {
+          "type": "return",
+          "value": undefined,
+        },
+        Object {
+          "type": "return",
+          "value": undefined,
+        },
+        Object {
+          "type": "return",
+          "value": undefined,
+        },
+      ],
+    },
+    "stop": [MockFunction],
+    "timings": Array [],
+  },
+  "processStack": [Function],
+  "query": Object {
+    "db": Object {
+      "cnString": Object {
+        "connectionString": "postgresql://user:user@localhost:5099/db",
+      },
+      "db": Object {},
+      "pool": Object {
+        "_clients": Array [],
+        "_events": Object {},
+        "_eventsCount": 0,
+        "_idle": Array [],
+        "_pendingQueue": Array [],
+        "ended": false,
+        "ending": false,
+        "options": Object {
+          "connectionString": "postgresql://user:user@localhost:5099/db",
+          "idleTimeoutMillis": 10000,
+          "max": 10,
+        },
+      },
+    },
+  },
+  "request": Object {
+    "permalink": "/arkansas/ash-flat-nursing-homes/",
+    "random": 94,
+    "route": "cityNursingHomes",
+    "slug": "ash-flat",
+    "state": Object {
+      "id": 6,
+      "slug": "arkansas",
+    },
+    "type": "build",
+  },
+  "route": Object {
+    "$$meta": Object {
+      "addedBy": "routejs",
+      "type": "route",
+    },
+    "hooks": Array [],
+    "layout": [MockFunction],
+    "parent": "home",
+    "template": "Content.svelte",
+    "templateComponent": [MockFunction],
+  },
+  "routes": Object {
+    "content": Object {
+      "$$meta": Object {
+        "addedBy": "routejs",
+        "type": "route",
+      },
+      "hooks": Array [],
+      "template": "Content.svelte",
+    },
+    "home": Object {
+      "$$meta": Object {
+        "addedBy": "routejs",
+        "type": "route",
+      },
+      "hooks": Array [
+        Object {
+          "description": "Adds test to data object",
+          "hook": "data",
+          "name": "testToData",
+          "priority": 50,
+        },
+      ],
+      "template": "Home.svelte",
+    },
+  },
+  "runHook": [Function],
+  "settings": Object {
+    "$$internal": Object {
+      "hashedComponents": Object {
+        "AutoComplete": "entryAutoComplete",
+        "Footer": "entryFooter",
+        "Header": "entryHeader",
+        "HeaderAutoComplete": "entryHeaderAutoComplete",
+        "Home": "entryHomeAutoComplete",
+        "HomeAutoComplete": "entryHomeAutoComplete",
+        "Modal": "entryModal",
+      },
+    },
+    "build": Object {
+      "numberOfWorkers": -1,
+      "shuffleRequests": false,
+    },
+    "cacheBustingId": "XmjyWGYZtV",
+    "debug": Object {
+      "automagic": false,
+      "build": false,
+      "hooks": false,
+      "performance": false,
+      "stacks": false,
+    },
+    "hooks": Object {
+      "disable": Array [],
+    },
+    "locations": Object {
+      "assets": "./public/dist/static/",
+      "buildFolder": "",
+      "intersectionObserverPoly": "/dist/static/intersection-observer.js",
+      "public": "./public/",
+      "srcFolder": "./src/",
+      "svelte": Object {
+        "clientComponents": "./public/dist/svelte/",
+        "ssrComponents": "./___ELDER___/compiled/",
+      },
+      "systemJs": "/dist/static/s.min.js",
+    },
+    "plugins": Object {
+      "elder-plugin-upload-s3": Object {
+        "dataBucket": "elderguide.com",
+        "deployId": "11111111",
+        "htmlBucket": "elderguide.com",
+      },
+    },
+    "server": false,
+    "typescript": false,
+    "worker": true,
+  },
+  "uid": "xxxxxxxxxx",
+}
+`;
+
+exports[`#Page initialize and build 2`] = `
+Page {
+  "allRequests": Array [
+    Object {
+      "permalink": "/arkansas/ash-flat-nursing-homes/",
+      "random": 94,
+      "route": "cityNursingHomes",
+      "slug": "ash-flat",
+      "state": Object {
+        "id": 6,
+        "slug": "arkansas",
+      },
+      "type": "build",
+    },
+    Object {
+      "permalink": "/alabama/albertville-nursing-homes/",
+      "random": 33,
+      "route": "cityNursingHomes",
+      "slug": "albertville",
+      "state": Object {
+        "id": 4,
+        "slug": "alabama",
+      },
+      "type": "build",
+    },
+  ],
+  "beforeHydrate": "beforeHydrateStack",
+  "beforeHydrateStack": Array [],
+  "cssStack": Array [],
+  "cssString": "cssStack",
+  "customJs": "customJsStack",
+  "customJsStack": Array [],
+  "customProps": Object {},
+  "data": Object {},
+  "errors": Array [],
+  "footer": "footerStack",
+  "footerStack": Array [],
+  "head": "headStack",
+  "headStack": Array [],
+  "headString": "headStack<style data-name=\\"cssStack\\">cssStack</style>",
+  "helpers": Object {
+    "metersInAMile": 0.00062137119224,
+    "permalinks": Object {},
+  },
+  "htmlString": "<!DOCTYPE html>
+      <html lang=\\"en\\">
+        <head>
+          <meta charset=\\"UTF-8\\" />
+          <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\" />
+          headStack<style data-name=\\"cssStack\\">cssStack</style>
+        </head>
+        <body class=\\"cityNursingHomes\\">
+          <div class=\\"container\\"></div>
+          
+          
+          
+          
+        </body>
+      </html>
+    ",
+  "hydrate": "<script data-name=\\"hydrateStack\\"></script>",
+  "hydrateStack": Array [],
+  "perf": Object {
+    "end": [MockFunction] {
+      "calls": Array [
+        Array [
+          "constructor",
+        ],
+        Array [
+          "initToBuildGap",
+        ],
+        Array [
+          "data",
+        ],
+        Array [
+          "html.template",
+        ],
+        Array [
+          "html.layout",
+        ],
+        Array [
+          "html.createHtmlString",
+        ],
+        Array [
+          "page",
+        ],
+      ],
+      "results": Array [
+        Object {
+          "type": "return",
+          "value": undefined,
+        },
+        Object {
+          "type": "return",
+          "value": undefined,
+        },
+        Object {
+          "type": "return",
+          "value": undefined,
+        },
+        Object {
+          "type": "return",
+          "value": undefined,
+        },
+        Object {
+          "type": "return",
+          "value": undefined,
+        },
+        Object {
+          "type": "return",
+          "value": undefined,
+        },
+        Object {
+          "type": "return",
+          "value": undefined,
+        },
+      ],
+    },
+    "start": [MockFunction] {
+      "calls": Array [
+        Array [
+          "page",
+        ],
+        Array [
+          "constructor",
+        ],
+        Array [
+          "initToBuildGap",
+        ],
+        Array [
+          "data",
+        ],
+        Array [
+          "html.template",
+        ],
+        Array [
+          "html.layout",
+        ],
+        Array [
+          "html.createHtmlString",
+        ],
+      ],
+      "results": Array [
+        Object {
+          "type": "return",
+          "value": undefined,
+        },
+        Object {
+          "type": "return",
+          "value": undefined,
+        },
+        Object {
+          "type": "return",
+          "value": undefined,
+        },
+        Object {
+          "type": "return",
+          "value": undefined,
+        },
+        Object {
+          "type": "return",
+          "value": undefined,
+        },
+        Object {
+          "type": "return",
+          "value": undefined,
+        },
+        Object {
+          "type": "return",
+          "value": undefined,
+        },
+      ],
+    },
+    "stop": [MockFunction] {
+      "calls": Array [
+        Array [],
+      ],
+      "results": Array [
+        Object {
+          "type": "return",
+          "value": undefined,
+        },
+      ],
+    },
+    "timings": Array [],
+  },
+  "processStack": [Function],
+  "query": Object {
+    "db": Object {
+      "cnString": Object {
+        "connectionString": "postgresql://user:user@localhost:5099/db",
+      },
+      "db": Object {},
+      "pool": Object {
+        "_clients": Array [],
+        "_events": Object {},
+        "_eventsCount": 0,
+        "_idle": Array [],
+        "_pendingQueue": Array [],
+        "ended": false,
+        "ending": false,
+        "options": Object {
+          "connectionString": "postgresql://user:user@localhost:5099/db",
+          "idleTimeoutMillis": 10000,
+          "max": 10,
+        },
+      },
+    },
+  },
+  "request": Object {
+    "permalink": "/arkansas/ash-flat-nursing-homes/",
+    "random": 94,
+    "route": "cityNursingHomes",
+    "slug": "ash-flat",
+    "state": Object {
+      "id": 6,
+      "slug": "arkansas",
+    },
+    "type": "build",
+  },
+  "route": Object {
+    "$$meta": Object {
+      "addedBy": "routejs",
+      "type": "route",
+    },
+    "hooks": Array [],
+    "layout": [MockFunction] {
+      "calls": Array [
+        Array [
+          Object {
+            "page": [Circular],
+            "props": Object {
+              "data": Object {},
+              "helpers": Object {
+                "metersInAMile": 0.00062137119224,
+                "permalinks": Object {},
+              },
+              "page": [Circular],
+              "routeHTML": undefined,
+              "settings": Object {
+                "$$internal": Object {
+                  "hashedComponents": Object {
+                    "AutoComplete": "entryAutoComplete",
+                    "Footer": "entryFooter",
+                    "Header": "entryHeader",
+                    "HeaderAutoComplete": "entryHeaderAutoComplete",
+                    "Home": "entryHomeAutoComplete",
+                    "HomeAutoComplete": "entryHomeAutoComplete",
+                    "Modal": "entryModal",
+                  },
+                },
+                "build": Object {
+                  "numberOfWorkers": -1,
+                  "shuffleRequests": false,
+                },
+                "cacheBustingId": "XmjyWGYZtV",
+                "debug": Object {
+                  "automagic": false,
+                  "build": false,
+                  "hooks": false,
+                  "performance": false,
+                  "stacks": false,
+                },
+                "hooks": Object {
+                  "disable": Array [],
+                },
+                "locations": Object {
+                  "assets": "./public/dist/static/",
+                  "buildFolder": "",
+                  "intersectionObserverPoly": "/dist/static/intersection-observer.js",
+                  "public": "./public/",
+                  "srcFolder": "./src/",
+                  "svelte": Object {
+                    "clientComponents": "./public/dist/svelte/",
+                    "ssrComponents": "./___ELDER___/compiled/",
+                  },
+                  "systemJs": "/dist/static/s.min.js",
+                },
+                "plugins": Object {
+                  "elder-plugin-upload-s3": Object {
+                    "dataBucket": "elderguide.com",
+                    "deployId": "11111111",
+                    "htmlBucket": "elderguide.com",
+                  },
+                },
+                "server": false,
+                "typescript": false,
+                "worker": true,
+              },
+            },
+          },
+        ],
+      ],
+      "results": Array [
+        Object {
+          "type": "return",
+          "value": "<div class=\\"container\\"></div>",
+        },
+      ],
+    },
+    "parent": "home",
+    "template": "Content.svelte",
+    "templateComponent": [MockFunction] {
+      "calls": Array [
+        Array [
+          Object {
+            "page": [Circular],
+            "props": Object {
+              "data": Object {},
+              "helpers": Object {
+                "metersInAMile": 0.00062137119224,
+                "permalinks": Object {},
+              },
+              "request": Object {
+                "permalink": "/arkansas/ash-flat-nursing-homes/",
+                "random": 94,
+                "route": "cityNursingHomes",
+                "slug": "ash-flat",
+                "state": Object {
+                  "id": 6,
+                  "slug": "arkansas",
+                },
+                "type": "build",
+              },
+              "settings": Object {
+                "$$internal": Object {
+                  "hashedComponents": Object {
+                    "AutoComplete": "entryAutoComplete",
+                    "Footer": "entryFooter",
+                    "Header": "entryHeader",
+                    "HeaderAutoComplete": "entryHeaderAutoComplete",
+                    "Home": "entryHomeAutoComplete",
+                    "HomeAutoComplete": "entryHomeAutoComplete",
+                    "Modal": "entryModal",
+                  },
+                },
+                "build": Object {
+                  "numberOfWorkers": -1,
+                  "shuffleRequests": false,
+                },
+                "cacheBustingId": "XmjyWGYZtV",
+                "debug": Object {
+                  "automagic": false,
+                  "build": false,
+                  "hooks": false,
+                  "performance": false,
+                  "stacks": false,
+                },
+                "hooks": Object {
+                  "disable": Array [],
+                },
+                "locations": Object {
+                  "assets": "./public/dist/static/",
+                  "buildFolder": "",
+                  "intersectionObserverPoly": "/dist/static/intersection-observer.js",
+                  "public": "./public/",
+                  "srcFolder": "./src/",
+                  "svelte": Object {
+                    "clientComponents": "./public/dist/svelte/",
+                    "ssrComponents": "./___ELDER___/compiled/",
+                  },
+                  "systemJs": "/dist/static/s.min.js",
+                },
+                "plugins": Object {
+                  "elder-plugin-upload-s3": Object {
+                    "dataBucket": "elderguide.com",
+                    "deployId": "11111111",
+                    "htmlBucket": "elderguide.com",
+                  },
+                },
+                "server": false,
+                "typescript": false,
+                "worker": true,
+              },
+            },
+          },
+        ],
+      ],
+      "results": Array [
+        Object {
+          "type": "return",
+          "value": undefined,
+        },
+      ],
+    },
+  },
+  "routes": Object {
+    "content": Object {
+      "$$meta": Object {
+        "addedBy": "routejs",
+        "type": "route",
+      },
+      "hooks": Array [],
+      "template": "Content.svelte",
+    },
+    "home": Object {
+      "$$meta": Object {
+        "addedBy": "routejs",
+        "type": "route",
+      },
+      "hooks": Array [
+        Object {
+          "description": "Adds test to data object",
+          "hook": "data",
+          "name": "testToData",
+          "priority": 50,
+        },
+      ],
+      "template": "Home.svelte",
+    },
+  },
+  "runHook": [Function],
+  "settings": Object {
+    "$$internal": Object {
+      "hashedComponents": Object {
+        "AutoComplete": "entryAutoComplete",
+        "Footer": "entryFooter",
+        "Header": "entryHeader",
+        "HeaderAutoComplete": "entryHeaderAutoComplete",
+        "Home": "entryHomeAutoComplete",
+        "HomeAutoComplete": "entryHomeAutoComplete",
+        "Modal": "entryModal",
+      },
+    },
+    "build": Object {
+      "numberOfWorkers": -1,
+      "shuffleRequests": false,
+    },
+    "cacheBustingId": "XmjyWGYZtV",
+    "debug": Object {
+      "automagic": false,
+      "build": false,
+      "hooks": false,
+      "performance": false,
+      "stacks": false,
+    },
+    "hooks": Object {
+      "disable": Array [],
+    },
+    "locations": Object {
+      "assets": "./public/dist/static/",
+      "buildFolder": "",
+      "intersectionObserverPoly": "/dist/static/intersection-observer.js",
+      "public": "./public/",
+      "srcFolder": "./src/",
+      "svelte": Object {
+        "clientComponents": "./public/dist/svelte/",
+        "ssrComponents": "./___ELDER___/compiled/",
+      },
+      "systemJs": "/dist/static/s.min.js",
+    },
+    "plugins": Object {
+      "elder-plugin-upload-s3": Object {
+        "dataBucket": "elderguide.com",
+        "deployId": "11111111",
+        "htmlBucket": "elderguide.com",
+      },
+    },
+    "server": false,
+    "typescript": false,
+    "worker": true,
+  },
+  "styleTag": "<style data-name=\\"cssStack\\">cssStack</style>",
+  "timings": Array [],
+  "uid": "xxxxxxxxxx",
+}
+`;
