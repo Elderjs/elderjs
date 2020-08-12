@@ -39,7 +39,9 @@ export const hookInterface: Array<HookInterface> = [
     <li>This could be used for incremental builds. By filtering and overwriting the allRequests array building just a single route or even a single request is doable.</li>
     <li>This hook is used by elderjs-plugin-random to register temporary requests that it later intercepts to redirect to a random page of a route.</li>
     <li>This hook is used by elderjs-plugin-markdown to register processed markdown files and their slugs Elder.js</li>
-    </ul>`,
+    </ul>
+    
+    <p><strong>NOTE:</strong> If you are modifying 'allRequests' you <strong>must</strong> set 'request.route' key for each request.</p>`,
     location: 'Elder.ts',
     experimental: false,
     advanced: true,
