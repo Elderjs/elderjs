@@ -4,7 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import { ConfigOptions } from './types';
 import { getDefaultConfig } from './validations';
-import { tsConfigExist } from './tsConfigExist';
+import tsConfigExist from './tsConfigExist';
 
 function getConfig(context?: string): ConfigOptions {
   const explorerSync = cosmiconfigSync('elder');
