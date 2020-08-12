@@ -11,7 +11,7 @@ let ready = false;
  *
  * @returns {Object}
  */
-const getHashedSvelteCompontents = (config) => {
+const getHashedSvelteComponents = (config) => {
   if (!ready) {
     ready = true;
 
@@ -36,4 +36,4 @@ const getHashedSvelteCompontents = (config) => {
   }
   return results;
 };
-export default getHashedSvelteCompontents;
+export default getHashedSvelteComponents;

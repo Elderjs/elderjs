@@ -160,7 +160,7 @@ const pluginSchema = yup.object({
     )
     .test(
       'isFunction',
-      'Run should be a function or async function',
+      'Init should be a function or async function',
       (value) => typeof value === 'function' || (typeof value === 'object' && value.then === 'function'),
     ),
   routes: yup.object().notRequired().default({}).label('(optional) Any routes the plugin is adding.'),
@@ -215,15 +215,15 @@ function getDefaultConfig(): ConfigOptions {
   return validated;
 }
 
-function validateConfig(config = {}) {
-  try {
-    configSchema.validateSync(config);
-    const validated: ConfigOptions = configSchema.cast(config);
-    return validated;
-  } catch (err) {
-    return false;
-  }
-}
+// function validateConfig(config = {}) {
+//   try {
+//     configSchema.validateSync(config);
+//     const validated: ConfigOptions = configSchema.cast(config);
+//     return validated;
+//   } catch (err) {
+//     return false;
+//   }
+// }
 
 function validateRoute(route, routeName: string): RouteOptions | false {
   try {
@@ -247,7 +247,9 @@ function validatePlugin(plugin): PluginOptions | false {
     return validated;
   } catch (err) {
     console.error(
-      `Plugin ${plugin.$$meta.addedBy} does not have the required fields. Please let the author know`,
+      `Plugin ${
+        (plugin && plugin.$$meta && plugin.$$meta.addedBy) || ''
+      } does not have the required fields. Please let the author know`,
       err.errors,
       err.value,
     );
@@ -278,7 +280,7 @@ export {
   validateRoute,
   validatePlugin,
   validateHook,
-  validateConfig,
+  // validateConfig,
   getDefaultConfig,
   configSchema,
   hookSchema,

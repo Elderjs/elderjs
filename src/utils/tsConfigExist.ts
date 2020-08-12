@@ -1,9 +1,7 @@
-/* eslint-disable import/prefer-default-export */
 import path from 'path';
 import fs from 'fs';
 
-// eslint-disable-next-line consistent-return
-export function tsConfigExist() {
+export default function tsConfigExist() {
   const tsConfigPath = path.join(process.cwd(), 'tsconfig.json');
   try {
     fs.statSync(tsConfigPath);
@@ -12,5 +10,7 @@ export function tsConfigExist() {
     if (err.code === 'ENOENT') {
       return false;
     }
+    // unexpected error
+    throw err;
   }
 }

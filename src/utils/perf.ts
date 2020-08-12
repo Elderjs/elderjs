@@ -25,7 +25,7 @@ const perf = (page) => {
      *
      * @param {String} label
      */
-    start: (label) => {
+    start: (label: string) => {
       performance.mark(`${label}-start-${page.uid}`);
     },
     /**
