@@ -6,13 +6,23 @@ import getUniqueId from './getUniqueId';
 import IntersectionObserver from './IntersectionObserver';
 // const getHashedSvelteComponents = require('./getHashedSvelteComponents');
 
-const getComponentName = (str) => {
-  str = str.replace('.svelte', '').replace('.js', '');
-  if (str.includes('/')) {
-    str = str.split('/').pop();
+export const getComponentName = (str) => {
+  let out = str.replace('.svelte', '').replace('.js', '');
+  if (out.includes('/')) {
+    out = out.split('/').pop();
   }
-  return str;
+  return out;
 };
+
+export const replaceSpecialCharacters = (str) =>
+  str
+    .replace(/&quot;/gim, '"')
+    .replace(/&lt;/gim, '<')
+    .replace(/&gt;/gim, '>')
+    .replace(/&#39;/gim, "'")
+    .replace(/\\\\n/gim, '')
+    .replace(/\\"/gim, '"')
+    .replace(/&amp;/gim, '&');
 
 const svelteComponent = (componentName) => ({ page, props, hydrate = 0 }) => {
   const cleanComponentName = getComponentName(componentName);
@@ -21,7 +31,7 @@ const svelteComponent = (componentName) => ({ page, props, hydrate = 0 }) => {
 
   const clientComponents = page.settings.$$internal.hashedComponents;
 
-  const ssrCompontent = path.resolve(
+  const ssrComponent = path.resolve(
     process.cwd(),
     `./${page.settings.locations.svelte.ssrComponents}${cleanComponentName}.js`,
   );
@@ -30,7 +40,7 @@ const svelteComponent = (componentName) => ({ page, props, hydrate = 0 }) => {
   if (clientSvelteFolder.indexOf('.') === 0) clientSvelteFolder = clientSvelteFolder.substring(1);
   const clientComponent = `${clientSvelteFolder}${clientComponents[cleanComponentName]}.js`;
 
-  const { render } = require(ssrCompontent);
+  const { render } = require(ssrComponent);
 
   try {
     let { css, html: htmlOutput, head } = render({ ...props, link: page.helpers.permalinks });
@@ -72,15 +82,7 @@ const svelteComponent = (componentName) => ({ page, props, hydrate = 0 }) => {
     for (const match of matches) {
       const hydrateComponentName = match[1];
 
-      let data = match[2]
-        .replace(/&quot;/gim, '"')
-        .replace(/&lt;/gim, '<')
-        .replace(/&gt;/gim, '>')
-        .replace(/&#39;/gim, "'")
-        .replace(/\\\\n/gim, '')
-        .replace(/\\"/gim, '"')
-        .replace(/&amp;/gim, '&');
-      // console.log(data);
+      let data = replaceSpecialCharacters(match[2]);
       data = JSON.parse(data);
       if (hydrate > 1) {
         throw new Error(
