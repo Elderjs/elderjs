@@ -28,4 +28,11 @@ jobs:
       - run: npm ci
       - run: npm run build --if-present
       # - run: npm run eslint - uncomment when passing
-      - run: npm test
+      - run: npm test:coverage
+      - uses: codecov/codecov-action@v1
+        with:
+          # file: ./coverage/coverage.xml # optional
+          # files: ./coverage1.xml,./coverage2.xml # optional
+          flags: unittests # optional
+          name: codecov-umbrella # optional
+          fail_ci_if_error: true
