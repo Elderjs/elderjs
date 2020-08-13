@@ -28,7 +28,7 @@ jobs:
       - run: npm ci
       - run: npm run build --if-present
       # - run: npm run eslint - uncomment when passing
-      - run: npm test:coverage
+      - run: npm run test:coverage
       - uses: codecov/codecov-action@v1
         with:
           # file: ./coverage/coverage.xml # optional
