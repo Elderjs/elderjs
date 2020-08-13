@@ -39,15 +39,22 @@ const allSupportedHooks = [
     mutable: ['errors'],
     context: 'Super basic hook',
   },
+  {
+    hook: 'bootstrap-custom',
+    props: ['settings', 'errors', 'customProp'],
+    mutable: ['errors'],
+    context: 'Super basic hook',
+  },
 ];
 
 describe('#prepareRunHook', () => {
   const settings = {
     debug: {
-      hooks: false,
+      hooks: true,
     },
     magicNumber: 42,
   };
+  const perf = { start: jest.fn(), end: jest.fn() };
   let prepareRunHookFn = prepareRunHook({ hooks: [hooks[0], hooks[1]], allSupportedHooks, settings });
 
   it('throws for unknown hook', async () => {
@@ -56,13 +63,33 @@ describe('#prepareRunHook', () => {
 
   it('works for bootstrap hook', async () => {
     const errors = [];
-    await expect(await prepareRunHookFn('bootstrap', { settings, errors })).toEqual({});
+    await expect(await prepareRunHookFn('bootstrap', { settings, errors, perf })).toEqual({});
     expect(errors).toEqual(['something bad happened']);
+  });
+
+  it('works for custom props', async () => {
+    const errors = [];
+    await expect(
+      await prepareRunHookFn('bootstrap-custom', { settings, errors, perf, customProps: { customProp: 'testProp' } }),
+    ).toEqual({
+      customProps: {
+        customProp: 'testProp',
+      },
+      errors: [],
+      perf,
+      settings: {
+        debug: {
+          hooks: true,
+        },
+        magicNumber: 42,
+      },
+    });
+    expect(errors).toEqual([]);
   });
 
   it('cannot mutate not mutable prop', async () => {
     prepareRunHookFn = prepareRunHook({ hooks, allSupportedHooks, settings });
     const errors = [];
-    await expect(prepareRunHookFn('bootstrap', { settings, errors })).rejects.toThrow();
+    await expect(prepareRunHookFn('bootstrap', { settings, errors, perf })).rejects.toThrow();
   });
 });
