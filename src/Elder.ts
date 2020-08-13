@@ -490,6 +490,9 @@ class Elder {
 
       await this.runHook('allRequests', this);
 
+      // TODO: We should validate that all requests have a request.route = '';
+      // sometimes the request object returned by the allRequests hook may not have it set.
+
       await asyncForEach(this.allRequests, async (request) => {
         if (!this.routes[request.route] || !this.routes[request.route].permalink) {
           console.log(request);
