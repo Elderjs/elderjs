@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 export { configSchema, hookSchema, routeSchema, pluginSchema } from './utils/validations';
 
 export { Elder, getElderConfig, build, partialHydration } from './Elder';

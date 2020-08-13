@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 const hookEntityDefinitions = {
   allRequests: `Every request object collected from all routes during bootstrap. It is important to note that 'allRequests' will be different at the 'request' hook during a build because the requests are split between different processes during build time using the allRequests object.`,
   hookInterface:
