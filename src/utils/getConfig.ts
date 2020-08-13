@@ -8,7 +8,7 @@ import tsConfigExist from './tsConfigExist';
 
 function getConfig(context?: string): ConfigOptions {
   const explorerSync = cosmiconfigSync('elder');
-  const explorerSearch: any = explorerSync.search();
+  const explorerSearch = explorerSync.search();
   let loadedConfig = {};
   if (explorerSearch && explorerSearch.config) {
     loadedConfig = explorerSearch.config;
