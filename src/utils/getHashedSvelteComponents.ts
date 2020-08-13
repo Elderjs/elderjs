@@ -36,4 +36,5 @@ const getHashedSvelteComponents = (config) => {
   }
   return results;
 };
+
 export default getHashedSvelteComponents;
