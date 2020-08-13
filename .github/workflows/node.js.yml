@@ -31,4 +31,5 @@ jobs:
       - run: npm run test:coverage
       - uses: codecov/codecov-action@v1
         with:
+          name: codecov-ci # optional
           fail_ci_if_error: true
