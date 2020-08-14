@@ -2,6 +2,7 @@
 
 ![Elder.js CI](https://github.com/Elderjs/elderjs/workflows/Elder.js%20CI/badge.svg)
 [![Codecov Coverage](https://img.shields.io/codecov/c/github/elderjs/elderjs/master.svg?style=flat-square)](https://codecov.io/gh/elderjs/elderjs/)
+<img src="https://img.shields.io/badge/dynamic/json?color=brightgreen&label=Node&query=engines.node&url=https%3A%2F%2Fraw.githubusercontent.com%2Felderjs%2Felderjs%2Fmaster%2Fpackage.json" alt="node version" />
 [![npm](https://img.shields.io/npm/v/@elderjs/elderjs.svg)](https://www.npmjs.com/package/@elderjs/elderjs)
 
 Elder.js is an opinionated static site generator and web framework built with SEO in mind.
