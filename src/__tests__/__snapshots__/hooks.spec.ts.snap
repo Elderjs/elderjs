@@ -1,0 +1,103 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`#hooks elderAddDefaultIntersectionObserver 1`] = `
+Object {
+  "beforeHydrateStack": Array [
+    Object {
+      "name": "intersectionObserver",
+      "priority": 1,
+      "source": "elderjs",
+      "string": "<script type=\\"text/javascript\\">
+      if (!('IntersectionObserver' in window)) {
+          var script = document.createElement(\\"script\\");
+          script.src = \\"foo\\";
+          document.getElementsByTagName('head')[0].appendChild(script);
+      };
+      </script>",
+    },
+  ],
+}
+`;
+
+exports[`#hooks elderAddExternalHelpers 1`] = `
+Object {
+  "helpers": Object {
+    "old": [MockFunction],
+    "permalink": [MockFunction],
+  },
+}
+`;
+
+exports[`#hooks elderAddSystemJs 1`] = `
+Object {
+  "beforeHydrateStack": Array [
+    Object {
+      "name": "systemjs",
+      "priority": 2,
+      "source": "internal",
+      "string": "<script data-name=\\"systemjs\\" src=\\"foo\\"></script>",
+    },
+  ],
+}
+`;
+
+exports[`#hooks matchesSnapshot 1`] = `
+Array [
+  Object {
+    "description": "Adds external helpers to helpers object",
+    "hook": "bootstrap",
+    "name": "elderAddExternalHelpers",
+    "priority": 100,
+    "run": [Function],
+  },
+  Object {
+    "description": "Sets up the default polyfill for the intersection observer",
+    "hook": "stacks",
+    "name": "elderAddDefaultIntersectionObserver",
+    "priority": 1,
+    "run": [Function],
+  },
+  Object {
+    "description": "AddsSystemJs",
+    "hook": "stacks",
+    "name": "elderAddSystemJs",
+    "priority": 1,
+    "run": [Function],
+  },
+  Object {
+    "description": "Log any errors to the console.",
+    "hook": "error",
+    "name": "elderConsoleLogErrors",
+    "priority": 100,
+    "run": [Function],
+  },
+  Object {
+    "description": "Write the html output to public.",
+    "hook": "requestComplete",
+    "name": "elderWriteHtmlFileToPublic",
+    "priority": 100,
+    "run": [Function],
+  },
+  Object {
+    "description": "Page generating timings and logging.",
+    "hook": "requestComplete",
+    "name": "elderDisplayRequestTime",
+    "priority": 50,
+    "run": [Function],
+  },
+  Object {
+    "description": "A breakdown of the average times of different stages of the build.",
+    "hook": "buildComplete",
+    "name": "elderShowParsedBuildTimes",
+    "priority": 50,
+    "run": [Function],
+  },
+  Object {
+    "description": "Writes out any errors of a build to a JSON file in the ___ELDER___ folder.",
+    "hook": "buildComplete",
+    "name": "elderWriteBuildErrors",
+    "priority": 50,
+    "run": [Function],
+  },
+]
+`;
