@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`#routes 1`] = `
+Object {
+  "Content": Object {
+    "all": [Function],
+    "data": Object {
+      "foo": "bar",
+    },
+    "layout": "<div class=\\"svelteComponent\\">Layout.svelte</div>",
+    "permalink": [Function],
+    "template": "Default",
+    "templateComponent": "<div class=\\"svelteComponent\\">Default</div>",
+  },
+  "Home": Object {
+    "all": [Function],
+    "data": [Function],
+    "layout": "<div class=\\"svelteComponent\\">Layout.svelte</div>",
+    "permalink": [Function],
+    "template": "Home.svelte",
+    "templateComponent": "<div class=\\"svelteComponent\\">test/src/routes/Home/Home.svelte</div>",
+  },
+}
+`;
