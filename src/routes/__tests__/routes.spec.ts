@@ -49,7 +49,7 @@ jest.mock(
 
 jest.mock('test/src/routes/Content/data.js', () => ({ foo: 'bar' }), { virtual: true });
 
-test('#routes', async () => {
+test('#routes', () => {
   const settings = {
     debug: {
       automagic: true,
