@@ -6,7 +6,7 @@ import { Elder, getElderConfig } from '../Elder';
 import shuffleArray from '../utils/shuffleArray';
 import { BuildResult } from '../utils/types';
 
-function getWorkerCounts(counts) {
+export function getWorkerCounts(counts) {
   return Object.keys(counts).reduce(
     (out, cv) => {
       out.count += counts[cv].count;
