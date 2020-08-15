@@ -118,10 +118,10 @@ describe('#build', () => {
       }
 
       send({ cmd }) {
-        if (cmd === 'start' && this.handlers['message']) {
-          this.handlers['message'](['start']);
-          this.handlers['message'](['done']);
-          this.handlers['message'](['requestComplete']);
+        if (cmd === 'start' && this.handlers.message) {
+          this.handlers.message(['start']);
+          this.handlers.message(['done']);
+          this.handlers.message(['requestComplete']);
         }
       }
 
