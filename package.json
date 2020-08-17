@@ -45,10 +45,10 @@
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-jest": "^23.20.0",
     "eslint-plugin-prettier": "^3.1.4",
-    "jest": "^26.2.2",
+    "jest": "^26.4.0",
     "prettier": "^2.0.5",
     "rimraf": "^3.0.0",
-    "ts-jest": "^26.1.4",
+    "ts-jest": "^26.2.0",
     "ts-node": "^8.3.0",
     "typescript": "^3.9.7"
   },

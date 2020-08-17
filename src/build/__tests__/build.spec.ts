@@ -60,7 +60,9 @@ jest.mock('os', () => ({
 }));
 
 describe('#build', () => {
-  beforeEach(() => jest.resetModules());
+  beforeEach(() => {
+    jest.resetModules();
+  });
 
   it('getWorkerCounts works', () => {
     expect(getWorkerCounts({})).toEqual({ count: 0, errors: 0 });
@@ -99,6 +101,7 @@ describe('#build', () => {
   });
 
   it('build works - master node, 5 workers', async () => {
+    jest.useFakeTimers();
     process.env = {};
     class WorkerMock {
       id: number;
@@ -161,6 +164,10 @@ describe('#build', () => {
     // eslint-disable-next-line global-require
     const build = require('../build').default;
     await build();
+    jest.advanceTimersByTime(1000); // not all intervalls are cleared
+    // eslint-disable-next-line global-require
+    expect(require('cluster').workers.map((w) => w.killed)).toEqual([true, true, true, true, true]);
     expect(calledHooks).toEqual(['buildComplete']);
+    expect(setInterval).toHaveBeenCalledTimes(5);
   });
 });
