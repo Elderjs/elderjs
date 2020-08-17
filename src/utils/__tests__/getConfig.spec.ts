@@ -1,14 +1,13 @@
-import getConfig from '../getConfig';
-
+const defaultConfig = { debug: { automagic: true }, locations: { buildFolder: '' } };
 jest.mock('../tsConfigExist.ts', () => () => true);
 jest.mock('../validations.ts', () => ({
-  getDefaultConfig: () => ({ debug: { automagic: false }, locations: { buildFolder: '' } }),
+  getDefaultConfig: () => defaultConfig,
 }));
 
 jest.mock('cosmiconfig', () => {
   return {
     cosmiconfigSync: () => ({
-      search: () => jest.fn(),
+      search: () => ({ config: defaultConfig }),
     }),
   };
 });
@@ -19,37 +18,65 @@ jest.mock('path', () => {
   };
 });
 
-jest.mock('fs', () => {
-  return {
-    statSync: (path) => {
-      if (path.startsWith('test')) {
-        throw new Error('');
-      }
-      return {};
-    },
-    readFileSync: () =>
-      JSON.stringify({
-        compilerOptions: {
-          outDir: 'build',
-        },
-      }),
-  };
-});
-
 process.cwd = () => 'test';
 
 describe('#getConfig', () => {
+  const output = {
+    debug: {
+      automagic: true,
+    },
+    locations: {
+      buildFolder: './build/',
+    },
+    typescript: true,
+  };
+
+  beforeEach(() => {
+    jest.resetModules();
+  });
+
+  it('throws but is catched, fallbacks to default', () => {
+    jest.mock('fs', () => ({
+      readFileSync: () => {
+        throw new Error();
+      },
+    }));
+    // eslint-disable-next-line global-require
+    const getConfig = require('../getConfig').default;
+
+    expect(getConfig()).toEqual(defaultConfig);
+  });
+
+  it('not able to set build folder from tsconfig', () => {
+    jest.mock('fs', () => ({
+      readFileSync: () =>
+        JSON.stringify({
+          compilerOptions: {
+            outDir: '/build',
+          },
+        }),
+    }));
+
+    // eslint-disable-next-line global-require
+    const getConfig = require('../getConfig').default;
+
+    expect(getConfig()).toEqual(defaultConfig);
+  });
+
   it('works', () => {
-    const output = {
-      debug: {
-        automagic: false,
-      },
-      locations: {
-        buildFolder: './build/',
-      },
-      typescript: true,
-    };
-    expect(getConfig()).toEqual(output);
+    jest.mock('fs', () => ({
+      readFileSync: () =>
+        JSON.stringify({
+          compilerOptions: {
+            outDir: 'build',
+          },
+        }),
+    }));
+
+    // eslint-disable-next-line global-require
+    const getConfig = require('../getConfig').default;
+
+    expect(getConfig('debug')).toEqual(output);
     expect(getConfig('build')).toEqual(output);
     expect(getConfig('random')).toEqual(output);
   });
