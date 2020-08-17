@@ -98,12 +98,14 @@ describe('#build', () => {
     expect(sent[0]).toEqual(['done', [[{ duration: 500, name: 'foo' }], [{ duration: 500, name: 'foo' }]]]);
   });
 
-  it.skip('build works - master node, 5 workers', async () => {
+  it('build works - master node, 5 workers', async () => {
     process.env = {};
     class WorkerMock {
       id: number;
 
-      handlers: any;
+      handlers: {
+        [event: string]: (args: any) => any;
+      };
 
       killed: boolean;
 
