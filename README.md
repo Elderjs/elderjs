@@ -5,8 +5,8 @@
 <h1 align="center">Elder.js: SEO focused, Svelte Framework & Static Site Generator</h1>
 
 <div align="center">
-  <a href="https://npmjs.org/package/polka">
-    <img src="https://badgen.now.sh/npm/v/polka" alt="version" />
+  <a href="https://npmjs.org/package/@elderjs/elderjs">
+    <img src="https://badgen.now.sh/npm/v/@elderjs/elderjs" alt="version" />
   </a>
   <a href="https://codecov.io/gh/elderjs/elderjs">
     <img src="https://badgen.now.sh/codecov/c/github/elderjs/elderjs" alt="codecov" />
