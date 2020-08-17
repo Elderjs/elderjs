@@ -2,7 +2,7 @@
   <img src="https://github.com/elderjs/elderjs/raw/master/elderjs.png" alt="Elder.js" width="300" />
 </div>
 
-<h1 align="center">Elder.js: SEO focused, Svelte Framework & Static Site Generator :rocket:</h1>
+<h1 align="center">Elder.js: SEO focused, Svelte Framework & Static Site Generator</h1>
 
 <div align="center">
   <a href="https://npmjs.org/package/polka">
@@ -22,7 +22,7 @@
 <br />
 
 
-Elder.js is an opinionated static site generator and web framework built with SEO in mind.
+Elder.js is an opinionated static site generator and web framework built with SEO in mind.  :rocket:
 
 **We consider Elder.js to be in 'beta' and are using it in production https://elderguide.com.**
 
