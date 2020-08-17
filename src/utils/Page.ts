@@ -94,7 +94,7 @@ const buildPage = async (page) => {
         </head>
         <body class="${page.request.route}">
           ${layoutHtml}
-          ${page.hydrateStack.length > 0 ? page.beforeHydrate : ''}
+          ${page.hydrateStack.length > 0 ? page.beforeHydrate : '' /* page.hydrateStack.length is correct here */}
           ${page.hydrateStack.length > 0 ? page.hydrate : ''}
           ${page.customJsStack.length > 0 ? page.customJs : ''}
           ${page.footerStack.length > 0 ? page.footer : ''}
@@ -204,7 +204,7 @@ class Page {
     }
     return buildPage(this)
       .then((page) => page.htmlString)
-      .catch((e) => JSON.stringify(e));
+      .catch(JSON.stringify);
   }
 }
 

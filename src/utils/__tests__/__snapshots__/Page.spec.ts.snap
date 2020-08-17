@@ -117,6 +117,7 @@ Page {
       "addedBy": "routejs",
       "type": "route",
     },
+    "data": [Function],
     "hooks": Array [],
     "layout": [MockFunction],
     "parent": "home",
@@ -234,12 +235,18 @@ Page {
   "cssStack": Array [],
   "cssString": "cssStack",
   "customJs": "customJsStack",
-  "customJsStack": Array [],
+  "customJsStack": Array [
+    "customJsStack",
+  ],
   "customProps": Object {},
-  "data": Object {},
+  "data": Object {
+    "worldPopulation": 7805564950,
+  },
   "errors": Array [],
   "footer": "footerStack",
-  "footerStack": Array [],
+  "footerStack": Array [
+    "footerStack",
+  ],
   "head": "headStack",
   "headStack": Array [],
   "headString": "headStack<style data-name=\\"cssStack\\">cssStack</style>",
@@ -256,15 +263,17 @@ Page {
         </head>
         <body class=\\"cityNursingHomes\\">
           <div class=\\"container\\"></div>
-          
-          
-          
-          
+          beforeHydrateStack
+          <script data-name=\\"hydrateStack\\">hydrateStack</script>
+          customJsStack
+          footerStack
         </body>
       </html>
     ",
-  "hydrate": "<script data-name=\\"hydrateStack\\"></script>",
-  "hydrateStack": Array [],
+  "hydrate": "<script data-name=\\"hydrateStack\\">hydrateStack</script>",
+  "hydrateStack": Array [
+    "hydrateStack",
+  ],
   "perf": Object {
     "end": [MockFunction] {
       "calls": Array [
@@ -428,6 +437,7 @@ Page {
       "addedBy": "routejs",
       "type": "route",
     },
+    "data": [Function],
     "hooks": Array [],
     "layout": [MockFunction] {
       "calls": Array [
@@ -435,7 +445,9 @@ Page {
           Object {
             "page": [Circular],
             "props": Object {
-              "data": Object {},
+              "data": Object {
+                "worldPopulation": 7805564950,
+              },
               "helpers": Object {
                 "metersInAMile": 0.00062137119224,
                 "permalinks": Object {},
@@ -511,7 +523,9 @@ Page {
           Object {
             "page": [Circular],
             "props": Object {
-              "data": Object {},
+              "data": Object {
+                "worldPopulation": 7805564950,
+              },
               "helpers": Object {
                 "metersInAMile": 0.00062137119224,
                 "permalinks": Object {},

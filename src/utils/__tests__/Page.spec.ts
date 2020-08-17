@@ -1,14 +1,21 @@
 import Page from '../Page';
 
 jest.mock('../getUniqueId', () => () => 'xxxxxxxxxx');
-jest.mock('../prepareProcessStack', () => () => (stackName) => {
+jest.mock('../prepareProcessStack', () => (page) => (stackName) => {
   const data = {
     headStack: 'headStack',
     cssStack: 'cssStack',
+    hydrateStack: 'hydrateStack',
     beforeHydrateStack: 'beforeHydrateStack',
     customJsStack: 'customJsStack',
     footerStack: 'footerStack',
   };
+  if (!page.hydrateStack || !page.hydrateStack.length) {
+    // should be done in stacks hook
+    page.footerStack = ['footerStack'];
+    page.customJsStack = ['customJsStack'];
+    page.hydrateStack = ['hydrateStack'];
+  }
   if (data[stackName]) {
     return data[stackName];
   }
@@ -142,6 +149,7 @@ const helpers = {
 const route = {
   hooks: [],
   template: 'Content.svelte',
+  data: () => Promise.resolve({ worldPopulation: 7805564950 }),
   templateComponent: jest.fn(),
   layout: jest.fn(() => '<div class="container"></div>'),
   parent: 'home',
@@ -193,18 +201,10 @@ describe('#Page', () => {
     route,
     routes,
     errors: [],
-    customProps: {},
     runHook,
   };
-  it('initialize and build', async () => {
-    const page = new Page(pageInput);
-    expect(page).toMatchSnapshot();
-    expect(hooks).toEqual(['modifyCustomProps']);
-    await page.build();
-    expect(hooks).toEqual(['modifyCustomProps', 'request', 'data', 'stacks', 'head', 'html', 'requestComplete']);
-    expect(page).toMatchSnapshot();
-    const htmlString = await page.html();
-    expect(htmlString.trim()).toEqual(`<!DOCTYPE html>
+
+  const expectedOutput = `<!DOCTYPE html>
       <html lang="en">
         <head>
           <meta charset="UTF-8" />
@@ -213,11 +213,40 @@ describe('#Page', () => {
         </head>
         <body class="cityNursingHomes">
           <div class="container"></div>
-          
-          
-          
-          
+          beforeHydrateStack
+          <script data-name="hydrateStack">hydrateStack</script>
+          customJsStack
+          footerStack
         </body>
-      </html>`);
+      </html>`;
+
+  it('initialize and build', async () => {
+    const page = new Page(pageInput);
+    expect(page).toMatchSnapshot();
+    expect(hooks).toEqual(['modifyCustomProps']);
+    await page.build();
+    expect(hooks).toEqual(['modifyCustomProps', 'request', 'data', 'stacks', 'head', 'html', 'requestComplete']);
+    expect(page).toMatchSnapshot();
+    const htmlString = await page.html();
+    expect(htmlString.trim()).toEqual(expectedOutput);
+  });
+
+  it('init and request html', async () => {
+    const page = new Page({ ...pageInput, route: { ...pageInput.route, data: { worldPopulation: 7805564950 } } });
+    const html = await page.html();
+    expect(html.trim()).toEqual(expectedOutput);
+  });
+
+  it('init and request html, throw catched errors', async () => {
+    const page = new Page({
+      ...pageInput,
+      runHook: (hook) => {
+        if (hook === 'request' || hook === 'error') {
+          throw new Error(`mocked for hook: ${hook}`);
+        }
+        return runHook(hook);
+      },
+    });
+    expect(await page.html()).toEqual('{}');
   });
 });
