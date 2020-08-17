@@ -1,13 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`#routes 1`] = `
+exports[`#routes works 1`] = `
 Object {
   "Content": Object {
     "all": [Function],
     "data": Object {
       "foo": "bar",
     },
-    "layout": "<div class=\\"svelteComponent\\">Layout.svelte</div>",
+    "layout": "<div class=\\"svelteComponent\\">Layout</div>",
     "permalink": [Function],
     "template": "Default",
     "templateComponent": "<div class=\\"svelteComponent\\">Default</div>",

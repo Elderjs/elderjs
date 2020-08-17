@@ -1,5 +1,3 @@
-import routes from '../routes';
-
 process.cwd = () => 'test';
 
 jest.mock('path', () => ({
@@ -28,28 +26,7 @@ jest.mock('glob', () => ({
 
 jest.mock('../../utils/svelteComponent', () => (component) => `<div class="svelteComponent">${component}</div>`);
 
-jest.mock(
-  'test/src/routes/Content/route.js',
-  () => ({
-    permalink: () => 'content-permalink',
-    all: () => null,
-    template: 'Default',
-  }),
-  { virtual: true },
-);
-
-jest.mock(
-  'test/src/routes/Home/route.js',
-  () => ({
-    permalink: () => 'home-permalink',
-    all: () => null,
-  }),
-  { virtual: true },
-);
-
-jest.mock('test/src/routes/Content/data.js', () => ({ foo: 'bar' }), { virtual: true });
-
-test('#routes', () => {
+describe('#routes', () => {
   const settings = {
     debug: {
       automagic: true,
@@ -65,6 +42,74 @@ test('#routes', () => {
     typescript: false,
     hooks: {},
   };
-  // @ts-ignore
-  expect(routes(settings)).toMatchSnapshot();
+
+  it('throws error when no permalink function', () => {
+    beforeEach(() => {
+      jest.resetModules();
+    });
+    jest.mock(
+      'test/src/routes/Content/route.js',
+      () => ({
+        all: () => null,
+        template: 'Default',
+        layout: 'Layout.svelte',
+      }),
+      { virtual: true },
+    );
+    // eslint-disable-next-line global-require
+    const routes = require('../routes').default;
+    // @ts-ignore
+    expect(() => routes(settings)).toThrow(
+      'test/src/routes/Content/route.js does not include a permalink attribute that is a string or function.',
+    );
+  });
+
+  it('throws error when no all function', () => {
+    beforeEach(() => {
+      jest.resetModules();
+    });
+    jest.mock(
+      'test/src/routes/Content/route.js',
+      () => ({
+        permalink: () => 'content-permalink',
+        template: 'Default',
+        layout: 'Layout.svelte',
+      }),
+      { virtual: true },
+    );
+    // eslint-disable-next-line global-require
+    const routes = require('../routes').default;
+    // @ts-ignore
+    expect(() => routes(settings)).toThrow(
+      'test/src/routes/Content/route.js does not include a all attribute that is is a function or an array.',
+    );
+  });
+
+  it('works', () => {
+    jest.mock(
+      'test/src/routes/Content/route.js',
+      () => ({
+        permalink: () => 'content-permalink',
+        all: () => null,
+        template: 'Default',
+        layout: 'Layout.svelte',
+      }),
+      { virtual: true },
+    );
+
+    jest.mock(
+      'test/src/routes/Home/route.js',
+      () => ({
+        permalink: () => 'home-permalink',
+        all: () => null,
+      }),
+      { virtual: true },
+    );
+
+    jest.mock('test/src/routes/Content/data.js', () => ({ foo: 'bar' }), { virtual: true });
+    // eslint-disable-next-line global-require
+    const routes = require('../routes').default;
+    // @ts-ignore
+    expect(routes(settings)).toMatchSnapshot();
+  });
 });

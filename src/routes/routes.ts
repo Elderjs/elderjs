@@ -38,7 +38,7 @@ function routes(settings: ConfigOptions) {
       .filter((r) => !r.includes('route.js'));
 
     if (!route.permalink && (typeof route.permalink !== 'string' || typeof route.permalink !== 'function')) {
-      throw new Error(`${cv} does not include a permalink attribute that is a string or function,`);
+      throw new Error(`${cv} does not include a permalink attribute that is a string or function.`);
     }
 
     if (!route.all && (Array.isArray(route.all) || typeof route.all !== 'function')) {
