@@ -1,9 +1,26 @@
-# Elder.js: SEO focused, Svelte Framework & Static Site Generator
+<div align="center">
+  <img src="https://github.com/elderjs/elderjs/raw/master/elderjs.png" alt="Elder.js" width="300" />
+</div>
 
-[![Elder.js CI](https://github.com/Elderjs/elderjs/workflows/Elder.js%20CI/badge.svg)](https://github.com/elderjs/elderjs/actions?query=workflow%3A%22Elder.js+CI%22)
-[![Codecov Coverage](https://img.shields.io/codecov/c/github/elderjs/elderjs/master.svg?style=flat-square)](https://codecov.io/gh/elderjs/elderjs/)
-<img src="https://img.shields.io/badge/dynamic/json?color=brightgreen&label=Node&query=engines.node&url=https%3A%2F%2Fraw.githubusercontent.com%2Felderjs%2Felderjs%2Fmaster%2Fpackage.json" alt="node version" />
-[![npm](https://img.shields.io/npm/v/@elderjs/elderjs.svg)](https://www.npmjs.com/package/@elderjs/elderjs)
+<h1 align="center">Elder.js: SEO focused, Svelte Framework & Static Site Generator :rocket:</h1>
+
+<div align="center">
+  <a href="https://npmjs.org/package/polka">
+    <img src="https://badgen.now.sh/npm/v/polka" alt="version" />
+  </a>
+  <a href="https://codecov.io/gh/elderjs/elderjs">
+    <img src="https://badgen.now.sh/codecov/c/github/elderjs/elderjs" alt="codecov" />
+  </a> 
+  <a href="https://github.com/elderjs/elderjs/actions?query=workflow%3A%22Elder.js+CI%22">
+    <img src="https://github.com/Elderjs/elderjs/workflows/Elder.js%20CI/badge.svg" "elder.js ci" />
+  </a>
+  <a href="https://github.com/Elderjs/elderjs">
+    <img src="https://img.shields.io/badge/dynamic/json?color=brightgreen&label=Node&query=engines.node&url=https%3A%2F%2Fraw.githubusercontent.com%2Felderjs%2Felderjs%2Fmaster%2Fpackage.json" alt="node version" />
+  </a>
+</div>
+
+<br />
+
 
 Elder.js is an opinionated static site generator and web framework built with SEO in mind.
 
