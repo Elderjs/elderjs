@@ -10,6 +10,7 @@ const hooks = [
       if (!settings.magicNumber) {
         throw new Error();
       }
+      return {};
     },
   },
   {
@@ -19,6 +20,7 @@ const hooks = [
     run: async ({ errors }) => {
       await new Promise((resolve) => setTimeout(resolve, 10));
       errors.push('something bad happened');
+      return { errors };
     },
   },
   {
@@ -28,6 +30,7 @@ const hooks = [
     run: async ({ settings }) => {
       await new Promise((resolve) => setTimeout(resolve, 100));
       settings.injection = 666;
+      return { settings };
     },
   },
 ];
@@ -63,7 +66,9 @@ describe('#prepareRunHook', () => {
 
   it('works for bootstrap hook', async () => {
     const errors = [];
-    await expect(await prepareRunHookFn('bootstrap', { settings, errors, perf })).toEqual({});
+    await expect(await prepareRunHookFn('bootstrap', { settings, errors, perf })).toEqual({
+      errors: ['something bad happened'],
+    });
     expect(errors).toEqual(['something bad happened']);
   });
 
