@@ -2,13 +2,13 @@
 
 exports[`#externalHelpers works - buildHelpers 1`] = `
 Object {
-  "userHelper": [MockFunction],
+  "userHelper": [Function],
 }
 `;
 
 exports[`#externalHelpers works - buildHelpers 2`] = `
 Object {
-  "userHelper": [MockFunction],
+  "userHelper": [Function],
 }
 `;
 
