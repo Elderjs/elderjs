@@ -360,7 +360,7 @@ class Elder {
       this.hooks = this.hooks.filter((h) => !this.settings.hooks.disable.includes(h.name));
     }
 
-    // todo, plugins should be able to register their own hooks?
+    // TODO: plugins should be able to register their own hooks?
 
     this.data = {};
     this.hookInterface = allSupportedHooks;
