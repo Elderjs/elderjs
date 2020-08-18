@@ -6,13 +6,13 @@
 
 <div align="center">
   <a href="https://npmjs.org/package/@elderjs/elderjs">
-    <img src="https://badgen.now.sh/npm/v/@elderjs/elderjs" alt="version" />
+    <img src="https://badgen.net/npm/v/@elderjs/elderjs" alt="version" />
   </a>
   <a href="https://codecov.io/gh/elderjs/elderjs">
-    <img src="https://badgen.now.sh/codecov/c/github/elderjs/elderjs" alt="codecov" />
+    <img src="https://badgen.net/codecov/c/github/elderjs/elderjs" alt="codecov" />
   </a> 
   <a href="https://github.com/elderjs/elderjs/actions?query=workflow%3A%22Elder.js+CI%22">
-    <img src="https://github.com/Elderjs/elderjs/workflows/Elder.js%20CI/badge.svg" "elder.js ci" />
+    <img src="https://github.com/Elderjs/elderjs/workflows/Elder.js%20CI/badge.svg" alt="elder.js ci" />
   </a>
   <a href="https://github.com/Elderjs/elderjs">
     <img src="https://img.shields.io/badge/dynamic/json?color=brightgreen&label=Node&query=engines.node&url=https%3A%2F%2Fraw.githubusercontent.com%2Felderjs%2Felderjs%2Fmaster%2Fpackage.json" alt="node version" />
