@@ -40,17 +40,19 @@ const svelteComponent = (componentName) => ({ page, props, hydrate = 0 }) => {
   if (clientSvelteFolder.indexOf('.') === 0) clientSvelteFolder = clientSvelteFolder.substring(1);
   const clientComponent = `${clientSvelteFolder}${clientComponents[cleanComponentName]}.js`;
 
+  // eslint-disable-next-line global-require, import/no-dynamic-require
   const { render } = require(ssrComponent);
 
   try {
-    let { css, html: htmlOutput, head } = render({ ...props, link: page.helpers.permalinks });
+    const { css, html: htmlOutput, head } = render({ ...props, link: page.helpers.permalinks });
+    let finalHtmlOuput = htmlOutput;
 
-    if (css && css.code && css.code.length > 0) {
-      page.cssStack && page.cssStack.push({ source: componentName, priority: 50, string: css.code });
+    if (css && css.code && css.code.length > 0 && page.cssStack) {
+      page.cssStack.push({ source: componentName, priority: 50, string: css.code });
     }
 
-    if (head) {
-      page.headStack && page.headStack.push({ source: componentName, priority: 50, string: head });
+    if (head && page.headStack) {
+      page.headStack.push({ source: componentName, priority: 50, string: head });
     }
 
     if (hydrate) {
@@ -75,7 +77,7 @@ const svelteComponent = (componentName) => ({ page, props, hydrate = 0 }) => {
       });
     }
 
-    const matches = htmlOutput.matchAll(
+    const matches = finalHtmlOuput.matchAll(
       /<div class="needs-hydration" data-component="([A-Za-z]+)" data-data="({.*})"><\/div>/gim,
     );
 
@@ -91,14 +93,15 @@ const svelteComponent = (componentName) => ({ page, props, hydrate = 0 }) => {
       }
 
       const hydratedHtml = svelteComponent(hydrateComponentName)({ page, props: data, hydrate: hydrate + 1 });
-      htmlOutput = htmlOutput.replace(match[0], hydratedHtml);
+      finalHtmlOuput = finalHtmlOuput.replace(match[0], hydratedHtml);
     }
 
-    return `<span class="${cleanComponentName.toLowerCase()}-component" id="${cleanComponentName.toLowerCase()}-${id}">${htmlOutput}</span>`;
+    return `<span class="${cleanComponentName.toLowerCase()}-component" id="${cleanComponentName.toLowerCase()}-${id}">${finalHtmlOuput}</span>`;
   } catch (e) {
     console.log(e);
     page.errors.push(e);
   }
+  return '';
 };
 
 export default svelteComponent;

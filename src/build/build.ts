@@ -114,7 +114,9 @@ async function build(): Promise<void> {
         return function messageHandler(msg: Array<any>) {
           if (msg[0] === 'requestComplete') {
             requestsProcessed += 1;
+            // eslint-disable-next-line prefer-destructuring
             counts[workerId].count = msg[1];
+            // eslint-disable-next-line prefer-destructuring
             counts[workerId].errCount = msg[2];
             if (msg[4]) {
               errors.push(msg[4]);
@@ -165,33 +167,36 @@ async function build(): Promise<void> {
         };
       }
 
+      // eslint-disable-next-line no-restricted-syntax
       for (const id in cluster.workers) {
-        const workerId = `worker-${id}`;
+        if (Object.prototype.hasOwnProperty.call(cluster.workers, id)) {
+          const workerId = `worker-${id}`;
 
-        if (settings.debug.build) {
-          cluster.workers[id].on('exit', (code, signal) => {
-            if (signal) {
-              console.log(`worker-${id} was killed by signal: ${signal}`);
-            } else if (code !== 0) {
-              console.log(`worker-${id} exited with error code: ${code}`);
-            } else {
-              console.log(`worker-${id} successfully exited!`, code, signal);
-            }
-          });
+          if (settings.debug.build) {
+            cluster.workers[id].on('exit', (code, signal) => {
+              if (signal) {
+                console.log(`worker-${id} was killed by signal: ${signal}`);
+              } else if (code !== 0) {
+                console.log(`worker-${id} exited with error code: ${code}`);
+              } else {
+                console.log(`worker-${id} successfully exited!`, code, signal);
+              }
+            });
+          }
+
+          const msgHandler = prepareWorkerMessageHandler(workerId);
+          cluster.workers[id].on('message', msgHandler);
+
+          const workerRequests = requestsToSplit.splice(0, requestsPerWorker);
+
+          counts[workerId] = {
+            id,
+            count: 0,
+            errCount: 0,
+          };
+
+          cluster.workers[id].send({ cmd: 'start', workerRequests, id });
         }
-
-        const msgHandler = prepareWorkerMessageHandler(workerId);
-        cluster.workers[id].on('message', msgHandler);
-
-        const workerRequests = requestsToSplit.splice(0, requestsPerWorker);
-
-        counts[workerId] = {
-          id,
-          count: 0,
-          errCount: 0,
-        };
-
-        cluster.workers[id].send({ cmd: 'start', workerRequests, id });
       }
 
       await workersComplete;
@@ -204,8 +209,11 @@ async function build(): Promise<void> {
         singlebar.stop();
       }
 
+      // eslint-disable-next-line no-restricted-syntax
       for (const id in cluster.workers) {
-        cluster.workers[id].kill();
+        if (Object.prototype.hasOwnProperty.call(cluster.workers, id)) {
+          cluster.workers[id].kill();
+        }
       }
 
       const time = Date.now() - start;
