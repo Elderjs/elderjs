@@ -7,7 +7,9 @@ test('#partialHydration', async () => {
         content: '<DatePicker hydrate-client={{ a: "b" }} />',
       })
     ).code,
-  ).toEqual(`<div class="needs-hydration" data-component="DatePicker"  data-data={JSON.stringify({ a: "b" })} />`);
+  ).toEqual(
+    `<div class="needs-hydration" data-component="DatePicker"  data-hydrate={JSON.stringify({ a: "b" })} data-options={JSON.stringify({lazy: true})} />`,
+  );
   expect(
     (
       await partialHydration.markup({

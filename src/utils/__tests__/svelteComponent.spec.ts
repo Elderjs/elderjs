@@ -72,9 +72,7 @@ describe('#svelteComponent', () => {
       }),
       { virtual: true },
     );
-    expect(home(componentProps)).toEqual(
-      `<span class="home-component" id="home-SwrzsrVDCd"><div class="svelte-home">mock html output</div></span>`,
-    );
+    expect(home(componentProps)).toEqual(`<div class="svelte-home">mock html output</div>`);
   });
 
   it('svelteComponent works with partial hydration of subcomponent', () => {
@@ -85,7 +83,7 @@ describe('#svelteComponent', () => {
           head: '<head>',
           css: { code: '<css>' },
           html:
-            '<div class="svelte-datepicker"><div class="needs-hydration" data-component="Datepicker" data-data="{ "a": "b" }"></div></div>',
+            '<div class="svelte-datepicker"><div class="needs-hydration" data-component="Datepicker" data-hydrate="{ "a": "b" }" data-options="{ "lazy": true }"></div></div>',
         }),
       }),
       { virtual: true },
@@ -102,7 +100,7 @@ describe('#svelteComponent', () => {
       { virtual: true },
     );
     expect(home(componentProps)).toEqual(
-      `<span class="home-component" id="home-SwrzsrVDCd"><div class="svelte-datepicker"><span class="datepicker-component" id="datepicker-SwrzsrVDCd"><div>DATEPICKER</div></span></div></span>`,
+      `<div class="svelte-datepicker"><div class="datepicker" id="datepicker-SwrzsrVDCd"><div>DATEPICKER</div></div></div>`,
     );
     expect(componentProps.page.hydrateStack).toEqual([
       {
@@ -110,12 +108,12 @@ describe('#svelteComponent', () => {
         source: 'Datepicker',
         string: `
         function initdatepickerSwrzsrVDCd() {
-          System.import('public/dist/svelte/Datepicker.a1b2c3.js').then(({ default: App }) => {
-            new App({ target: document.getElementById('datepicker-SwrzsrVDCd'), hydrate: true, props: {"a":"b"} });
-          });
+
+    System.import('public/dist/svelte/Datepicker.a1b2c3.js').then(({ default: App }) => {
+    new App({ target: document.getElementById('datepicker-SwrzsrVDCd'), hydrate: true, props: {"a":"b"} });
+    });
         }
         
-
       window.addEventListener('load', function (event) {
         var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {
           var objK = Object.keys(entries);
@@ -145,3 +143,11 @@ describe('#svelteComponent', () => {
     ]);
   });
 });
+
+/** TODO:
+ * hydrate-options={{ lazy: false }} This would cause the component to be hydrate in a blocking manner.
+ * hydrate-options={{ preload: true }} This adds a preload to the head stack as outlined above... could be preloaded without forcing blocking.
+ * hydrate-options={{ preload: true, lazy: false }} This would preload and be blocking.
+ * hydrate-options={{ rootMargin: '500' }} This would adjust the root margin of the intersection observer. Only usable with lazy: true.
+ * hydrate-options={{ inline: true }}  components are display block by default. If this is true, this adds <div style="display:inline;"> to the wrapper.
+ */

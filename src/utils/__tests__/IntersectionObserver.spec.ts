@@ -14,6 +14,7 @@ test('#IntersectionObserver', () => {
       name: 'IntersectionObserver.spec.js',
       loaded: 'console.log("loaded");',
       notLoaded: 'console.log("not loaded");',
+      id: mockedGetUniqueId(),
     }).trim(),
   ).toEqual(`window.addEventListener('load', function (event) {
         var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {
