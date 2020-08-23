@@ -108,7 +108,7 @@ describe('#svelteComponent', () => {
         source: 'Datepicker',
         string: `
         function initdatepickerSwrzsrVDCd() {
-
+          
     System.import('public/dist/svelte/Datepicker.a1b2c3.js').then(({ default: App }) => {
     new App({ target: document.getElementById('datepicker-SwrzsrVDCd'), hydrate: true, props: {"a":"b"} });
     });

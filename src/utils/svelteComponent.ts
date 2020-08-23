@@ -2,7 +2,6 @@ import path from 'path';
 import getUniqueId from './getUniqueId';
 import IntersectionObserver from './IntersectionObserver';
 import { HydrateOptions } from './types';
-import Page from './Page';
 
 export const getComponentName = (str) => {
   let out = str.replace('.svelte', '').replace('.js', '');
@@ -147,7 +146,7 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
     }
 
     if (hydrateOptions.inline) {
-      return `<div class="${cleanComponentName.toLowerCase()}" id="${cleanComponentName.toLowerCase()}-${id}"  style="display:inline;">${finalHtmlOuput}</div>`;
+      return `<div class="${cleanComponentName.toLowerCase()}" id="${cleanComponentName.toLowerCase()}-${id}" style="display:inline;">${finalHtmlOuput}</div>`;
     }
     return `<div class="${cleanComponentName.toLowerCase()}" id="${cleanComponentName.toLowerCase()}-${id}">${finalHtmlOuput}</div>`;
   } catch (e) {
