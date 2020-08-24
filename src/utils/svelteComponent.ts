@@ -1,7 +1,7 @@
 import path from 'path';
 import getUniqueId from './getUniqueId';
 import IntersectionObserver from './IntersectionObserver';
-import { HydrateOptions } from './types';
+import { ComponentPayload } from './types';
 
 export const getComponentName = (str) => {
   let out = str.replace('.svelte', '').replace('.js', '');
@@ -21,32 +21,33 @@ export const replaceSpecialCharacters = (str) =>
     .replace(/\\"/gim, '"')
     .replace(/&amp;/gim, '&');
 
-// TODO: can we possibly add a cache for components so we aren't requiring multiple times?
-
-interface ComponentPayload {
-  page: any;
-  props: any;
-  hydrateOptions?: HydrateOptions;
-}
+const componentCache = {};
 
 const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: ComponentPayload): string => {
   const cleanComponentName = getComponentName(componentName);
-
   const id = getUniqueId();
 
-  const clientComponents = page.settings.$$internal.hashedComponents;
+  if (!componentCache[cleanComponentName]) {
+    const clientComponents = page.settings.$$internal.hashedComponents;
+    const ssrComponent = path.resolve(
+      process.cwd(),
+      `./${page.settings.locations.svelte.ssrComponents}${cleanComponentName}.js`,
+    );
+    let clientSvelteFolder = page.settings.locations.svelte.clientComponents.replace(
+      page.settings.locations.public,
+      '/',
+    );
+    if (clientSvelteFolder.indexOf('.') === 0) clientSvelteFolder = clientSvelteFolder.substring(1);
 
-  const ssrComponent = path.resolve(
-    process.cwd(),
-    `./${page.settings.locations.svelte.ssrComponents}${cleanComponentName}.js`,
-  );
+    // eslint-disable-next-line global-require, import/no-dynamic-require
+    const { render } = require(ssrComponent);
+    componentCache[cleanComponentName] = {
+      render,
+      clientSrc: `${clientSvelteFolder}${clientComponents[cleanComponentName]}.js`,
+    };
+  }
 
-  let clientSvelteFolder = page.settings.locations.svelte.clientComponents.replace(page.settings.locations.public, '/');
-  if (clientSvelteFolder.indexOf('.') === 0) clientSvelteFolder = clientSvelteFolder.substring(1);
-  const clientComponent = `${clientSvelteFolder}${clientComponents[cleanComponentName]}.js`;
-
-  // eslint-disable-next-line global-require, import/no-dynamic-require
-  const { render } = require(ssrComponent);
+  const { render, clientSrc } = componentCache[cleanComponentName];
 
   try {
     const { css, html: htmlOutput, head } = render({ ...props, link: page.helpers.permalinks });
@@ -105,12 +106,12 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
       page.headStack.push({
         source: componentName,
         priority: 50,
-        string: `<link rel="preload" href="${clientComponent}" as="script">`,
+        string: `<link rel="preload" href="${clientSrc}" as="script">`,
       });
     }
 
     const clientJs = `
-    System.import('${clientComponent}').then(({ default: App }) => {
+    System.import('${clientSrc}').then(({ default: App }) => {
     new App({ target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'), hydrate: true, props: ${JSON.stringify(
       props,
     )} });

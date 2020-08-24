@@ -118,3 +118,9 @@ export type HydrateOptions = {
   rootMargin: string;
   threshold: number;
 };
+
+export interface ComponentPayload {
+  page: any;
+  props: any;
+  hydrateOptions?: HydrateOptions;
+}
