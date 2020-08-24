@@ -16,7 +16,7 @@ const partialHydration = {
       if (hydrateOptionsResults && hydrateOptionsResults[1] && hydrateOptionsResults[1].length > 0) {
         replacement += ` data-hydrate-options={JSON.stringify(${hydrateOptionsResults[1]})}`;
       } else {
-        replacement += ` data-hydrate-options="{ "loading": "lazy" }"`;
+        replacement += ` data-hydrate-options={JSON.stringify({ "loading": "lazy" })}`;
       }
       replacement += ` />`;
       input = input.replace(wholeMatch, replacement);

@@ -8,7 +8,7 @@ test('#partialHydration', async () => {
       })
     ).code,
   ).toEqual(
-    `<div class="needs-hydration" data-hydrate-component="DatePicker"  data-hydrate-props={JSON.stringify({ a: "b" })} data-hydrate-options="{ "loading": "lazy" }" />`,
+    `<div class="needs-hydration" data-hydrate-component="DatePicker"  data-hydrate-props={JSON.stringify({ a: "b" })} data-hydrate-options={JSON.stringify({ \"loading\": \"lazy\" })} />`,
   );
 
   expect(
