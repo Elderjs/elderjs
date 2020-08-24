@@ -83,7 +83,7 @@ describe('#svelteComponent', () => {
           head: '<head>',
           css: { code: '<css>' },
           html:
-            '<div class="svelte-datepicker"><div class="needs-hydration" data-component="Datepicker" data-hydrate="{ "a": "b" }" data-options="{ "lazy": true }"></div></div>',
+            '<div class="svelte-datepicker"><div class="needs-hydration" data-hydrate-component="Datepicker" data-hydrate-props="{ "a": "b" }" data-hydrate-options="{ "loading": "lazy" }"></div></div>',
         }),
       }),
       { virtual: true },

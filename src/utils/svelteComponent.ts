@@ -61,15 +61,13 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
 
     let finalHtmlOuput = htmlOutput;
     const matches = finalHtmlOuput.matchAll(
-      /<div class="needs-hydration" data-component="([A-Za-z]+)" data-hydrate="({.*})" data-options="({.*})"><\/div>/gim,
+      /<div class="needs-hydration" data-hydrate-component="([A-Za-z]+)" data-hydrate-props="({.*})" data-hydrate-options="({.*})"><\/div>/gim,
     );
 
     for (const match of matches) {
       const hydrateComponentName = match[1];
-
-      const dataHydrate = JSON.parse(replaceSpecialCharacters(match[2]));
-      const dataOptions = JSON.parse(replaceSpecialCharacters(match[3]));
-      console.log(dataHydrate, dataOptions);
+      const hydrateComponentProps = JSON.parse(replaceSpecialCharacters(match[2]));
+      const hydrateComponentOptions = JSON.parse(replaceSpecialCharacters(match[3]));
 
       if (hydrateOptions) {
         throw new Error(
@@ -79,8 +77,8 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
 
       const hydratedHtml = svelteComponent(hydrateComponentName)({
         page,
-        props: dataHydrate,
-        hydrateOptions: dataOptions,
+        props: hydrateComponentProps,
+        hydrateOptions: hydrateComponentOptions,
       });
       finalHtmlOuput = finalHtmlOuput.replace(match[0], hydratedHtml);
     }
@@ -93,10 +91,11 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
     // hydrate a component
 
     /**
-     * hydrate-options={{ lazy: false }} This would cause the component to be hydrate in a blocking manner.
+     * hydrate-options={{ loading: 'lazy' }} This is the default config, uses intersection observer.
+     * hydrate-options={{ loading: 'eager' }} This would cause the component to be hydrate in a blocking manner as soon as the js is rendered.
      * hydrate-options={{ preload: true }} This adds a preload to the head stack as outlined above... could be preloaded without forcing blocking.
-     * hydrate-options={{ preload: true, lazy: false }} This would preload and be blocking.
-     * hydrate-options={{ rootMargin: '500' }} This would adjust the root margin of the intersection observer. Only usable with lazy: true.
+     * hydrate-options={{ preload: true, loading: 'eager' }} This would preload and be blocking.
+     * hydrate-options={{ rootMargin: '500px', threshold: 0 }} This would adjust the root margin of the intersection observer. Only usable with loading: 'lazy'
      * hydrate-options={{ inline: true }}  components are display block by default. If this is true, this adds <div style="display:inline;"> to the wrapper.
      */
 
@@ -117,8 +116,8 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
     )} });
     });`;
 
-    // should we not lazy load it?
-    if (hydrateOptions.lazy) {
+    // are we lazy loading?
+    if (hydrateOptions.loading === 'lazy') {
       page.hydrateStack.push({
         source: componentName,
         priority: 50,
@@ -137,7 +136,7 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
         })}
       `,
       });
-    } else {
+    } else if (hydrateOptions.loading === 'eager') {
       // this is eager loaded. Still requires System.js to be defined.
       page.hydrateStack.push({
         source: componentName,
@@ -146,9 +145,6 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
       });
     }
 
-    if (hydrateOptions.inline) {
-      return `<div class="${cleanComponentName.toLowerCase()}" id="${cleanComponentName.toLowerCase()}-${id}" style="display:inline;">${finalHtmlOuput}</div>`;
-    }
     return `<div class="${cleanComponentName.toLowerCase()}" id="${cleanComponentName.toLowerCase()}-${id}">${finalHtmlOuput}</div>`;
   } catch (e) {
     console.log(e);

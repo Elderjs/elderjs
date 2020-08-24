@@ -113,9 +113,8 @@ interface Init {
 export type ExcludesFalse = <T>(x: T | false) => x is T;
 
 export type HydrateOptions = {
-  lazy: boolean;
+  loading: string;
   preload: boolean;
   rootMargin: string;
   threshold: number;
-  inline: boolean;
 };
