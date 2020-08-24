@@ -24,9 +24,11 @@
 
 Elder.js is an opinionated static site generator and web framework built with SEO in mind.  :rocket:
 
-**We consider Elder.js to be in 'beta' and are using it in production https://elderguide.com.**
+Full documentation here: https://elderguide.com/tech/elderjs/
 
 If you find bugs please open an issue.
+
+**We consider Elder.js to be in 'beta' in terms of API stability but are using it in production on https://elderguide.com.**
 
 ## Features:
 
