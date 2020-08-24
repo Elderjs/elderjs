@@ -116,8 +116,15 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
     )} });
     });`;
 
-    // are we lazy loading?
-    if (hydrateOptions.loading === 'lazy') {
+    if (hydrateOptions.loading === 'eager') {
+      // this is eager loaded. Still requires System.js to be defined.
+      page.hydrateStack.push({
+        source: componentName,
+        priority: 50,
+        string: clientJs,
+      });
+    } else {
+      // we're lazy loading
       page.hydrateStack.push({
         source: componentName,
         priority: 50,
@@ -135,13 +142,6 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
           id,
         })}
       `,
-      });
-    } else if (hydrateOptions.loading === 'eager') {
-      // this is eager loaded. Still requires System.js to be defined.
-      page.hydrateStack.push({
-        source: componentName,
-        priority: 50,
-        string: clientJs,
       });
     }
 
