@@ -131,7 +131,8 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
           name: `${cleanComponentName.toLowerCase()}`,
           loaded: `init${cleanComponentName.toLowerCase()}${id}();`,
           notLoaded: `init${cleanComponentName.toLowerCase()}${id}();`,
-          rootMargin: hydrateOptions.rootMargin || 200,
+          rootMargin: hydrateOptions.rootMargin || '200px',
+          threshold: hydrateOptions.threshold || 0,
           id,
         })}
       `,

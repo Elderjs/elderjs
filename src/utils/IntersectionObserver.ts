@@ -1,4 +1,4 @@
-export default ({ el, name, loaded, notLoaded, id, rootMargin = 200 }) => {
+export default ({ el, name, loaded, notLoaded, id, rootMargin = '200px', threshold = 0 }) => {
   return `
       window.addEventListener('load', function (event) {
         var observer${id} = new IntersectionObserver(function(entries, observer) {
@@ -18,8 +18,8 @@ export default ({ el, name, loaded, notLoaded, id, rootMargin = 200 }) => {
             }
           }
         }, {
-          rootMargin: '${rootMargin}px',
-          threshold: 0
+          rootMargin: '${rootMargin}',
+          threshold: ${threshold}
         });
         observer${id}.observe(${el});
       });
