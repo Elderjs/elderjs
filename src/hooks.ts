@@ -50,7 +50,7 @@ const hooks: Array<HookOptions> = [
           return {
             beforeHydrateStack: [
               {
-                source: 'elderjs',
+                source: 'elderAddDefaultIntersectionObserver',
                 string: `<script type="text/javascript">
       if (!('IntersectionObserver' in window)) {
           var script = document.createElement("script");
@@ -59,7 +59,6 @@ const hooks: Array<HookOptions> = [
       };
       </script>`,
                 priority: 1,
-                name: 'intersectionObserver',
               },
               ...beforeHydrateStack,
             ],
@@ -76,20 +75,28 @@ const hooks: Array<HookOptions> = [
   {
     hook: 'stacks',
     name: 'elderAddSystemJs',
-    description: 'AddsSystemJs',
+    description: 'AddsSystemJs to beforeHydrateStack also add preloading of systemjs to the headStack.',
     priority: 1,
-    run: async ({ beforeHydrateStack, settings }) => {
+    run: async ({ beforeHydrateStack, headStack, settings }) => {
       if (settings && settings.locations && {}.hasOwnProperty.call(settings.locations, 'systemJs')) {
         if (settings.locations.systemJs) {
           return {
             beforeHydrateStack: [
               {
-                source: 'internal',
+                source: 'elderAddSystemJs',
                 string: `<script data-name="systemjs" src="${settings.locations.systemJs}"></script>`,
                 priority: 2,
-                name: 'systemjs',
               },
               ...beforeHydrateStack,
+            ],
+
+            headStack: [
+              {
+                source: 'elderAddSystemJs',
+                string: `<link rel="preload" href="${settings.locations.systemJs}" as="script">`,
+                priority: 2,
+              },
+              ...headStack,
             ],
           };
         }
