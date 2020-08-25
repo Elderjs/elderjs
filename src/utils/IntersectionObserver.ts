@@ -1,11 +1,7 @@
-import getUniqueId from './getUniqueId';
-
-export default ({ el, name, loaded, notLoaded, distancePx = 200 }) => {
-  const uid = getUniqueId();
-  return /* javascript */ `
-
+export default ({ el, name, loaded, notLoaded, id, rootMargin = '200px', threshold = 0 }) => {
+  return `
       window.addEventListener('load', function (event) {
-        var observer${uid} = new IntersectionObserver(function(entries, observer) {
+        var observer${id} = new IntersectionObserver(function(entries, observer) {
           var objK = Object.keys(entries);
           var objKl = objK.length;
           var objKi = 0;
@@ -22,10 +18,10 @@ export default ({ el, name, loaded, notLoaded, distancePx = 200 }) => {
             }
           }
         }, {
-          rootMargin: '${distancePx}px',
-          threshold: 0
+          rootMargin: '${rootMargin}',
+          threshold: ${threshold}
         });
-        observer${uid}.observe(${el});
+        observer${id}.observe(${el});
       });
     `;
 };

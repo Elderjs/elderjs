@@ -2,20 +2,13 @@
 import getUniqueId from './getUniqueId';
 import perf from './perf';
 import prepareProcessStack from './prepareProcessStack';
-import { QueryOptions, SettingOptions, ConfigOptions, RequestOptions } from './types';
+import { QueryOptions, Stack, SettingOptions, ConfigOptions, RequestOptions } from './types';
 import { RoutesOptions } from '../routes/types';
 import createReadOnlyProxy from './createReadOnlyProxy';
 
 const buildPage = async (page) => {
   try {
     page.perf.end('initToBuildGap');
-    // stacks
-    page.headStack = [];
-    page.cssStack = [];
-    page.beforeHydrateStack = [];
-    page.hydrateStack = [];
-    page.customJsStack = [];
-    page.footerStack = [];
 
     await page.runHook('request', page);
 
@@ -155,6 +148,18 @@ class Page {
 
   htmlString: string;
 
+  headStack: Stack;
+
+  cssStack: Stack;
+
+  beforeHydrateStack: Stack;
+
+  hydrateStack: Stack;
+
+  customJsStack: Stack;
+
+  footerStack: Stack;
+
   constructor({
     request,
     settings,
@@ -184,6 +189,13 @@ class Page {
     this.routes = routes;
     this.customProps = customProps;
     this.htmlString = '';
+
+    this.headStack = [];
+    this.cssStack = [];
+    this.beforeHydrateStack = [];
+    this.hydrateStack = [];
+    this.customJsStack = [];
+    this.footerStack = [];
 
     this.processStack = prepareProcessStack(this);
 
