@@ -95,7 +95,6 @@ export type StackItem = {
   source: string;
   string: string;
   priority: number;
-  name: string;
 };
 
 export type PluginOptions = {
@@ -112,3 +111,16 @@ interface Init {
 }
 
 export type ExcludesFalse = <T>(x: T | false) => x is T;
+
+export type HydrateOptions = {
+  loading: string;
+  preload: boolean;
+  rootMargin: string;
+  threshold: number;
+};
+
+export interface ComponentPayload {
+  page: any;
+  props: any;
+  hydrateOptions?: HydrateOptions;
+}

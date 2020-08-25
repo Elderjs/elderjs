@@ -1,10 +1,7 @@
 import path from 'path';
-
 import getUniqueId from './getUniqueId';
-
-/* NOTE: If a svelte component is called after the CSS or head array have been called in the layout, the scripts/styles will not be displayed */
 import IntersectionObserver from './IntersectionObserver';
-// const getHashedSvelteComponents = require('./getHashedSvelteComponents');
+import { ComponentPayload } from './types';
 
 export const getComponentName = (str) => {
   let out = str.replace('.svelte', '').replace('.js', '');
@@ -24,28 +21,36 @@ export const replaceSpecialCharacters = (str) =>
     .replace(/\\"/gim, '"')
     .replace(/&amp;/gim, '&');
 
-const svelteComponent = (componentName) => ({ page, props, hydrate = 0 }) => {
-  const cleanComponentName = getComponentName(componentName);
+const componentCache = {};
 
+const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: ComponentPayload): string => {
+  const cleanComponentName = getComponentName(componentName);
   const id = getUniqueId();
 
-  const clientComponents = page.settings.$$internal.hashedComponents;
+  if (!componentCache[cleanComponentName]) {
+    const clientComponents = page.settings.$$internal.hashedComponents;
+    const ssrComponent = path.resolve(
+      process.cwd(),
+      `./${page.settings.locations.svelte.ssrComponents}${cleanComponentName}.js`,
+    );
+    let clientSvelteFolder = page.settings.locations.svelte.clientComponents.replace(
+      page.settings.locations.public,
+      '/',
+    );
+    if (clientSvelteFolder.indexOf('.') === 0) clientSvelteFolder = clientSvelteFolder.substring(1);
 
-  const ssrComponent = path.resolve(
-    process.cwd(),
-    `./${page.settings.locations.svelte.ssrComponents}${cleanComponentName}.js`,
-  );
+    // eslint-disable-next-line global-require, import/no-dynamic-require
+    const { render } = require(ssrComponent);
+    componentCache[cleanComponentName] = {
+      render,
+      clientSrc: `${clientSvelteFolder}${clientComponents[cleanComponentName]}.js`,
+    };
+  }
 
-  let clientSvelteFolder = page.settings.locations.svelte.clientComponents.replace(page.settings.locations.public, '/');
-  if (clientSvelteFolder.indexOf('.') === 0) clientSvelteFolder = clientSvelteFolder.substring(1);
-  const clientComponent = `${clientSvelteFolder}${clientComponents[cleanComponentName]}.js`;
-
-  // eslint-disable-next-line global-require, import/no-dynamic-require
-  const { render } = require(ssrComponent);
+  const { render, clientSrc } = componentCache[cleanComponentName];
 
   try {
     const { css, html: htmlOutput, head } = render({ ...props, link: page.helpers.permalinks });
-    let finalHtmlOuput = htmlOutput;
 
     if (css && css.code && css.code.length > 0 && page.cssStack) {
       page.cssStack.push({ source: componentName, priority: 50, string: css.code });
@@ -55,48 +60,93 @@ const svelteComponent = (componentName) => ({ page, props, hydrate = 0 }) => {
       page.headStack.push({ source: componentName, priority: 50, string: head });
     }
 
-    if (hydrate) {
+    let finalHtmlOuput = htmlOutput;
+    const matches = finalHtmlOuput.matchAll(
+      /<div class="needs-hydration" data-hydrate-component="([A-Za-z]+)" data-hydrate-props="({.*})" data-hydrate-options="({.*})"><\/div>/gim,
+    );
+
+    for (const match of matches) {
+      const hydrateComponentName = match[1];
+      const hydrateComponentProps = JSON.parse(replaceSpecialCharacters(match[2]));
+      const hydrateComponentOptions = JSON.parse(replaceSpecialCharacters(match[3]));
+
+      if (hydrateOptions) {
+        throw new Error(
+          `Client side hydrated component includes client side hydrated sub component. This isn't supported.`,
+        );
+      }
+
+      const hydratedHtml = svelteComponent(hydrateComponentName)({
+        page,
+        props: hydrateComponentProps,
+        hydrateOptions: hydrateComponentOptions,
+      });
+      finalHtmlOuput = finalHtmlOuput.replace(match[0], hydratedHtml);
+    }
+
+    if (!hydrateOptions) {
+      // if a component isn't hydrated we don't need to wrap it in a unique div.
+      return finalHtmlOuput;
+    }
+
+    // hydrate a component
+
+    /**
+     * hydrate-options={{ loading: 'lazy' }} This is the default config, uses intersection observer.
+     * hydrate-options={{ loading: 'eager' }} This would cause the component to be hydrate in a blocking manner as soon as the js is rendered.
+     * hydrate-options={{ preload: true }} This adds a preload to the head stack as outlined above... could be preloaded without forcing blocking.
+     * hydrate-options={{ preload: true, loading: 'eager' }} This would preload and be blocking.
+     * hydrate-options={{ rootMargin: '500px', threshold: 0 }} This would adjust the root margin of the intersection observer. Only usable with loading: 'lazy'
+     * hydrate-options={{ inline: true }}  components are display block by default. If this is true, this adds <div style="display:inline;"> to the wrapper.
+     */
+
+    // should we use the IntersectionObserver and / or adjust the distance?
+
+    if (hydrateOptions.preload) {
+      page.headStack.push({
+        source: componentName,
+        priority: 50,
+        string: `<link rel="preload" href="${clientSrc}" as="script">`,
+      });
+    }
+
+    const clientJs = `
+    System.import('${clientSrc}').then(({ default: App }) => {
+    new App({ target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'), hydrate: true, props: ${JSON.stringify(
+      props,
+    )} });
+    });`;
+
+    if (hydrateOptions.loading === 'eager') {
+      // this is eager loaded. Still requires System.js to be defined.
+      page.hydrateStack.push({
+        source: componentName,
+        priority: 50,
+        string: clientJs,
+      });
+    } else {
+      // we're lazy loading
       page.hydrateStack.push({
         source: componentName,
         priority: 50,
         string: `
         function init${cleanComponentName.toLowerCase()}${id}() {
-          System.import('${clientComponent}').then(({ default: App }) => {
-            new App({ target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'), hydrate: true, props: ${JSON.stringify(
-          props,
-        )} });
-          });
+          ${clientJs}
         }
         ${IntersectionObserver({
           el: `document.getElementById('${cleanComponentName.toLowerCase()}-${id}')`,
           name: `${cleanComponentName.toLowerCase()}`,
           loaded: `init${cleanComponentName.toLowerCase()}${id}();`,
           notLoaded: `init${cleanComponentName.toLowerCase()}${id}();`,
+          rootMargin: hydrateOptions.rootMargin || '200px',
+          threshold: hydrateOptions.threshold || 0,
+          id,
         })}
       `,
       });
     }
 
-    const matches = finalHtmlOuput.matchAll(
-      /<div class="needs-hydration" data-component="([A-Za-z]+)" data-data="({.*})"><\/div>/gim,
-    );
-
-    for (const match of matches) {
-      const hydrateComponentName = match[1];
-
-      let data = replaceSpecialCharacters(match[2]);
-      data = JSON.parse(data);
-      if (hydrate > 1) {
-        throw new Error(
-          `Client side hydrated component includes client side hydrated sub component. This isn't supported.`,
-        );
-      }
-
-      const hydratedHtml = svelteComponent(hydrateComponentName)({ page, props: data, hydrate: hydrate + 1 });
-      finalHtmlOuput = finalHtmlOuput.replace(match[0], hydratedHtml);
-    }
-
-    return `<span class="${cleanComponentName.toLowerCase()}-component" id="${cleanComponentName.toLowerCase()}-${id}">${finalHtmlOuput}</span>`;
+    return `<div class="${cleanComponentName.toLowerCase()}" id="${cleanComponentName.toLowerCase()}-${id}">${finalHtmlOuput}</div>`;
   } catch (e) {
     console.log(e);
     page.errors.push(e);

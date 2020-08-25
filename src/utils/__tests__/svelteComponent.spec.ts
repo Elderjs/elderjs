@@ -1,24 +1,49 @@
-import { mocked } from 'ts-jest/utils';
-import svelteComponent, { getComponentName, replaceSpecialCharacters } from '../svelteComponent';
-import getUniqueId from '../getUniqueId';
+const componentProps = {
+  page: {
+    hydrateStack: [],
+    errors: [],
+    cssStack: [],
+    headStack: [],
 
-jest.mock('../getUniqueId');
-
-const mockedGetUniqueId = mocked(getUniqueId, true);
-mockedGetUniqueId.mockImplementation(() => 'SwrzsrVDCd');
-
-process.cwd = () => 'test';
-
-jest.mock('path', () => ({
-  resolve: (...strings) => strings.join('/').replace('./', ''),
-}));
+    helpers: {
+      permalinks: jest.fn(),
+    },
+    settings: {
+      locations: {
+        public: '/',
+        svelte: {
+          ssrComponents: '___ELDER___/compiled/',
+          clientComponents: 'public/dist/svelte/',
+        },
+      },
+      $$internal: {
+        hashedComponents: {
+          Home: 'Home.a1b2c3',
+          Datepicker: 'Datepicker.a1b2c3',
+        },
+      },
+    },
+  },
+  props: {},
+};
 
 describe('#svelteComponent', () => {
+  beforeAll(() => {
+    jest.mock('../getUniqueId', () => () => 'SwrzsrVDCd');
+    process.cwd = () => 'test';
+
+    jest.mock('path', () => ({
+      resolve: (...strings) => strings.join('/').replace('./', ''),
+    }));
+  });
+
   beforeEach(() => {
     jest.resetModules();
   });
 
   it('getComponentName works', () => {
+    // eslint-disable-next-line global-require
+    const { getComponentName } = require('../svelteComponent');
     expect(getComponentName('Home.svelte')).toEqual('Home');
     expect(getComponentName('Home.js')).toEqual('Home');
     expect(getComponentName('foo/bar/Home.js')).toEqual('Home');
@@ -26,39 +51,11 @@ describe('#svelteComponent', () => {
   });
 
   it('replaceSpecialCharacters works', () => {
+    // eslint-disable-next-line global-require
+    const { replaceSpecialCharacters } = require('../svelteComponent');
     expect(replaceSpecialCharacters('&quot;&lt;&gt;&#39;&quot;\\n\\\\n\\"&amp;')).toEqual('"<>\'"\\n"&');
     expect(replaceSpecialCharacters('abcd 1234 <&""&>')).toEqual('abcd 1234 <&""&>');
   });
-
-  const home = svelteComponent('Home.svelte');
-  const componentProps = {
-    page: {
-      hydrateStack: [],
-      errors: [],
-      cssStack: [],
-      headStack: [],
-
-      helpers: {
-        permalinks: jest.fn(),
-      },
-      settings: {
-        locations: {
-          public: '/',
-          svelte: {
-            ssrComponents: '___ELDER___/compiled/',
-            clientComponents: 'public/dist/svelte/',
-          },
-        },
-        $$internal: {
-          hashedComponents: {
-            Home: 'Home.a1b2c3',
-            Datepicker: 'Datepicker.a1b2c3',
-          },
-        },
-      },
-    },
-    props: {},
-  };
 
   it('svelteComponent works', () => {
     jest.mock(
@@ -72,9 +69,10 @@ describe('#svelteComponent', () => {
       }),
       { virtual: true },
     );
-    expect(home(componentProps)).toEqual(
-      `<span class="home-component" id="home-SwrzsrVDCd"><div class="svelte-home">mock html output</div></span>`,
-    );
+    // eslint-disable-next-line global-require
+    const svelteComponent = require('../svelteComponent').default;
+    const home = svelteComponent('Home.svelte');
+    expect(home(componentProps)).toEqual(`<div class="svelte-home">mock html output</div>`);
   });
 
   it('svelteComponent works with partial hydration of subcomponent', () => {
@@ -85,7 +83,7 @@ describe('#svelteComponent', () => {
           head: '<head>',
           css: { code: '<css>' },
           html:
-            '<div class="svelte-datepicker"><div class="needs-hydration" data-component="Datepicker" data-data="{ "a": "b" }"></div></div>',
+            '<div class="svelte-datepicker"><div class="needs-hydration" data-hydrate-component="Datepicker" data-hydrate-props="{ "a": "b" }" data-hydrate-options="{ "loading": "lazy" }"></div></div>',
         }),
       }),
       { virtual: true },
@@ -101,8 +99,11 @@ describe('#svelteComponent', () => {
       }),
       { virtual: true },
     );
+    // eslint-disable-next-line global-require
+    const svelteComponent = require('../svelteComponent').default;
+    const home = svelteComponent('Home.svelte');
     expect(home(componentProps)).toEqual(
-      `<span class="home-component" id="home-SwrzsrVDCd"><div class="svelte-datepicker"><span class="datepicker-component" id="datepicker-SwrzsrVDCd"><div>DATEPICKER</div></span></div></span>`,
+      `<div class="svelte-datepicker"><div class="datepicker" id="datepicker-SwrzsrVDCd"><div>DATEPICKER</div></div></div>`,
     );
     expect(componentProps.page.hydrateStack).toEqual([
       {
@@ -110,12 +111,12 @@ describe('#svelteComponent', () => {
         source: 'Datepicker',
         string: `
         function initdatepickerSwrzsrVDCd() {
-          System.import('public/dist/svelte/Datepicker.a1b2c3.js').then(({ default: App }) => {
-            new App({ target: document.getElementById('datepicker-SwrzsrVDCd'), hydrate: true, props: {"a":"b"} });
-          });
+          
+    System.import('public/dist/svelte/Datepicker.a1b2c3.js').then(({ default: App }) => {
+    new App({ target: document.getElementById('datepicker-SwrzsrVDCd'), hydrate: true, props: {"a":"b"} });
+    });
         }
         
-
       window.addEventListener('load', function (event) {
         var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {
           var objK = Object.keys(entries);
@@ -145,3 +146,11 @@ describe('#svelteComponent', () => {
     ]);
   });
 });
+
+/** TODO:
+ * hydrate-options={{ lazy: false }} This would cause the component to be hydrate in a blocking manner.
+ * hydrate-options={{ preload: true }} This adds a preload to the head stack as outlined above... could be preloaded without forcing blocking.
+ * hydrate-options={{ preload: true, lazy: false }} This would preload and be blocking.
+ * hydrate-options={{ rootMargin: '500' }} This would adjust the root margin of the intersection observer. Only usable with lazy: true.
+ * hydrate-options={{ inline: true }}  components are display block by default. If this is true, this adds <div style="display:inline;"> to the wrapper.
+ */

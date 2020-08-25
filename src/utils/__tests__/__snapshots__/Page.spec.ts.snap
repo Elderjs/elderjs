@@ -26,14 +26,20 @@ Page {
       "type": "build",
     },
   ],
+  "beforeHydrateStack": Array [],
+  "cssStack": Array [],
+  "customJsStack": Array [],
   "customProps": Object {},
   "data": Object {},
   "errors": Array [],
+  "footerStack": Array [],
+  "headStack": Array [],
   "helpers": Object {
     "metersInAMile": 0.00062137119224,
     "permalinks": Object {},
   },
   "htmlString": "",
+  "hydrateStack": Array [],
   "perf": Object {
     "end": [MockFunction] {
       "calls": Array [
