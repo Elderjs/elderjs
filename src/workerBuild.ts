@@ -12,7 +12,6 @@ async function workerBuild({ bootstrapComplete, workerRequests }) {
     customProps,
     allRequests,
   } = await bootstrapComplete;
-  console.log(workerRoutes);
 
   // potential issue that since builds are split across processes,
   // some plugins may need all requests of the same category to be passed at the same time.
