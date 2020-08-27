@@ -36,7 +36,7 @@ describe('#hooks', () => {
   });
   it('elderAddSystemJs', async () => {
     expect(
-      await hooks[2].run({ beforeHydrateStack: [], settings: { locations: { systemJs: 'foo' } } }),
+      await hooks[2].run({ beforeHydrateStack: [], headStack: [], settings: { locations: { systemJs: 'foo' } } }),
     ).toMatchSnapshot();
     expect(await hooks[2].run({ beforeHydrateStack: [], settings: {} })).toBe(null);
   });

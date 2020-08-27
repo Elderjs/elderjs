@@ -4,9 +4,8 @@ exports[`#hooks elderAddDefaultIntersectionObserver 1`] = `
 Object {
   "beforeHydrateStack": Array [
     Object {
-      "name": "intersectionObserver",
       "priority": 1,
-      "source": "elderjs",
+      "source": "elderAddDefaultIntersectionObserver",
       "string": "<script type=\\"text/javascript\\">
       if (!('IntersectionObserver' in window)) {
           var script = document.createElement(\\"script\\");
@@ -32,10 +31,16 @@ exports[`#hooks elderAddSystemJs 1`] = `
 Object {
   "beforeHydrateStack": Array [
     Object {
-      "name": "systemjs",
       "priority": 2,
-      "source": "internal",
+      "source": "elderAddSystemJs",
       "string": "<script data-name=\\"systemjs\\" src=\\"foo\\"></script>",
+    },
+  ],
+  "headStack": Array [
+    Object {
+      "priority": 2,
+      "source": "elderAddSystemJs",
+      "string": "<link rel=\\"preload\\" href=\\"foo\\" as=\\"script\\">",
     },
   ],
 }
@@ -58,7 +63,7 @@ Array [
     "run": [Function],
   },
   Object {
-    "description": "AddsSystemJs",
+    "description": "AddsSystemJs to beforeHydrateStack also add preloading of systemjs to the headStack.",
     "hook": "stacks",
     "name": "elderAddSystemJs",
     "priority": 1,
