@@ -57,7 +57,7 @@ const buildPage = async (page) => {
         data: page.data,
         helpers: page.helpers,
         settings: page.settings,
-        page,
+        request: page.request,
         routeHTML,
       },
     });
