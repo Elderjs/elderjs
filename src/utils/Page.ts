@@ -20,11 +20,11 @@ const buildPage = async (page) => {
         data: page.data,
         query: page.query,
         helpers: page.helpers,
-        settings: createReadOnlyProxy(page.settings, 'settings', 'data.js'),
-        request: createReadOnlyProxy(page.request, 'request', 'data.js'),
+        settings: createReadOnlyProxy(page.settings, 'settings', `${page.request.route}: data function`),
+        request: createReadOnlyProxy(page.request, 'request', `${page.request.route}: data function`),
         errors: page.errors,
         perf: page.perf,
-        allRequests: createReadOnlyProxy(page.allRequests, 'allRequests', 'data.js'),
+        allRequests: createReadOnlyProxy(page.allRequests, 'allRequests', `${page.request.route}: data function`),
       });
       if (dataResponse) {
         page.data = dataResponse;
