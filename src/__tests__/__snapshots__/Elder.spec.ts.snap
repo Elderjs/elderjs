@@ -8,12 +8,12 @@ Elder {
   "data": Object {},
   "errors": Array [],
   "helpers": Object {
+    "inlineSvelteComponent": [Function],
     "permalinks": Object {
       "route-a": [Function],
       "test-a": [Function],
       "test-b": [Function],
     },
-    "svelteComponent": [Function],
   },
   "hookInterface": Array [
     Object {
@@ -590,12 +590,12 @@ Elder {
   "data": Object {},
   "errors": Array [],
   "helpers": Object {
+    "inlineSvelteComponent": [Function],
     "permalinks": Object {
       "route-a": [Function],
       "test-a": [Function],
       "test-b": [Function],
     },
-    "svelteComponent": [Function],
   },
   "hookInterface": Array [
     Object {
