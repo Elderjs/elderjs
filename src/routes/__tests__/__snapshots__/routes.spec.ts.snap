@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`#routes no template 1`] = `
+exports[`#routes no template, ts imports 1`] = `
 Object {
   "Content": Object {
     "all": [Function],
