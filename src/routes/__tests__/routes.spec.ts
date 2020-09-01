@@ -21,6 +21,7 @@ jest.mock('glob', () => ({
       'test/___ELDER___/compiled/Home.js',
       'test/___ELDER___/compiled/AutoComplete.js',
       'test/___ELDER___/compiled/Default.js',
+      'test/___ELDER___/compiled/Content.js',
     ]),
 }));
 
@@ -111,5 +112,37 @@ describe('#routes', () => {
     const routes = require('../routes').default;
     // @ts-ignore
     expect(routes(settings)).toMatchSnapshot();
+  });
+
+  it('no template, ts imports', () => {
+    jest.mock(
+      'test/src/routes/Content/route.js',
+      () => ({
+        default: {
+          permalink: () => 'content-permalink',
+          all: () => null,
+          layout: 'Layout.svelte',
+        },
+      }),
+      { virtual: true },
+    );
+
+    jest.mock(
+      'test/src/routes/Home/route.js',
+      () => ({
+        default: {
+          permalink: () => 'home-permalink',
+          all: () => null,
+        },
+      }),
+      { virtual: true },
+    );
+
+    jest.mock('test/src/routes/Content/data.js', () => ({ default: { foo: 'bar' } }), { virtual: true });
+
+    // eslint-disable-next-line global-require
+    const routes = require('../routes').default;
+    // @ts-ignore
+    expect(routes({ ...settings, typescript: true })).toMatchSnapshot();
   });
 });
