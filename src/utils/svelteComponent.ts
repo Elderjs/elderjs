@@ -86,7 +86,6 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
       finalHtmlOuput = finalHtmlOuput.replace(match[0], hydratedHtml);
     }
 
-
     // hydrateOptions.loading=none for server only rendered injected into html somehow???
     if (!hydrateOptions || hydrateOptions.loading === 'none') {
       // if a component isn't hydrated we don't need to wrap it in a unique div.
@@ -94,7 +93,6 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
     }
 
     // hydrate a component
-
 
     // should we use the IntersectionObserver and / or adjust the distance?
     if (hydrateOptions.preload) {
