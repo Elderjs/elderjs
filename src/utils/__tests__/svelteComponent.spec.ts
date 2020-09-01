@@ -83,7 +83,7 @@ describe('#svelteComponent', () => {
           head: '<head>',
           css: { code: '<css>' },
           html:
-            '<div class="svelte-datepicker"><div class="ejs-compontent" data-ejs-component="Datepicker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "lazy" }"></div></div>',
+            '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "lazy" }"></div></div>',
         }),
       }),
       { virtual: true },
