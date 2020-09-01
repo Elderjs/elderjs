@@ -37,11 +37,17 @@ export function inlinePreprocessedSvelteComponent({
   return `<div${replacementAttrsString} />`;
 }
 
+enum Loading {
+  lazy = 'lazy',
+  eager = 'eager',
+  none = 'none',
+}
+
 type InputParamsInlineSvelteComponent = {
   name?: string;
   props?: any;
   options?: {
-    loading?: string; // TODO: enum
+    loading?: Loading;
   };
 };
 
