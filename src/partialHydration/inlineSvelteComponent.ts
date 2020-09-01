@@ -2,7 +2,26 @@ const defaultHydrationOptions = {
   loading: 'lazy',
 };
 
-export function inlinePreprocessedSvelteComponent({ name = '', props = {}, options = '' }) {
+export function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+type InputParamsInlinePreprocessedSvelteComponent = {
+  name?: string;
+  props?: any;
+  options?: string;
+};
+
+export function inlinePreprocessedSvelteComponent({
+  name = '',
+  props = {},
+  options = '',
+}: InputParamsInlinePreprocessedSvelteComponent): string {
   const hydrationOptions = options.length > 0 ? options : JSON.stringify(defaultHydrationOptions);
 
   const replacementAttrs = {
@@ -18,16 +37,19 @@ export function inlinePreprocessedSvelteComponent({ name = '', props = {}, optio
   return `<div${replacementAttrsString} />`;
 }
 
-function escapeHtml(text) {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
+type InputParamsInlineSvelteComponent = {
+  name?: string;
+  props?: any;
+  options?: {
+    loading?: string; // TODO: enum
+  };
+};
 
-export function inlineSvelteComponent({ name = '', props = {}, options = {} }) {
+export function inlineSvelteComponent({
+  name = '',
+  props = {},
+  options = {},
+}: InputParamsInlineSvelteComponent): string {
   const hydrationOptions = Object.keys(options).length > 0 ? options : defaultHydrationOptions;
 
   const replacementAttrs = {
@@ -43,5 +65,3 @@ export function inlineSvelteComponent({ name = '', props = {}, options = {} }) {
 
   return `<div${replacementAttrsString}></div>`;
 }
-
-// TODO: Filip can we test these?
