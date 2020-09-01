@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
 import { getWorkerCounts } from '../build';
 
-const calledHooks = [];
+let calledHooks = [];
 
 jest.mock('cli-progress');
 
@@ -9,13 +9,13 @@ jest.mock('../../Elder', () => ({
   Elder: class ElderMock {
     errors: [];
 
-    runHook: (string) => void;
+    runHook: (string, any) => void;
 
     constructor() {
       this.errors = [];
-      this.runHook = (h) => {
+      this.runHook = (h, opts) => {
         // push outside of class instance for assertion
-        calledHooks.push(h);
+        calledHooks.push(`${h}-${JSON.stringify(opts)}`);
       };
     }
 
@@ -59,9 +59,56 @@ jest.mock('os', () => ({
   ],
 }));
 
+class WorkerMock {
+  id: number;
+
+  handlers: {
+    [event: string]: (...args: any) => any;
+  };
+
+  killed: boolean;
+
+  withError: boolean; // mocked to send invalid message
+
+  constructor(id, withError?: boolean) {
+    this.id = id;
+    this.handlers = {};
+    this.killed = false;
+    this.withError = withError || false;
+  }
+
+  on(event, cb) {
+    this.handlers[event] = cb;
+  }
+
+  send({ cmd }) {
+    if (cmd === 'start' && this.handlers.message) {
+      this.handlers.message(['start']);
+      this.handlers.message(['done']);
+      if (this.withError) {
+        this.handlers.message(['requestComplete', 3, 0, 'ignoreMe', 'pushMeToErrors']);
+      } else {
+        this.handlers.message(['requestComplete']);
+      }
+    }
+  }
+
+  kill() {
+    this.killed = true;
+    if (this.handlers.exit) {
+      this.handlers.exit(this.id < 2 ? 0 : 500, this.id === 0 ? 'kill' : null);
+    }
+  }
+
+  [Symbol.iterator]() {
+    return this.id;
+  }
+}
+
 describe('#build', () => {
   beforeEach(() => {
     jest.resetModules();
+    calledHooks = [];
   });
 
   it('getWorkerCounts works', () => {
@@ -103,41 +150,6 @@ describe('#build', () => {
   it('build works - master node, 5 workers', async () => {
     jest.useFakeTimers();
     process.env = {};
-    class WorkerMock {
-      id: number;
-
-      handlers: {
-        [event: string]: (args: any) => any;
-      };
-
-      killed: boolean;
-
-      constructor(id) {
-        this.id = id;
-        this.handlers = {};
-        this.killed = false;
-      }
-
-      on(event, cb) {
-        this.handlers[event] = cb;
-      }
-
-      send({ cmd }) {
-        if (cmd === 'start' && this.handlers.message) {
-          this.handlers.message(['start']);
-          this.handlers.message(['done']);
-          this.handlers.message(['requestComplete']);
-        }
-      }
-
-      kill() {
-        this.killed = true;
-      }
-
-      [Symbol.iterator]() {
-        return this.id;
-      }
-    }
 
     jest.mock('cluster', () => ({
       isMaster: true,
@@ -167,7 +179,87 @@ describe('#build', () => {
     jest.advanceTimersByTime(1000); // not all intervalls are cleared
     // eslint-disable-next-line global-require
     expect(require('cluster').workers.map((w) => w.killed)).toEqual([true, true, true, true, true]);
-    expect(calledHooks).toEqual(['buildComplete']);
+    expect(calledHooks).toEqual(['buildComplete-{"success":true,"errors":[],"timings":[null,null,null,null,null]}']);
     expect(setInterval).toHaveBeenCalledTimes(5);
+  });
+
+  it('build fails - different settings, 2 workers', async () => {
+    jest.mock('../../Elder', () => ({
+      Elder: class ElderMock {
+        errors: string[];
+
+        runHook: (string, any) => void;
+
+        constructor() {
+          this.errors = ['bornToFail'];
+          this.runHook = (h, opts) => {
+            // push outside of class instance for assertion
+            calledHooks.push(`${h}-${JSON.stringify(opts)}`);
+          };
+        }
+
+        // eslint-disable-next-line class-methods-use-this
+        worker() {
+          return {
+            errors: [],
+            timings: [[{ duration: 500, name: 'foo' }], [{ duration: 500, name: 'foo' }]],
+          };
+        }
+
+        // eslint-disable-next-line class-methods-use-this
+        bootstrap() {
+          return Promise.resolve({
+            allRequests: [0, 1],
+          });
+        }
+      },
+      getElderConfig: () => ({
+        debug: {
+          build: false,
+        },
+        build: {
+          numberOfWorkers: -20,
+          shuffleRequests: true,
+        },
+      }),
+    }));
+    jest.useFakeTimers();
+    process.env = {
+      ELDER_BUILD_NUMBER_OF_WORKERS: '2',
+    };
+
+    jest.mock('cluster', () => ({
+      isMaster: true,
+      fork: jest.fn(),
+      workers: [new WorkerMock(0), new WorkerMock(1, true)],
+    }));
+
+    const dateNowStub = jest
+      .fn()
+      .mockImplementationOnce(() => 1530518257007)
+      .mockImplementationOnce(() => 1530518257008)
+      .mockImplementationOnce(() => 1530518307009)
+      .mockImplementationOnce(() => 1530518307010)
+      .mockImplementationOnce(() => 1530518307011)
+      .mockImplementationOnce(() => 1530518307012)
+      .mockImplementationOnce(() => 1530518307013)
+      .mockImplementation(() => {
+        throw new Error('unmocked Date call');
+      });
+
+    global.Date.now = dateNowStub;
+
+    expect(calledHooks).toEqual([]);
+    // eslint-disable-next-line global-require
+    const build = require('../build').default;
+    await build();
+    jest.advanceTimersByTime(1000); // not all intervalls are cleared
+    // eslint-disable-next-line global-require
+    expect(require('cluster').workers.map((w) => w.killed)).toEqual([true, true]);
+    expect(calledHooks).toEqual([
+      'error-{"errors":["bornToFail","pushMeToErrors"]}',
+      'buildComplete-{"success":false,"errors":["bornToFail","pushMeToErrors"],"timings":[null,null]}',
+    ]);
+    expect(setInterval).toHaveBeenCalledTimes(2);
   });
 });
