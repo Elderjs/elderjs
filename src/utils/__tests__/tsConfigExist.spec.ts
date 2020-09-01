@@ -15,6 +15,9 @@ jest.mock('fs', () => {
       if (path.startsWith('test')) {
         throw new StatSyncError('');
       }
+      if (path.startsWith('folder')) {
+        throw new Error('');
+      }
       return {};
     },
   };
@@ -23,6 +26,11 @@ jest.mock('fs', () => {
 test('#tsConfigExist - Error NO ENTity', () => {
   process.cwd = () => 'test';
   expect(tsConfigExist()).toBe(false);
+});
+
+test('#tsConfigExist - Unknown error', () => {
+  process.cwd = () => 'folder';
+  expect(() => tsConfigExist()).toThrow('');
 });
 
 test('#tsConfigExist - statSync ok', () => {

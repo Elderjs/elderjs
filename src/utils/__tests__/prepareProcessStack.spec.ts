@@ -23,7 +23,11 @@ test('#prepareProcessStack', () => {
       start: jest.fn(),
       end: jest.fn(),
     },
-    settings: {},
+    settings: {
+      debug: {
+        stacks: true,
+      },
+    },
   };
   const processStackFn = prepareProcessStack(page);
   expect(processStackFn('testStack')).toEqual('-50--10--1-');
