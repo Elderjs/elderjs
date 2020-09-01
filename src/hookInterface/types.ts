@@ -24,6 +24,9 @@ export type HookInterface = {
   advanced: boolean;
 };
 
+interface Run {
+  (input: any): any | Promise<any>;
+}
 export type HookOptions = {
   hook: Hook;
   name: string;
@@ -35,7 +38,3 @@ export type HookOptions = {
     addedBy: string;
   };
 };
-
-interface Run {
-  (input: any): any | Promise<any>;
-}

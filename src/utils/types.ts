@@ -1,19 +1,6 @@
 import type { StateSlug, RoutesOptions } from '../routes/types';
 import type { HookOptions } from '../hookInterface/types';
 
-export type ConfigOptions = {
-  server: ServerOptions;
-  build: BuildOptions;
-  locations: LocationOptions;
-  debug: DebugOptions;
-  plugins?: any;
-  hooks: {
-    disable?: string[];
-  };
-  typescript: boolean;
-  worker: boolean;
-};
-
 type ServerOptions = {
   prefix: string;
 };
@@ -21,16 +8,6 @@ type ServerOptions = {
 type BuildOptions = {
   numberOfWorkers: number;
   shuffleRequests: boolean;
-};
-
-type LocationOptions = {
-  assets: string;
-  public: string;
-  svelte: SvelteOptions;
-  systemJs: string;
-  intersectionObserverPoly: string;
-  srcFolder: string;
-  buildFolder: string;
 };
 
 type SvelteOptions = {
@@ -46,14 +23,37 @@ type DebugOptions = {
   automagic: boolean;
 };
 
-export type SettingOptions = {
-  server: boolean;
-  build: boolean;
-  $$internal: Internal;
+type LocationOptions = {
+  assets: string;
+  public: string;
+  svelte: SvelteOptions;
+  systemJs: string;
+  intersectionObserverPoly: string;
+  srcFolder: string;
+  buildFolder: string;
+};
+
+export type ConfigOptions = {
+  server: ServerOptions;
+  build: BuildOptions;
+  locations: LocationOptions;
+  debug: DebugOptions;
+  plugins?: any;
+  hooks: {
+    disable?: string[];
+  };
+  typescript: boolean;
+  worker: boolean;
 };
 
 type Internal = {
   hashedComponents: {};
+};
+
+export type SettingOptions = {
+  server: boolean;
+  build: boolean;
+  $$internal: Internal;
 };
 
 export type QueryOptions = {
@@ -79,23 +79,28 @@ export type RequestOptions = {
 export type RequestsOptions = {
   [name: string]: RequestOptions;
 };
-export interface BuildResult {
-  timings: Array<Timing[]>;
-  errors: any[];
-}
 
 export interface Timing {
   name: string;
   duration: number;
 }
 
-export type Stack = Array<StackItem>;
+export interface BuildResult {
+  timings: Array<Timing[]>;
+  errors: any[];
+}
 
 export type StackItem = {
   source: string;
   string: string;
   priority: number;
 };
+
+export type Stack = Array<StackItem>;
+
+interface Init {
+  (input: any): any;
+}
 
 export type PluginOptions = {
   name: string;
@@ -106,10 +111,7 @@ export type PluginOptions = {
   config?: Object;
 };
 
-interface Init {
-  (input: any): any;
-}
-
+// eslint-disable-next-line no-undef
 export type ExcludesFalse = <T>(x: T | false) => x is T;
 
 export type HydrateOptions = {
