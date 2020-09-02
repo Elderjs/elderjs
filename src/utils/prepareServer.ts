@@ -1,5 +1,4 @@
 import Page from './Page';
-import { request } from 'http';
 
 function prepareServer({ bootstrapComplete }) {
   // eslint-disable-next-line consistent-return
