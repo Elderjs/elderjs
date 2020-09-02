@@ -435,7 +435,7 @@ class Elder {
 
       await asyncForEach(this.allRequests, async (request) => {
         if (!this.routes[request.route] || !this.routes[request.route].permalink) {
-          console.log(request);
+          console.error(`request missing permalink, please create an issue. ${request}`);
         }
         if (context === 'server') {
           request.type = 'server';

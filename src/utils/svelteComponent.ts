@@ -70,8 +70,6 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
       const hydrateComponentProps = JSON.parse(replaceSpecialCharacters(match[2]));
       const hydrateComponentOptions = JSON.parse(replaceSpecialCharacters(match[3]));
 
-      console.log('svelteComponent.ts', hydrateComponentName, hydrateComponentProps, match[0]);
-
       if (hydrateOptions) {
         throw new Error(
           `Client side hydrated component includes client side hydrated sub component. This isn't supported.`,
