@@ -97,21 +97,15 @@ function routes(settings: ConfigOptions) {
     if (!route.data) {
       const dataFile = filesForThisRoute.find((f) => f.endsWith(`data.js`));
       if (dataFile) {
+        // TODO: v1 removal
         route.data = settings.typescript ? require(dataFile).default : require(dataFile);
-        if (settings.debug.automagic) {
-          console.log(
-            `debug.automagic:: Loading your /routes/${routeName}/data.js file. It will be run and the object returned will be passed to your ${route.template} `,
-          );
-        }
+        console.warn(
+          `WARN: Loading your /routes/${routeName}/data.js file. This functionality is depricated. Please include your data function in your /routes/${routeName}/route.js object under the 'data' key. As a quick fix you can just import the existing data file and include it as "data" key.`,
+        );
       } else {
         route.data = (page) => {
           page.data = {};
         };
-        if (settings.debug.automagic) {
-          console.warn(
-            `debug.automagic:: We couldn't find a data file at /routes/${routeName}/data.js. This route won't receive any data props.`,
-          );
-        }
       }
     }
 

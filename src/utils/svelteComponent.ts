@@ -62,13 +62,15 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
 
     let finalHtmlOuput = htmlOutput;
     const matches = finalHtmlOuput.matchAll(
-      /<div class="needs-hydration" data-hydrate-component="([A-Za-z]+)" data-hydrate-props="({.*})" data-hydrate-options="({.*})"><\/div>/gim,
+      /<div class="ejs-component" data-ejs-component="([A-Za-z]+)" data-ejs-props="({[^]*?})" data-ejs-options="({[^]*?})"><\/div>/gim,
     );
 
     for (const match of matches) {
       const hydrateComponentName = match[1];
       const hydrateComponentProps = JSON.parse(replaceSpecialCharacters(match[2]));
       const hydrateComponentOptions = JSON.parse(replaceSpecialCharacters(match[3]));
+
+      console.log('svelteComponent.ts', hydrateComponentName, hydrateComponentProps, match[0]);
 
       if (hydrateOptions) {
         throw new Error(
@@ -84,24 +86,15 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
       finalHtmlOuput = finalHtmlOuput.replace(match[0], hydratedHtml);
     }
 
-    if (!hydrateOptions) {
+    // hydrateOptions.loading=none for server only rendered injected into html somehow???
+    if (!hydrateOptions || hydrateOptions.loading === 'none') {
       // if a component isn't hydrated we don't need to wrap it in a unique div.
       return finalHtmlOuput;
     }
 
     // hydrate a component
 
-    /**
-     * hydrate-options={{ loading: 'lazy' }} This is the default config, uses intersection observer.
-     * hydrate-options={{ loading: 'eager' }} This would cause the component to be hydrate in a blocking manner as soon as the js is rendered.
-     * hydrate-options={{ preload: true }} This adds a preload to the head stack as outlined above... could be preloaded without forcing blocking.
-     * hydrate-options={{ preload: true, loading: 'eager' }} This would preload and be blocking.
-     * hydrate-options={{ rootMargin: '500px', threshold: 0 }} This would adjust the root margin of the intersection observer. Only usable with loading: 'lazy'
-     * hydrate-options={{ inline: true }}  components are display block by default. If this is true, this adds <div style="display:inline;"> to the wrapper.
-     */
-
     // should we use the IntersectionObserver and / or adjust the distance?
-
     if (hydrateOptions.preload) {
       page.headStack.push({
         source: componentName,

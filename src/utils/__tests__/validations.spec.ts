@@ -36,6 +36,7 @@ describe('#validations', () => {
     hooks: {
       disable: [],
     },
+    siteUrl: '',
     locations: {
       assets: './public/dist/static/',
       buildFolder: '',

@@ -8,7 +8,7 @@ test('#partialHydration', async () => {
       })
     ).code,
   ).toEqual(
-    `<div class="needs-hydration" data-hydrate-component="DatePicker" data-hydrate-props={JSON.stringify({ a: "b" })} data-hydrate-options={JSON.stringify({"loading":"lazy"})} />`,
+    `<div class="ejs-component" data-ejs-component="DatePicker" data-ejs-props={JSON.stringify({ a: "b" })} data-ejs-options={JSON.stringify({"loading":"lazy"})} />`,
   );
 
   expect(
@@ -18,7 +18,7 @@ test('#partialHydration', async () => {
       })
     ).code,
   ).toEqual(
-    `<div class="needs-hydration" data-hydrate-component="DatePicker" data-hydrate-props={JSON.stringify({ a: "b" })} data-hydrate-options={JSON.stringify({ loading: "eager" })} />`,
+    `<div class="ejs-component" data-ejs-component="DatePicker" data-ejs-props={JSON.stringify({ a: "b" })} data-ejs-options={JSON.stringify({ loading: "eager" })} />`,
   );
 
   expect(
@@ -29,7 +29,7 @@ test('#partialHydration', async () => {
       })
     ).code,
   ).toEqual(
-    `<div class="needs-hydration" data-hydrate-component="DatePicker" data-hydrate-props={JSON.stringify({ a: "b" })} data-hydrate-options={JSON.stringify({ loading: "eager", rootMargin: "500px", threshold: 0 })} />`,
+    `<div class="ejs-component" data-ejs-component="DatePicker" data-ejs-props={JSON.stringify({ a: "b" })} data-ejs-options={JSON.stringify({ loading: "eager", rootMargin: "500px", threshold: 0 })} />`,
   );
 
   expect(

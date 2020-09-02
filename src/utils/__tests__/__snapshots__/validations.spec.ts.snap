@@ -20,6 +20,7 @@ ObjectSchema {
     "hooks",
     "debug",
     "locations",
+    "siteUrl",
   ],
   "_options": Object {
     "abortEarly": true,
@@ -777,6 +778,33 @@ ObjectSchema {
         [Function],
       ],
       "type": "object",
+    },
+    "siteUrl": StringSchema {
+      "_blacklist": RefSet {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": Array [],
+      "_default": "",
+      "_deps": Array [],
+      "_exclusive": Object {},
+      "_label": "The domain your site is hosted on. https://yourdomain.com.",
+      "_mutate": undefined,
+      "_options": Object {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "string",
+      "_typeError": [Function],
+      "_whitelist": RefSet {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": Array [],
+      "transforms": Array [
+        [Function],
+      ],
+      "type": "string",
     },
     "typescript": BooleanSchema {
       "_blacklist": RefSet {

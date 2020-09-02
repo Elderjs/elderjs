@@ -35,6 +35,7 @@ import {
 } from './utils/types';
 import createReadOnlyProxy from './utils/createReadOnlyProxy';
 import workerBuild from './workerBuild';
+import { inlineSvelteComponent } from './partialHydration/inlineSvelteComponent';
 
 const getElderConfig = getConfig;
 
@@ -373,7 +374,7 @@ class Elder {
 
     this.helpers = {
       permalinks: permalinks({ routes: this.routes, settings: this.settings }),
-      svelteComponent,
+      inlineSvelteComponent,
     };
 
     if (context === 'server') {

@@ -8,12 +8,12 @@ Elder {
   "data": Object {},
   "errors": Array [],
   "helpers": Object {
+    "inlineSvelteComponent": [Function],
     "permalinks": Object {
       "route-a": [Function],
       "test-a": [Function],
       "test-b": [Function],
     },
-    "svelteComponent": [Function],
   },
   "hookInterface": Array [
     Object {
@@ -184,7 +184,7 @@ Elder {
       ],
       "use": "<p>This hook gives access to the entire state of a request lifecycle before it starts.</p>
     <ul>
-      <li>Primarily used to set 'request' specific data that is required by all routes so doesn't make sense to store across multiple 'data.js' files.</li>
+      <li>Primarily used to set 'request' specific data that is required by all routes so doesn't make sense to share across multiple 'data' functions.</li>
       <li>If you have helper functions that need a closure isolated to a specific page generation lifecycle here is where you should attach them.</li>
       <li>If you need to programmatically change the route, you can do so here. This is how the elderjs-plugin-random works.</li>
       <li>This hook is commonly uses by plugins that need to add route level data that is dependent on the request to populate.</li>
@@ -193,7 +193,7 @@ Elder {
     },
     Object {
       "advanced": true,
-      "context": "This hook is run after the route's data.js file has executed.",
+      "context": "This hook is run after the route's \\"data\\" function has executed.",
       "experimental": false,
       "hook": "data",
       "location": "Page.ts",
@@ -222,14 +222,14 @@ Elder {
         "footerStack",
         "settings",
       ],
-      "use": "<p>This hook is mainly used by plugins/hooks to offer functionality at the route level that is dependent on the data.js returning but isn't suitable to live in data.js on many routes due to code duplication.</p>
+      "use": "<p>This hook is mainly used by plugins/hooks to offer functionality at the route level that is dependent on the route's \\"data\\" function has returning but isn't suitable to live in multiple data function across many routes due to code duplication.</p>
     <p>Examples of things we (ElderGuide.com) have done or have seen users do:</p>
     <ul>
-      <li><strong>LD+JSON</strong>: Plugins/hooks that add LD+JSON may need the data.js file to be executed before they have the data needed to run.</li>
-      <li><strong>Breadcrumbs</strong>: Plugins/hooks that add breadcrumbs may be dependent on data.js.</li>
-      <li><strong>Table Of Contents</strong>: Plugins/hooks that automatically generate a table of contents will be dependent on data from data.js has run.</li>
+      <li><strong>LD+JSON</strong>: Plugins/hooks that add LD+JSON may need the a route's \\"data\\" function to be executed before they have the data needed to run.</li>
+      <li><strong>Breadcrumbs</strong>: Plugins/hooks that add breadcrumbs may be dependent on the \\"data\\" function of a route.</li>
+      <li><strong>Table Of Contents</strong>: Plugins/hooks that automatically generate a table of contents will be dependent on data from a route's data function.</li>
       <li><strong>Reference Plugins</strong>: Plugins/hooks that collect references from content and add them to the footer of the page content.</li>
-      <li><strong>Last Updated Data</strong>: Determining the last updated date for a page is often better to do in a central place instead of in many data.js file and is dependent on data from data.js.</li>
+      <li><strong>Last Updated Data</strong>: Determining the last updated date for a page is often better to do in a central place instead of in many \\"data\\" functions.</li>
     </ul>
     <p>Stacks are made available here so that strings can be added to the head or footer of the page easily.</p>
     ",
@@ -345,7 +345,7 @@ Elder {
     <ul>
     <li> Internally, Elder.js uses this hook to write html to the \\"public folder\\".</li>
     <li> Useful for uploading static html to s3 or another source.</li>
-    <li> Could also be used to write the output of the data.js file to help with client site routing if you were so inclined.</li>
+    <li> Could also be used to write the output of a route's \\"data\\" function file to help with client site routing if you were so inclined.</li>
     <li> This hook may also be used by plugins to clean up any request specific 'state' they have stored.</li>
     <li> By default Elder.js adds a hook here to all server requests that outputs how long the request took to generate. If you want to see detailed output from this hook set debug.speed = true in your config file.</li>
     </ul>",
@@ -590,12 +590,12 @@ Elder {
   "data": Object {},
   "errors": Array [],
   "helpers": Object {
+    "inlineSvelteComponent": [Function],
     "permalinks": Object {
       "route-a": [Function],
       "test-a": [Function],
       "test-b": [Function],
     },
-    "svelteComponent": [Function],
   },
   "hookInterface": Array [
     Object {
@@ -766,7 +766,7 @@ Elder {
       ],
       "use": "<p>This hook gives access to the entire state of a request lifecycle before it starts.</p>
     <ul>
-      <li>Primarily used to set 'request' specific data that is required by all routes so doesn't make sense to store across multiple 'data.js' files.</li>
+      <li>Primarily used to set 'request' specific data that is required by all routes so doesn't make sense to share across multiple 'data' functions.</li>
       <li>If you have helper functions that need a closure isolated to a specific page generation lifecycle here is where you should attach them.</li>
       <li>If you need to programmatically change the route, you can do so here. This is how the elderjs-plugin-random works.</li>
       <li>This hook is commonly uses by plugins that need to add route level data that is dependent on the request to populate.</li>
@@ -775,7 +775,7 @@ Elder {
     },
     Object {
       "advanced": true,
-      "context": "This hook is run after the route's data.js file has executed.",
+      "context": "This hook is run after the route's \\"data\\" function has executed.",
       "experimental": false,
       "hook": "data",
       "location": "Page.ts",
@@ -804,14 +804,14 @@ Elder {
         "footerStack",
         "settings",
       ],
-      "use": "<p>This hook is mainly used by plugins/hooks to offer functionality at the route level that is dependent on the data.js returning but isn't suitable to live in data.js on many routes due to code duplication.</p>
+      "use": "<p>This hook is mainly used by plugins/hooks to offer functionality at the route level that is dependent on the route's \\"data\\" function has returning but isn't suitable to live in multiple data function across many routes due to code duplication.</p>
     <p>Examples of things we (ElderGuide.com) have done or have seen users do:</p>
     <ul>
-      <li><strong>LD+JSON</strong>: Plugins/hooks that add LD+JSON may need the data.js file to be executed before they have the data needed to run.</li>
-      <li><strong>Breadcrumbs</strong>: Plugins/hooks that add breadcrumbs may be dependent on data.js.</li>
-      <li><strong>Table Of Contents</strong>: Plugins/hooks that automatically generate a table of contents will be dependent on data from data.js has run.</li>
+      <li><strong>LD+JSON</strong>: Plugins/hooks that add LD+JSON may need the a route's \\"data\\" function to be executed before they have the data needed to run.</li>
+      <li><strong>Breadcrumbs</strong>: Plugins/hooks that add breadcrumbs may be dependent on the \\"data\\" function of a route.</li>
+      <li><strong>Table Of Contents</strong>: Plugins/hooks that automatically generate a table of contents will be dependent on data from a route's data function.</li>
       <li><strong>Reference Plugins</strong>: Plugins/hooks that collect references from content and add them to the footer of the page content.</li>
-      <li><strong>Last Updated Data</strong>: Determining the last updated date for a page is often better to do in a central place instead of in many data.js file and is dependent on data from data.js.</li>
+      <li><strong>Last Updated Data</strong>: Determining the last updated date for a page is often better to do in a central place instead of in many \\"data\\" functions.</li>
     </ul>
     <p>Stacks are made available here so that strings can be added to the head or footer of the page easily.</p>
     ",
@@ -927,7 +927,7 @@ Elder {
     <ul>
     <li> Internally, Elder.js uses this hook to write html to the \\"public folder\\".</li>
     <li> Useful for uploading static html to s3 or another source.</li>
-    <li> Could also be used to write the output of the data.js file to help with client site routing if you were so inclined.</li>
+    <li> Could also be used to write the output of a route's \\"data\\" function file to help with client site routing if you were so inclined.</li>
     <li> This hook may also be used by plugins to clean up any request specific 'state' they have stored.</li>
     <li> By default Elder.js adds a hook here to all server requests that outputs how long the request took to generate. If you want to see detailed output from this hook set debug.speed = true in your config file.</li>
     </ul>",

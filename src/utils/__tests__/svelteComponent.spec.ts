@@ -83,7 +83,7 @@ describe('#svelteComponent', () => {
           head: '<head>',
           css: { code: '<css>' },
           html:
-            '<div class="svelte-datepicker"><div class="needs-hydration" data-hydrate-component="Datepicker" data-hydrate-props="{ "a": "b" }" data-hydrate-options="{ "loading": "lazy" }"></div></div>',
+            '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "lazy" }"></div></div>',
         }),
       }),
       { virtual: true },
@@ -148,9 +148,10 @@ describe('#svelteComponent', () => {
 });
 
 /** TODO:
- * hydrate-options={{ lazy: false }} This would cause the component to be hydrate in a blocking manner.
+ * hydrate-options={{ loading: 'lazy' }} This is the default config, uses intersection observer.
+ * hydrate-options={{ loading: 'eager' }} This would cause the component to be hydrate in a blocking manner as soon as the js is rendered.
+ * hydrate-options={{ loading: 'none' }} This allows arbitray svelte components to be rendered server side but not hydrated.
  * hydrate-options={{ preload: true }} This adds a preload to the head stack as outlined above... could be preloaded without forcing blocking.
- * hydrate-options={{ preload: true, lazy: false }} This would preload and be blocking.
- * hydrate-options={{ rootMargin: '500' }} This would adjust the root margin of the intersection observer. Only usable with lazy: true.
- * hydrate-options={{ inline: true }}  components are display block by default. If this is true, this adds <div style="display:inline;"> to the wrapper.
+ * hydrate-options={{ preload: true, loading: 'eager' }} This would preload and be blocking.
+ * hydrate-options={{ rootMargin: '500px', threshold: 0 }} This would adjust the root margin of the intersection observer. Only usable with loading: 'lazy'
  */

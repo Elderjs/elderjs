@@ -113,7 +113,7 @@ export const hookInterface: Array<HookInterface> = [
     context: `This is executed at the beginning the request object being processed.`,
     use: `<p>This hook gives access to the entire state of a request lifecycle before it starts.</p>
     <ul>
-      <li>Primarily used to set 'request' specific data that is required by all routes so doesn't make sense to store across multiple 'data.js' files.</li>
+      <li>Primarily used to set 'request' specific data that is required by all routes so doesn't make sense to share across multiple 'data' functions.</li>
       <li>If you have helper functions that need a closure isolated to a specific page generation lifecycle here is where you should attach them.</li>
       <li>If you need to programmatically change the route, you can do so here. This is how the elderjs-plugin-random works.</li>
       <li>This hook is commonly uses by plugins that need to add route level data that is dependent on the request to populate.</li>
@@ -151,15 +151,15 @@ export const hookInterface: Array<HookInterface> = [
       'customJsStack',
       'footerStack',
     ],
-    context: `This hook is run after the route's data.js file has executed.`,
-    use: `<p>This hook is mainly used by plugins/hooks to offer functionality at the route level that is dependent on the data.js returning but isn't suitable to live in data.js on many routes due to code duplication.</p>
+    context: `This hook is run after the route's "data" function has executed.`,
+    use: `<p>This hook is mainly used by plugins/hooks to offer functionality at the route level that is dependent on the route's "data" function has returning but isn't suitable to live in multiple data function across many routes due to code duplication.</p>
     <p>Examples of things we (ElderGuide.com) have done or have seen users do:</p>
     <ul>
-      <li><strong>LD+JSON</strong>: Plugins/hooks that add LD+JSON may need the data.js file to be executed before they have the data needed to run.</li>
-      <li><strong>Breadcrumbs</strong>: Plugins/hooks that add breadcrumbs may be dependent on data.js.</li>
-      <li><strong>Table Of Contents</strong>: Plugins/hooks that automatically generate a table of contents will be dependent on data from data.js has run.</li>
+      <li><strong>LD+JSON</strong>: Plugins/hooks that add LD+JSON may need the a route's "data" function to be executed before they have the data needed to run.</li>
+      <li><strong>Breadcrumbs</strong>: Plugins/hooks that add breadcrumbs may be dependent on the "data" function of a route.</li>
+      <li><strong>Table Of Contents</strong>: Plugins/hooks that automatically generate a table of contents will be dependent on data from a route's data function.</li>
       <li><strong>Reference Plugins</strong>: Plugins/hooks that collect references from content and add them to the footer of the page content.</li>
-      <li><strong>Last Updated Data</strong>: Determining the last updated date for a page is often better to do in a central place instead of in many data.js file and is dependent on data from data.js.</li>
+      <li><strong>Last Updated Data</strong>: Determining the last updated date for a page is often better to do in a central place instead of in many "data" functions.</li>
     </ul>
     <p>Stacks are made available here so that strings can be added to the head or footer of the page easily.</p>
     `,
@@ -239,7 +239,7 @@ export const hookInterface: Array<HookInterface> = [
     <ul>
     <li> Internally, Elder.js uses this hook to write html to the "public folder".</li>
     <li> Useful for uploading static html to s3 or another source.</li>
-    <li> Could also be used to write the output of the data.js file to help with client site routing if you were so inclined.</li>
+    <li> Could also be used to write the output of a route's "data" function file to help with client site routing if you were so inclined.</li>
     <li> This hook may also be used by plugins to clean up any request specific 'state' they have stored.</li>
     <li> By default Elder.js adds a hook here to all server requests that outputs how long the request took to generate. If you want to see detailed output from this hook set debug.speed = true in your config file.</li>
     </ul>`,
@@ -272,152 +272,3 @@ export const hookInterface: Array<HookInterface> = [
   },
 ];
 export default hookInterface;
-
-// {
-//   hook: 'dataStart',
-//   props: ['helpers', 'data', 'settings', 'request', 'query', 'errors'],
-//   mutable: ['errors', 'data'],
-//   context: "This is executed just be for a route's data file",
-//   use:
-//     '<p>This hook is commonly uses by plugins that need to add route level data that is dependent on the request to populate.</p>',
-//   location: 'Page.ts',
-// },
-
-// todo: rename to "requestStart" to"request"
-
-// todo: update the example in the template that uses the footerStack
-
-// move timings to request complete and buildComplete
-
-// todo: move EG critical path css to stacks
-
-// {
-//   hook: 'style',
-//   props: ['helpers', 'data', 'settings', 'request', 'styleTag', 'cssString', 'query', 'errors'],
-//   mutable: ['errors', 'styleTag'],
-//   context: 'Executed after the cssStack has been compiled and before the styleTag is added to the head. ',
-//   use: `<p>This hook receives the &lt;style&gt; tag and the cssString from the cssStack for modification before it is written to the head.</p>
-//   <ul>
-//   <li>The main use is to programatically write critical path CSS styles. </li>
-//   </ul>`,
-//   location: 'Page.ts',
-//   experimental: false,
-//   advanced: false,
-// },
-
-// {
-//   hook: 'footerStack',
-//   props: ['helpers', 'data', 'settings', 'request', 'footerStack', 'query', 'errors'],
-//   mutable: ['errors', 'footerStack'],
-//   context: 'Executed just before the "footerStack" is reduced to a string.',
-//   use: `<p>This hook gives access to the footerStack which is an array of html or html friendly strings that will be written to the footer.Ideal place for plugins to add Analytics scripts as it fires after all other JS.</p>`,
-//   location: 'Page.ts',
-// },
-
-// {
-//   hook: 'beforeHydrateStack',
-//   props: ['helpers', 'data', 'settings', 'request', 'beforeHydrateStack', 'query', 'errors'],
-//   mutable: ['errors', 'beforeHydrateStack'],
-//   context: 'Executed just before the "beforeHydrateStack" is reduced to a string.',
-//   use: `<p>This hook gives access to the beforeHydrateStack array which by default includes a polyfill for intersection observer and systemjs for loading svelte. This stack is not run unless there are svelte components to be hydrated. This hook was designed to give users the option to
-//   change away from systemjs or add their own intersectionObserver.</p>`,
-//   location: 'Page.ts',
-// },
-
-// {
-//   hook: 'headStack',
-//   props: ['helpers', 'data', 'settings', 'request', 'headStack', 'query', 'errors'],
-//   mutable: ['errors', 'headStack'],
-//   context: `Fired just before the headStack is reduced to a string.`,
-//   use: `<p>Used to edit the 'headStack' before it is sorted and compiled into a string.</p>
-//   <ul>
-//   <li>Internally all content used in <svelte:head></svelte:head> is added here.</li>
-//   <li>If you have ld+json that you want added to a page, you could do it here.</li>
-//   <li><strong>NOTE:</strong> This hook is used to set a <title></title> tag it could be changed later. The recommended place to add your title tag is on the 'head' hook.</li>
-//   </ul>`,
-//   location: 'Page.ts',
-// },
-
-// {
-//   hook: 'cssStack',
-//   props: ['helpers', 'data', 'settings', 'request', 'cssStack', 'query', 'errors'],
-//   mutable: ['errors', 'cssStack'],
-//   context: 'Executed just before the cssStack is compiled.',
-//   use: `<p>The 'cssStack' represents all of the css strings emitted by the SSR Svelte components. Plugins can add css here, but we recommend users add them directly in Svelte files. Note: Do not wrap strings added to the stack in &lt;style&gt;</style>.</p>`,
-//   location: 'Page.ts',
-// },
-
-// {
-//   hook: 'initStacks',
-//   props: [
-//     'cssStack',
-//     'headStack',
-//     'beforeHydrateStack',
-//     'hydrateStack',
-//     'customJsStack',
-//     'footerStack',
-//     'query',
-//     'errors',
-//     'settings',
-//     'data',
-//     'request',
-//   ],
-//   mutable: [
-//     'errors',
-//     'cssStack',
-//     'headStack',
-//     'beforeHydrateStack',
-//     'hydrateStack',
-//     'customJsStack',
-//     'footerStack',
-//     'query',
-//   ],
-//   context:
-//     'This hook is run after stacks are initialized in Page.ts and Elder.js has added the standard attributes to these stacks.',
-//   use: `<p>This hook offers access to adding or modifying various stacks. If you need to seed multiple stacks with data based on the request you can access them here. This hook is mainly designed for plugins to not have to write to multiple hooks to manage stacks.</p>`,
-//   location: 'Page.ts',
-// },
-
-// {
-//   hook: 'timings',
-//   props: ['helpers', 'data', 'settings', 'request', 'query', 'errors', 'timings'],
-//   mutable: ['errors'],
-//   context: 'Fired at the end of an individual request or the end of an entire build.',
-//   use: `<p>Performance array of how long each step of the request took. By default Elder.js adds a hook here to all server requests that outputs how long the request took to generate.</p>
-//         <p>If you want to see detailed output from this hook set debug.speed = true in your config file.</p>`,
-//   location: 'Page.ts, build.ts',
-// },
-
-// {
-//   hook: 'writeFile',
-//   props: ['helpers', 'data', 'settings', 'request', 'htmlString', 'query', 'errors'],
-//   mutable: ['errors'],
-//   context: 'Executed when Elder.js is going to write the file.',
-//   use: `<p>HTML files are written to the ./public/ folder here by an Elder.js hook.</p>`,
-//   location: 'Page.ts',
-// },
-
-// to "data"
-// {
-//   hook: 'dataComplete',
-//   props: [
-//     'helpers',
-//     'data',
-//     'settings',
-//     'request',
-//     'query',
-//     'headStack',
-//     'footerStack',
-//     'cssStack',
-//     'customJsStack',
-//     'route',
-//     'errors',
-//     'routes',
-//   ],
-//   mutable: ['errors', 'data', 'headStack', 'footerStack', 'cssStack', 'customJsStack', 'query'],
-//   context:
-//     "Executed just before data and other properties are passed to the route's Svelte template and Svelte layout.",
-//   use:
-//     '<p>Useful for adjusting the data object, adding properties to stacks. Could also be used to write the output of the data.js file to help with client site routing if you were so inclined. This plugin is mainly here for plugins.</p>',
-//   location: 'Page.ts',
-// },

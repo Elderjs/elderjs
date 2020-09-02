@@ -5,6 +5,7 @@ import type { HookOptions } from '../hookInterface/types';
 import hookInterface from '../hookInterface/hookInterface';
 
 const configSchema = yup.object({
+  siteUrl: yup.string().notRequired().default('').label(`The domain your site is hosted on. https://yourdomain.com.`),
   locations: yup
     .object({
       assets: yup

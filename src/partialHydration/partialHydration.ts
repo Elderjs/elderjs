@@ -1,3 +1,5 @@
+import { inlinePreprocessedSvelteComponent } from './inlineSvelteComponent';
+
 const extractHydrateOptions = (htmlString) => {
   const hydrateOptionsPattern = /hydrate-options={([^]*?})}/gim;
 
@@ -5,36 +7,24 @@ const extractHydrateOptions = (htmlString) => {
   if (optionsMatch) {
     return optionsMatch[1];
   }
-  return JSON.stringify({
-    loading: 'lazy',
-  });
+  return '';
 };
 
-const createReplacementString = ({ input, componentName, componentProps }) => {
-  const hydrateOptions = extractHydrateOptions(input);
-  const replacementAttrs = {
-    class: '"needs-hydration"',
-    'data-hydrate-component': `"${componentName}"`,
-    'data-hydrate-props': `{JSON.stringify(${componentProps})}`,
-    'data-hydrate-options': `{JSON.stringify(${hydrateOptions})}`,
-  };
-  const replacementAttrsString = Object.entries(replacementAttrs).reduce(
-    (out, [name, value]) => `${out} ${name}=${value}`,
-    '',
-  );
-  return `<div${replacementAttrsString} />`;
+const createReplacementString = ({ input, name, props }) => {
+  const options = extractHydrateOptions(input);
+  return inlinePreprocessedSvelteComponent({ name, props, options });
 };
 
 const partialHydration = {
-  markup: async ({ content /* , filename */ }) => {
+  markup: async ({ content }) => {
     // Note: this regex only supports self closing components.
     // Slots aren't supported for client hydration either.
     const hydrateableComponentPattern = /<([a-zA-Z]+)[^>]+hydrate-client={([^]*?})}[^/>]+\/>/gim;
     const matches = [...content.matchAll(hydrateableComponentPattern)];
 
     const output = matches.reduce((out, match) => {
-      const [wholeMatch, componentName, componentProps] = match;
-      const replacement = createReplacementString({ input: match.input, componentName, componentProps });
+      const [wholeMatch, name, props] = match;
+      const replacement = createReplacementString({ input: match.input, name, props });
       return out.replace(wholeMatch, replacement);
     }, content);
 
