@@ -26,6 +26,8 @@ Elder.js is an opinionated static site generator and web framework built with SE
 
 Full documentation here: https://elderguide.com/tech/elderjs/
 
+The quickest way to get started is here: https://github.com/Elderjs/template/
+
 If you find bugs please open an issue.
 
 **We consider Elder.js to be in 'beta' in terms of API stability but are using it in production on https://elderguide.com.**
