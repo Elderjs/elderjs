@@ -67,8 +67,19 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
 
     for (const match of matches) {
       const hydrateComponentName = match[1];
-      const hydrateComponentProps = JSON.parse(replaceSpecialCharacters(match[2]));
-      const hydrateComponentOptions = JSON.parse(replaceSpecialCharacters(match[3]));
+      let hydrateComponentProps;
+      let hydrateComponentOptions;
+
+      try {
+        hydrateComponentProps = JSON.parse(replaceSpecialCharacters(match[2]));
+      } catch (e) {
+        throw new Error(`Failed to JSON.parse props for ${componentName} ${match[2]}`);
+      }
+      try {
+        hydrateComponentOptions = JSON.parse(replaceSpecialCharacters(match[3]));
+      } catch (e) {
+        throw new Error(`Failed to JSON.parse props for ${componentName} ${match[3]}`);
+      }
 
       if (hydrateOptions) {
         throw new Error(
