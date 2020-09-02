@@ -41,7 +41,7 @@ type InputParamsInlineSvelteComponent = {
   name?: string;
   props?: any;
   options?: {
-    loading?: 'lazy' | 'eager' | 'none';
+    loading?: string; // todo: enum, can't get it working: 'lazy', 'eager', 'none'
   };
 };
 
