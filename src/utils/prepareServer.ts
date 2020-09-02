@@ -1,4 +1,5 @@
 import Page from './Page';
+import { request } from 'http';
 
 function prepareServer({ bootstrapComplete }) {
   // eslint-disable-next-line consistent-return
@@ -25,11 +26,18 @@ function prepareServer({ bootstrapComplete }) {
         }
       }
 
-      if (path[path.length - 1] !== '/') {
+      // see if we have a request object with the path as is. (could include / or not.)
+      let requestObject = serverLookupObject[path];
+      if (!requestObject && path[path.length - 1] === '/') {
+        // check the path without a slash.
+        requestObject = serverLookupObject[path.substring(0, path.length - 1)];
+        console.log(path, requestObject);
+      } else if (!requestObject) {
+        // check the path with a slash.
         path += '/';
+        requestObject = serverLookupObject[path];
+        console.log(path, requestObject);
       }
-
-      const requestObject = serverLookupObject[path];
 
       // if we have a requestObject then we know it is for ElderGuide
       if (requestObject) {
