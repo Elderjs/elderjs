@@ -15,14 +15,14 @@ function routes(settings: ConfigOptions) {
     `,
     );
 
-  const srcFolder = path.join(process.cwd(), settings.locations.srcFolder);
-  const buildFolder = path.join(process.cwd(), settings.locations.buildFolder);
+  const srcFolder = path.join(settings.locations.rootDir, settings.locations.srcFolder);
+  const buildFolder = path.join(settings.locations.rootDir, settings.locations.buildFolder);
   let files = glob.sync(`${srcFolder}/routes/*/+(*.js|*.svelte)`);
   if (settings.locations.buildFolder && settings.locations.buildFolder.length > 0) {
     files = [...files, ...glob.sync(`${buildFolder}/routes/*/+(*.js|*.svelte)`)];
   }
 
-  const ssrFolder = path.resolve(process.cwd(), settings.locations.svelte.ssrComponents);
+  const ssrFolder = path.resolve(settings.locations.rootDir, settings.locations.svelte.ssrComponents);
 
   const ssrComponents = glob.sync(`${ssrFolder}/*.js`);
 
@@ -100,7 +100,7 @@ function routes(settings: ConfigOptions) {
         // TODO: v1 removal
         route.data = settings.typescript ? require(dataFile).default : require(dataFile);
         console.warn(
-          `WARN: Loading your /routes/${routeName}/data.js file. This functionality is depricated. Please include your data function in your /routes/${routeName}/route.js object under the 'data' key. As a quick fix you can just import the existing data file and include it as "data" key.`,
+          `WARN: Loading your /routes/${routeName}/data.js file. This functionality is deprecated. Please include your data function in your /routes/${routeName}/route.js object under the 'data' key. As a quick fix you can just import the existing data file and include it as "data" key.`,
         );
       } else {
         route.data = (page) => {

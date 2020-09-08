@@ -10,8 +10,8 @@ let userHelpers;
 const cache = {};
 
 async function externalHelpers({ settings, query, helpers }: ExternalHelperRequestOptions) {
-  const srcFolder = path.join(process.cwd(), settings.locations.srcFolder);
-  const buildFolder = path.join(process.cwd(), settings.locations.buildFolder);
+  const srcFolder = path.join(settings.locations.rootDir, settings.locations.srcFolder);
+  const buildFolder = path.join(settings.locations.rootDir, settings.locations.buildFolder);
   const helperFilePath = `helpers/index.js`;
 
   const srcHelpers = path.join(srcFolder, helperFilePath);

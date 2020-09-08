@@ -30,7 +30,7 @@ function getConfig(context?: string): ConfigOptions {
   if (config.typescript) {
     if (config.locations.buildFolder === '') {
       try {
-        const tsConfigLocation = path.resolve(process.cwd(), './tsconfig.json');
+        const tsConfigLocation = path.resolve(config.locations.rootDir, './tsconfig.json');
         const tsConfig = JSON.parse(fs.readFileSync(tsConfigLocation, { encoding: 'utf-8' }));
 
         if (tsConfig.compilerOptions.outDir) {

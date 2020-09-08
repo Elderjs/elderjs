@@ -30,7 +30,7 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
   if (!componentCache[cleanComponentName]) {
     const clientComponents = page.settings.$$internal.hashedComponents;
     const ssrComponent = path.resolve(
-      process.cwd(),
+      page.settings.locations.rootDir,
       `./${page.settings.locations.svelte.ssrComponents}${cleanComponentName}.js`,
     );
     let clientSvelteFolder = page.settings.locations.svelte.clientComponents.replace(

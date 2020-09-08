@@ -79,7 +79,7 @@ class Elder {
 
     const config = getConfig(context);
 
-    const { srcFolder, buildFolder } = config.locations;
+    const { rootDir, srcFolder, buildFolder } = config.locations;
 
     this.settings = {
       ...config,
@@ -115,14 +115,14 @@ class Elder {
 
       let plugin: PluginOptions | undefined;
       const pluginPath = `./plugins/${pluginName}/index.js`;
-      const srcPlugin = path.resolve(process.cwd(), srcFolder, pluginPath);
+      const srcPlugin = path.resolve(rootDir, srcFolder, pluginPath);
       if (fs.existsSync(srcPlugin)) {
         // eslint-disable-next-line import/no-dynamic-require
         plugin = require(srcPlugin).default || require(srcPlugin);
       }
 
       if (!plugin && buildFolder.length > 0) {
-        const buildPlugin = path.resolve(process.cwd(), buildFolder, pluginPath);
+        const buildPlugin = path.resolve(rootDir, buildFolder, pluginPath);
         if (fs.existsSync(buildPlugin)) {
           // eslint-disable-next-line import/no-dynamic-require
           plugin = require(buildPlugin).default || require(buildPlugin);
@@ -130,7 +130,7 @@ class Elder {
       }
 
       if (!plugin) {
-        const pkgPath = path.resolve(process.cwd(), './node_modules/', pluginName);
+        const pkgPath = path.resolve(rootDir, './node_modules/', pluginName);
         if (fs.existsSync(pkgPath)) {
           // eslint-disable-next-line import/no-dynamic-require
           const pluginPackageJson = require(path.resolve(pkgPath, './package.json'));
@@ -226,7 +226,7 @@ class Elder {
           ) {
             const templateName = plugin.routes[routeName].template.replace('.svelte', '');
             const ssrComponent = path.resolve(
-              process.cwd(),
+              rootDir,
               this.settings.locations.svelte.ssrComponents,
               `${templateName}.js`,
             );
@@ -296,8 +296,8 @@ class Elder {
     this.routes = validatedRoutes;
 
     let hooksJs: Array<HookOptions> = [];
-    const hookSrcPath = path.resolve(process.cwd(), srcFolder, './hooks.js');
-    const hookBuildPath = path.resolve(process.cwd(), buildFolder, './hooks.js');
+    const hookSrcPath = path.resolve(rootDir, srcFolder, './hooks.js');
+    const hookBuildPath = path.resolve(rootDir, buildFolder, './hooks.js');
 
     if (this.settings.debug.automagic) {
       console.log(

@@ -31,6 +31,7 @@ type LocationOptions = {
   intersectionObserverPoly: string;
   srcFolder: string;
   buildFolder: string;
+  rootDir: string;
 };
 
 export type ConfigOptions = {

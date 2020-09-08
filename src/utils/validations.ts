@@ -15,6 +15,11 @@ const configSchema = yup.object({
         .label(
           'Where your site\'s assets files should be written to if you are using the Elder.js template. (Include ./public/)"',
         ),
+      rootDir: yup
+        .string()
+        .notRequired()
+        .default(process.cwd())
+        .label('The workspace directory of your Elder application"'),
       public: yup
         .string()
         .notRequired()
