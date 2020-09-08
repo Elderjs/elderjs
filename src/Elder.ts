@@ -72,12 +72,12 @@ class Elder {
 
   builder: any;
 
-  constructor({ context, worker = false }) {
+  constructor({ context, worker = false, configOptions = {} }) {
     this.bootstrapComplete = new Promise((resolve) => {
       this.markBootstrapComplete = resolve;
     });
 
-    const config = getConfig(context);
+    const config = getConfig(context, configOptions);
 
     const { rootDir, srcFolder, buildFolder } = config.locations;
 

@@ -6,7 +6,7 @@ import { ConfigOptions } from './types';
 import { getDefaultConfig } from './validations';
 import tsConfigExist from './tsConfigExist';
 
-function getConfig(context?: string): ConfigOptions {
+function getConfig(context?: string, configOptions?: object): ConfigOptions {
   const explorerSync = cosmiconfigSync('elder');
   const explorerSearch = explorerSync.search();
   let loadedConfig = {};
@@ -15,7 +15,7 @@ function getConfig(context?: string): ConfigOptions {
   }
 
   const defaultConfig = getDefaultConfig();
-  const config: ConfigOptions = defaultsDeep(loadedConfig, defaultConfig);
+  const config: ConfigOptions = defaultsDeep(configOptions, loadedConfig, defaultConfig);
 
   if (config.debug.automagic && (!context || context !== 'build')) {
     console.log(
