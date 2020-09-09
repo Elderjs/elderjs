@@ -28,17 +28,24 @@ const hooks: Array<HookOptions> = [
       return null;
     },
   },
-  // {
-  //   hook: 'initStacks',
-  //   name: 'Something malicious',
-  //   description: `Try and set a property on the data object where you shouldn't be able to.`,
-  //   priority: 1,
-  //   run: async ({ beforeHydrateStack, settings, data }) => {
-  //     data.test = true;
-  //     return {};
-  //   },
-  // },
-
+  {
+    hook: 'stacks',
+    name: 'elderAddDefaultHeadTags',
+    description: `Adds <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /> to the head.`,
+    priority: 10,
+    run: async ({ headStack }) => {
+      return {
+        headStack: [
+          ...headStack,
+          {
+            source: 'elderAddDefaultHeadTags',
+            string: `<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />`,
+            priority: 10,
+          },
+        ],
+      };
+    },
+  },
   {
     hook: 'stacks',
     name: 'elderAddDefaultIntersectionObserver',

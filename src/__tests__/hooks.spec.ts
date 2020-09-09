@@ -28,24 +28,27 @@ describe('#hooks', () => {
   it('elderAddExternalHelpers', async () => {
     expect(await hooks[0].run({ helpers: { old: jest.fn() }, query: {}, settings: {} })).toMatchSnapshot();
   });
+  it('elderAddDefaultHeadTags', async () => {
+    expect(await hooks[1].run({ headStack: [] })).toMatchSnapshot();
+  });
   it('elderAddDefaultIntersectionObserver', async () => {
     expect(
-      await hooks[1].run({ beforeHydrateStack: [], settings: { locations: { intersectionObserverPoly: 'foo' } } }),
-    ).toMatchSnapshot();
-    expect(await hooks[1].run({ beforeHydrateStack: [], settings: {} })).toBe(null);
-  });
-  it('elderAddSystemJs', async () => {
-    expect(
-      await hooks[2].run({ beforeHydrateStack: [], headStack: [], settings: { locations: { systemJs: 'foo' } } }),
+      await hooks[2].run({ beforeHydrateStack: [], settings: { locations: { intersectionObserverPoly: 'foo' } } }),
     ).toMatchSnapshot();
     expect(await hooks[2].run({ beforeHydrateStack: [], settings: {} })).toBe(null);
   });
+  it('elderAddSystemJs', async () => {
+    expect(
+      await hooks[3].run({ beforeHydrateStack: [], headStack: [], settings: { locations: { systemJs: 'foo' } } }),
+    ).toMatchSnapshot();
+    expect(await hooks[3].run({ beforeHydrateStack: [], settings: {} })).toBe(null);
+  });
   it('elderConsoleLogErrors', async () => {
-    expect(await hooks[3].run({ errors: ['foo', 'bar'] })).toBe(undefined);
+    expect(await hooks[4].run({ errors: ['foo', 'bar'] })).toBe(undefined);
   });
   it('elderWriteHtmlFileToPublic', async () => {
     expect(
-      await hooks[4].run({
+      await hooks[5].run({
         request: { permalink: '/foo' },
         htmlString: '<html>string</html>',
         errors: [],
@@ -53,7 +56,7 @@ describe('#hooks', () => {
       }),
     ).toBe(null);
     expect(
-      await hooks[4].run({
+      await hooks[5].run({
         request: { permalink: '/foo' },
         htmlString: '<html>string</html>',
         errors: [],
@@ -61,7 +64,7 @@ describe('#hooks', () => {
       }),
     ).toBe(null);
     expect(
-      await hooks[4].run({
+      await hooks[5].run({
         request: { permalink: '/foo' },
         htmlString: '<html>string</html>',
         errors: [],
@@ -71,7 +74,7 @@ describe('#hooks', () => {
   });
   it('elderDisplayRequestTime', async () => {
     expect(
-      await hooks[5].run({
+      await hooks[6].run({
         request: { permalink: '/foo' },
         timings: [
           { name: 'foo', duration: 500 },
@@ -83,7 +86,7 @@ describe('#hooks', () => {
   });
   it('elderShowParsedBuildTimes', async () => {
     expect(
-      await hooks[6].run({
+      await hooks[7].run({
         timings: [
           [
             { name: 'foo', duration: 500 },
@@ -100,7 +103,7 @@ describe('#hooks', () => {
   });
   it('elderWriteBuildErrors', async () => {
     expect(
-      await hooks[7].run({
+      await hooks[8].run({
         errors: ['error1', 'error2'],
         settings: { debug: { performance: true } },
       }),

@@ -405,6 +405,17 @@ Elder {
         "addedBy": "elder.js",
         "type": "internal",
       },
+      "description": "Adds <meta charset=\\"UTF-8\\" /><meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\" /> to the head.",
+      "hook": "stacks",
+      "name": "elderAddDefaultHeadTags",
+      "priority": 10,
+      "run": [Function],
+    },
+    Object {
+      "$$meta": Object {
+        "addedBy": "elder.js",
+        "type": "internal",
+      },
       "description": "Sets up the default polyfill for the intersection observer",
       "hook": "stacks",
       "name": "elderAddDefaultIntersectionObserver",
@@ -980,6 +991,17 @@ Elder {
       "hook": "bootstrap",
       "name": "elderAddExternalHelpers",
       "priority": 100,
+      "run": [Function],
+    },
+    Object {
+      "$$meta": Object {
+        "addedBy": "elder.js",
+        "type": "internal",
+      },
+      "description": "Adds <meta charset=\\"UTF-8\\" /><meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\" /> to the head.",
+      "hook": "stacks",
+      "name": "elderAddDefaultHeadTags",
+      "priority": 10,
       "run": [Function],
     },
     Object {

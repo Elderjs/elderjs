@@ -1,5 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`#hooks elderAddDefaultHeadTags 1`] = `
+Object {
+  "headStack": Array [
+    Object {
+      "priority": 10,
+      "source": "elderAddDefaultHeadTags",
+      "string": "<meta charset=\\"UTF-8\\" /><meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\" />",
+    },
+  ],
+}
+`;
+
 exports[`#hooks elderAddDefaultIntersectionObserver 1`] = `
 Object {
   "beforeHydrateStack": Array [
@@ -53,6 +65,13 @@ Array [
     "hook": "bootstrap",
     "name": "elderAddExternalHelpers",
     "priority": 100,
+    "run": [Function],
+  },
+  Object {
+    "description": "Adds <meta charset=\\"UTF-8\\" /><meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\" /> to the head.",
+    "hook": "stacks",
+    "name": "elderAddDefaultHeadTags",
+    "priority": 10,
     "run": [Function],
   },
   Object {
