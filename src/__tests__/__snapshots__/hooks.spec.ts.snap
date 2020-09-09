@@ -1,17 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`#hooks elderAddDefaultHeadTags 1`] = `
-Object {
-  "headStack": Array [
-    Object {
-      "priority": 10,
-      "source": "elderAddDefaultHeadTags",
-      "string": "<meta charset=\\"UTF-8\\" /><meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\" />",
-    },
-  ],
-}
-`;
-
 exports[`#hooks elderAddDefaultIntersectionObserver 1`] = `
 Object {
   "beforeHydrateStack": Array [
@@ -36,6 +24,30 @@ Object {
     "old": [MockFunction],
     "permalink": [MockFunction],
   },
+}
+`;
+
+exports[`#hooks elderAddMetaCharsetToHead 1`] = `
+Object {
+  "headStack": Array [
+    Object {
+      "priority": 1,
+      "source": "elderAddMetaCharsetToHead",
+      "string": "<meta charset=\\"UTF-8\\" />",
+    },
+  ],
+}
+`;
+
+exports[`#hooks elderAddMetaViewportToHead 1`] = `
+Object {
+  "headStack": Array [
+    Object {
+      "priority": 10,
+      "source": "elderAddMetaViewportToHead",
+      "string": "<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\" />",
+    },
+  ],
 }
 `;
 
@@ -68,9 +80,16 @@ Array [
     "run": [Function],
   },
   Object {
-    "description": "Adds <meta charset=\\"UTF-8\\" /><meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\" /> to the head.",
+    "description": "Adds <meta charset=\\"UTF-8\\" /> to the head.",
     "hook": "stacks",
-    "name": "elderAddDefaultHeadTags",
+    "name": "elderAddMetaCharsetToHead",
+    "priority": 1,
+    "run": [Function],
+  },
+  Object {
+    "description": "Adds <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\" /> to the head.",
+    "hook": "stacks",
+    "name": "elderAddMetaViewportToHead",
     "priority": 10,
     "run": [Function],
   },

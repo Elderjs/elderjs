@@ -30,16 +30,34 @@ const hooks: Array<HookOptions> = [
   },
   {
     hook: 'stacks',
-    name: 'elderAddDefaultHeadTags',
-    description: `Adds <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /> to the head.`,
+    name: 'elderAddMetaCharsetToHead',
+    description: `Adds <meta charset="UTF-8" /> to the head.`,
+    priority: 1,
+    run: async ({ headStack }) => {
+      return {
+        headStack: [
+          ...headStack,
+          {
+            source: 'elderAddMetaCharsetToHead',
+            string: `<meta charset="UTF-8" />`,
+            priority: 1,
+          },
+        ],
+      };
+    },
+  },
+  {
+    hook: 'stacks',
+    name: 'elderAddMetaViewportToHead',
+    description: `Adds <meta name="viewport" content="width=device-width, initial-scale=1" /> to the head.`,
     priority: 10,
     run: async ({ headStack }) => {
       return {
         headStack: [
           ...headStack,
           {
-            source: 'elderAddDefaultHeadTags',
-            string: `<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />`,
+            source: 'elderAddMetaViewportToHead',
+            string: `<meta name="viewport" content="width=device-width, initial-scale=1" />`,
             priority: 10,
           },
         ],
