@@ -3,7 +3,6 @@ export type Hook =
   | 'bootstrap'
   | 'allRequests'
   | 'middleware'
-  | 'modifyCustomProps'
   | 'request'
   | 'data'
   | 'stacks'

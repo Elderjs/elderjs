@@ -221,9 +221,8 @@ describe('#Page', () => {
   it('initialize and build', async () => {
     const page = new Page(pageInput);
     expect(page).toMatchSnapshot();
-    expect(hooks).toEqual(['modifyCustomProps']);
     await page.build();
-    expect(hooks).toEqual(['modifyCustomProps', 'request', 'data', 'stacks', 'head', 'html', 'requestComplete']);
+    expect(hooks).toEqual(['request', 'data', 'stacks', 'head', 'html', 'requestComplete']);
     expect(page).toMatchSnapshot();
     const htmlString = await page.html();
     expect(htmlString.trim()).toEqual(expectedOutput);

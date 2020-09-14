@@ -4,7 +4,6 @@ exports[`#Elder hookSrcFile not found 1`] = `
 Elder {
   "allRequests": Array [],
   "bootstrapComplete": Promise {},
-  "customProps": Object {},
   "data": Object {},
   "errors": Array [],
   "helpers": Object {
@@ -18,22 +17,20 @@ Elder {
   "hookInterface": Array [
     Object {
       "advanced": true,
-      "context": "Run before collecting all hooks.",
+      "context": "Used to modify what hooks can mutate which properties all hooks.",
       "experimental": true,
       "hook": "customizeHooks",
       "location": "Elder.ts",
       "mutable": Array [
         "hookInterface",
-        "customProps",
         "errors",
       ],
       "props": Array [
         "hookInterface",
-        "customProps",
         "errors",
       ],
       "use": "<p>This hook receives the hookInterface.ts file which defines all hook interactions. You can customize all 'props' and 'mutable' of
-      all hooks by using this hook. This is a power user hook and would often be used in conjunction with customProps.</p>",
+      all hooks by using this hook. This is a power user hook and unless you know Elder.js internals don't mess with it.</p>",
     },
     Object {
       "advanced": false,
@@ -64,7 +61,7 @@ Elder {
     </ul>",
     },
     Object {
-      "advanced": true,
+      "advanced": false,
       "context": "allRequests which represents all of the request objects have been collected from route and plugins. This makes the 'allRequests' array mutable.",
       "experimental": false,
       "hook": "allRequests",
@@ -133,29 +130,6 @@ Elder {
     <li>If you're looking to pass in details about the query string deeper into your application, you could use this hook to do so.</li>
     <li>Anything you'd use an Express 'req' or 'next' for you can do and customize other parts of the Elder.js on this hook.</li>
     </ul>",
-    },
-    Object {
-      "advanced": true,
-      "context": "This hook is run just after a Page.ts object is created for a request. Page.ts objects are the main object used during page generation.",
-      "experimental": true,
-      "hook": "modifyCustomProps",
-      "location": "Page.ts",
-      "mutable": Array [
-        "customProps",
-        "request",
-        "errors",
-        "helpers",
-        "query",
-      ],
-      "props": Array [
-        "customProps",
-        "request",
-        "errors",
-        "helpers",
-        "query",
-        "settings",
-      ],
-      "use": "<p>This hook is often used in conjunction with the 'customizeHooks' hook to modify 'customProps' based on the request. This is very much a power user hook.</p>",
     },
     Object {
       "advanced": false,
@@ -501,16 +475,6 @@ Elder {
     },
     Object {
       "$$meta": Object {
-        "addedBy": "route-a",
-        "type": "route",
-      },
-      "description": "test",
-      "hook": "routeHook",
-      "name": "route hook",
-      "run": [MockFunction],
-    },
-    Object {
-      "$$meta": Object {
         "addedBy": "hooks.js",
         "type": "hooks.js",
       },
@@ -608,7 +572,6 @@ Elder {
     },
   ],
   "bootstrapComplete": Promise {},
-  "customProps": Object {},
   "data": Object {},
   "errors": Array [],
   "helpers": Object {
@@ -622,22 +585,20 @@ Elder {
   "hookInterface": Array [
     Object {
       "advanced": true,
-      "context": "Run before collecting all hooks.",
+      "context": "Used to modify what hooks can mutate which properties all hooks.",
       "experimental": true,
       "hook": "customizeHooks",
       "location": "Elder.ts",
       "mutable": Array [
         "hookInterface",
-        "customProps",
         "errors",
       ],
       "props": Array [
         "hookInterface",
-        "customProps",
         "errors",
       ],
       "use": "<p>This hook receives the hookInterface.ts file which defines all hook interactions. You can customize all 'props' and 'mutable' of
-      all hooks by using this hook. This is a power user hook and would often be used in conjunction with customProps.</p>",
+      all hooks by using this hook. This is a power user hook and unless you know Elder.js internals don't mess with it.</p>",
     },
     Object {
       "advanced": false,
@@ -668,7 +629,7 @@ Elder {
     </ul>",
     },
     Object {
-      "advanced": true,
+      "advanced": false,
       "context": "allRequests which represents all of the request objects have been collected from route and plugins. This makes the 'allRequests' array mutable.",
       "experimental": false,
       "hook": "allRequests",
@@ -737,29 +698,6 @@ Elder {
     <li>If you're looking to pass in details about the query string deeper into your application, you could use this hook to do so.</li>
     <li>Anything you'd use an Express 'req' or 'next' for you can do and customize other parts of the Elder.js on this hook.</li>
     </ul>",
-    },
-    Object {
-      "advanced": true,
-      "context": "This hook is run just after a Page.ts object is created for a request. Page.ts objects are the main object used during page generation.",
-      "experimental": true,
-      "hook": "modifyCustomProps",
-      "location": "Page.ts",
-      "mutable": Array [
-        "customProps",
-        "request",
-        "errors",
-        "helpers",
-        "query",
-      ],
-      "props": Array [
-        "customProps",
-        "request",
-        "errors",
-        "helpers",
-        "query",
-        "settings",
-      ],
-      "use": "<p>This hook is often used in conjunction with the 'customizeHooks' hook to modify 'customProps' based on the request. This is very much a power user hook.</p>",
     },
     Object {
       "advanced": false,
@@ -1132,16 +1070,6 @@ Elder {
       "hook": "bootstrap",
       "name": "test hook 3",
       "run": [Function],
-    },
-    Object {
-      "$$meta": Object {
-        "addedBy": "route-a",
-        "type": "route",
-      },
-      "description": "test",
-      "hook": "routeHook",
-      "name": "route hook",
-      "run": [MockFunction],
     },
     Object {
       "$$meta": Object {

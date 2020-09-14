@@ -29,7 +29,6 @@ Page {
   "beforeHydrateStack": Array [],
   "cssStack": Array [],
   "customJsStack": Array [],
-  "customProps": Object {},
   "data": Object {},
   "errors": Array [],
   "footerStack": Array [],
@@ -244,7 +243,6 @@ Page {
   "customJsStack": Array [
     "customJsStack",
   ],
-  "customProps": Object {},
   "data": Object {
     "worldPopulation": 7805564950,
   },

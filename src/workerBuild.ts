@@ -9,7 +9,6 @@ async function workerBuild({ bootstrapComplete, workerRequests }) {
     runHook,
     routes: workerRoutes,
     errors,
-    customProps,
     allRequests,
   } = await bootstrapComplete;
 
@@ -37,7 +36,6 @@ async function workerBuild({ bootstrapComplete, workerRequests }) {
       runHook,
       routes: workerRoutes,
       errors,
-      customProps,
     });
     const { errors: buildErrors, timings } = await page.build();
     i += 1;

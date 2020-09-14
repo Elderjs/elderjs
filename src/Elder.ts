@@ -56,8 +56,6 @@ class Elder {
 
   hookInterface: any;
 
-  customProps: any;
-
   query: QueryOptions;
 
   allRequests: Array<RequestOptions>;
@@ -346,11 +344,8 @@ class Elder {
       this.hooks = this.hooks.filter((h) => !this.settings.hooks.disable.includes(h.name));
     }
 
-    // TODO: plugins should be able to register their own hooks?
-
     this.data = {};
     this.hookInterface = allSupportedHooks;
-    this.customProps = {};
 
     this.query = {};
     this.allRequests = [];
@@ -375,7 +370,7 @@ class Elder {
     });
 
     this.runHook('customizeHooks', this).then(async () => {
-      // we now have customProps and a new hookInterface.
+      // we now have any customizations to the hookInterface.
       this.runHook = prepareRunHook({
         hooks: this.hooks,
         allSupportedHooks: this.hookInterface,

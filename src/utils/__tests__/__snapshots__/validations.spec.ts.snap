@@ -1368,7 +1368,7 @@ ObjectSchema {
   "_exclusive": Object {},
   "_mutate": undefined,
   "_nodes": Array [
-    "hooks",
+    "data",
     "permalink",
     "all",
     "template",
@@ -1414,34 +1414,31 @@ ObjectSchema {
       "transforms": Array [],
       "type": "mixed",
     },
-    "hooks": ArraySchema {
+    "data": SchemaType {
       "_blacklist": RefSet {
         "list": Set {},
         "refs": Map {},
       },
       "_conditions": Array [],
-      "_default": Array [],
+      "_default": Object {},
       "_deps": Array [],
       "_exclusive": Object {},
-      "_label": "An array of hooks. NOTE/TODO: These run on all routes, not just the one defined on.",
+      "_label": "Async/sync function that returns a JS object. Can also be a plain JS object. Important: If this is a function it is passed a '{data}' parameter. This parameter should be mutated and returned to pick up any data populated via hooks or plugins.",
       "_mutate": undefined,
+      "_nullable": true,
       "_options": Object {
         "abortEarly": true,
         "recursive": true,
       },
-      "_subType": undefined,
-      "_type": "array",
+      "_type": "mixed",
       "_typeError": [Function],
       "_whitelist": RefSet {
         "list": Set {},
         "refs": Map {},
       },
-      "innerType": undefined,
       "tests": Array [],
-      "transforms": Array [
-        [Function],
-      ],
-      "type": "array",
+      "transforms": Array [],
+      "type": "mixed",
     },
     "permalink": SchemaType {
       "_blacklist": RefSet {

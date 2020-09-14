@@ -82,6 +82,7 @@ describe('#validations', () => {
       all: jest.fn(),
       permalink: jest.fn(),
       hooks: [],
+      data: {},
     };
     expect(validateRoute(validRoute, 'Home')).toEqual(validRoute);
     // works with valid hook

@@ -6,11 +6,11 @@ import type { HookInterface } from './types';
 export const hookInterface: Array<HookInterface> = [
   {
     hook: 'customizeHooks',
-    props: ['hookInterface', 'customProps', 'errors'],
-    mutable: ['hookInterface', 'customProps', 'errors'],
-    context: 'Run before collecting all hooks.',
+    props: ['hookInterface', 'errors'],
+    mutable: ['hookInterface', 'errors'],
+    context: 'Used to modify what hooks can mutate which properties all hooks.',
     use: `<p>This hook receives the hookInterface.ts file which defines all hook interactions. You can customize all 'props' and 'mutable' of
-      all hooks by using this hook. This is a power user hook and would often be used in conjunction with customProps.</p>`,
+      all hooks by using this hook. This is a power user hook and unless you know Elder.js internals don't mess with it.</p>`,
     location: 'Elder.ts',
     experimental: true,
     advanced: true,
@@ -44,7 +44,7 @@ export const hookInterface: Array<HookInterface> = [
     <p><strong>NOTE:</strong> If you are modifying 'allRequests' you <strong>must</strong> set 'request.route' key for each request.</p>`,
     location: 'Elder.ts',
     experimental: false,
-    advanced: true,
+    advanced: false,
   },
 
   // above this is Elder.js
@@ -90,18 +90,6 @@ export const hookInterface: Array<HookInterface> = [
     <li>Anything you'd use an Express 'req' or 'next' for you can do and customize other parts of the Elder.js on this hook.</li>
     </ul>`,
     location: 'prepareServer.ts',
-    experimental: true,
-    advanced: true,
-  },
-
-  {
-    hook: 'modifyCustomProps',
-    props: ['customProps', 'request', 'errors', 'helpers', 'query', 'settings'],
-    mutable: ['customProps', 'request', 'errors', 'helpers', 'query'],
-    context:
-      'This hook is run just after a Page.ts object is created for a request. Page.ts objects are the main object used during page generation.',
-    use: `<p>This hook is often used in conjunction with the 'customizeHooks' hook to modify 'customProps' based on the request. This is very much a power user hook.</p>`,
-    location: 'Page.ts',
     experimental: true,
     advanced: true,
   },

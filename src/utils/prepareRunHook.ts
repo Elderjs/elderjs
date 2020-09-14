@@ -11,7 +11,6 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
       throw new Error(`Hook ${hookName} not defined in hookInterface or via plugins.`);
     }
 
-    const customPropKeys = [];
     const hookProps = hookDefinition.props.reduce((out, cv) => {
       if (Object.hasOwnProperty.call(props, cv)) {
         if (!hookDefinition.mutable.includes(cv)) {
@@ -19,13 +18,6 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
         } else {
           out[cv] = props[cv];
         }
-      } else if (typeof props.customProps === 'object' && props.customProps[cv]) {
-        if (!hookDefinition.mutable.includes(cv)) {
-          out[cv] = createReadOnlyProxy(props.customProps[cv], cv, hookName);
-        } else {
-          out[cv] = props.customProps[cv];
-        }
-        customPropKeys.push(cv);
       } else {
         console.error(
           `Hook named '${hookName}' cannot be run because prop ${cv} is not in scope to pass to the hook. Hook contract broken.`,
@@ -81,11 +73,7 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
       ) {
         hookDefinition.mutable.forEach((key) => {
           if ({}.hasOwnProperty.call(hookOutput, key)) {
-            if (customPropKeys.includes(key)) {
-              props.customProps[key] = hookOutput[key];
-            } else {
-              props[key] = hookOutput[key];
-            }
+            props[key] = hookOutput[key];
           }
         });
       }

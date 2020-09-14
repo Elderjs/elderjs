@@ -142,8 +142,6 @@ class Page {
 
   perf: any;
 
-  customProps: any;
-
   htmlString: string;
 
   headStack: Stack;
@@ -158,19 +156,7 @@ class Page {
 
   footerStack: Stack;
 
-  constructor({
-    request,
-    settings,
-    query,
-    helpers,
-    data,
-    route,
-    runHook,
-    allRequests,
-    routes,
-    errors,
-    customProps = {},
-  }) {
+  constructor({ request, settings, query, helpers, data, route, runHook, allRequests, routes, errors }) {
     this.uid = getUniqueId();
     perf(this);
     this.perf.start('page');
@@ -185,7 +171,6 @@ class Page {
     this.query = query;
     this.errors = [...errors];
     this.routes = routes;
-    this.customProps = customProps;
     this.htmlString = '';
 
     this.headStack = [];
@@ -196,8 +181,6 @@ class Page {
     this.footerStack = [];
 
     this.processStack = prepareProcessStack(this);
-
-    this.runHook('modifyCustomProps', this);
 
     this.perf.end('constructor');
 
