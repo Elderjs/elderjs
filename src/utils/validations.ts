@@ -143,6 +143,12 @@ const routeSchema = yup.object({
     .label(
       'Sync function that turns request objects from the all() function into permalinks which are relative to the site root',
     ),
+  data: yup
+    .mixed()
+    .required()
+    .label(
+      `Async/sync function that returns a JS object. Can also be a plain JS object. Important: If this is a function it is passed a '{data}' parameter. This parameter should be mutated and returned to pick up any data populated via hooks or plugins.`,
+    ),
 });
 
 const pluginSchema = yup.object({
