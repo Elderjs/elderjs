@@ -371,6 +371,7 @@ class Elder {
 
     this.runHook('customizeHooks', this).then(async () => {
       // we now have any customizations to the hookInterface.
+      // we need to rebuild runHook with these customizations.
       this.runHook = prepareRunHook({
         hooks: this.hooks,
         allSupportedHooks: this.hookInterface,
@@ -385,10 +386,10 @@ class Elder {
         let allRequestsForRoute = [];
         if (typeof route.all === 'function') {
           allRequestsForRoute = await route.all({
-            settings: this.settings,
-            query: this.query,
-            helpers: this.helpers,
-            data: this.data,
+            settings: createReadOnlyProxy(this.settings, 'settings', `${routeName} all function`),
+            query: createReadOnlyProxy(this.query, 'query', `${routeName} all function`),
+            helpers: createReadOnlyProxy(this.helpers, 'helpers', `${routeName} all function`),
+            data: createReadOnlyProxy(this.data, 'data', `${routeName} all function`),
           });
         } else if (Array.isArray(route.all)) {
           allRequestsForRoute = route.all;

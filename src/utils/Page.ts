@@ -35,10 +35,7 @@ const buildPage = async (page) => {
 
     // start building templates
     page.perf.start('html.template');
-
-    // template building starts here
-
-    const routeHTML = page.route.templateComponent({
+    page.routeHTML = page.route.templateComponent({
       page,
       props: {
         data: page.data,
@@ -47,8 +44,9 @@ const buildPage = async (page) => {
         request: page.request,
       },
     });
-
     page.perf.end('html.template');
+
+    // shortcodes here.
 
     page.perf.start('html.layout');
     page.layoutHtml = page.route.layout({
@@ -58,7 +56,7 @@ const buildPage = async (page) => {
         helpers: page.helpers,
         settings: page.settings,
         request: page.request,
-        routeHTML,
+        routeHTML: page.routeHTML,
       },
     });
     page.perf.end('html.layout');
