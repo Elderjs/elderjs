@@ -253,7 +253,6 @@ class Elder {
     // add meta to routes and collect hooks from routes
     const userRoutesJsFile = routes(this.settings);
 
-    const routeHooks: Array<HookOptions> = [];
     const userRoutes = Object.keys(userRoutesJsFile);
 
     userRoutes.forEach((routeName) => {
@@ -264,20 +263,6 @@ class Elder {
           addedBy: 'routejs',
         },
       };
-      const processedRoute = userRoutesJsFile[routeName];
-
-      if (processedRoute.hooks && Array.isArray(processedRoute.hooks)) {
-        processedRoute.hooks.forEach((hook) => {
-          const hookWithMeta: HookOptions = {
-            ...hook,
-            $$meta: {
-              type: 'route',
-              addedBy: routeName,
-            },
-          };
-          routeHooks.push(hookWithMeta);
-        });
-      }
     });
 
     // plugins should never overwrite user routes.
@@ -353,7 +338,7 @@ class Elder {
 
     const allSupportedHooks = hookInterface;
 
-    this.hooks = [...elderJsHooks, ...pluginHooks, ...routeHooks, ...hooksJs]
+    this.hooks = [...elderJsHooks, ...pluginHooks, ...hooksJs]
       .map((hook) => validateHook(hook))
       .filter((Boolean as any) as ExcludesFalse);
 

@@ -143,11 +143,6 @@ const routeSchema = yup.object({
     .label(
       'Sync function that turns request objects from the all() function into permalinks which are relative to the site root',
     ),
-  hooks: yup
-    .array()
-    .notRequired()
-    .default([])
-    .label('An array of hooks. NOTE/TODO: These run on all routes, not just the one defined on.'),
 });
 
 const pluginSchema = yup.object({
