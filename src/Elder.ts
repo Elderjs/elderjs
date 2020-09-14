@@ -415,12 +415,21 @@ class Elder {
 
       await this.runHook('allRequests', this);
 
-      // TODO: We should validate that all requests have a request.route = '';
-      // sometimes the request object returned by the allRequests hook may not have it set.
-
       await asyncForEach(this.allRequests, async (request) => {
         if (!this.routes[request.route] || !this.routes[request.route].permalink) {
-          console.error(`request missing permalink, please create an issue. ${request}`);
+          if (!request.route) {
+            console.error(
+              `Request is missing a 'route' key. This usually happens when request objects have been added to the allRequests array via a hook or plugin. ${JSON.stringify(
+                request,
+              )}`,
+            );
+          } else {
+            console.error(
+              `Request missing permalink but has request.route defined. This shouldn't be an Elder.js issue but if you believe it could be please create an issue. ${JSON.stringify(
+                request,
+              )}`,
+            );
+          }
         }
         if (context === 'server') {
           request.type = 'server';
