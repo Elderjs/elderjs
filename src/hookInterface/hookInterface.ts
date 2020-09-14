@@ -61,7 +61,6 @@ export const hookInterface: Array<HookInterface> = [
       'settings',
       'allRequests',
       'routes',
-      'customProps',
       'req',
       'next',
       'res',
@@ -76,7 +75,6 @@ export const hookInterface: Array<HookInterface> = [
       'settings',
       'allRequests',
       'routes',
-      'customProps',
       'req',
       'next',
       'res',
@@ -195,8 +193,19 @@ export const hookInterface: Array<HookInterface> = [
     props: ['helpers', 'data', 'settings', 'request', 'headString', 'query', 'errors'],
     mutable: ['errors', 'headString'],
     context: 'Executed just before writing the <head> tag to the page.',
-    use: `<p>This hook's headSting represents everything that will be written to &lt;head&gt; tag excluding CSS (those are managed on the style hook).</p>
+    use: `<p>This hook's headSting represents everything that will be written to &lt;head&gt; tag.</p>
        <p>There are many possible SEO uses to this hook, especially for plugins. That said, we recommend users who want to set common SEO elements such as tags &lt;title&gt; and meta descriptions programatically to do it from within Svelte templates using the &lt;svelte:head&gt;&lt;/svelte:head&gt; tag. Chances are you won't need this field unless you're a power user and need access to the raw head.</p>`,
+    location: 'Page.ts',
+    experimental: false,
+    advanced: true,
+  },
+
+  {
+    hook: 'compileHtml',
+    props: ['helpers', 'data', 'request', 'headString', 'footerString', 'layoutHtml', 'htmlString'],
+    mutable: ['errors', 'htmlString'],
+    context: 'This is where Elder.js merges the html from the Svelte layout with stacks and wraps it in an <html> tag.',
+    use: `<p>This hook should only be used when you need to have full control over the &lt;html&gt; document. Make sure if you use this to add 'elderCompileHtml' to the 'hooks.disable' array in your elder.config.js or your template will be overwritten.</p>`,
     location: 'Page.ts',
     experimental: false,
     advanced: true,

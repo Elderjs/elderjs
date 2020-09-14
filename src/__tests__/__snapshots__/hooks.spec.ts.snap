@@ -108,6 +108,13 @@ Array [
     "run": [Function],
   },
   Object {
+    "description": "Creates an HTML string out of the Svelte layout and stacks.",
+    "hook": "compileHtml",
+    "name": "elderCompileHtml",
+    "priority": 100,
+    "run": [Function],
+  },
+  Object {
     "description": "Log any errors to the console.",
     "hook": "error",
     "name": "elderConsoleLogErrors",

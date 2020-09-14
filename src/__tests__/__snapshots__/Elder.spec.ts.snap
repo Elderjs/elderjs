@@ -104,7 +104,6 @@ Elder {
         "settings",
         "allRequests",
         "routes",
-        "customProps",
         "req",
         "next",
         "res",
@@ -119,7 +118,6 @@ Elder {
         "settings",
         "allRequests",
         "routes",
-        "customProps",
         "req",
         "next",
         "res",
@@ -268,8 +266,29 @@ Elder {
         "query",
         "errors",
       ],
-      "use": "<p>This hook's headSting represents everything that will be written to &lt;head&gt; tag excluding CSS (those are managed on the style hook).</p>
+      "use": "<p>This hook's headSting represents everything that will be written to &lt;head&gt; tag.</p>
        <p>There are many possible SEO uses to this hook, especially for plugins. That said, we recommend users who want to set common SEO elements such as tags &lt;title&gt; and meta descriptions programatically to do it from within Svelte templates using the &lt;svelte:head&gt;&lt;/svelte:head&gt; tag. Chances are you won't need this field unless you're a power user and need access to the raw head.</p>",
+    },
+    Object {
+      "advanced": true,
+      "context": "This is where Elder.js merges the html from the Svelte layout with stacks and wraps it in an <html> tag.",
+      "experimental": false,
+      "hook": "compileHtml",
+      "location": "Page.ts",
+      "mutable": Array [
+        "errors",
+        "htmlString",
+      ],
+      "props": Array [
+        "helpers",
+        "data",
+        "request",
+        "headString",
+        "footerString",
+        "layoutHtml",
+        "htmlString",
+      ],
+      "use": "<p>This stack should only be used when you need to have full control over the &lt;html&gt; document. Make sure if you use this to add 'elderCompileHtml' to the 'hooks.disable' array in your elder.config.js or your template will be overwritten.</p>",
     },
     Object {
       "advanced": false,
@@ -416,6 +435,17 @@ Elder {
       "hook": "stacks",
       "name": "elderAddSystemJs",
       "priority": 1,
+      "run": [Function],
+    },
+    Object {
+      "$$meta": Object {
+        "addedBy": "elder.js",
+        "type": "internal",
+      },
+      "description": "Creates an HTML string out of the Svelte layout and stacks.",
+      "hook": "compileHtml",
+      "name": "elderCompileHtml",
+      "priority": 100,
       "run": [Function],
     },
     Object {
@@ -672,7 +702,6 @@ Elder {
         "settings",
         "allRequests",
         "routes",
-        "customProps",
         "req",
         "next",
         "res",
@@ -687,7 +716,6 @@ Elder {
         "settings",
         "allRequests",
         "routes",
-        "customProps",
         "req",
         "next",
         "res",
@@ -836,8 +864,29 @@ Elder {
         "query",
         "errors",
       ],
-      "use": "<p>This hook's headSting represents everything that will be written to &lt;head&gt; tag excluding CSS (those are managed on the style hook).</p>
+      "use": "<p>This hook's headSting represents everything that will be written to &lt;head&gt; tag.</p>
        <p>There are many possible SEO uses to this hook, especially for plugins. That said, we recommend users who want to set common SEO elements such as tags &lt;title&gt; and meta descriptions programatically to do it from within Svelte templates using the &lt;svelte:head&gt;&lt;/svelte:head&gt; tag. Chances are you won't need this field unless you're a power user and need access to the raw head.</p>",
+    },
+    Object {
+      "advanced": true,
+      "context": "This is where Elder.js merges the html from the Svelte layout with stacks and wraps it in an <html> tag.",
+      "experimental": false,
+      "hook": "compileHtml",
+      "location": "Page.ts",
+      "mutable": Array [
+        "errors",
+        "htmlString",
+      ],
+      "props": Array [
+        "helpers",
+        "data",
+        "request",
+        "headString",
+        "footerString",
+        "layoutHtml",
+        "htmlString",
+      ],
+      "use": "<p>This stack should only be used when you need to have full control over the &lt;html&gt; document. Make sure if you use this to add 'elderCompileHtml' to the 'hooks.disable' array in your elder.config.js or your template will be overwritten.</p>",
     },
     Object {
       "advanced": false,
@@ -984,6 +1033,17 @@ Elder {
       "hook": "stacks",
       "name": "elderAddSystemJs",
       "priority": 1,
+      "run": [Function],
+    },
+    Object {
+      "$$meta": Object {
+        "addedBy": "elder.js",
+        "type": "internal",
+      },
+      "description": "Creates an HTML string out of the Svelte layout and stacks.",
+      "hook": "compileHtml",
+      "name": "elderCompileHtml",
+      "priority": 100,
       "run": [Function],
     },
     Object {

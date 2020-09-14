@@ -87,7 +87,7 @@ const settings = {
   },
   debug: {
     stacks: false,
-    hooks: false,
+    hooks: true,
     performance: false,
     build: false,
     automagic: false,
@@ -204,34 +204,12 @@ describe('#Page', () => {
     runHook,
   };
 
-  const expectedOutput = `<!DOCTYPE html>
-      <html lang="en">
-        <head>
-          headStack<style data-name="cssStack">cssStack</style>
-        </head>
-        <body class="cityNursingHomes">
-          <div class="container"></div>
-          beforeHydrateStack
-          <script data-name="hydrateStack">hydrateStack</script>
-          customJsStack
-          footerStack
-        </body>
-      </html>`;
-
   it('initialize and build', async () => {
     const page = new Page(pageInput);
     expect(page).toMatchSnapshot();
     await page.build();
-    expect(hooks).toEqual(['request', 'data', 'stacks', 'head', 'html', 'requestComplete']);
+    expect(hooks).toEqual(['request', 'data', 'stacks', 'head', 'compileHtml', 'html', 'requestComplete']);
     expect(page).toMatchSnapshot();
-    const htmlString = await page.html();
-    expect(htmlString.trim()).toEqual(expectedOutput);
-  });
-
-  it('init and request html', async () => {
-    const page = new Page({ ...pageInput, route: { ...pageInput.route, data: { worldPopulation: 7805564950 } } });
-    const html = await page.html();
-    expect(html.trim()).toEqual(expectedOutput);
   });
 
   it('init and request html, throw catched errors', async () => {

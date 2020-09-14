@@ -134,6 +134,18 @@ const hooks: Array<HookOptions> = [
     },
   },
   {
+    hook: 'compileHtml',
+    name: 'elderCompileHtml',
+    description: 'Creates an HTML string out of the Svelte layout and stacks.',
+    priority: 50,
+    run: async ({ request, headString, footerString, layoutHtml, htmlString }) => {
+      return {
+        htmlString: `<!DOCTYPE html><html lang="en"><head>${headString}</head><body class="${request.route}">${layoutHtml}${footerString}</body></html>`,
+      };
+    },
+  },
+
+  {
     hook: 'error',
     name: 'elderConsoleLogErrors',
     description: 'Log any errors to the console.',

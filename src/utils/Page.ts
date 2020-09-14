@@ -51,7 +51,7 @@ const buildPage = async (page) => {
     page.perf.end('html.template');
 
     page.perf.start('html.layout');
-    const layoutHtml = page.route.layout({
+    page.layoutHtml = page.route.layout({
       page,
       props: {
         data: page.data,
@@ -65,34 +65,30 @@ const buildPage = async (page) => {
 
     // Run header hooks / stacks to make headString
     await page.runHook('stacks', page);
+
+    // prepare for head hook
     page.head = page.processStack('headStack');
     page.cssString = '';
     page.cssString = page.processStack('cssStack');
-    page.styleTag = `<style data-name="cssStack">${page.cssString}</style>`;
+    page.styleTag = `<style>${page.cssString}</style>`;
     page.headString = `${page.head}${page.styleTag}`;
-    page.beforeHydrate = page.processStack('beforeHydrateStack');
-    page.hydrate = `<script data-name="hydrateStack">${page.processStack('hydrateStack')}</script>`;
-    page.customJs = page.processStack('customJsStack');
-    page.footer = page.processStack('footerStack');
 
     await page.runHook('head', page);
 
-    page.perf.start('html.createHtmlString');
-    page.htmlString = `<!DOCTYPE html>
-      <html lang="en">
-        <head>
-          ${page.headString}
-        </head>
-        <body class="${page.request.route}">
-          ${layoutHtml}
-          ${page.hydrateStack.length > 0 ? page.beforeHydrate : '' /* page.hydrateStack.length is correct here */}
-          ${page.hydrateStack.length > 0 ? page.hydrate : ''}
-          ${page.customJsStack.length > 0 ? page.customJs : ''}
-          ${page.footerStack.length > 0 ? page.footer : ''}
-        </body>
-      </html>
+    // prepare for compileHtml
+    const beforeHydrate = page.processStack('beforeHydrateStack');
+    const hydrate = `<script>${page.processStack('hydrateStack')}</script>`;
+    const customJs = page.processStack('customJsStack');
+    const footer = page.processStack('footerStack');
+
+    page.footerString = `
+    ${page.hydrateStack.length > 0 ? beforeHydrate : '' /* page.hydrateStack.length is correct here */}
+    ${page.hydrateStack.length > 0 ? hydrate : ''}
+    ${page.customJsStack.length > 0 ? customJs : ''}
+    ${page.footerStack.length > 0 ? footer : ''}
     `;
-    page.perf.end('html.createHtmlString');
+
+    await page.runHook('compileHtml', page);
 
     await page.runHook('html', page);
 
@@ -142,6 +138,10 @@ class Page {
 
   perf: any;
 
+  layoutHtml: string;
+
+  cssString: string;
+
   htmlString: string;
 
   headStack: Stack;
@@ -171,6 +171,7 @@ class Page {
     this.query = query;
     this.errors = [...errors];
     this.routes = routes;
+    this.cssString = '';
     this.htmlString = '';
 
     this.headStack = [];

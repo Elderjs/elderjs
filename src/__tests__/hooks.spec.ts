@@ -46,12 +46,26 @@ describe('#hooks', () => {
     ).toMatchSnapshot();
     expect(await hooks[4].run({ beforeHydrateStack: [], settings: {} })).toBe(null);
   });
+
+  it('elderCreateHtmlString', async () => {
+    expect(
+      await hooks[5].run({
+        request: { route: 'test' },
+        headString: 'head',
+        footerString: 'footer',
+        layoutHtml: 'layout',
+      }),
+    ).toStrictEqual({
+      htmlString: '<!DOCTYPE html><html lang="en"><head>head</head><body class="test">layoutfooter</body></html>',
+    });
+  });
+
   it('elderConsoleLogErrors', async () => {
-    expect(await hooks[5].run({ errors: ['foo', 'bar'] })).toBe(undefined);
+    expect(await hooks[6].run({ errors: ['foo', 'bar'] })).toBe(undefined);
   });
   it('elderWriteHtmlFileToPublic', async () => {
     expect(
-      await hooks[6].run({
+      await hooks[7].run({
         request: { permalink: '/foo' },
         htmlString: '<html>string</html>',
         errors: [],
@@ -59,7 +73,7 @@ describe('#hooks', () => {
       }),
     ).toBe(null);
     expect(
-      await hooks[6].run({
+      await hooks[7].run({
         request: { permalink: '/foo' },
         htmlString: '<html>string</html>',
         errors: [],
@@ -67,7 +81,7 @@ describe('#hooks', () => {
       }),
     ).toBe(null);
     expect(
-      await hooks[6].run({
+      await hooks[7].run({
         request: { permalink: '/foo' },
         htmlString: '<html>string</html>',
         errors: [],
@@ -77,7 +91,7 @@ describe('#hooks', () => {
   });
   it('elderDisplayRequestTime', async () => {
     expect(
-      await hooks[7].run({
+      await hooks[8].run({
         request: { permalink: '/foo' },
         timings: [
           { name: 'foo', duration: 500 },
@@ -89,7 +103,7 @@ describe('#hooks', () => {
   });
   it('elderShowParsedBuildTimes', async () => {
     expect(
-      await hooks[8].run({
+      await hooks[9].run({
         timings: [
           [
             { name: 'foo', duration: 500 },
@@ -106,7 +120,7 @@ describe('#hooks', () => {
   });
   it('elderWriteBuildErrors', async () => {
     expect(
-      await hooks[9].run({
+      await hooks[10].run({
         errors: ['error1', 'error2'],
         settings: { debug: { performance: true } },
       }),

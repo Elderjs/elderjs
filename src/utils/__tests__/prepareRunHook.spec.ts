@@ -72,26 +72,6 @@ describe('#prepareRunHook', () => {
     expect(errors).toEqual(['something bad happened']);
   });
 
-  it('works for custom props', async () => {
-    const errors = [];
-    await expect(
-      await prepareRunHookFn('bootstrap-custom', { settings, errors, perf, customProps: { customProp: 'testProp' } }),
-    ).toEqual({
-      customProps: {
-        customProp: 'testProp',
-      },
-      errors: [],
-      perf,
-      settings: {
-        debug: {
-          hooks: true,
-        },
-        magicNumber: 42,
-      },
-    });
-    expect(errors).toEqual([]);
-  });
-
   it('cannot mutate not mutable prop', async () => {
     prepareRunHookFn = prepareRunHook({ hooks, allSupportedHooks, settings });
     const errors = [];

@@ -10,7 +10,8 @@ export type Hook =
   | 'html'
   | 'requestComplete'
   | 'error'
-  | 'buildComplete';
+  | 'buildComplete'
+  | 'compileHtml';
 
 export type HookInterface = {
   hook: Hook;
