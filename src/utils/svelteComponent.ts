@@ -50,7 +50,7 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
   const { render, clientSrc } = componentCache[cleanComponentName];
 
   try {
-    const { css, html: htmlOutput, head } = render({ ...props, link: page.helpers.permalinks });
+    const { css, html: htmlOutput, head } = render(props);
 
     if (css && css.code && css.code.length > 0 && page.cssStack) {
       page.cssStack.push({ source: componentName, priority: 50, string: css.code });
