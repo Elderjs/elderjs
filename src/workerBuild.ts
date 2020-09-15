@@ -10,6 +10,7 @@ async function workerBuild({ bootstrapComplete, workerRequests }) {
     routes: workerRoutes,
     errors,
     allRequests,
+    shortcodes,
   } = await bootstrapComplete;
 
   // potential issue that since builds are split across processes,
@@ -36,6 +37,7 @@ async function workerBuild({ bootstrapComplete, workerRequests }) {
       runHook,
       routes: workerRoutes,
       errors,
+      shortcodes,
     });
     const { errors: buildErrors, timings } = await page.build();
     i += 1;

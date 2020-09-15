@@ -4,6 +4,19 @@ import type { RouteOptions } from '../routes/types';
 import type { HookOptions } from '../hookInterface/types';
 import hookInterface from '../hookInterface/hookInterface';
 
+const shortcodeSchema = yup.object({
+  shortcode: yup.string().required().label(`The 'name' of the shortcode. {{name /}}`),
+  run: yup
+    .mixed()
+    .required()
+    .test(
+      'isFunction',
+      'run() should be a function or async function',
+      (value) => typeof value === 'function' || (typeof value === 'object' && value.then === 'function'),
+    )
+    .label(`A sync/async function that returns the html, css, js, and head to be added to the html.`),
+});
+
 const configSchema = yup.object({
   siteUrl: yup.string().notRequired().default('').label(`The domain your site is hosted on. https://yourdomain.com.`),
   locations: yup
@@ -118,6 +131,11 @@ const configSchema = yup.object({
       ),
   }),
   typescript: yup.boolean().default(false).label('This causes Elder.js to look in the /build/ folder '),
+  shortcodes: yup.object({
+    openPattern: yup.string().default('{{').label('Opening pattern for identifying shortcodes in html output.'),
+    closePattern: yup.string().default('}}').label('closing pattern for identifying shortcodes in html output.'),
+    customShortcodes: yup.array().default([]).label('An array of custom shortcodes'),
+  }),
   plugins: yup.object().default({}).label('Used to define Elder.js plugins.'),
 });
 
@@ -289,4 +307,5 @@ export {
   hookSchema,
   routeSchema,
   pluginSchema,
+  shortcodeSchema,
 };

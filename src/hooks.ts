@@ -3,6 +3,7 @@ import fs from 'fs-extra';
 import { parseBuildPerf } from './utils';
 import externalHelpers from './externalHelpers';
 import { HookOptions } from './hookInterface/types';
+import prepareShortcodeParser from './utils/prepareShortcodeParser';
 
 const hooks: Array<HookOptions> = [
   {
@@ -26,6 +27,46 @@ const hooks: Array<HookOptions> = [
         };
       }
       return null;
+    },
+  },
+  {
+    hook: 'shortcodes',
+    name: 'elderProcessShortcodes',
+    description:
+      "Builds the shortcode parser, parses shortcodes from the html returned by the route's html and appends anything needed to the stacks.",
+    priority: 50,
+    run: async ({
+      helpers,
+      data,
+      settings,
+      request,
+      query,
+      cssStack,
+      headStack,
+      customJsStack,
+      routeHtml,
+      shortcodes,
+    }) => {
+      const ShortcodeParser = prepareShortcodeParser({
+        shortcodes,
+        helpers,
+        data,
+        settings,
+        request,
+        query,
+        cssStack,
+        headStack,
+        customJsStack,
+      });
+
+      const html = await ShortcodeParser.parse(routeHtml);
+
+      return {
+        routeHtml: html,
+        headStack,
+        cssStack,
+        customJsStack,
+      };
     },
   },
   {

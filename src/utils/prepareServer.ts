@@ -13,6 +13,7 @@ function prepareServer({ bootstrapComplete }) {
       allRequests,
       runHook,
       errors,
+      shortcodes,
     } = await bootstrapComplete;
 
     if (req.path) {
@@ -48,6 +49,7 @@ function prepareServer({ bootstrapComplete }) {
           allRequests,
           routes,
           errors,
+          shortcodes,
         };
 
         await runHook('middleware', { ...forPage, req, next, res });

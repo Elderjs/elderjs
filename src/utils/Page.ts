@@ -2,7 +2,7 @@
 import getUniqueId from './getUniqueId';
 import perf from './perf';
 import prepareProcessStack from './prepareProcessStack';
-import { QueryOptions, Stack, SettingOptions, ConfigOptions, RequestOptions } from './types';
+import { QueryOptions, Stack, SettingOptions, ConfigOptions, RequestOptions, ShortcodeDefs } from './types';
 import { RoutesOptions } from '../routes/types';
 import createReadOnlyProxy from './createReadOnlyProxy';
 
@@ -35,7 +35,7 @@ const buildPage = async (page) => {
 
     // start building templates
     page.perf.start('html.template');
-    page.routeHTML = page.route.templateComponent({
+    page.routeHtml = page.route.templateComponent({
       page,
       props: {
         data: page.data,
@@ -48,6 +48,9 @@ const buildPage = async (page) => {
 
     // shortcodes here.
 
+    await page.runHook('shortcodes', page);
+
+    // todo: readonly proxies?
     page.perf.start('html.layout');
     page.layoutHtml = page.route.layout({
       page,
@@ -56,12 +59,11 @@ const buildPage = async (page) => {
         helpers: page.helpers,
         settings: page.settings,
         request: page.request,
-        routeHTML: page.routeHTML,
+        routeHTML: page.routeHtml,
       },
     });
     page.perf.end('html.layout');
 
-    // Run header hooks / stacks to make headString
     await page.runHook('stacks', page);
 
     // prepare for head hook
@@ -138,6 +140,8 @@ class Page {
 
   layoutHtml: string;
 
+  routeHtml: string;
+
   cssString: string;
 
   htmlString: string;
@@ -154,7 +158,9 @@ class Page {
 
   footerStack: Stack;
 
-  constructor({ request, settings, query, helpers, data, route, runHook, allRequests, routes, errors }) {
+  shortcodes: ShortcodeDefs;
+
+  constructor({ request, settings, query, helpers, data, route, runHook, allRequests, routes, errors, shortcodes }) {
     this.uid = getUniqueId();
     perf(this);
     this.perf.start('page');
@@ -178,6 +184,7 @@ class Page {
     this.hydrateStack = [];
     this.customJsStack = [];
     this.footerStack = [];
+    this.shortcodes = shortcodes;
 
     this.processStack = prepareProcessStack(this);
 

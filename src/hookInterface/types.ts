@@ -5,13 +5,14 @@ export type Hook =
   | 'middleware'
   | 'request'
   | 'data'
+  | 'shortcodes'
   | 'stacks'
   | 'head'
+  | 'compileHtml'
   | 'html'
   | 'requestComplete'
   | 'error'
-  | 'buildComplete'
-  | 'compileHtml';
+  | 'buildComplete';
 
 export type HookInterface = {
   hook: Hook;

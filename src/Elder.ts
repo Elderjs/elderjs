@@ -32,6 +32,7 @@ import {
   RequestsOptions,
   PluginOptions,
   ExcludesFalse,
+  ShortcodeDefs,
 } from './utils/types';
 import createReadOnlyProxy from './utils/createReadOnlyProxy';
 import workerBuild from './workerBuild';
@@ -69,6 +70,8 @@ class Elder {
   server: any;
 
   builder: any;
+
+  shortcodes: ShortcodeDefs;
 
   constructor({ context, worker = false }) {
     this.bootstrapComplete = new Promise((resolve) => {
@@ -153,6 +156,8 @@ class Elder {
       const validatedPlugin = validatePlugin(plugin);
       if (!validatedPlugin) return;
       plugin = validatedPlugin;
+
+      // TODO: Collect plugin, shortcodes here.
 
       // clean props the plugin shouldn't be able to change between hook... specifically their hooks;
       let { hooks: pluginHooksArray } = plugin;
@@ -356,6 +361,29 @@ class Elder {
       permalinks: permalinks({ routes: this.routes, settings: this.settings }),
       inlineSvelteComponent,
     };
+
+    this.shortcodes = [
+      {
+        shortcode: 'svelteComponent',
+        run: async ({ props, content, data, helpers, request, query }) => {
+          console.log('ran');
+          return {
+            html: helpers.inlineSvelteComponent({ name: props.name, props: props.props, options: props.options }),
+          };
+        },
+      },
+      // {
+      //   shortcode: 'box',
+      //   run: async ({ content }) => {
+      //     return {
+      //       html: `<div class="box">${content}</div>`,
+      //       css: '.test{}',
+      //       js: '<script>var test = true;</script>',
+      //       head: '<meta test="true"/>',
+      //     };
+      //   },
+      // },
+    ];
 
     if (context === 'server') {
       this.server = prepareServer({ bootstrapComplete: this.bootstrapComplete });

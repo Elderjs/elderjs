@@ -155,6 +155,29 @@ export const hookInterface: Array<HookInterface> = [
   },
 
   {
+    hook: 'shortcodes',
+    props: [
+      'helpers',
+      'data',
+      'settings',
+      'request',
+      'query',
+      'errors',
+      'cssStack',
+      'headStack',
+      'customJsStack',
+      'routeHtml',
+      'shortcodes',
+    ],
+    mutable: ['errors', 'routeHtml', 'cssStack', 'headStack', 'customJsStack'],
+    context: `Executed after the route's html has been compiled, but before the layout html has been compiled.`,
+    use: `<p>Elder.js uses this hook to process shortcodes. The vast majority of users won't need to use this hook, but if you'd like to disable shortcodes completely, you can add 'elderProcessShortcodes' to hooks.disable in your elder.config.js file.</p>`,
+    location: 'Page.ts',
+    experimental: false,
+    advanced: true,
+  },
+
+  {
     hook: 'stacks',
     props: [
       'helpers',

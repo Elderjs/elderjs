@@ -126,3 +126,18 @@ export interface ComponentPayload {
   props: any;
   hydrateOptions?: HydrateOptions;
 }
+
+export interface ShortcodeDef {
+  shortcode: string;
+  run: (any) => ShortcodeResponse | Promise<ShortcodeResponse>;
+  plugin?: any; // plugin closure scope?
+}
+
+export interface ShortcodeResponse {
+  html?: string;
+  css?: string;
+  js?: string;
+  head?: string;
+}
+
+export type ShortcodeDefs = Array<ShortcodeDef>;
