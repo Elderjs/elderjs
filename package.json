@@ -30,7 +30,7 @@
     "glob": "^7.1.6",
     "intersection-observer": "^0.11.0",
     "lodash.defaultsdeep": "^4.6.1",
-    "@elderjs/shortcodes": "^1.0.5",
+    "@elderjs/shortcodes": "^1.0.6",
     "nanoid": "^3.1.12",
     "systemjs": "^6.5.0",
     "yup": "^0.29.3"

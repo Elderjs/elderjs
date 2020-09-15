@@ -44,6 +44,11 @@ export type ConfigOptions = {
   };
   typescript: boolean;
   worker: boolean;
+  shortcodes: {
+    openPattern: string;
+    closePattern: string;
+    customShortcodes: ShortcodeDefs;
+  };
 };
 
 type Internal = {
@@ -109,6 +114,7 @@ export type PluginOptions = {
   routes?: RoutesOptions;
   hooks: Array<HookOptions>;
   config?: Object;
+  shortcodes?: ShortcodeDefs;
 };
 
 // eslint-disable-next-line no-undef
@@ -130,7 +136,11 @@ export interface ComponentPayload {
 export interface ShortcodeDef {
   shortcode: string;
   run: (any) => ShortcodeResponse | Promise<ShortcodeResponse>;
-  plugin?: any; // plugin closure scope?
+  plugin?: any; // reference to the plugin closure scope.
+  $$meta: {
+    addedBy: string;
+    type: string;
+  };
 }
 
 export interface ShortcodeResponse {

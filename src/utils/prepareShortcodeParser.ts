@@ -32,6 +32,7 @@ function prepareShortcodeParser({
         query,
         helpers,
         settings,
+        plugin: shortcode.plugin,
       });
 
       if (css) {

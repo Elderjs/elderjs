@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import type { ConfigOptions, PluginOptions } from './types';
+import type { ConfigOptions, PluginOptions, ShortcodeDef } from './types';
 import type { RouteOptions } from '../routes/types';
 import type { HookOptions } from '../hookInterface/types';
 import hookInterface from '../hookInterface/hookInterface';
@@ -191,6 +191,7 @@ const pluginSchema = yup.object({
     .default({})
     .notRequired()
     .label('(optional) An object of default configs. These will be used when none are set in their elder.config.js.'),
+  shortcodes: yup.array().of(shortcodeSchema).notRequired().default([]).label('Array of shortcodes'),
 });
 
 const hookSchema = yup
@@ -297,10 +298,30 @@ function validateHook(hook): HookOptions | false {
   }
 }
 
+function validateShortcode(shortcode): ShortcodeDef | false {
+  try {
+    shortcodeSchema.validateSync(shortcode);
+    const validated = shortcodeSchema.cast(shortcode);
+    return validated;
+  } catch (err) {
+    if (shortcode && shortcode.$$meta && shortcode.$$meta.type === 'plugin') {
+      console.error(
+        `Plugin ${shortcode.$$meta.addedBy} uses a shortcode, but it is ignored due to error(s). Please create a ticket with that plugin so the author can investigate it.`,
+        err.errors,
+        err.value,
+      );
+    } else {
+      console.error(`Hook ignored due to error(s).`, err.errors, err.value);
+    }
+    return false;
+  }
+}
+
 export {
   validateRoute,
   validatePlugin,
   validateHook,
+  validateShortcode,
   // validateConfig,
   getDefaultConfig,
   configSchema,

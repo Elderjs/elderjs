@@ -13,7 +13,7 @@ import prepareRunHook from './prepareRunHook';
 import shuffleArray from './shuffleArray';
 import { prepareServer } from './prepareServer';
 
-import { validateHook, validateRoute, validatePlugin } from './validations';
+import { validateHook, validateRoute, validatePlugin, validateShortcode } from './validations';
 import prepareProcessStack from './prepareProcessStack';
 import getConfig from './getConfig';
 
@@ -23,6 +23,7 @@ export {
   svelteComponent,
   getHashedSvelteComponents,
   getUniqueId,
+  validateShortcode,
   IntersectionObserver,
   Page,
   parseBuildPerf,

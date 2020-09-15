@@ -17,6 +17,7 @@ import {
   validateHook,
   validateRoute,
   validatePlugin,
+  validateShortcode,
   permalinks,
   asyncForEach,
   getHashedSvelteComponents,
@@ -37,6 +38,7 @@ import {
 import createReadOnlyProxy from './utils/createReadOnlyProxy';
 import workerBuild from './workerBuild';
 import { inlineSvelteComponent } from './partialHydration/inlineSvelteComponent';
+import elderJsShortcodes from './shortcodes';
 
 const getElderConfig = getConfig;
 
@@ -106,7 +108,7 @@ class Elder {
      */
     let pluginRoutes: RoutesOptions = {};
     const pluginHooks: Array<HookOptions> = [];
-
+    const pluginShortcodes: ShortcodeDefs = [];
     const pluginNames = Object.keys(this.settings.plugins);
 
     for (let i = 0; i < pluginNames.length; i += 1) {
@@ -157,8 +159,6 @@ class Elder {
       if (!validatedPlugin) return;
       plugin = validatedPlugin;
 
-      // TODO: Collect plugin, shortcodes here.
-
       // clean props the plugin shouldn't be able to change between hook... specifically their hooks;
       let { hooks: pluginHooksArray } = plugin;
 
@@ -176,10 +176,6 @@ class Elder {
             run: async (payload: any = {}) => {
               // pass the plugin definition into the closure of every hook.
               let pluginDefinition = sanitizedPlugin;
-
-              // TODO: In a future release add in specific helpers to allow plugins to implement the
-              // same hook signature as we use on plugin.helpers; Plugin defined hooks will basically "shadow"
-              // system hooks.
 
               // eslint-disable-next-line no-param-reassign
               payload.plugin = pluginDefinition;
@@ -251,6 +247,14 @@ class Elder {
           pluginRoutes = { ...pluginRoutes, ...sanitizedRoute };
         });
       }
+
+      plugin.shortcodes.forEach((shortcode) => {
+        shortcode.$$meta = {
+          type: 'plugin',
+          addedBy: pluginName,
+        };
+        pluginShortcodes.push(shortcode);
+      });
     }
 
     // add meta to routes and collect hooks from routes
@@ -331,6 +335,7 @@ class Elder {
       }
     }
 
+    // validate hooks
     const elderJsHooks: Array<HookOptions> = internalHooks.map((hook) => ({
       ...hook,
       $$meta: {
@@ -338,8 +343,6 @@ class Elder {
         addedBy: 'elder.js',
       },
     }));
-
-    const allSupportedHooks = hookInterface;
 
     this.hooks = [...elderJsHooks, ...pluginHooks, ...hooksJs]
       .map((hook) => validateHook(hook))
@@ -349,8 +352,13 @@ class Elder {
       this.hooks = this.hooks.filter((h) => !this.settings.hooks.disable.includes(h.name));
     }
 
+    // validate shortcodes
+    this.shortcodes = [...elderJsShortcodes, ...pluginShortcodes, ...config.shortcodes.customShortcodes]
+      .map((shortcode) => validateShortcode(shortcode))
+      .filter((Boolean as any) as ExcludesFalse);
+
     this.data = {};
-    this.hookInterface = allSupportedHooks;
+    this.hookInterface = hookInterface;
 
     this.query = {};
     this.allRequests = [];
@@ -361,33 +369,6 @@ class Elder {
       permalinks: permalinks({ routes: this.routes, settings: this.settings }),
       inlineSvelteComponent,
     };
-
-    this.shortcodes = [
-      {
-        shortcode: 'svelteComponent',
-        run: async ({ props, helpers }) => {
-          if (!props.name) throw new Error(`svelteComponent shortcode requires a name="" property.`);
-          return {
-            html: helpers.inlineSvelteComponent({
-              name: props.name,
-              props: props.props || {},
-              options: props.options || {},
-            }),
-          };
-        },
-      },
-      {
-        shortcode: 'box',
-        run: async ({ content }) => {
-          return {
-            html: `<div class="box">${content}</div>`,
-            css: '.test{}',
-            js: '<script>var test = true;</script>',
-            head: '<meta test="true"/>',
-          };
-        },
-      },
-    ];
 
     if (context === 'server') {
       this.server = prepareServer({ bootstrapComplete: this.bootstrapComplete });

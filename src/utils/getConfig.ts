@@ -3,8 +3,9 @@ import defaultsDeep from 'lodash.defaultsdeep';
 import path from 'path';
 import fs from 'fs';
 import { ConfigOptions } from './types';
-import { getDefaultConfig } from './validations';
+import { getDefaultConfig, validateShortcode } from './validations';
 import tsConfigExist from './tsConfigExist';
+import shortcodes from '../shortcodes';
 
 function getConfig(context?: string): ConfigOptions {
   const explorerSync = cosmiconfigSync('elder');
@@ -57,6 +58,11 @@ function getConfig(context?: string): ConfigOptions {
       }
     }
   }
+
+  config.shortcodes.customShortcodes = config.shortcodes.customShortcodes.map((shortcode) => ({
+    ...shortcode,
+    $$meta: { type: 'config', addedBy: 'elder.config.js' },
+  }));
 
   return config;
 }
