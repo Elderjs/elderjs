@@ -114,6 +114,7 @@ describe('#Elder', () => {
   it('plugin found but invalid', async () => {
     jest.mock('../utils/validations', () => ({
       validatePlugin: () => false,
+      validateShortcode: (i) => i,
     }));
     jest.mock('fs-extra', () => ({
       existsSync: () => true,
@@ -178,6 +179,7 @@ describe('#Elder', () => {
       validatePlugin: (i) => i,
       validateHook: (i) => i,
       validateRoute: (i) => i,
+      validateShortcode: (i) => i,
     }));
     jest.mock('fs-extra', () => ({
       existsSync: () => true,
@@ -224,6 +226,7 @@ describe('#Elder', () => {
       validatePlugin: (i) => i,
       validateHook: (i) => i,
       validateRoute: (i) => i,
+      validateShortcode: (i) => i,
     }));
     jest.mock('fs-extra', () => ({
       existsSync: () => true,

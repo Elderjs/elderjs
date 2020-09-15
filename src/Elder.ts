@@ -57,8 +57,6 @@ class Elder {
 
   runHook: (string, Object) => Promise<any>;
 
-  hookInterface: any;
-
   query: QueryOptions;
 
   allRequests: Array<RequestOptions>;
@@ -100,14 +98,6 @@ class Elder {
     if (!context || context === 'build') {
       this.settings.debug.automagic = false;
     }
-
-    this.data = {};
-    this.hookInterface = hookInterface;
-
-    this.query = {};
-    this.allRequests = [];
-    this.serverLookupObject = {};
-    this.errors = [];
 
     /**
      * Plugin initalization
@@ -256,13 +246,15 @@ class Elder {
         });
       }
 
-      plugin.shortcodes.forEach((shortcode) => {
-        shortcode.$$meta = {
-          type: 'plugin',
-          addedBy: pluginName,
-        };
-        pluginShortcodes.push(shortcode);
-      });
+      if (plugin.shortcodes && plugin.shortcodes.length > 0) {
+        plugin.shortcodes.forEach((shortcode) => {
+          shortcode.$$meta = {
+            type: 'plugin',
+            addedBy: pluginName,
+          };
+          pluginShortcodes.push(shortcode);
+        });
+      }
     }
 
     /**
@@ -441,6 +433,13 @@ class Elder {
      * Just wire up the last few things.
      */
 
+    this.data = {};
+
+    this.query = {};
+    this.allRequests = [];
+    this.serverLookupObject = {};
+    this.errors = [];
+
     this.helpers = {
       permalinks: permalinks({ routes: this.routes, settings: this.settings }),
       inlineSvelteComponent,
@@ -454,7 +453,7 @@ class Elder {
     const hooksMinusPlugins = this.hooks.filter((h) => h.$$meta.type !== 'plugin');
     this.runHook = prepareRunHook({
       hooks: hooksMinusPlugins,
-      allSupportedHooks: this.hookInterface,
+      allSupportedHooks: hookInterface,
       settings: this.settings,
     });
 
@@ -463,7 +462,7 @@ class Elder {
       // we need to rebuild runHook with these customizations.
       this.runHook = prepareRunHook({
         hooks: this.hooks,
-        allSupportedHooks: this.hookInterface,
+        allSupportedHooks: hookInterface,
         settings: this.settings,
       });
 

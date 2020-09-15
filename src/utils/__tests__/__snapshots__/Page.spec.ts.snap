@@ -206,6 +206,7 @@ Page {
     "typescript": false,
     "worker": true,
   },
+  "shortcodes": Array [],
   "uid": "xxxxxxxxxx",
 }
 `;
@@ -592,6 +593,7 @@ Page {
       ],
     },
   },
+  "routeHtml": undefined,
   "routes": Object {
     "content": Object {
       "$$meta": Object {
@@ -668,6 +670,7 @@ Page {
     "typescript": false,
     "worker": true,
   },
+  "shortcodes": Array [],
   "styleTag": "<style>cssStack</style>",
   "timings": Array [],
   "uid": "xxxxxxxxxx",

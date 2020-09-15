@@ -202,13 +202,23 @@ describe('#Page', () => {
     routes,
     errors: [],
     runHook,
+    shortcodes: [],
   };
 
   it('initialize and build', async () => {
     const page = new Page(pageInput);
     expect(page).toMatchSnapshot();
     await page.build();
-    expect(hooks).toEqual(['request', 'data', 'stacks', 'head', 'compileHtml', 'html', 'requestComplete']);
+    expect(hooks).toEqual([
+      'request',
+      'data',
+      'shortcodes',
+      'stacks',
+      'head',
+      'compileHtml',
+      'html',
+      'requestComplete',
+    ]);
     expect(page).toMatchSnapshot();
   });
 

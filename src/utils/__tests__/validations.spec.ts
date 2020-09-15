@@ -54,6 +54,10 @@ describe('#validations', () => {
       prefix: '',
     },
     typescript: false,
+    shortcodes: {
+      closePattern: '}}',
+      openPattern: '{{',
+    },
   };
   test('getDefaultConfig', () => {
     expect(getDefaultConfig()).toEqual(defaultConfig);
@@ -101,6 +105,7 @@ describe('#validations', () => {
       description: 'just for testing',
       init: jest.fn(), // FIXME: init should be required or test should allow not defined
       hooks: [1, 2, 3], // TODO: nested hook validation?
+      shortcodes: [],
     };
     expect(validatePlugin(validPlugin)).toEqual({ ...validPlugin, config: {}, routes: {} });
     expect(validatePlugin({ ...validPlugin, config: defaultConfig })).toEqual({

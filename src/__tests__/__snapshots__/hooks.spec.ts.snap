@@ -70,6 +70,15 @@ Object {
 }
 `;
 
+exports[`#hooks elderProcessShortcodes 1`] = `
+Object {
+  "helpers": Object {
+    "old": [MockFunction],
+    "permalink": [MockFunction],
+  },
+}
+`;
+
 exports[`#hooks matchesSnapshot 1`] = `
 Array [
   Object {
@@ -77,6 +86,13 @@ Array [
     "hook": "bootstrap",
     "name": "elderAddExternalHelpers",
     "priority": 100,
+    "run": [Function],
+  },
+  Object {
+    "description": "Builds the shortcode parser, parses shortcodes from the html returned by the route's html and appends anything needed to the stacks.",
+    "hook": "shortcodes",
+    "name": "elderProcessShortcodes",
+    "priority": 50,
     "run": [Function],
   },
   Object {
@@ -111,7 +127,7 @@ Array [
     "description": "Creates an HTML string out of the Svelte layout and stacks.",
     "hook": "compileHtml",
     "name": "elderCompileHtml",
-    "priority": 100,
+    "priority": 50,
     "run": [Function],
   },
   Object {

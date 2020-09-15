@@ -14,6 +14,7 @@ ObjectSchema {
   "_mutate": undefined,
   "_nodes": Array [
     "plugins",
+    "shortcodes",
     "typescript",
     "build",
     "server",
@@ -779,6 +780,93 @@ ObjectSchema {
       ],
       "type": "object",
     },
+    "shortcodes": ObjectSchema {
+      "_blacklist": RefSet {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": Array [],
+      "_defaultDefault": [Function],
+      "_deps": Array [],
+      "_excludedEdges": Array [],
+      "_exclusive": Object {},
+      "_mutate": undefined,
+      "_nodes": Array [
+        "closePattern",
+        "openPattern",
+      ],
+      "_options": Object {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "object",
+      "_typeError": [Function],
+      "_whitelist": RefSet {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "fields": Object {
+        "closePattern": StringSchema {
+          "_blacklist": RefSet {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "_conditions": Array [],
+          "_default": "}}",
+          "_deps": Array [],
+          "_exclusive": Object {},
+          "_label": "closing pattern for identifying shortcodes in html output.",
+          "_mutate": undefined,
+          "_options": Object {
+            "abortEarly": true,
+            "recursive": true,
+          },
+          "_type": "string",
+          "_typeError": [Function],
+          "_whitelist": RefSet {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "tests": Array [],
+          "transforms": Array [
+            [Function],
+          ],
+          "type": "string",
+        },
+        "openPattern": StringSchema {
+          "_blacklist": RefSet {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "_conditions": Array [],
+          "_default": "{{",
+          "_deps": Array [],
+          "_exclusive": Object {},
+          "_label": "Opening pattern for identifying shortcodes in html output.",
+          "_mutate": undefined,
+          "_options": Object {
+            "abortEarly": true,
+            "recursive": true,
+          },
+          "_type": "string",
+          "_typeError": [Function],
+          "_whitelist": RefSet {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "tests": Array [],
+          "transforms": Array [
+            [Function],
+          ],
+          "type": "string",
+        },
+      },
+      "tests": Array [],
+      "transforms": Array [
+        [Function],
+      ],
+      "type": "object",
+    },
     "siteUrl": StringSchema {
       "_blacklist": RefSet {
         "list": Set {},
@@ -1151,6 +1239,7 @@ ObjectSchema {
   "_exclusive": Object {},
   "_mutate": undefined,
   "_nodes": Array [
+    "shortcodes",
     "config",
     "hooks",
     "routes",
@@ -1345,6 +1434,31 @@ ObjectSchema {
         [Function],
       ],
       "type": "object",
+    },
+    "shortcodes": SchemaType {
+      "_blacklist": RefSet {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": Array [],
+      "_default": Array [],
+      "_deps": Array [],
+      "_exclusive": Object {},
+      "_label": "Array of shortcodes",
+      "_mutate": undefined,
+      "_options": Object {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "mixed",
+      "_typeError": [Function],
+      "_whitelist": RefSet {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": Array [],
+      "transforms": Array [],
+      "type": "mixed",
     },
   },
   "tests": Array [],

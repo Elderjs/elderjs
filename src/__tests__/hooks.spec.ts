@@ -26,30 +26,42 @@ describe('#hooks', () => {
     expect(hooks).toMatchSnapshot();
   });
   it('elderAddExternalHelpers', async () => {
-    expect(await hooks[0].run({ helpers: { old: jest.fn() }, query: {}, settings: {} })).toMatchSnapshot();
+    const hook = hooks.find((h) => h.name === 'elderAddExternalHelpers');
+    expect(await hook.run({ helpers: { old: jest.fn() }, query: {}, settings: {} })).toMatchSnapshot();
+  });
+  it('elderProcessShortcodes', async () => {
+    const hook = hooks.find((h) => h.name === 'elderAddExternalHelpers');
+    expect(await hook.run({ helpers: { old: jest.fn() }, query: {}, settings: {} })).toMatchSnapshot();
+
+    // TODO!!!
   });
   it('elderAddMetaCharsetToHead', async () => {
-    expect(await hooks[1].run({ headStack: [] })).toMatchSnapshot();
+    const hook = hooks.find((h) => h.name === 'elderAddMetaCharsetToHead');
+    expect(await hook.run({ headStack: [] })).toMatchSnapshot();
   });
   it('elderAddMetaViewportToHead', async () => {
-    expect(await hooks[2].run({ headStack: [] })).toMatchSnapshot();
+    const hook = hooks.find((h) => h.name === 'elderAddMetaViewportToHead');
+    expect(await hook.run({ headStack: [] })).toMatchSnapshot();
   });
   it('elderAddDefaultIntersectionObserver', async () => {
+    const hook = hooks.find((h) => h.name === 'elderAddDefaultIntersectionObserver');
     expect(
-      await hooks[3].run({ beforeHydrateStack: [], settings: { locations: { intersectionObserverPoly: 'foo' } } }),
+      await hook.run({ beforeHydrateStack: [], settings: { locations: { intersectionObserverPoly: 'foo' } } }),
     ).toMatchSnapshot();
-    expect(await hooks[3].run({ beforeHydrateStack: [], settings: {} })).toBe(null);
+    expect(await hook.run({ beforeHydrateStack: [], settings: {} })).toBe(null);
   });
   it('elderAddSystemJs', async () => {
+    const hook = hooks.find((h) => h.name === 'elderAddSystemJs');
     expect(
-      await hooks[4].run({ beforeHydrateStack: [], headStack: [], settings: { locations: { systemJs: 'foo' } } }),
+      await hook.run({ beforeHydrateStack: [], headStack: [], settings: { locations: { systemJs: 'foo' } } }),
     ).toMatchSnapshot();
-    expect(await hooks[4].run({ beforeHydrateStack: [], settings: {} })).toBe(null);
+    expect(await hook.run({ beforeHydrateStack: [], settings: {} })).toBe(null);
   });
 
-  it('elderCreateHtmlString', async () => {
+  it('elderCompileHtml', async () => {
+    const hook = hooks.find((h) => h.name === 'elderCompileHtml');
     expect(
-      await hooks[5].run({
+      await hook.run({
         request: { route: 'test' },
         headString: 'head',
         footerString: 'footer',
@@ -61,11 +73,13 @@ describe('#hooks', () => {
   });
 
   it('elderConsoleLogErrors', async () => {
-    expect(await hooks[6].run({ errors: ['foo', 'bar'] })).toBe(undefined);
+    const hook = hooks.find((h) => h.name === 'elderConsoleLogErrors');
+    expect(await hook.run({ request: { permalink: '/foo' }, errors: ['foo', 'bar'] })).toBe(undefined);
   });
   it('elderWriteHtmlFileToPublic', async () => {
+    const hook = hooks.find((h) => h.name === 'elderWriteHtmlFileToPublic');
     expect(
-      await hooks[7].run({
+      await hook.run({
         request: { permalink: '/foo' },
         htmlString: '<html>string</html>',
         errors: [],
@@ -73,7 +87,7 @@ describe('#hooks', () => {
       }),
     ).toBe(null);
     expect(
-      await hooks[7].run({
+      await hook.run({
         request: { permalink: '/foo' },
         htmlString: '<html>string</html>',
         errors: [],
@@ -81,7 +95,7 @@ describe('#hooks', () => {
       }),
     ).toBe(null);
     expect(
-      await hooks[7].run({
+      await hook.run({
         request: { permalink: '/foo' },
         htmlString: '<html>string</html>',
         errors: [],
@@ -90,8 +104,9 @@ describe('#hooks', () => {
     ).toEqual({ errors: [new Error('Failed to write')] });
   });
   it('elderDisplayRequestTime', async () => {
+    const hook = hooks.find((h) => h.name === 'elderDisplayRequestTime');
     expect(
-      await hooks[8].run({
+      await hook.run({
         request: { permalink: '/foo' },
         timings: [
           { name: 'foo', duration: 500 },
@@ -102,8 +117,9 @@ describe('#hooks', () => {
     ).toBe(undefined);
   });
   it('elderShowParsedBuildTimes', async () => {
+    const hook = hooks.find((h) => h.name === 'elderShowParsedBuildTimes');
     expect(
-      await hooks[9].run({
+      await hook.run({
         timings: [
           [
             { name: 'foo', duration: 500 },
@@ -119,8 +135,9 @@ describe('#hooks', () => {
     ).toBe(undefined);
   });
   it('elderWriteBuildErrors', async () => {
+    const hook = hooks.find((h) => h.name === 'elderWriteBuildErrors');
     expect(
-      await hooks[10].run({
+      await hook.run({
         errors: ['error1', 'error2'],
         settings: { debug: { performance: true } },
       }),
