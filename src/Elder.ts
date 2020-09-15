@@ -101,6 +101,14 @@ class Elder {
       this.settings.debug.automagic = false;
     }
 
+    this.data = {};
+    this.hookInterface = hookInterface;
+
+    this.query = {};
+    this.allRequests = [];
+    this.serverLookupObject = {};
+    this.errors = [];
+
     /**
      * Plugin initalization
      * * Collect plugin routes
@@ -257,6 +265,13 @@ class Elder {
       });
     }
 
+    /**
+     * Finalize Routes
+     * Add in user routes
+     * Add in plugin routes
+     * Validate them
+     */
+
     // add meta to routes and collect hooks from routes
     const userRoutesJsFile = routes(this.settings);
 
@@ -286,6 +301,13 @@ class Elder {
     });
 
     this.routes = validatedRoutes;
+
+    /**
+     * Finalize hooks
+     * Import User Hooks.js
+     * Validate Hooks
+     * Filter out hooks that are disabled.
+     */
 
     let hooksJs: Array<HookOptions> = [];
     const hookSrcPath = path.resolve(process.cwd(), srcFolder, './hooks.js');
@@ -344,6 +366,7 @@ class Elder {
       },
     }));
 
+    // validate hooks
     this.hooks = [...elderJsHooks, ...pluginHooks, ...hooksJs]
       .map((hook) => validateHook(hook))
       .filter((Boolean as any) as ExcludesFalse);
@@ -352,18 +375,71 @@ class Elder {
       this.hooks = this.hooks.filter((h) => !this.settings.hooks.disable.includes(h.name));
     }
 
+    /**
+     * Finalize Shortcodes
+     * Import User Shortcodes.js
+     * Validate Shortcodes
+     */
+
+    let shortcodesJs: ShortcodeDefs = [];
+    const shortcodeSrcPath = path.resolve(process.cwd(), srcFolder, './shortcodes.js');
+    const shortcodeBuildPath = path.resolve(process.cwd(), buildFolder, './shortcodes.js');
+
+    if (this.settings.debug.automagic) {
+      console.log(
+        `debug.automagic::Attempting to automagically pull in shortcodes from your ${shortcodeSrcPath} ${
+          buildFolder ? `with a fallback to ${shortcodeBuildPath}` : ''
+        }`,
+      );
+    }
+    try {
+      const shortcodes: ShortcodeDefs = config.typescript
+        ? require(shortcodeSrcPath).default
+        : require(shortcodeSrcPath);
+      shortcodesJs = shortcodes.map((shortcode) => ({
+        ...shortcode,
+        $$meta: {
+          type: 'shortcodes.js',
+          addedBy: 'shortcodes.js',
+        },
+      }));
+    } catch (err) {
+      if (err.code === 'MODULE_NOT_FOUND') {
+        if (buildFolder && buildFolder.length > 0) {
+          try {
+            const shortcodeBuildFile: ShortcodeDefs = config.typescript
+              ? require(shortcodeBuildPath).default
+              : require(shortcodeBuildPath);
+            shortcodesJs = shortcodeBuildFile.map((shortcode) => ({
+              ...shortcode,
+              $$meta: {
+                type: 'shortcodes.js',
+                addedBy: 'shortcodes.js',
+              },
+            }));
+          } catch (err2) {
+            if (err2.code !== 'MODULE_NOT_FOUND') {
+              console.error(err);
+            }
+          }
+        } else if (this.settings.debug.automagic) {
+          console.log(`No luck finding that hooks file. You can add one at ${shortcodeBuildPath}`);
+        }
+      } else {
+        console.error(err);
+      }
+    }
+
     // validate shortcodes
-    this.shortcodes = [...elderJsShortcodes, ...pluginShortcodes, ...config.shortcodes.customShortcodes]
+    this.shortcodes = [...elderJsShortcodes, ...pluginShortcodes, ...shortcodesJs]
       .map((shortcode) => validateShortcode(shortcode))
       .filter((Boolean as any) as ExcludesFalse);
 
-    this.data = {};
-    this.hookInterface = hookInterface;
-
-    this.query = {};
-    this.allRequests = [];
-    this.serverLookupObject = {};
-    this.errors = [];
+    /**
+     *
+     * Almost ready for customize hooks and bootstrap
+     * Just wire up the last few things.
+     */
 
     this.helpers = {
       permalinks: permalinks({ routes: this.routes, settings: this.settings }),

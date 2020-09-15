@@ -46,6 +46,7 @@ const hooks: Array<HookOptions> = [
       customJsStack,
       routeHtml,
       shortcodes,
+      allRequests,
     }) => {
       const ShortcodeParser = prepareShortcodeParser({
         shortcodes,
@@ -57,6 +58,7 @@ const hooks: Array<HookOptions> = [
         cssStack,
         headStack,
         customJsStack,
+        allRequests,
       });
 
       const html = await ShortcodeParser.parse(routeHtml);
@@ -191,8 +193,8 @@ const hooks: Array<HookOptions> = [
     name: 'elderConsoleLogErrors',
     description: 'Log any errors to the console.',
     priority: 100,
-    run: async ({ errors }) => {
-      console.error(errors);
+    run: async ({ errors, request }) => {
+      console.error(request.permalink, errors);
     },
   },
   {

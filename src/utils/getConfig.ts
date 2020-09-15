@@ -59,11 +59,6 @@ function getConfig(context?: string): ConfigOptions {
     }
   }
 
-  config.shortcodes.customShortcodes = config.shortcodes.customShortcodes.map((shortcode) => ({
-    ...shortcode,
-    $$meta: { type: 'config', addedBy: 'elder.config.js' },
-  }));
-
   return config;
 }
 

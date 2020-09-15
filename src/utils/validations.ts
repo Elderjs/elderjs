@@ -134,7 +134,6 @@ const configSchema = yup.object({
   shortcodes: yup.object({
     openPattern: yup.string().default('{{').label('Opening pattern for identifying shortcodes in html output.'),
     closePattern: yup.string().default('}}').label('closing pattern for identifying shortcodes in html output.'),
-    customShortcodes: yup.array().default([]).label('An array of custom shortcodes'),
   }),
   plugins: yup.object().default({}).label('Used to define Elder.js plugins.'),
 });

@@ -1,4 +1,6 @@
-const ShortcodeParser = require('@elderjs/shortcodes');
+import ShortcodeParser from '@elderjs/shortcodes';
+import createReadOnlyProxy from './createReadOnlyProxy';
+// TODO: Needs TS magic.
 
 function prepareShortcodeParser({
   shortcodes,
@@ -7,6 +9,7 @@ function prepareShortcodeParser({
   settings,
   request,
   query,
+  allRequests,
   cssStack,
   headStack,
   customJsStack,
@@ -27,12 +30,37 @@ function prepareShortcodeParser({
       const { html, css, js, head } = await shortcode.run({
         props,
         content,
-        data,
-        request,
-        query,
-        helpers,
-        settings,
         plugin: shortcode.plugin,
+        data: createReadOnlyProxy(
+          data,
+          'data',
+          `${shortcode.shortcode} defined by ${JSON.stringify(shortcode.$$meta)}`,
+        ),
+        request: createReadOnlyProxy(
+          request,
+          'request',
+          `${shortcode.shortcode} defined by ${JSON.stringify(shortcode.$$meta)}`,
+        ),
+        query: createReadOnlyProxy(
+          query,
+          'query',
+          `${shortcode.shortcode} defined by ${JSON.stringify(shortcode.$$meta)}`,
+        ),
+        helpers: createReadOnlyProxy(
+          helpers,
+          'helpers',
+          `${shortcode.shortcode} defined by ${JSON.stringify(shortcode.$$meta)}`,
+        ),
+        settings: createReadOnlyProxy(
+          settings,
+          'settings',
+          `${shortcode.shortcode} defined by ${JSON.stringify(shortcode.$$meta)}`,
+        ),
+        allRequests: createReadOnlyProxy(
+          allRequests,
+          'allRequests',
+          `${shortcode.shortcode} defined by ${JSON.stringify(shortcode.$$meta)}`,
+        ),
       });
 
       if (css) {
@@ -53,7 +81,7 @@ function prepareShortcodeParser({
           string: head,
         });
       }
-      return html;
+      return html || '';
     });
   });
 

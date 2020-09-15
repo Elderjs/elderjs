@@ -168,6 +168,7 @@ export const hookInterface: Array<HookInterface> = [
       'customJsStack',
       'routeHtml',
       'shortcodes',
+      'allRequests',
     ],
     mutable: ['errors', 'routeHtml', 'cssStack', 'headStack', 'customJsStack'],
     context: `Executed after the route's html has been compiled, but before the layout html has been compiled.`,
