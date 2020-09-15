@@ -365,24 +365,28 @@ class Elder {
     this.shortcodes = [
       {
         shortcode: 'svelteComponent',
-        run: async ({ props, content, data, helpers, request, query }) => {
-          console.log('ran');
+        run: async ({ props, helpers }) => {
+          if (!props.name) throw new Error(`svelteComponent shortcode requires a name="" property.`);
           return {
-            html: helpers.inlineSvelteComponent({ name: props.name, props: props.props, options: props.options }),
+            html: helpers.inlineSvelteComponent({
+              name: props.name,
+              props: props.props || {},
+              options: props.options || {},
+            }),
           };
         },
       },
-      // {
-      //   shortcode: 'box',
-      //   run: async ({ content }) => {
-      //     return {
-      //       html: `<div class="box">${content}</div>`,
-      //       css: '.test{}',
-      //       js: '<script>var test = true;</script>',
-      //       head: '<meta test="true"/>',
-      //     };
-      //   },
-      // },
+      {
+        shortcode: 'box',
+        run: async ({ content }) => {
+          return {
+            html: `<div class="box">${content}</div>`,
+            css: '.test{}',
+            js: '<script>var test = true;</script>',
+            head: '<meta test="true"/>',
+          };
+        },
+      },
     ];
 
     if (context === 'server') {

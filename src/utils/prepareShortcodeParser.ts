@@ -1,5 +1,4 @@
 const ShortcodeParser = require('@elderjs/shortcodes');
-const { ShortcodeResponse } = require('./types');
 
 function prepareShortcodeParser({
   shortcodes,
@@ -24,11 +23,7 @@ function prepareShortcodeParser({
       );
 
     shortcodeParser.add(shortcode.shortcode, async (props, content) => {
-      // todo, async?
-
-      console.log(shortcode.shortcode, props, content);
-
-      // plugin?
+      // todo: plugin?
       const { html, css, js, head } = await shortcode.run({
         props,
         content,
@@ -36,6 +31,7 @@ function prepareShortcodeParser({
         request,
         query,
         helpers,
+        settings,
       });
 
       if (css) {
