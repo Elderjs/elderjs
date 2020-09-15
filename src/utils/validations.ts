@@ -212,7 +212,7 @@ const hookSchema = yup
       .optional()
       .default(50)
       .label(
-        'The priority level a hook should run at. Elder.js hooks run at 1 or 100 where 1 is the highest priorty and 100 is the lowest priority.',
+        'The priority level a hook should run at. Elder.js hooks run here 100 is the highest priority and 1 is the lowest priority.',
       ),
     run: yup
       .mixed()

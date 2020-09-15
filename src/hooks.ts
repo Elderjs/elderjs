@@ -10,7 +10,7 @@ const hooks: Array<HookOptions> = [
     hook: 'bootstrap',
     name: 'elderAddExternalHelpers',
     description: 'Adds external helpers to helpers object',
-    priority: 100,
+    priority: 1,
     run: async ({ helpers, query, settings }) => {
       let additionalHelpers = {};
       try {
@@ -75,7 +75,7 @@ const hooks: Array<HookOptions> = [
     hook: 'stacks',
     name: 'elderAddMetaCharsetToHead',
     description: `Adds <meta charset="UTF-8" /> to the head.`,
-    priority: 1,
+    priority: 100,
     run: async ({ headStack }) => {
       return {
         headStack: [
@@ -83,7 +83,7 @@ const hooks: Array<HookOptions> = [
           {
             source: 'elderAddMetaCharsetToHead',
             string: `<meta charset="UTF-8" />`,
-            priority: 1,
+            priority: 100,
           },
         ],
       };
@@ -93,7 +93,7 @@ const hooks: Array<HookOptions> = [
     hook: 'stacks',
     name: 'elderAddMetaViewportToHead',
     description: `Adds <meta name="viewport" content="width=device-width, initial-scale=1" /> to the head.`,
-    priority: 10,
+    priority: 90,
     run: async ({ headStack }) => {
       return {
         headStack: [
@@ -101,7 +101,7 @@ const hooks: Array<HookOptions> = [
           {
             source: 'elderAddMetaViewportToHead',
             string: `<meta name="viewport" content="width=device-width, initial-scale=1" />`,
-            priority: 10,
+            priority: 90,
           },
         ],
       };
@@ -111,7 +111,7 @@ const hooks: Array<HookOptions> = [
     hook: 'stacks',
     name: 'elderAddDefaultIntersectionObserver',
     description: 'Sets up the default polyfill for the intersection observer',
-    priority: 1,
+    priority: 100,
     run: async ({ beforeHydrateStack, settings }) => {
       if (settings && settings.locations && {}.hasOwnProperty.call(settings.locations, 'intersectionObserverPoly')) {
         if (settings.locations.intersectionObserverPoly) {
@@ -126,7 +126,7 @@ const hooks: Array<HookOptions> = [
           document.getElementsByTagName('head')[0].appendChild(script);
       };
       </script>`,
-                priority: 1,
+                priority: 100,
               },
               ...beforeHydrateStack,
             ],
@@ -153,7 +153,7 @@ const hooks: Array<HookOptions> = [
               {
                 source: 'elderAddSystemJs',
                 string: `<script data-name="systemjs" src="${settings.locations.systemJs}"></script>`,
-                priority: 2,
+                priority: 99,
               },
               ...beforeHydrateStack,
             ],
@@ -162,7 +162,7 @@ const hooks: Array<HookOptions> = [
               {
                 source: 'elderAddSystemJs',
                 string: `<link rel="preload" href="${settings.locations.systemJs}" as="script">`,
-                priority: 2,
+                priority: 99,
               },
               ...headStack,
             ],
@@ -192,7 +192,7 @@ const hooks: Array<HookOptions> = [
     hook: 'error',
     name: 'elderConsoleLogErrors',
     description: 'Log any errors to the console.',
-    priority: 100,
+    priority: 1,
     run: async ({ errors, request }) => {
       console.error(request.permalink, errors);
     },
@@ -201,7 +201,7 @@ const hooks: Array<HookOptions> = [
     hook: 'requestComplete',
     name: 'elderWriteHtmlFileToPublic',
     description: 'Write the html output to public.',
-    priority: 100,
+    priority: 1,
     run: async ({ settings, request, htmlString, errors }) => {
       if (settings.build) {
         const file = path.resolve(process.cwd(), `${settings.locations.public}${request.permalink}/index.html`);

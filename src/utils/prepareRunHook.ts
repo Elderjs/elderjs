@@ -30,7 +30,7 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
     const theseHooks = hooks.filter((h) => h.hook === hookName);
     if (theseHooks && Array.isArray(theseHooks) && theseHooks.length > 0) {
       // lower priority is more important.
-      const hookList = theseHooks.sort((a, b) => a.priority - b.priority);
+      const hookList = theseHooks.sort((a, b) => b.priority - a.priority);
 
       if (settings && settings.debug && settings.debug.hooks) {
         console.log(`Hooks registered on ${hookName}:`, hookList);

@@ -3,7 +3,7 @@ function prepareProcessStack(page) {
     page.perf.start(`stack.${name}`);
     const str = page[name]
       .map((s) => ({ ...s, priority: s.priority || 50 }))
-      .sort((a, b) => a.priority - b.priority)
+      .sort((a, b) => b.priority - a.priority)
       .reduce((out, cv, i, arr) => {
         if (page.settings.debug && page.settings.debug.stacks) {
           console.log(`stack.${name}`, arr, i);

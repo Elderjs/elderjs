@@ -30,5 +30,5 @@ test('#prepareProcessStack', () => {
     },
   };
   const processStackFn = prepareProcessStack(page);
-  expect(processStackFn('testStack')).toEqual('-1--10--50-');
+  expect(processStackFn('testStack')).toEqual('-50--10--1-');
 });
