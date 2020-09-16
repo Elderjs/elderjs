@@ -1,5 +1,4 @@
-const defaultConfig = { debug: { automagic: true }, locations: { buildFolder: '' } };
-jest.mock('../tsConfigExist.ts', () => () => true);
+const defaultConfig = { debug: { automagic: true }, distDir: 'public', srcDir: 'src', rootDir: 'test' };
 jest.mock('../validations.ts', () => ({
   getDefaultConfig: () => defaultConfig,
 }));
@@ -14,7 +13,7 @@ jest.mock('cosmiconfig', () => {
 
 jest.mock('path', () => {
   return {
-    resolve: (...strings) => strings.join('/').replace('./', ''),
+    resolve: (...strings) => strings.join('/').replace('./', '').replace('test/test', 'test'),
   };
 });
 
@@ -22,13 +21,16 @@ process.cwd = () => 'test';
 
 describe('#getConfig', () => {
   const output = {
+    $$internal: {
+      clientComponents: 'test/public/svelte/',
+      ssrComponents: 'test/___ELDER___/compiled/',
+    },
     debug: {
       automagic: true,
     },
-    locations: {
-      buildFolder: './build/',
-    },
-    typescript: true,
+    distDir: 'test/public',
+    rootDir: 'test',
+    srcDir: 'test/src',
   };
 
   beforeEach(() => {
@@ -41,22 +43,6 @@ describe('#getConfig', () => {
         throw new Error();
       },
     }));
-    // eslint-disable-next-line global-require
-    const getConfig = require('../getConfig').default;
-
-    expect(getConfig()).toEqual(defaultConfig);
-  });
-
-  it('not able to set build folder from tsconfig', () => {
-    jest.mock('fs', () => ({
-      readFileSync: () =>
-        JSON.stringify({
-          compilerOptions: {
-            outDir: '/build',
-          },
-        }),
-    }));
-
     // eslint-disable-next-line global-require
     const getConfig = require('../getConfig').default;
 

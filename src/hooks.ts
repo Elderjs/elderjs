@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import { parseBuildPerf } from './utils';
 import externalHelpers from './externalHelpers';
-import { HookOptions, Hook } from './hookInterface/types';
+import { HookOptions } from './hookInterface/types';
 import prepareShortcodeParser from './utils/prepareShortcodeParser';
 
 const hooks: Array<HookOptions> = [

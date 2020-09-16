@@ -15,12 +15,13 @@ ObjectSchema {
   "_nodes": Array [
     "plugins",
     "shortcodes",
-    "typescript",
     "build",
     "server",
     "hooks",
     "debug",
-    "locations",
+    "srcDir",
+    "distDir",
+    "rootDir",
     "siteUrl",
   ],
   "_options": Object {
@@ -293,6 +294,33 @@ ObjectSchema {
       ],
       "type": "object",
     },
+    "distDir": StringSchema {
+      "_blacklist": RefSet {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": Array [],
+      "_default": "public",
+      "_deps": Array [],
+      "_exclusive": Object {},
+      "_label": "Where should files be written? This represents the \\"root\\" of your site and where your html will be built.",
+      "_mutate": undefined,
+      "_options": Object {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "string",
+      "_typeError": [Function],
+      "_whitelist": RefSet {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": Array [],
+      "transforms": Array [
+        [Function],
+      ],
+      "type": "string",
+    },
     "hooks": ObjectSchema {
       "_blacklist": RefSet {
         "list": Set {},
@@ -402,294 +430,6 @@ ObjectSchema {
       ],
       "type": "object",
     },
-    "locations": ObjectSchema {
-      "_blacklist": RefSet {
-        "list": Set {},
-        "refs": Map {},
-      },
-      "_conditions": Array [],
-      "_defaultDefault": [Function],
-      "_deps": Array [],
-      "_excludedEdges": Array [],
-      "_exclusive": Object {},
-      "_label": "Where various files are written and read from.",
-      "_mutate": undefined,
-      "_nodes": Array [
-        "intersectionObserverPoly",
-        "buildFolder",
-        "srcFolder",
-        "systemJs",
-        "svelte",
-        "public",
-        "assets",
-      ],
-      "_options": Object {
-        "abortEarly": true,
-        "recursive": true,
-      },
-      "_type": "object",
-      "_typeError": [Function],
-      "_whitelist": RefSet {
-        "list": Set {},
-        "refs": Map {},
-      },
-      "fields": Object {
-        "assets": StringSchema {
-          "_blacklist": RefSet {
-            "list": Set {},
-            "refs": Map {},
-          },
-          "_conditions": Array [],
-          "_default": "./public/dist/static/",
-          "_deps": Array [],
-          "_exclusive": Object {},
-          "_label": "Where your site's assets files should be written to if you are using the Elder.js template. (Include ./public/)\\"",
-          "_mutate": undefined,
-          "_options": Object {
-            "abortEarly": true,
-            "recursive": true,
-          },
-          "_type": "string",
-          "_typeError": [Function],
-          "_whitelist": RefSet {
-            "list": Set {},
-            "refs": Map {},
-          },
-          "tests": Array [],
-          "transforms": Array [
-            [Function],
-          ],
-          "type": "string",
-        },
-        "buildFolder": StringSchema {
-          "_blacklist": RefSet {
-            "list": Set {},
-            "refs": Map {},
-          },
-          "_conditions": Array [],
-          "_default": "",
-          "_deps": Array [],
-          "_exclusive": Object {},
-          "_label": "If Elder.js doesn't find the files it is looking for in the src folder, it will look in the build folder. (used for typescript)",
-          "_mutate": undefined,
-          "_options": Object {
-            "abortEarly": true,
-            "recursive": true,
-          },
-          "_type": "string",
-          "_typeError": [Function],
-          "_whitelist": RefSet {
-            "list": Set {},
-            "refs": Map {},
-          },
-          "tests": Array [],
-          "transforms": Array [
-            [Function],
-          ],
-          "type": "string",
-        },
-        "intersectionObserverPoly": StringSchema {
-          "_blacklist": RefSet {
-            "list": Set {},
-            "refs": Map {},
-          },
-          "_conditions": Array [],
-          "_default": "/dist/static/intersection-observer.js",
-          "_deps": Array [],
-          "_exclusive": Object {},
-          "_label": "Elder.js uses a poly fill for the intersection observer. This is where it will be found on your site. (exclude /public/)",
-          "_mutate": undefined,
-          "_options": Object {
-            "abortEarly": true,
-            "recursive": true,
-          },
-          "_type": "string",
-          "_typeError": [Function],
-          "_whitelist": RefSet {
-            "list": Set {},
-            "refs": Map {},
-          },
-          "tests": Array [],
-          "transforms": Array [
-            [Function],
-          ],
-          "type": "string",
-        },
-        "public": StringSchema {
-          "_blacklist": RefSet {
-            "list": Set {},
-            "refs": Map {},
-          },
-          "_conditions": Array [],
-          "_default": "./public/",
-          "_deps": Array [],
-          "_exclusive": Object {},
-          "_label": "Where should files be written? This represents the \\"root\\" of your site and where your html will be built.",
-          "_mutate": undefined,
-          "_options": Object {
-            "abortEarly": true,
-            "recursive": true,
-          },
-          "_type": "string",
-          "_typeError": [Function],
-          "_whitelist": RefSet {
-            "list": Set {},
-            "refs": Map {},
-          },
-          "tests": Array [],
-          "transforms": Array [
-            [Function],
-          ],
-          "type": "string",
-        },
-        "srcFolder": StringSchema {
-          "_blacklist": RefSet {
-            "list": Set {},
-            "refs": Map {},
-          },
-          "_conditions": Array [],
-          "_default": "./src/",
-          "_deps": Array [],
-          "_exclusive": Object {},
-          "_label": "Elder.js and plugins use this to resolve where things should be in the expected file structure.",
-          "_mutate": undefined,
-          "_options": Object {
-            "abortEarly": true,
-            "recursive": true,
-          },
-          "_type": "string",
-          "_typeError": [Function],
-          "_whitelist": RefSet {
-            "list": Set {},
-            "refs": Map {},
-          },
-          "tests": Array [],
-          "transforms": Array [
-            [Function],
-          ],
-          "type": "string",
-        },
-        "svelte": ObjectSchema {
-          "_blacklist": RefSet {
-            "list": Set {},
-            "refs": Map {},
-          },
-          "_conditions": Array [],
-          "_defaultDefault": [Function],
-          "_deps": Array [],
-          "_excludedEdges": Array [],
-          "_exclusive": Object {},
-          "_mutate": undefined,
-          "_nodes": Array [
-            "clientComponents",
-            "ssrComponents",
-          ],
-          "_options": Object {
-            "abortEarly": true,
-            "recursive": true,
-          },
-          "_type": "object",
-          "_typeError": [Function],
-          "_whitelist": RefSet {
-            "list": Set {},
-            "refs": Map {},
-          },
-          "fields": Object {
-            "clientComponents": StringSchema {
-              "_blacklist": RefSet {
-                "list": Set {},
-                "refs": Map {},
-              },
-              "_conditions": Array [],
-              "_default": "./public/dist/svelte/",
-              "_deps": Array [],
-              "_exclusive": Object {},
-              "_label": "Location where Svelte components that are bundled for the client should be saved. (Include ./public/)",
-              "_mutate": undefined,
-              "_options": Object {
-                "abortEarly": true,
-                "recursive": true,
-              },
-              "_type": "string",
-              "_typeError": [Function],
-              "_whitelist": RefSet {
-                "list": Set {},
-                "refs": Map {},
-              },
-              "tests": Array [],
-              "transforms": Array [
-                [Function],
-              ],
-              "type": "string",
-            },
-            "ssrComponents": StringSchema {
-              "_blacklist": RefSet {
-                "list": Set {},
-                "refs": Map {},
-              },
-              "_conditions": Array [],
-              "_default": "./___ELDER___/compiled/",
-              "_deps": Array [],
-              "_exclusive": Object {},
-              "_label": "Location where should SSR components be stored.",
-              "_mutate": undefined,
-              "_options": Object {
-                "abortEarly": true,
-                "recursive": true,
-              },
-              "_type": "string",
-              "_typeError": [Function],
-              "_whitelist": RefSet {
-                "list": Set {},
-                "refs": Map {},
-              },
-              "tests": Array [],
-              "transforms": Array [
-                [Function],
-              ],
-              "type": "string",
-            },
-          },
-          "tests": Array [],
-          "transforms": Array [
-            [Function],
-          ],
-          "type": "object",
-        },
-        "systemJs": StringSchema {
-          "_blacklist": RefSet {
-            "list": Set {},
-            "refs": Map {},
-          },
-          "_conditions": Array [],
-          "_default": "/dist/static/s.min.js",
-          "_deps": Array [],
-          "_exclusive": Object {},
-          "_label": "If you are using the recommended Elder.js rollup file it is using Systemjs. This defines is where the systemjs file will be found on your site. (exclude /public/)",
-          "_mutate": undefined,
-          "_options": Object {
-            "abortEarly": true,
-            "recursive": true,
-          },
-          "_type": "string",
-          "_typeError": [Function],
-          "_whitelist": RefSet {
-            "list": Set {},
-            "refs": Map {},
-          },
-          "tests": Array [],
-          "transforms": Array [
-            [Function],
-          ],
-          "type": "string",
-        },
-      },
-      "tests": Array [],
-      "transforms": Array [
-        [Function],
-      ],
-      "type": "object",
-    },
     "plugins": ObjectSchema {
       "_blacklist": RefSet {
         "list": Set {},
@@ -720,6 +460,33 @@ ObjectSchema {
         [Function],
       ],
       "type": "object",
+    },
+    "rootDir": StringSchema {
+      "_blacklist": RefSet {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": Array [],
+      "_default": "process.cwd()",
+      "_deps": Array [],
+      "_exclusive": Object {},
+      "_label": "Here your package.json lives.",
+      "_mutate": undefined,
+      "_options": Object {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "string",
+      "_typeError": [Function],
+      "_whitelist": RefSet {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": Array [],
+      "transforms": Array [
+        [Function],
+      ],
+      "type": "string",
     },
     "server": ObjectSchema {
       "_blacklist": RefSet {
@@ -894,22 +661,22 @@ ObjectSchema {
       ],
       "type": "string",
     },
-    "typescript": BooleanSchema {
+    "srcDir": StringSchema {
       "_blacklist": RefSet {
         "list": Set {},
         "refs": Map {},
       },
       "_conditions": Array [],
-      "_default": false,
+      "_default": "src",
       "_deps": Array [],
       "_exclusive": Object {},
-      "_label": "This causes Elder.js to look in the /build/ folder ",
+      "_label": "Where Elder.js should find it's expected file structure. If you are using a build step such as typescript on your project, you may need to edit this. ",
       "_mutate": undefined,
       "_options": Object {
         "abortEarly": true,
         "recursive": true,
       },
-      "_type": "boolean",
+      "_type": "string",
       "_typeError": [Function],
       "_whitelist": RefSet {
         "list": Set {},
@@ -919,7 +686,7 @@ ObjectSchema {
       "transforms": Array [
         [Function],
       ],
-      "type": "boolean",
+      "type": "string",
     },
   },
   "tests": Array [],
@@ -1162,7 +929,7 @@ ObjectSchema {
         "max": true,
         "min": true,
       },
-      "_label": "The priority level a hook should run at. Elder.js hooks run at 1 or 100 where 1 is the highest priorty and 100 is the lowest priority.",
+      "_label": "The priority level a hook should run at. Elder.js hooks run here 100 is the highest priority and 1 is the lowest priority.",
       "_mutate": undefined,
       "_options": Object {
         "abortEarly": true,

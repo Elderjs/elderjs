@@ -444,6 +444,7 @@ Page {
                 "type": "build",
               },
               "routeHTML": undefined,
+              "routeHtml": undefined,
               "settings": Object {
                 "$$internal": Object {
                   "hashedComponents": Object {

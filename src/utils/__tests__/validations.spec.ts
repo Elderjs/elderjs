@@ -26,6 +26,9 @@ describe('#validations', () => {
       numberOfWorkers: -1,
       shuffleRequests: false,
     },
+    rootDir: 'process.cwd()',
+    srcDir: 'src',
+    distDir: 'public',
     debug: {
       automagic: false,
       build: false,
@@ -37,23 +40,10 @@ describe('#validations', () => {
       disable: [],
     },
     siteUrl: '',
-    locations: {
-      assets: './public/dist/static/',
-      buildFolder: '',
-      intersectionObserverPoly: '/dist/static/intersection-observer.js',
-      public: './public/',
-      srcFolder: './src/',
-      svelte: {
-        clientComponents: './public/dist/svelte/',
-        ssrComponents: './___ELDER___/compiled/',
-      },
-      systemJs: '/dist/static/s.min.js',
-    },
     plugins: {},
     server: {
       prefix: '',
     },
-    typescript: false,
     shortcodes: {
       closePattern: '}}',
       openPattern: '{{',

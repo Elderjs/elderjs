@@ -3,6 +3,7 @@ process.cwd = () => 'test';
 jest.mock('path', () => ({
   resolve: (...strings) => strings.join('/').replace('./', '').replace('//', '/').slice(0, -1),
   join: (...strings) => strings.join('/').replace('./', '').replace('//', '/').slice(0, -1),
+  posix: () => ({ dirname: () => '' }),
 }));
 
 jest.mock('glob', () => ({
@@ -16,7 +17,6 @@ jest.mock('glob', () => ({
       'test/src/routes/Content/data.js',
       'test/src/routes/Content/Layout.svelte',
     ])
-    .mockImplementationOnce(() => [])
     .mockImplementationOnce(() => [
       'test/___ELDER___/compiled/Home.js',
       'test/___ELDER___/compiled/AutoComplete.js',
@@ -32,16 +32,15 @@ describe('#routes', () => {
     debug: {
       automagic: true,
     },
-    locations: {
-      buildFolder: './___ELDER___/',
-      srcFolder: './src/',
-      svelte: {
-        ssrComponents: './___ELDER___/compiled/',
-        clientComponents: './public/dist/svelte/',
-      },
-    },
-    typescript: false,
+    siteUrl: '',
+    distDir: 'test/public',
+    rootDir: 'test',
+    srcDir: 'test/src',
     hooks: {},
+    $$internal: {
+      clientComponents: 'test/public/svelte',
+      ssrComponents: 'test/___ELDER___/compiled',
+    },
   };
 
   it('throws error when no permalink function', () => {

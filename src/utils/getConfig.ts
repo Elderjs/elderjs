@@ -1,10 +1,8 @@
 import { cosmiconfigSync } from 'cosmiconfig';
 import defaultsDeep from 'lodash.defaultsdeep';
 import path from 'path';
-import fs from 'fs';
 import { ConfigOptions } from './types';
 import { getDefaultConfig } from './validations';
-import getHashedSvelteComponents from './getHashedSvelteComponents';
 
 function getConfig(context?: string): ConfigOptions {
   const explorerSync = cosmiconfigSync('elder');
@@ -19,8 +17,8 @@ function getConfig(context?: string): ConfigOptions {
 
   const rootDir = config.rootDir === 'process.cwd()' ? process.cwd() : path.resolve(config.rootDir);
   config.rootDir = rootDir;
-  config.srcDir = path.resolve(rootDir, config.srcDir);
-  config.distDir = path.resolve(rootDir, config.distDir);
+  config.srcDir = path.resolve(rootDir, `./${config.srcDir}`);
+  config.distDir = path.resolve(rootDir, `./${config.distDir}`);
 
   const ssrComponents = path.resolve(config.rootDir, './___ELDER___/compiled/');
   const clientComponents = path.resolve(config.distDir, './svelte/');
@@ -28,7 +26,6 @@ function getConfig(context?: string): ConfigOptions {
   config.$$internal = {
     ssrComponents,
     clientComponents,
-    hashedComponents: getHashedSvelteComponents({ ssrComponents, clientComponents }),
   };
 
   if (config.debug.automagic && (!context || context !== 'build')) {

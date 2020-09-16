@@ -1,5 +1,4 @@
 import glob from 'glob';
-import path from 'path';
 
 let results = {};
 

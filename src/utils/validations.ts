@@ -144,7 +144,6 @@ const configSchema = yup.object({
         `If you have some pages that take longer to generate than others, you may want to shuffle your requests so they are spread out more evenly across processes when building.`,
       ),
   }),
-  typescript: yup.boolean().default(false).label('This causes Elder.js to look in the /build/ folder '),
   shortcodes: yup.object({
     openPattern: yup.string().default('{{').label('Opening pattern for identifying shortcodes in html output.'),
     closePattern: yup.string().default('}}').label('closing pattern for identifying shortcodes in html output.'),

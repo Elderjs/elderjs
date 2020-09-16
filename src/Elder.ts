@@ -88,6 +88,8 @@ class Elder {
       build: context === 'build' && config[context],
     };
 
+    this.settings.$$internal.hashedComponents = getHashedSvelteComponents({ ...config.$$internal });
+
     if (context === 'build' && worker) {
       this.settings.worker = worker;
     }
@@ -114,6 +116,7 @@ class Elder {
       let plugin: PluginOptions | undefined;
       const pluginPath = `./plugins/${pluginName}/index.js`;
       const srcPlugin = path.resolve(this.settings.srcDir, pluginPath);
+
       if (fs.existsSync(srcPlugin)) {
         // eslint-disable-next-line import/no-dynamic-require
         const pluginReq = require(srcPlugin);
@@ -128,7 +131,8 @@ class Elder {
           const pluginPkgPath = path.resolve(pkgPath, pluginPackageJson.main);
 
           // eslint-disable-next-line import/no-dynamic-require
-          plugin = require(pluginPkgPath).default || require(pluginPkgPath);
+          const nmPluginReq = require(pluginPkgPath);
+          plugin = nmPluginReq.default || nmPluginReq;
         }
       }
 

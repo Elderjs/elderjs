@@ -125,21 +125,22 @@ export default function getRollupConfig({ svelteConfig }) {
   [
     ['./node_modules/intersection-observer/intersection-observer.js', './static/intersection-observer.js'],
     ['./node_modules/systemjs/dist/s.min.js', './static/s.min.js'],
-  ]
-    .filter((dep) => fs.existsSync(path.resolve(rootDir, dep[0])))
-    .forEach((dep) => {
-      configs.push({
-        input: dep[0],
-        output: [
-          {
-            file: path.resolve(distDir, dep[1]),
-            format: 'iife',
-            name: dep[1],
-            plugins: [terser()],
-          },
-        ],
-      });
+  ].forEach((dep) => {
+    if (!fs.existsSync(path.resolve(rootDir, dep[0]))) {
+      throw new Error(`Elder.js peer dependency not found at ${dep[0]}`);
+    }
+    configs.push({
+      input: dep[0],
+      output: [
+        {
+          file: path.resolve(distDir, dep[1]),
+          format: 'iife',
+          name: dep[1],
+          plugins: [terser()],
+        },
+      ],
     });
+  });
 
   // SSR /routes/ Svelte files.
   const templates = glob.sync(`${relSrcDir}/routes/*/*.svelte`).reduce((out, cv) => {

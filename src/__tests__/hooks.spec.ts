@@ -6,6 +6,7 @@ process.cwd = () => 'test';
 
 jest.mock('path', () => ({
   resolve: (...strings) => strings.join('/').replace('./', '').replace('//', '/'),
+  posix: () => ({ dirname: () => '' }),
 }));
 
 jest.mock('fs-extra', () => ({
@@ -45,17 +46,11 @@ describe('#hooks', () => {
   });
   it('elderAddDefaultIntersectionObserver', async () => {
     const hook = hooks.find((h) => h.name === 'elderAddDefaultIntersectionObserver');
-    expect(
-      await hook.run({ beforeHydrateStack: [], settings: { locations: { intersectionObserverPoly: 'foo' } } }),
-    ).toMatchSnapshot();
-    expect(await hook.run({ beforeHydrateStack: [], settings: {} })).toBe(null);
+    expect(await hook.run({ beforeHydrateStack: [] })).toMatchSnapshot();
   });
   it('elderAddSystemJs', async () => {
     const hook = hooks.find((h) => h.name === 'elderAddSystemJs');
-    expect(
-      await hook.run({ beforeHydrateStack: [], headStack: [], settings: { locations: { systemJs: 'foo' } } }),
-    ).toMatchSnapshot();
-    expect(await hook.run({ beforeHydrateStack: [], settings: {} })).toBe(null);
+    expect(await hook.run({ beforeHydrateStack: [], headStack: [] })).toMatchSnapshot();
   });
 
   it('elderCompileHtml', async () => {
