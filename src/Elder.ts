@@ -71,6 +71,8 @@ class Elder {
 
   builder: any;
 
+  hookInterface: any;
+
   shortcodes: ShortcodeDefs;
 
   constructor({ context, worker = false }) {
@@ -439,6 +441,7 @@ class Elder {
     this.allRequests = [];
     this.serverLookupObject = {};
     this.errors = [];
+    this.hookInterface = hookInterface;
 
     this.helpers = {
       permalinks: permalinks({ routes: this.routes, settings: this.settings }),
