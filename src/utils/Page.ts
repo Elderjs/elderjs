@@ -59,7 +59,8 @@ const buildPage = async (page) => {
         helpers: page.helpers,
         settings: page.settings,
         request: page.request,
-        routeHTML: page.routeHtml,
+        routeHTML: page.routeHtml, //todo, depreciate this
+        routeHtml: page.routeHtml,
       },
     });
     page.perf.end('html.layout');
