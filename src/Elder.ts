@@ -40,8 +40,6 @@ import workerBuild from './workerBuild';
 import { inlineSvelteComponent } from './partialHydration/inlineSvelteComponent';
 import elderJsShortcodes from './shortcodes';
 
-const getElderConfig = getConfig;
-
 class Elder {
   bootstrapComplete: Promise<any>;
 
@@ -80,7 +78,7 @@ class Elder {
       this.markBootstrapComplete = resolve;
     });
 
-    const config = getConfig(context);
+    const config = getConfig();
 
     this.settings = {
       ...config,
@@ -500,4 +498,4 @@ class Elder {
   }
 }
 
-export { Elder, getElderConfig, build, partialHydration };
+export { Elder, build, partialHydration };

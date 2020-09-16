@@ -4,7 +4,7 @@ import path from 'path';
 import { ConfigOptions } from './types';
 import { getDefaultConfig } from './validations';
 
-function getConfig(context?: string): ConfigOptions {
+function getConfig(): ConfigOptions {
   const explorerSync = cosmiconfigSync('elder');
   const explorerSearch = explorerSync.search();
   let loadedConfig = {};
@@ -27,12 +27,6 @@ function getConfig(context?: string): ConfigOptions {
     ssrComponents,
     clientComponents,
   };
-
-  if (config.debug.automagic && (!context || context !== 'build')) {
-    console.log(
-      `debug.automagic:: Your elder.config.js has debug.automagic = true. We call this chatty mode, but it is designed to show you the things we're doing automatically so you're aware. To turn it off set debug.automagic = 'false'`,
-    );
-  }
 
   return config;
 }

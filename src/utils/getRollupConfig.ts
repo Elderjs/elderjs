@@ -1,3 +1,4 @@
+/* eslint-disable no-lonely-if */
 // require('dotenv').config();
 import svelte from 'rollup-plugin-svelte';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
@@ -13,7 +14,8 @@ import glob from 'glob';
 import path from 'path';
 import fs from 'fs-extra';
 import del from 'del';
-import { getElderConfig, partialHydration } from '../Elder';
+import { getElderConfig, partialHydration } from '../index';
+import { ConfigOptions } from './types';
 
 const production = process.env.NODE_ENV === 'production' || !process.env.ROLLUP_WATCH;
 
@@ -107,11 +109,31 @@ function createSSRConfig({ input, output, svelteConfig, multiInputConfig = false
   return config;
 }
 
+function getPluginPaths(elderConfig: ConfigOptions) {
+  const pluginNames = Object.keys(elderConfig.plugins);
+
+  return pluginNames.reduce((out, pluginName) => {
+    const pluginPath = path.resolve(elderConfig.srcDir, `./plugins/${pluginName}`);
+    const nmPluginPath = path.resolve(elderConfig.rootDir, `./node_modules/${pluginName}`);
+    if (fs.existsSync(`${pluginPath}/index.js`)) {
+      const svelteFiles = glob.sync(`${pluginPath}/*.svelte`);
+      console.log(`${pluginPath}/*.svelte`, svelteFiles);
+      if (svelteFiles.length > 0) {
+        out.push(`${pluginPath}/`);
+      }
+    } else if (fs.existsSync(`${nmPluginPath}/package.json`)) {
+      if (glob.sync(`${nmPluginPath}/*.svelte`).length > 0) {
+        out.push(`${nmPluginPath}/`);
+      }
+    }
+    return out;
+  }, []);
+}
+
 export default function getRollupConfig({ svelteConfig }) {
   const elderConfig = getElderConfig();
   const { $$internal, distDir, srcDir, rootDir } = elderConfig;
   const { ssrComponents, clientComponents } = $$internal;
-
   const relSrcDir = srcDir.replace(rootDir, '').substr(1);
 
   console.log(`Elder.js using rollup in ${production ? 'production' : 'development'} mode.`);
@@ -177,11 +199,14 @@ export default function getRollupConfig({ svelteConfig }) {
     return out;
   }, []);
 
+  const pluginPaths = getPluginPaths(elderConfig);
+
+  configs = [...configs, ...templates, ...layouts];
+
   if (production) {
     // production build does bundle splitting, minification, and babel
-    configs = [...configs, ...templates, ...layouts];
+
     if (fs.existsSync(path.resolve(srcDir, `./components/`))) {
-      console.log(`${relSrcDir}/components/*/*.svelte`);
       configs.push(
         createBrowserConfig({
           input: [`${relSrcDir}/components/*/*.svelte`],
@@ -216,11 +241,11 @@ export default function getRollupConfig({ svelteConfig }) {
     }
   } else {
     // watch/dev build bundles each component individually for faster reload times during dev.
-    let sharedComponents = [];
+
     if (fs.existsSync(path.resolve(srcDir, `./components/`))) {
-      sharedComponents = glob.sync(path.resolve(srcDir, './components/*/*.svelte')).reduce((out, cv) => {
+      glob.sync(path.resolve(srcDir, './components/*/*.svelte')).forEach((cv) => {
         const file = cv.replace(`${rootDir}/`, '');
-        out.push(
+        configs.push(
           createBrowserConfig({
             input: file,
             output: {
@@ -232,7 +257,7 @@ export default function getRollupConfig({ svelteConfig }) {
             svelteConfig,
           }),
         );
-        out.push(
+        configs.push(
           createSSRConfig({
             input: file,
             output: {
@@ -243,12 +268,43 @@ export default function getRollupConfig({ svelteConfig }) {
             svelteConfig,
           }),
         );
-
-        return out;
-      }, []);
+      });
     }
-    configs = [...configs, ...templates, ...layouts, ...sharedComponents];
   }
+
+  pluginPaths.forEach((pluginPath) => {
+    configs.push(
+      createBrowserConfig({
+        input: [`${pluginPath}*.svelte`],
+        output: {
+          dir: clientComponents,
+          entryFileNames: 'entry[name]-[hash].js',
+          sourcemap: !production,
+          format: 'system',
+        },
+        multiInputConfig: multiInput({
+          relative: pluginPath.replace(elderConfig.distDir, '').substr(1),
+          transformOutputPath: (output) => `${path.basename(output)}`,
+        }),
+        svelteConfig,
+      }),
+    );
+    configs.push(
+      createSSRConfig({
+        input: [`${pluginPath}*.svelte`],
+        output: {
+          dir: ssrComponents,
+          format: 'cjs',
+          exports: 'auto',
+        },
+        multiInputConfig: multiInput({
+          relative: pluginPath.replace(elderConfig.distDir, '').substr(1),
+          transformOutputPath: (output) => `${path.basename(output)}`,
+        }),
+        svelteConfig,
+      }),
+    );
+  });
 
   return configs;
 }

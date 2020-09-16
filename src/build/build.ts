@@ -2,7 +2,7 @@ import cliProgress from 'cli-progress';
 import os from 'os';
 import cluster from 'cluster';
 
-import { Elder, getElderConfig } from '../Elder';
+import { Elder, getElderConfig } from '../index';
 import shuffleArray from '../utils/shuffleArray';
 import { BuildResult } from '../utils/types';
 
