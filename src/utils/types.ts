@@ -32,8 +32,6 @@ type PathOptions = {
   // srcFolder: string;
   // buildFolder: string;
 
-  ssrComponents: string;
-  clientComponents: string;
   distDir: string;
   srcDir: string;
   rootDir: string;
@@ -46,7 +44,7 @@ export type ConfigOptions = {
 
   server: ServerOptions;
   build: BuildOptions;
-  paths: PathOptions;
+  // paths: PathOptions;
   debug: DebugOptions;
   plugins?: any;
   hooks: {
@@ -58,16 +56,18 @@ export type ConfigOptions = {
     openPattern: string;
     closePattern: string;
   };
+  $$internal: Internal;
 };
 
 type Internal = {
-  hashedComponents: {};
+  hashedComponents?: {};
+  ssrComponents: string;
+  clientComponents: string;
 };
 
 export type SettingOptions = {
   server: boolean;
   build: boolean;
-  $$internal: Internal;
 };
 
 export type QueryOptions = {

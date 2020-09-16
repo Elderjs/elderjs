@@ -29,11 +29,9 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
 
   if (!componentCache[cleanComponentName]) {
     const clientComponents = page.settings.$$internal.hashedComponents;
-    const ssrComponent = path.resolve(page.settings.paths.ssrComponents, `./${cleanComponentName}.js`);
-    let clientSvelteFolder = page.settings.paths.clientComponents.replace(page.settings.paths.distDir, '');
+    const ssrComponent = path.resolve(page.settings.$$internal.ssrComponents, `./${cleanComponentName}.js`);
+    let clientSvelteFolder = page.settings.$$internal.clientComponents.replace(page.settings.distDir, '');
     if (clientSvelteFolder.indexOf('.') === 0) clientSvelteFolder = clientSvelteFolder.substring(1);
-
-    console.log(clientComponents, cleanComponentName);
 
     // eslint-disable-next-line global-require, import/no-dynamic-require
     const { render } = require(ssrComponent);

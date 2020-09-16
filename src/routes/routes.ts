@@ -14,9 +14,9 @@ function routes(settings: ConfigOptions) {
     `,
     );
 
-  const files = glob.sync(`${settings.paths.srcDir}/routes/*/+(*.js|*.svelte)`);
+  const files = glob.sync(`${settings.srcDir}/routes/*/+(*.js|*.svelte)`);
 
-  const ssrFolder = settings.paths.ssrComponents;
+  const ssrFolder = settings.$$internal.ssrComponents;
 
   const ssrComponents = glob.sync(`${ssrFolder}/*.js`);
 
@@ -46,7 +46,7 @@ function routes(settings: ConfigOptions) {
         const ssrComponent = ssrComponents.find((f) => f.endsWith(`${componentName}.js`));
         if (!ssrComponent) {
           console.error(
-            `We see you want to load ${route.template}, but we don't see a compiled template in ${settings.paths.ssrComponents}. You'll probably see more errors in a second. Make sure you've run rollup.`,
+            `We see you want to load ${route.template}, but we don't see a compiled template in ${settings.$$internal.ssrComponents}. You'll probably see more errors in a second. Make sure you've run rollup.`,
           );
         }
 
@@ -69,7 +69,7 @@ function routes(settings: ConfigOptions) {
         const ssrComponent = ssrComponents.find((f) => f.endsWith(`${capitalizedRoute}.js`));
         if (!ssrComponent) {
           console.error(
-            `We see you want to load ${route.template}, but we don't see a compiled template in ${settings.paths.ssrComponents}. You'll probably see more errors in a second. Make sure you've run rollup.`,
+            `We see you want to load ${route.template}, but we don't see a compiled template in ${settings.$$internal.ssrComponents}. You'll probably see more errors in a second. Make sure you've run rollup.`,
           );
         }
       } else {

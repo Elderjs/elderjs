@@ -186,7 +186,7 @@ const hooks: Array<HookOptions> = [
     priority: 1,
     run: async ({ settings, request, htmlString, errors }) => {
       if (settings.build) {
-        const file = path.resolve(settings.paths.distDir, `.${request.permalink}/index.html`);
+        const file = path.resolve(settings.distDir, `.${request.permalink}/index.html`);
         try {
           fs.outputFileSync(file, htmlString);
         } catch (e) {
@@ -235,7 +235,7 @@ const hooks: Array<HookOptions> = [
     priority: 50,
     run: async ({ errors, settings }) => {
       if (errors && errors.length > 0) {
-        const buildOutputLocation = path.resolve(settings.paths.rootDir, `./___ELDER___/build-${Date.now()}.json`);
+        const buildOutputLocation = path.resolve(settings.rootDir, `./___ELDER___/build-${Date.now()}.json`);
         console.log(`Writing details on the ${errors.length} build errors to: ${buildOutputLocation}`);
         fs.writeJSONSync(buildOutputLocation, { errors, settings });
       }

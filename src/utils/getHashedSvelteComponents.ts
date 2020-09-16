@@ -11,12 +11,12 @@ let ready = false;
  *
  * @returns {Object}
  */
-const getHashedSvelteComponents = (config) => {
+const getHashedSvelteComponents = ({ ssrComponents, clientComponents }) => {
   if (!ready) {
     ready = true;
 
-    const ssrFiles = glob.sync(`${config.paths.ssrComponents}/*.js`, {});
-    const clientFiles = glob.sync(`${config.paths.clientComponents}/*.js`, {});
+    const ssrFiles = glob.sync(`${ssrComponents}/*.js`, {});
+    const clientFiles = glob.sync(`${clientComponents}/*.js`, {});
 
     // get an array with jus the file name before .js;
     // CityResults.js => CityResults

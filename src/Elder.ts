@@ -86,9 +86,6 @@ class Elder {
       ...config,
       server: context === 'server' && config[context],
       build: context === 'build' && config[context],
-      $$internal: {
-        hashedComponents: getHashedSvelteComponents(config),
-      },
     };
 
     if (context === 'build' && worker) {
@@ -124,7 +121,7 @@ class Elder {
       }
 
       if (!plugin) {
-        const pkgPath = path.resolve(this.settings.paths.rootDir, './node_modules/', pluginName);
+        const pkgPath = path.resolve(this.settings.rootDir, './node_modules/', pluginName);
         if (fs.existsSync(pkgPath)) {
           // eslint-disable-next-line import/no-dynamic-require
           const pluginPackageJson = require(path.resolve(pkgPath, './package.json'));
@@ -215,7 +212,7 @@ class Elder {
             plugin.routes[routeName].template.endsWith('.svelte')
           ) {
             const templateName = plugin.routes[routeName].template.replace('.svelte', '');
-            const ssrComponent = path.resolve(this.settings.paths.ssrComponents, `${templateName}.js`);
+            const ssrComponent = path.resolve(this.settings.$$internal.ssrComponents, `${templateName}.js`);
 
             if (!fs.existsSync(ssrComponent)) {
               console.warn(

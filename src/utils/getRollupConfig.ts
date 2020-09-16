@@ -109,15 +109,12 @@ function createSSRConfig({ input, output, svelteConfig, multiInputConfig = false
 
 export default function getRollupConfig({ svelteConfig }) {
   const elderConfig = getElderConfig();
-  const { ssrComponents, clientComponents, distDir, srcDir, rootDir } = elderConfig.paths;
+  const { $$internal, distDir, srcDir, rootDir } = elderConfig;
+  const { ssrComponents, clientComponents } = $$internal;
 
-  console.log(ssrComponents, clientComponents);
+  const relSrcDir = srcDir.replace(rootDir, '').substr(1);
 
-  console.log(
-    `rollup production === ${production}. ${!process.env.ROLLUP_WATCH ? 'Because watch is undefined' : ''}. ${
-      process.env.NODE_ENV === 'production' ? 'Because NODE_ENV === Production' : ''
-    }`,
-  );
+  console.log(`Elder.js using rollup in ${production ? 'production' : 'development'} mode.`);
 
   let configs = [];
 
@@ -145,7 +142,7 @@ export default function getRollupConfig({ svelteConfig }) {
     });
 
   // SSR /routes/ Svelte files.
-  const templates = glob.sync(`${elderConfig.srcDir}/routes/*/*.svelte`).reduce((out, cv) => {
+  const templates = glob.sync(`${relSrcDir}/routes/*/*.svelte`).reduce((out, cv) => {
     const file = cv.replace(`${rootDir}/`, '');
     out.push(
       createSSRConfig({
@@ -162,7 +159,7 @@ export default function getRollupConfig({ svelteConfig }) {
   }, []);
 
   // SSR /layouts/ Svelte files.
-  const layouts = glob.sync(`${elderConfig.srcDir}/layouts/*.svelte`).reduce((out, cv) => {
+  const layouts = glob.sync(`${relSrcDir}/layouts/*.svelte`).reduce((out, cv) => {
     const file = cv.replace(`${rootDir}/`, '');
     out.push(
       createSSRConfig({
@@ -183,9 +180,10 @@ export default function getRollupConfig({ svelteConfig }) {
     // production build does bundle splitting, minification, and babel
     configs = [...configs, ...templates, ...layouts];
     if (fs.existsSync(path.resolve(srcDir, `./components/`))) {
+      console.log(`${relSrcDir}/components/*/*.svelte`);
       configs.push(
         createBrowserConfig({
-          input: [`${elderConfig.srcDir}/components/*/*.svelte`],
+          input: [`${relSrcDir}/components/*/*.svelte`],
           output: {
             dir: clientComponents,
             entryFileNames: 'entry[name]-[hash].js',
@@ -193,7 +191,7 @@ export default function getRollupConfig({ svelteConfig }) {
             format: 'system',
           },
           multiInputConfig: multiInput({
-            relative: `${elderConfig.srcDir}/components`,
+            relative: `${relSrcDir}/components`,
             transformOutputPath: (output) => `${path.basename(output)}`,
           }),
           svelteConfig,
@@ -201,14 +199,14 @@ export default function getRollupConfig({ svelteConfig }) {
       );
       configs.push(
         createSSRConfig({
-          input: [`${elderConfig.srcDir}/components/*/*.svelte`],
+          input: [`${relSrcDir}/components/*/*.svelte`],
           output: {
             dir: ssrComponents,
             format: 'cjs',
             exports: 'auto',
           },
           multiInputConfig: multiInput({
-            relative: `${elderConfig.srcDir}/components`,
+            relative: `${relSrcDir}/components`,
             transformOutputPath: (output) => `${path.basename(output)}`,
           }),
           svelteConfig,
