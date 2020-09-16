@@ -16,6 +16,7 @@ import { prepareServer } from './prepareServer';
 import { validateHook, validateRoute, validatePlugin, validateShortcode } from './validations';
 import prepareProcessStack from './prepareProcessStack';
 import getConfig from './getConfig';
+import getRollupConfig from './getRollupConfig';
 
 export {
   asyncForEach,
@@ -37,4 +38,5 @@ export {
   prepareServer,
   prepareProcessStack,
   getConfig,
+  getRollupConfig,
 };
