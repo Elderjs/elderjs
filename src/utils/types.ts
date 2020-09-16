@@ -10,10 +10,10 @@ type BuildOptions = {
   shuffleRequests: boolean;
 };
 
-type SvelteOptions = {
-  ssrComponents: string;
-  clientComponents: string;
-};
+// type SvelteOptions = {
+//   ssrComponents: string;
+//   clientComponents: string;
+// };
 
 type DebugOptions = {
   stacks: boolean;
@@ -23,31 +23,40 @@ type DebugOptions = {
   automagic: boolean;
 };
 
-type LocationOptions = {
-  assets: string;
-  public: string;
-  svelte: SvelteOptions;
-  systemJs: string;
-  intersectionObserverPoly: string;
-  srcFolder: string;
-  buildFolder: string;
+type PathOptions = {
+  // assets: string;
+  // public: string;
+  // svelte: SvelteOptions;
+  // systemJs: string;
+  // intersectionObserverPoly: string;
+  // srcFolder: string;
+  // buildFolder: string;
+
+  ssrComponents: string;
+  clientComponents: string;
+  distDir: string;
+  srcDir: string;
+  rootDir: string;
 };
 
 export type ConfigOptions = {
+  distDir: string;
+  srcDir: string;
+  rootDir: string;
+
   server: ServerOptions;
   build: BuildOptions;
-  locations: LocationOptions;
+  paths: PathOptions;
   debug: DebugOptions;
   plugins?: any;
   hooks: {
     disable?: string[];
   };
-  typescript: boolean;
+  // typescript: boolean;
   worker: boolean;
   shortcodes: {
     openPattern: string;
     closePattern: string;
-    customShortcodes: ShortcodeDefs;
   };
 };
 

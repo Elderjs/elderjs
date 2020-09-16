@@ -15,8 +15,8 @@ const getHashedSvelteComponents = (config) => {
   if (!ready) {
     ready = true;
 
-    const ssrFiles = glob.sync(`${path.resolve(process.cwd(), config.locations.svelte.ssrComponents)}/*.js`, {});
-    const clientFiles = glob.sync(`${path.resolve(process.cwd(), config.locations.svelte.clientComponents)}/*.js`, {});
+    const ssrFiles = glob.sync(`${config.paths.ssrComponents}/*.js`, {});
+    const clientFiles = glob.sync(`${config.paths.clientComponents}/*.js`, {});
 
     // get an array with jus the file name before .js;
     // CityResults.js => CityResults

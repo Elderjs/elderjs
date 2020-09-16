@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import { parseBuildPerf } from './utils';
 import externalHelpers from './externalHelpers';
-import { HookOptions } from './hookInterface/types';
+import { HookOptions, Hook } from './hookInterface/types';
 import prepareShortcodeParser from './utils/prepareShortcodeParser';
 
 const hooks: Array<HookOptions> = [
@@ -112,32 +112,23 @@ const hooks: Array<HookOptions> = [
     name: 'elderAddDefaultIntersectionObserver',
     description: 'Sets up the default polyfill for the intersection observer',
     priority: 100,
-    run: async ({ beforeHydrateStack, settings }) => {
-      if (settings && settings.locations && {}.hasOwnProperty.call(settings.locations, 'intersectionObserverPoly')) {
-        if (settings.locations.intersectionObserverPoly) {
-          return {
-            beforeHydrateStack: [
-              {
-                source: 'elderAddDefaultIntersectionObserver',
-                string: `<script type="text/javascript">
+    run: async ({ beforeHydrateStack }) => {
+      return {
+        beforeHydrateStack: [
+          {
+            source: 'elderAddDefaultIntersectionObserver',
+            string: `<script type="text/javascript">
       if (!('IntersectionObserver' in window)) {
           var script = document.createElement("script");
-          script.src = "${settings.locations.intersectionObserverPoly}";
+          script.src = "/static/intersection-observer.js";
           document.getElementsByTagName('head')[0].appendChild(script);
       };
       </script>`,
-                priority: 100,
-              },
-              ...beforeHydrateStack,
-            ],
-          };
-        }
-      } else {
-        console.log(
-          'Not injecting intersection observer polyfill. To not see this warning set locations.intersectionObserverPoly = false in elder.config.js.',
-        );
-      }
-      return null;
+            priority: 100,
+          },
+          ...beforeHydrateStack,
+        ],
+      };
     },
   },
   {
@@ -145,35 +136,26 @@ const hooks: Array<HookOptions> = [
     name: 'elderAddSystemJs',
     description: 'AddsSystemJs to beforeHydrateStack also add preloading of systemjs to the headStack.',
     priority: 1,
-    run: async ({ beforeHydrateStack, headStack, settings }) => {
-      if (settings && settings.locations && {}.hasOwnProperty.call(settings.locations, 'systemJs')) {
-        if (settings.locations.systemJs) {
-          return {
-            beforeHydrateStack: [
-              {
-                source: 'elderAddSystemJs',
-                string: `<script data-name="systemjs" src="${settings.locations.systemJs}"></script>`,
-                priority: 99,
-              },
-              ...beforeHydrateStack,
-            ],
+    run: async ({ beforeHydrateStack, headStack }) => {
+      return {
+        beforeHydrateStack: [
+          {
+            source: 'elderAddSystemJs',
+            string: `<script src="/static/s.min.js"></script>`,
+            priority: 99,
+          },
+          ...beforeHydrateStack,
+        ],
 
-            headStack: [
-              {
-                source: 'elderAddSystemJs',
-                string: `<link rel="preload" href="${settings.locations.systemJs}" as="script">`,
-                priority: 99,
-              },
-              ...headStack,
-            ],
-          };
-        }
-      } else {
-        console.log(
-          'Not injecting systemjs. To not see this warning set locations.systemJs = false in elder.config.js.',
-        );
-      }
-      return null;
+        headStack: [
+          {
+            source: 'elderAddSystemJs',
+            string: `<link rel="preload" href="/static/s.min.js" as="script">`,
+            priority: 99,
+          },
+          ...headStack,
+        ],
+      };
     },
   },
   {
@@ -204,7 +186,7 @@ const hooks: Array<HookOptions> = [
     priority: 1,
     run: async ({ settings, request, htmlString, errors }) => {
       if (settings.build) {
-        const file = path.resolve(process.cwd(), `${settings.locations.public}${request.permalink}/index.html`);
+        const file = path.resolve(settings.paths.distDir, `.${request.permalink}/index.html`);
         try {
           fs.outputFileSync(file, htmlString);
         } catch (e) {
@@ -253,7 +235,7 @@ const hooks: Array<HookOptions> = [
     priority: 50,
     run: async ({ errors, settings }) => {
       if (errors && errors.length > 0) {
-        const buildOutputLocation = path.resolve(process.cwd(), `./___ELDER___/build-${Date.now()}.json`);
+        const buildOutputLocation = path.resolve(settings.paths.rootDir, `./___ELDER___/build-${Date.now()}.json`);
         console.log(`Writing details on the ${errors.length} build errors to: ${buildOutputLocation}`);
         fs.writeJSONSync(buildOutputLocation, { errors, settings });
       }

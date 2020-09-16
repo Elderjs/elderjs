@@ -29,21 +29,17 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
 
   if (!componentCache[cleanComponentName]) {
     const clientComponents = page.settings.$$internal.hashedComponents;
-    const ssrComponent = path.resolve(
-      process.cwd(),
-      `./${page.settings.locations.svelte.ssrComponents}${cleanComponentName}.js`,
-    );
-    let clientSvelteFolder = page.settings.locations.svelte.clientComponents.replace(
-      page.settings.locations.public,
-      '/',
-    );
+    const ssrComponent = path.resolve(page.settings.paths.ssrComponents, `./${cleanComponentName}.js`);
+    let clientSvelteFolder = page.settings.paths.clientComponents.replace(page.settings.paths.distDir, '');
     if (clientSvelteFolder.indexOf('.') === 0) clientSvelteFolder = clientSvelteFolder.substring(1);
+
+    console.log(clientComponents, cleanComponentName);
 
     // eslint-disable-next-line global-require, import/no-dynamic-require
     const { render } = require(ssrComponent);
     componentCache[cleanComponentName] = {
       render,
-      clientSrc: `${clientSvelteFolder}${clientComponents[cleanComponentName]}.js`,
+      clientSrc: `${clientSvelteFolder}/${clientComponents[cleanComponentName]}.js`,
     };
   }
 

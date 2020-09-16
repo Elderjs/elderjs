@@ -82,8 +82,6 @@ class Elder {
 
     const config = getConfig(context);
 
-    const { srcFolder, buildFolder } = config.locations;
-
     this.settings = {
       ...config,
       server: context === 'server' && config[context],
@@ -118,22 +116,15 @@ class Elder {
 
       let plugin: PluginOptions | undefined;
       const pluginPath = `./plugins/${pluginName}/index.js`;
-      const srcPlugin = path.resolve(process.cwd(), srcFolder, pluginPath);
+      const srcPlugin = path.resolve(this.settings.srcDir, pluginPath);
       if (fs.existsSync(srcPlugin)) {
         // eslint-disable-next-line import/no-dynamic-require
-        plugin = require(srcPlugin).default || require(srcPlugin);
-      }
-
-      if (!plugin && buildFolder.length > 0) {
-        const buildPlugin = path.resolve(process.cwd(), buildFolder, pluginPath);
-        if (fs.existsSync(buildPlugin)) {
-          // eslint-disable-next-line import/no-dynamic-require
-          plugin = require(buildPlugin).default || require(buildPlugin);
-        }
+        const pluginReq = require(srcPlugin);
+        plugin = pluginReq.default || pluginReq;
       }
 
       if (!plugin) {
-        const pkgPath = path.resolve(process.cwd(), './node_modules/', pluginName);
+        const pkgPath = path.resolve(this.settings.paths.rootDir, './node_modules/', pluginName);
         if (fs.existsSync(pkgPath)) {
           // eslint-disable-next-line import/no-dynamic-require
           const pluginPackageJson = require(path.resolve(pkgPath, './package.json'));
@@ -224,15 +215,11 @@ class Elder {
             plugin.routes[routeName].template.endsWith('.svelte')
           ) {
             const templateName = plugin.routes[routeName].template.replace('.svelte', '');
-            const ssrComponent = path.resolve(
-              process.cwd(),
-              this.settings.locations.svelte.ssrComponents,
-              `${templateName}.js`,
-            );
+            const ssrComponent = path.resolve(this.settings.paths.ssrComponents, `${templateName}.js`);
 
             if (!fs.existsSync(ssrComponent)) {
               console.warn(
-                `Plugin Route: ${routeName} has an error. No SSR svelte compontent found ${templateName} which was added by ${pluginName}. This may cause unexpected outcomes. If you believe this should be working, make sure rollup has run before this file is initialized. If the issue persists, please contact the plugin author. Expected location \`${ssrComponent}\``,
+                `Plugin Route: ${routeName} has an error. No SSR svelte component found ${templateName} which was added by ${pluginName}. This may cause unexpected outcomes. If you believe this should be working, make sure rollup has run before this file is initialized. If the issue persists, please contact the plugin author. Expected location \`${ssrComponent}\``,
               );
             }
 
@@ -304,19 +291,11 @@ class Elder {
      */
 
     let hooksJs: Array<HookOptions> = [];
-    const hookSrcPath = path.resolve(process.cwd(), srcFolder, './hooks.js');
-    const hookBuildPath = path.resolve(process.cwd(), buildFolder, './hooks.js');
+    const hookSrcPath = path.resolve(this.settings.srcDir, './hooks.js');
 
-    if (this.settings.debug.automagic) {
-      console.log(
-        `debug.automagic::Attempting to automagically pull in hooks from your ${hookSrcPath} ${
-          buildFolder ? `with a fallback to ${hookBuildPath}` : ''
-        }`,
-      );
-    }
     try {
-      const hookSrcFile: Array<HookOptions> = config.typescript ? require(hookSrcPath).default : require(hookSrcPath);
-
+      const hooksReq = require(hookSrcPath);
+      const hookSrcFile: Array<HookOptions> = hooksReq.default || hooksReq;
       hooksJs = hookSrcFile.map((hook) => ({
         ...hook,
         $$meta: {
@@ -326,26 +305,7 @@ class Elder {
       }));
     } catch (err) {
       if (err.code === 'MODULE_NOT_FOUND') {
-        if (buildFolder && buildFolder.length > 0) {
-          try {
-            const hookBuildFile: Array<HookOptions> = config.typescript
-              ? require(hookBuildPath).default
-              : require(hookBuildPath);
-            hooksJs = hookBuildFile.map((hook) => ({
-              ...hook,
-              $$meta: {
-                type: 'hooks.js',
-                addedBy: 'hooks.js',
-              },
-            }));
-          } catch (err2) {
-            if (err2.code !== 'MODULE_NOT_FOUND') {
-              console.error(err);
-            }
-          }
-        } else if (this.settings.debug.automagic) {
-          console.log(`No luck finding that hooks file. You can add one at ${hookSrcPath}`);
-        }
+        console.error(`Could not load hooks file from ${hookSrcPath}.`);
       } else {
         console.error(err);
       }
@@ -376,20 +336,11 @@ class Elder {
      */
 
     let shortcodesJs: ShortcodeDefs = [];
-    const shortcodeSrcPath = path.resolve(process.cwd(), srcFolder, './shortcodes.js');
-    const shortcodeBuildPath = path.resolve(process.cwd(), buildFolder, './shortcodes.js');
+    const shortcodeSrcPath = path.resolve(this.settings.srcDir, './shortcodes.js');
 
-    if (this.settings.debug.automagic) {
-      console.log(
-        `debug.automagic::Attempting to automagically pull in shortcodes from your ${shortcodeSrcPath} ${
-          buildFolder ? `with a fallback to ${shortcodeBuildPath}` : ''
-        }`,
-      );
-    }
     try {
-      const shortcodes: ShortcodeDefs = config.typescript
-        ? require(shortcodeSrcPath).default
-        : require(shortcodeSrcPath);
+      const shortcodeReq = require(shortcodeSrcPath);
+      const shortcodes: ShortcodeDefs = shortcodeReq.default || shortcodeReq;
       shortcodesJs = shortcodes.map((shortcode) => ({
         ...shortcode,
         $$meta: {
@@ -399,26 +350,7 @@ class Elder {
       }));
     } catch (err) {
       if (err.code === 'MODULE_NOT_FOUND') {
-        if (buildFolder && buildFolder.length > 0) {
-          try {
-            const shortcodeBuildFile: ShortcodeDefs = config.typescript
-              ? require(shortcodeBuildPath).default
-              : require(shortcodeBuildPath);
-            shortcodesJs = shortcodeBuildFile.map((shortcode) => ({
-              ...shortcode,
-              $$meta: {
-                type: 'shortcodes.js',
-                addedBy: 'shortcodes.js',
-              },
-            }));
-          } catch (err2) {
-            if (err2.code !== 'MODULE_NOT_FOUND') {
-              console.error(err);
-            }
-          }
-        } else if (this.settings.debug.automagic) {
-          console.log(`No luck finding that hooks file. You can add one at ${shortcodeBuildPath}`);
-        }
+        console.error(`Could not load hooks file from ${shortcodeSrcPath}.`);
       } else {
         console.error(err);
       }
