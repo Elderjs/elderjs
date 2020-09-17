@@ -26,8 +26,11 @@ const buildPage = async (page) => {
         perf: page.perf,
         allRequests: createReadOnlyProxy(page.allRequests, 'allRequests', `${page.request.route}: data function`),
       });
-      if (dataResponse) {
-        page.data = dataResponse;
+      if (dataResponse && Object.keys(dataResponse).length > 0) {
+        page.data = {
+          ...page.data,
+          ...dataResponse,
+        };
       }
     }
     page.perf.end('data');
@@ -40,26 +43,22 @@ const buildPage = async (page) => {
       props: {
         data: page.data,
         helpers: page.helpers,
-        settings: page.settings,
-        request: page.request,
+        settings: createReadOnlyProxy(page.settings, 'settings', `${page.request.route}: Svelte Template`),
+        request: createReadOnlyProxy(page.request, 'request', `${page.request.route}: Svelte Template`),
       },
     });
     page.perf.end('html.template');
 
-    // shortcodes here.
-
     await page.runHook('shortcodes', page);
 
-    // TODO: readonly proxies?
     page.perf.start('html.layout');
     page.layoutHtml = page.route.layout({
       page,
       props: {
         data: page.data,
         helpers: page.helpers,
-        settings: page.settings,
-        request: page.request,
-        routeHTML: page.routeHtml, // TODO: depreciate this
+        settings: createReadOnlyProxy(page.settings, 'settings', `${page.request.route}: Svelte Layout`),
+        request: createReadOnlyProxy(page.request, 'request', `${page.request.route}: Svelte Layout`),
         routeHtml: page.routeHtml,
       },
     });
