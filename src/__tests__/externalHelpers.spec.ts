@@ -8,10 +8,7 @@ const settings = {
   debug: {
     automagic: true,
   },
-  locations: {
-    buildFolder: './___ELDER___/',
-    srcFolder: './src/',
-  },
+  srcDir: './src/',
 };
 const query = {};
 
@@ -39,7 +36,7 @@ describe('#externalHelpers', () => {
     const modifiedSettings = {
       ...settings,
       debug: { automagic: false },
-      locations: { ...settings.locations, buildFolder: '' },
+      srcDir: '',
     };
     expect(
       await externalHelpers({
@@ -49,23 +46,27 @@ describe('#externalHelpers', () => {
       }),
     ).toEqual(undefined);
   });
-  it('works - buildHelpers', async () => {
+  it('returns undefined if file is not there', async () => {
+    jest.mock('fs', () => ({
+      statSync: jest.fn().mockImplementationOnce(() => {
+        throw new Error('');
+      }),
+    }));
+    // eslint-disable-next-line global-require
+    const externalHelpers = require('../externalHelpers').default;
+    // @ts-ignore
+    expect(await externalHelpers({ settings, query, helpers: [] })).toBe(undefined);
+  });
+  it('works - userHelpers is not a function', async () => {
     jest.mock(
-      'test/___ELDER___/helpers/index.js',
-      () => () =>
-        Promise.resolve({
-          userHelper: () => 'something',
-        }),
+      'src/helpers/index.js',
+      () => ({
+        userHelper: () => 'something',
+      }),
       { virtual: true },
     );
-    jest.mock('test/src/helpers/index.js', () => () => Promise.resolve({ srcHelper: jest.fn() }), { virtual: true });
     jest.mock('fs', () => ({
-      statSync: jest
-        .fn()
-        .mockImplementationOnce(() => {
-          throw new Error('');
-        })
-        .mockImplementationOnce(() => {}),
+      statSync: jest.fn().mockImplementationOnce(() => {}),
     }));
     // eslint-disable-next-line global-require
     const externalHelpers = require('../externalHelpers').default;
@@ -75,14 +76,17 @@ describe('#externalHelpers', () => {
     // @ts-ignore
     expect(await externalHelpers({ settings, query, helpers: [] })).toMatchSnapshot();
   });
-  it('works - userHelpers', async () => {
-    jest.mock('test/___ELDER___/helpers/index.js', () => () => ({ userHelper: jest.fn() }), { virtual: true });
-    jest.mock('test/src/helpers/index.js', () => () => Promise.resolve({ srcHelper: jest.fn() }), { virtual: true });
+  it('works - userHelpers is a function', async () => {
+    jest.mock(
+      'src/helpers/index.js',
+      () => () =>
+        Promise.resolve({
+          userHelper: () => 'something',
+        }),
+      { virtual: true },
+    );
     jest.mock('fs', () => ({
-      statSync: jest
-        .fn()
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {}),
+      statSync: jest.fn().mockImplementationOnce(() => {}),
     }));
     // eslint-disable-next-line global-require
     const externalHelpers = require('../externalHelpers').default;
