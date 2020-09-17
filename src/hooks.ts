@@ -163,7 +163,7 @@ const hooks: Array<HookOptions> = [
     name: 'elderCompileHtml',
     description: 'Creates an HTML string out of the Svelte layout and stacks.',
     priority: 50,
-    run: async ({ request, headString, footerString, layoutHtml, htmlString }) => {
+    run: async ({ request, headString, footerString, layoutHtml }) => {
       return {
         htmlString: `<!DOCTYPE html><html lang="en"><head>${headString}</head><body class="${request.route}">${layoutHtml}${footerString}</body></html>`,
       };
