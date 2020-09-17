@@ -91,6 +91,67 @@ describe('#getRollupConfig', () => {
     });
   });
 
+  it('createBrowserConfig multiInputConfig = false', () => {
+    expect(
+      createBrowserConfig({
+        input: [`./components/*/*.svelte`],
+        output: {
+          dir: './public/dist/svelte/',
+          entryFileNames: 'entry[name]-[hash].js',
+          sourcemap: true,
+          format: 'system',
+        },
+        svelteConfig: {},
+      }).plugins,
+    ).toEqual([
+      {
+        name: 'replace',
+        renderChunk: expect.any(Function),
+        transform: expect.any(Function),
+      },
+      {
+        name: 'json',
+        transform: expect.any(Function),
+      },
+      {
+        generateBundle: expect.any(Function),
+        load: expect.any(Function),
+        name: 'svelte',
+        resolveId: expect.any(Function),
+        transform: expect.any(Function),
+      },
+      {
+        name: 'rollup-plugin-external-globals',
+        transform: expect.any(Function),
+      },
+      {
+        buildStart: expect.any(Function),
+        generateBundle: expect.any(Function),
+        getPackageInfoForId: expect.any(Function),
+        load: expect.any(Function),
+        name: 'node-resolve',
+        resolveId: expect.any(Function),
+      },
+      {
+        buildStart: expect.any(Function),
+        load: expect.any(Function),
+        name: 'commonjs',
+        resolveId: expect.any(Function),
+        transform: expect.any(Function),
+      },
+      {
+        load: expect.any(Function),
+        name: 'babel',
+        resolveId: expect.any(Function),
+        transform: expect.any(Function),
+      },
+      {
+        name: 'terser',
+        renderChunk: expect.any(Function),
+      },
+    ]);
+  });
+
   it('createSSRConfig works', () => {
     expect(
       createSSRConfig({
@@ -170,6 +231,69 @@ describe('#getRollupConfig', () => {
       ],
       treeshake: true,
     });
+  });
+
+  it('createSSRConfig multiInputConfig = false', () => {
+    expect(
+      createSSRConfig({
+        input: [`./components/*/*.svelte`],
+        output: {
+          dir: './___ELDER___/compiled/',
+          format: 'cjs',
+          exports: 'auto',
+        },
+        svelteConfig: {
+          preprocess: [
+            {
+              style: ({ content }) => {
+                return content.toUpperCase();
+              },
+            },
+          ],
+        },
+      }).plugins,
+    ).toEqual([
+      {
+        name: 'replace',
+        renderChunk: expect.any(Function),
+        transform: expect.any(Function),
+      },
+      {
+        name: 'json',
+        transform: expect.any(Function),
+      },
+      {
+        generateBundle: expect.any(Function),
+        load: expect.any(Function),
+        name: 'svelte',
+        resolveId: expect.any(Function),
+        transform: expect.any(Function),
+      },
+      {
+        buildStart: expect.any(Function),
+        generateBundle: expect.any(Function),
+        getPackageInfoForId: expect.any(Function),
+        load: expect.any(Function),
+        name: 'node-resolve',
+        resolveId: expect.any(Function),
+      },
+      {
+        buildStart: expect.any(Function),
+        load: expect.any(Function),
+        name: 'commonjs',
+        resolveId: expect.any(Function),
+        transform: expect.any(Function),
+      },
+      {
+        generateBundle: expect.any(Function),
+        name: 'css',
+        transform: expect.any(Function),
+      },
+      {
+        name: 'terser',
+        renderChunk: expect.any(Function),
+      },
+    ]);
   });
 
   it('getPluginPaths works', () => {
