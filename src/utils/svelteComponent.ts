@@ -1,4 +1,5 @@
 import path from 'path';
+import devalue from 'devalue';
 import getUniqueId from './getUniqueId';
 import IntersectionObserver from './IntersectionObserver';
 import { ComponentPayload } from './types';
@@ -107,7 +108,7 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
 
     const clientJs = `
     System.import('${clientSrc}').then(({ default: App }) => {
-    new App({ target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'), hydrate: true, props: ${JSON.stringify(
+    new App({ target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'), hydrate: true, props: ${devalue(
       props,
     )} });
     });`;
