@@ -19,7 +19,7 @@ import { ConfigOptions } from './types';
 
 const production = process.env.NODE_ENV === 'production' || !process.env.ROLLUP_WATCH;
 
-function createBrowserConfig({ input, output, multiInputConfig = false, svelteConfig }) {
+export function createBrowserConfig({ input, output, multiInputConfig = false, svelteConfig }) {
   const config = {
     cache: true,
     treeshake: true,
@@ -68,7 +68,7 @@ function createBrowserConfig({ input, output, multiInputConfig = false, svelteCo
   return config;
 }
 
-function createSSRConfig({ input, output, svelteConfig, multiInputConfig = false }) {
+export function createSSRConfig({ input, output, svelteConfig, multiInputConfig = false }) {
   const config = {
     cache: true,
     treeshake: true,
@@ -109,7 +109,7 @@ function createSSRConfig({ input, output, svelteConfig, multiInputConfig = false
   return config;
 }
 
-function getPluginPaths(elderConfig: ConfigOptions) {
+export function getPluginPaths(elderConfig: ConfigOptions) {
   const pluginNames = Object.keys(elderConfig.plugins);
 
   return pluginNames.reduce((out, pluginName) => {
@@ -117,7 +117,6 @@ function getPluginPaths(elderConfig: ConfigOptions) {
     const nmPluginPath = path.resolve(elderConfig.rootDir, `./node_modules/${pluginName}`);
     if (fs.existsSync(`${pluginPath}/index.js`)) {
       const svelteFiles = glob.sync(`${pluginPath}/*.svelte`);
-      console.log(`${pluginPath}/*.svelte`, svelteFiles);
       if (svelteFiles.length > 0) {
         out.push(`${pluginPath}/`);
       }
