@@ -17,6 +17,7 @@ import { validateHook, validateRoute, validatePlugin, validateShortcode } from '
 import prepareProcessStack from './prepareProcessStack';
 import getConfig from './getConfig';
 import getRollupConfig from './getRollupConfig';
+import prepareInlineShortcode from './prepareInlineShortcode';
 
 export {
   asyncForEach,
@@ -39,4 +40,5 @@ export {
   prepareProcessStack,
   getConfig,
   getRollupConfig,
+  prepareInlineShortcode,
 };

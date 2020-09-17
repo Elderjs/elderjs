@@ -22,6 +22,7 @@ import {
   asyncForEach,
   getHashedSvelteComponents,
   getConfig,
+  prepareInlineShortcode,
 } from './utils';
 import { RoutesOptions } from './routes/types';
 import { HookOptions } from './hookInterface/types';
@@ -240,6 +241,7 @@ class Elder {
             type: 'plugin',
             addedBy: pluginName,
           };
+          shortcode.plugin = sanitizedPlugin;
           pluginShortcodes.push(shortcode);
         });
       }
@@ -349,7 +351,9 @@ class Elder {
       }));
     } catch (err) {
       if (err.code === 'MODULE_NOT_FOUND') {
-        console.error(`Could not load hooks file from ${shortcodeSrcPath}.`);
+        console.error(
+          `Could not load shortcodes file from ${shortcodeSrcPath}. They are not required, but could be useful.`,
+        );
       } else {
         console.error(err);
       }
@@ -377,6 +381,7 @@ class Elder {
     this.helpers = {
       permalinks: permalinks({ routes: this.routes, settings: this.settings }),
       inlineSvelteComponent,
+      shortcode: prepareInlineShortcode({ settings: this.settings }),
     };
 
     if (context === 'server') {

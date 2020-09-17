@@ -13,6 +13,7 @@ Elder {
       "test-a": [Function],
       "test-b": [Function],
     },
+    "shortcode": [Function],
   },
   "hookInterface": Array [
     Object {
@@ -648,6 +649,7 @@ Elder {
       "test-a": [Function],
       "test-b": [Function],
     },
+    "shortcode": [Function],
   },
   "hookInterface": Array [
     Object {
