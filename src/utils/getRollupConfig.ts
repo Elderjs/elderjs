@@ -117,7 +117,6 @@ function getPluginPaths(elderConfig: ConfigOptions) {
     const nmPluginPath = path.resolve(elderConfig.rootDir, `./node_modules/${pluginName}`);
     if (fs.existsSync(`${pluginPath}/index.js`)) {
       const svelteFiles = glob.sync(`${pluginPath}/*.svelte`);
-      console.log(`${pluginPath}/*.svelte`, svelteFiles);
       if (svelteFiles.length > 0) {
         out.push(`${pluginPath}/`);
       }
