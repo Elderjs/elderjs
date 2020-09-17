@@ -26,8 +26,7 @@ function prepareShortcodeParser({
       );
 
     shortcodeParser.add(shortcode.shortcode, async (props, content) => {
-      // TODO: plugin?
-      const { html, css, js, head } = await shortcode.run({
+      const shortcodeResponse = await shortcode.run({
         props,
         content,
         plugin: shortcode.plugin,
@@ -63,25 +62,30 @@ function prepareShortcodeParser({
         ),
       });
 
-      if (css) {
-        cssStack.push({
-          source: `${shortcode.shortcode} shortcode`,
-          string: css,
-        });
+      if (typeof shortcodeResponse === 'object') {
+        const { html, css, js, head } = shortcodeResponse;
+        if (css) {
+          cssStack.push({
+            source: `${shortcode.shortcode} shortcode`,
+            string: css,
+          });
+        }
+        if (js) {
+          customJsStack.push({
+            source: `${shortcode.shortcode} shortcode`,
+            string: js,
+          });
+        }
+        if (head) {
+          headStack.push({
+            source: `${shortcode.shortcode} shortcode`,
+            string: head,
+          });
+        }
+        return html || '';
       }
-      if (js) {
-        customJsStack.push({
-          source: `${shortcode.shortcode} shortcode`,
-          string: js,
-        });
-      }
-      if (head) {
-        headStack.push({
-          source: `${shortcode.shortcode} shortcode`,
-          string: head,
-        });
-      }
-      return html || '';
+
+      return shortcodeResponse || '';
     });
   });
 

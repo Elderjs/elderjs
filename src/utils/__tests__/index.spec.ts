@@ -22,5 +22,6 @@ test('includes all', () => {
     'prepareProcessStack',
     'getConfig',
     'getRollupConfig',
+    'prepareInlineShortcode',
   ]);
 });
