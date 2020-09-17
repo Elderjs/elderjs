@@ -23,18 +23,26 @@ type DebugOptions = {
   automagic: boolean;
 };
 
-type PathOptions = {
-  // assets: string;
-  // public: string;
-  // svelte: SvelteOptions;
-  // systemJs: string;
-  // intersectionObserverPoly: string;
-  // srcFolder: string;
-  // buildFolder: string;
+// type PathOptions = {
+/* 
+  assets: string;
+  public: string;
+  svelte: SvelteOptions;
+  systemJs: string;
+  intersectionObserverPoly: string;
+  srcFolder: string;
+   buildFolder: string;
+*/
 
-  distDir: string;
-  srcDir: string;
-  rootDir: string;
+// distDir: string;
+// srcDir: string;
+// rootDir: string;
+// };
+
+type Internal = {
+  hashedComponents?: {};
+  ssrComponents: string;
+  clientComponents: string;
 };
 
 export type ConfigOptions = {
@@ -57,12 +65,6 @@ export type ConfigOptions = {
     closePattern: string;
   };
   $$internal: Internal;
-};
-
-type Internal = {
-  hashedComponents?: {};
-  ssrComponents: string;
-  clientComponents: string;
 };
 
 export type SettingOptions = {
@@ -116,6 +118,25 @@ interface Init {
   (input: any): any;
 }
 
+export interface ShortcodeResponse {
+  html?: string;
+  css?: string;
+  js?: string;
+  head?: string;
+}
+
+export interface ShortcodeDef {
+  shortcode: string;
+  run: (any) => ShortcodeResponse | Promise<ShortcodeResponse>;
+  plugin?: any; // reference to the plugin closure scope.
+  $$meta: {
+    addedBy: string;
+    type: string;
+  };
+}
+
+export type ShortcodeDefs = Array<ShortcodeDef>;
+
 export type PluginOptions = {
   name: string;
   description: string;
@@ -141,22 +162,3 @@ export interface ComponentPayload {
   props: any;
   hydrateOptions?: HydrateOptions;
 }
-
-export interface ShortcodeDef {
-  shortcode: string;
-  run: (any) => ShortcodeResponse | Promise<ShortcodeResponse>;
-  plugin?: any; // reference to the plugin closure scope.
-  $$meta: {
-    addedBy: string;
-    type: string;
-  };
-}
-
-export interface ShortcodeResponse {
-  html?: string;
-  css?: string;
-  js?: string;
-  head?: string;
-}
-
-export type ShortcodeDefs = Array<ShortcodeDef>;

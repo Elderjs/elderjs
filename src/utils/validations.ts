@@ -1,5 +1,4 @@
 import * as yup from 'yup';
-import path from 'path';
 import type { ConfigOptions, PluginOptions, ShortcodeDef } from './types';
 import type { RouteOptions } from '../routes/types';
 import type { HookOptions } from '../hookInterface/types';

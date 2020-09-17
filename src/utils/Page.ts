@@ -53,7 +53,7 @@ const buildPage = async (page) => {
 
     await page.runHook('shortcodes', page);
 
-    // todo: readonly proxies?
+    // TODO: readonly proxies?
     page.perf.start('html.layout');
     page.layoutHtml = page.route.layout({
       page,
@@ -62,7 +62,7 @@ const buildPage = async (page) => {
         helpers: page.helpers,
         settings: page.settings,
         request: page.request,
-        routeHTML: page.routeHtml, //todo, depreciate this
+        routeHTML: page.routeHtml, // TODO: depreciate this
         routeHtml: page.routeHtml,
       },
     });

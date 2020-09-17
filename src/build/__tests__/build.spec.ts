@@ -3,7 +3,20 @@ import { getWorkerCounts } from '../build';
 
 let calledHooks = [];
 
+jest.mock('cosmiconfig', () => ({
+  cosmiconfigSync: () => ({ search: () => null }),
+}));
+
 jest.mock('cli-progress');
+
+jest.mock('../../utils/getConfig', () => () => ({
+  debug: {
+    build: true,
+  },
+  build: {
+    numberOfWorkers: 5,
+  },
+}));
 
 jest.mock('../../Elder', () => ({
   Elder: class ElderMock {
@@ -34,14 +47,6 @@ jest.mock('../../Elder', () => ({
       });
     }
   },
-  getElderConfig: () => ({
-    debug: {
-      build: true,
-    },
-    build: {
-      numberOfWorkers: 5,
-    },
-  }),
 }));
 
 jest.mock('os', () => ({
