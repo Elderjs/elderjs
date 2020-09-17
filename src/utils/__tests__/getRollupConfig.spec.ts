@@ -329,4 +329,48 @@ describe('#getRollupConfig', () => {
       }),
     ).toEqual(['src/plugins/pluginA/', '/node_modules/pluginB/']);
   });
+
+  it('getRollupConfig as a whole works', () => {
+    jest.mock('../getConfig', () => () => ({
+      $$internal: {
+        clientComponents: 'test/public/svelte',
+        ssrComponents: 'test/___ELDER___/compiled',
+      },
+      distDir: './dist',
+      srcDir: './src',
+      rootDir: './',
+      plugins: {
+        pluginA: {},
+        pluginB: {},
+      },
+    }));
+
+    jest.mock('path', () => ({
+      resolve: (...strings) => strings.join('/').replace('./', '').replace('//', '/').replace('/./', '/'),
+      posix: () => ({ dirname: () => '' }),
+    }));
+    jest.mock('del');
+    jest.mock('fs-extra', () => ({
+      existsSync: jest.fn().mockImplementation(() => true),
+    }));
+    jest.mock('glob', () => ({
+      sync: jest
+        .fn()
+        .mockImplementationOnce(() => ['route1.svelte', 'route2.svelte'])
+        .mockImplementationOnce(() => ['layout1.svelte', 'layout2.svelte'])
+        .mockImplementationOnce(() => ['pluginA.svelte', 'pluginB.svelte'])
+        .mockImplementationOnce(() => ['foo.svelte', 'bar.svelte']),
+    }));
+
+    const svelteConfig = {
+      preprocess: [
+        {
+          style: ({ content }) => {
+            return content.toUpperCase();
+          },
+        },
+      ],
+    };
+    expect(require('../getRollupConfig').default({ svelteConfig })).toMatchSnapshot();
+  });
 });
