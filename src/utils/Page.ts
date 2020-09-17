@@ -26,8 +26,11 @@ const buildPage = async (page) => {
         perf: page.perf,
         allRequests: createReadOnlyProxy(page.allRequests, 'allRequests', `${page.request.route}: data function`),
       });
-      if (dataResponse) {
-        page.data = dataResponse;
+      if (dataResponse && Object.keys(dataResponse).length > 0) {
+        page.data = {
+          ...page.data,
+          ...dataResponse,
+        };
       }
     }
     page.perf.end('data');
