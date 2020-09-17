@@ -26,7 +26,7 @@ function prepareShortcodeParser({
       );
 
     shortcodeParser.add(shortcode.shortcode, async (props, content) => {
-      // todo: plugin?
+      // TODO: plugin?
       const { html, css, js, head } = await shortcode.run({
         props,
         content,
