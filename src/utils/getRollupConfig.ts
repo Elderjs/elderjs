@@ -27,7 +27,7 @@ export function createBrowserConfig({ input, output, multiInputConfig = false, s
     output,
     plugins: [
       replace({
-        'process.env.componentType': 'browser',
+        'process.env.componentType': "'browser'",
         'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
       }),
       json(),
@@ -76,7 +76,7 @@ export function createSSRConfig({ input, output, svelteConfig, multiInputConfig 
     output,
     plugins: [
       replace({
-        'process.env.componentType': 'server',
+        'process.env.componentType': "'server'",
         'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
       }),
       json(),
@@ -94,7 +94,7 @@ export function createSSRConfig({ input, output, svelteConfig, multiInputConfig 
         browser: false,
         dedupe: ['svelte'],
       }),
-      commonjs({ sourceMap: false }),
+      commonjs({ sourceMap: true }),
       css({
         ignore: true,
       }),
