@@ -211,6 +211,13 @@ async function build(): Promise<void> {
         singlebar.stop();
       }
 
+      // eslint-disable-next-line no-restricted-syntax
+      for (const id in cluster.workers) {
+        if (Object.prototype.hasOwnProperty.call(cluster.workers, id)) {
+          cluster.workers[id].kill();
+        }
+      }
+
       let success = true;
 
       mElder.errors = [...mElder.errors, ...errors];
@@ -246,13 +253,6 @@ async function build(): Promise<void> {
       if (!success) {
         throw new Error(`Build did not complete successfully.`);
       }
-
-      // eslint-disable-next-line no-restricted-syntax
-      for (const id in cluster.workers) {
-        if (Object.prototype.hasOwnProperty.call(cluster.workers, id)) {
-          cluster.workers[id].kill();
-        }
-      }
     } else {
       process.on('message', async (msg) => {
         if (msg.cmd === 'start') {
@@ -265,7 +265,10 @@ async function build(): Promise<void> {
       });
     }
   } catch (e) {
-    process.exit(1);
+    if (e.message === 'Build did not complete successfully.') {
+      process.exit(1);
+    }
+    console.error(e);
   }
 }
 export default build;

@@ -50,6 +50,7 @@ async function workerBuild({ bootstrapComplete, workerRequests }) {
       errs += 1;
       response.push(errs);
       response.push({ request, errors: buildErrors.map((e) => JSON.stringify(e, Object.getOwnPropertyNames(e))) });
+      bErrors.push({ request, errors: buildErrors });
     } else {
       response.push(errs);
     }
@@ -59,7 +60,7 @@ async function workerBuild({ bootstrapComplete, workerRequests }) {
       process.send(response);
     }
   });
-  return { timings: bTimes };
+  return { timings: bTimes, errors: bErrors };
 }
 
 export default workerBuild;

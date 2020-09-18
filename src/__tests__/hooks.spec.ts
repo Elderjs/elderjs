@@ -69,7 +69,9 @@ describe('#hooks', () => {
 
   it('elderConsoleLogErrors', async () => {
     const hook = hooks.find((h) => h.name === 'elderConsoleLogErrors');
-    expect(await hook.run({ request: { permalink: '/foo' }, errors: ['foo', 'bar'] })).toBe(undefined);
+    expect(
+      await hook.run({ settings: { worker: false }, request: { permalink: '/foo' }, errors: ['foo', 'bar'] }),
+    ).toBe(undefined);
   });
   it('elderWriteHtmlFileToPublic', async () => {
     const hook = hooks.find((h) => h.name === 'elderWriteHtmlFileToPublic');

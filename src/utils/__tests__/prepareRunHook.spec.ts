@@ -75,6 +75,8 @@ describe('#prepareRunHook', () => {
   it('cannot mutate not mutable prop', async () => {
     prepareRunHookFn = prepareRunHook({ hooks, allSupportedHooks, settings });
     const errors = [];
-    await expect(prepareRunHookFn('bootstrap', { settings, errors, perf })).rejects.toThrow();
+    await prepareRunHookFn('bootstrap', { settings, errors, perf });
+    expect(errors).toHaveLength(2);
+    expect(errors[1]).toEqual('something bad happened');
   });
 });

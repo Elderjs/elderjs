@@ -142,6 +142,7 @@ describe('#build', () => {
         sent.push(i);
         return true;
       },
+      exit: () => '' as never,
     };
 
     // eslint-disable-next-line global-require
@@ -258,11 +259,12 @@ describe('#build', () => {
     // eslint-disable-next-line global-require
     const build = require('../build').default;
     await build();
-    jest.advanceTimersByTime(1000); // not all intervalls are cleared
+    jest.advanceTimersByTime(5000); // not all intervalls are cleared
+
     // eslint-disable-next-line global-require
     expect(require('cluster').workers.map((w) => w.killed)).toEqual([true, true]);
+
     expect(calledHooks).toEqual([
-      'error-{"errors":["bornToFail","pushMeToErrors"]}',
       'buildComplete-{"success":false,"errors":["bornToFail","pushMeToErrors"],"timings":[null,null]}',
     ]);
     expect(setInterval).toHaveBeenCalledTimes(2);

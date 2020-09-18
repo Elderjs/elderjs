@@ -221,17 +221,4 @@ describe('#Page', () => {
     ]);
     expect(page).toMatchSnapshot();
   });
-
-  it('init and request html, throw catched errors', async () => {
-    const page = new Page({
-      ...pageInput,
-      runHook: (hook) => {
-        if (hook === 'request' || hook === 'error') {
-          throw new Error(`mocked for hook: ${hook}`);
-        }
-        return runHook(hook);
-      },
-    });
-    expect(await page.html()).toEqual('{}');
-  });
 });
