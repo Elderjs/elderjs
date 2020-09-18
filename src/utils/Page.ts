@@ -176,7 +176,6 @@ class Page {
     this.routes = routes;
     this.cssString = '';
     this.htmlString = '';
-
     this.headStack = [];
     this.cssStack = [];
     this.beforeHydrateStack = [];
@@ -186,23 +185,19 @@ class Page {
     this.shortcodes = shortcodes;
 
     this.processStack = prepareProcessStack(this);
-
     this.perf.end('constructor');
-
     this.perf.start('initToBuildGap');
   }
 
   build() {
-    return buildPage(this);
+    return buildPage(this).then((page) => page);
   }
 
   html() {
     if (this.htmlString) {
       return this.htmlString;
     }
-    return buildPage(this)
-      .then((page) => page.htmlString)
-      .catch(JSON.stringify);
+    return buildPage(this).then((page) => page.htmlString);
   }
 }
 

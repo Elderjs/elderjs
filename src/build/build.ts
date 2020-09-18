@@ -119,8 +119,9 @@ async function build(): Promise<void> {
             counts[workerId].count = msg[1];
             // eslint-disable-next-line prefer-destructuring
             counts[workerId].errCount = msg[2];
-            if (msg[4]) {
-              errors.push(msg[4]);
+            if (msg[3]) {
+              msg[3].errors = msg[3].errors.map((jsonErr) => JSON.parse(jsonErr));
+              errors.push(msg[3]);
             }
             if (totalRequests === requestsProcessed) {
               markWorkersComplete({ errors, timings });
@@ -210,35 +211,47 @@ async function build(): Promise<void> {
         singlebar.stop();
       }
 
-      // eslint-disable-next-line no-restricted-syntax
-      for (const id in cluster.workers) {
-        if (Object.prototype.hasOwnProperty.call(cluster.workers, id)) {
-          cluster.workers[id].kill();
-        }
+      let success = true;
+
+      mElder.errors = [...mElder.errors, ...errors];
+      if (mElder.errors.length > 0) {
+        success = false;
       }
 
       const time = Date.now() - start;
 
       if (time > 60000) {
-        console.log(`Build completed ${totalRequests} pages in ${Math.round((time / 60000) * 100) / 100} minutes`);
+        console.log(
+          `Build ${success ? 'Completed Successfully:' : 'Failed:'} Built ${totalRequests} pages in ${
+            Math.round((time / 60000) * 100) / 100
+          } minutes`,
+        );
       } else if (time > 1000) {
-        console.log(`Build completed ${totalRequests} pages in ${Math.round((time / 1000) * 100) / 100} seconds`);
+        console.log(
+          `Build ${success ? 'Completed Successfully:' : 'Failed:'} Built ${totalRequests} pages in ${
+            Math.round((time / 1000) * 100) / 100
+          } seconds`,
+        );
       } else {
-        console.log(`Build completed ${totalRequests} pages in ${time}ms`);
-      }
-
-      let success = true;
-
-      mElder.errors = [...mElder.errors, ...errors];
-      if (mElder.errors.length > 0) {
-        await mElder.runHook('error', mElder);
-        success = false;
+        console.log(
+          `Build ${success ? 'Completed Successfully:' : 'Failed:'} Built ${totalRequests} pages in ${time}ms`,
+        );
       }
 
       await mElder.runHook('buildComplete', { success, ...mElder, timings });
 
       if (settings.debug.build) {
         console.log('Build complete. Workers:', cluster.workers);
+      }
+      if (!success) {
+        throw new Error(`Build did not complete successfully.`);
+      }
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const id in cluster.workers) {
+        if (Object.prototype.hasOwnProperty.call(cluster.workers, id)) {
+          cluster.workers[id].kill();
+        }
       }
     } else {
       process.on('message', async (msg) => {
@@ -252,7 +265,7 @@ async function build(): Promise<void> {
       });
     }
   } catch (e) {
-    console.log(e);
+    process.exit(1);
   }
 }
 export default build;

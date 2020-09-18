@@ -42,25 +42,30 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
       await hookList.reduce((p, hook) => {
         return p.then(async () => {
           if (props.perf) props.perf.start(`hook.${hookName}.${hook.name}`);
-          let hookResponse = await hook.run(hookProps);
+          try {
+            let hookResponse = await hook.run(hookProps);
 
-          if (!hookResponse) hookResponse = {};
+            if (!hookResponse) hookResponse = {};
 
-          if (settings && settings.debug && settings.debug.hooks) {
-            console.log(`${hook.name} ran on ${hookName} and returned`, hookResponse);
-          }
-
-          Object.keys(hookResponse).forEach((key) => {
-            if (hookDefinition.mutable && hookDefinition.mutable.includes(key)) {
-              hookOutput[key] = hookResponse[key];
-              hookProps[key] = hookResponse[key];
-            } else {
-              console.error(
-                `Received attempted mutation on "${hookName}" from "${hook.name}" on the object "${key}". ${key} is not mutable on this hook `,
-                hook.$$meta,
-              );
+            if (settings && settings.debug && settings.debug.hooks) {
+              console.log(`${hook.name} ran on ${hookName} and returned`, hookResponse);
             }
-          });
+
+            Object.keys(hookResponse).forEach((key) => {
+              if (hookDefinition.mutable && hookDefinition.mutable.includes(key)) {
+                hookOutput[key] = hookResponse[key];
+                hookProps[key] = hookResponse[key];
+              } else {
+                console.error(
+                  `Received attempted mutation on "${hookName}" from "${hook.name}" on the object "${key}". ${key} is not mutable on this hook `,
+                  hook.$$meta,
+                );
+              }
+            });
+          } catch (e) {
+            e.message = `Hook: "${hook.name}" threw an error: ${e.message}`;
+            props.errors.push(e);
+          }
           if (props.perf) props.perf.end(`hook.${hookName}.${hook.name}`);
         });
       }, Promise.resolve());

@@ -39,25 +39,27 @@ async function workerBuild({ bootstrapComplete, workerRequests }) {
       errors,
       shortcodes,
     });
-    const { errors: buildErrors, timings } = await page.build();
     i += 1;
+    const response: any = ['requestComplete', i];
+
+    // try {
+    const { errors: buildErrors, timings } = await page.build();
     bTimes.push(timings);
 
-    const response: any = ['requestComplete', i];
     if (buildErrors && buildErrors.length > 0) {
       errs += 1;
       response.push(errs);
-      response.push({ request, errors: buildErrors });
-      bErrors.push({ request, errors: buildErrors });
+      response.push({ request, errors: buildErrors.map((e) => JSON.stringify(e, Object.getOwnPropertyNames(e))) });
     } else {
       response.push(errs);
     }
+    // } catch (e) {}
 
     if (process.send) {
       process.send(response);
     }
   });
-  return { timings: bTimes, errors: bErrors };
+  return { timings: bTimes };
 }
 
 export default workerBuild;

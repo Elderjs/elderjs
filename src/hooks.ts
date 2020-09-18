@@ -175,8 +175,10 @@ const hooks: Array<HookOptions> = [
     name: 'elderConsoleLogErrors',
     description: 'Log any errors to the console.',
     priority: 1,
-    run: async ({ errors, request }) => {
-      console.error(request.permalink, errors);
+    run: async ({ errors, request, settings }) => {
+      if (!settings.worker) {
+        console.error(request.permalink, errors);
+      }
     },
   },
   {
@@ -235,9 +237,16 @@ const hooks: Array<HookOptions> = [
     priority: 50,
     run: async ({ errors, settings }) => {
       if (errors && errors.length > 0) {
-        const buildOutputLocation = path.resolve(settings.rootDir, `./___ELDER___/build-${Date.now()}.json`);
-        console.log(`Writing details on the ${errors.length} build errors to: ${buildOutputLocation}`);
-        fs.writeJSONSync(buildOutputLocation, { errors, settings });
+        const buildOutputLocation = path.resolve(settings.rootDir, `./___ELDER___/build-errors-${Date.now()}.json`);
+        console.log(
+          `Errors during Elder.js build. Writing details on the ${errors.length} build errors to: ${buildOutputLocation}`,
+        );
+        fs.writeJSONSync(buildOutputLocation, { settings, buildErrors: errors });
+
+        errors.forEach((error) => {
+          console.error(error);
+          console.error(`------`);
+        });
       }
     },
   },
