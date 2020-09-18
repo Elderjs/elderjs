@@ -18,7 +18,7 @@ const shortcodeSchema = yup.object({
 });
 
 const configSchema = yup.object({
-  siteUrl: yup.string().notRequired().default('').label(`The domain your site is hosted on. https://yourdomain.com.`),
+  origin: yup.string().notRequired().default('').label(`The domain your site is hosted on. https://yourdomain.com.`),
   rootDir: yup.string().notRequired().default('process.cwd()').label('Here your package.json lives.'),
   distDir: yup
     .string()
@@ -32,70 +32,6 @@ const configSchema = yup.object({
     .label(
       "Where Elder.js should find it's expected file structure. If you are using a build step such as typescript on your project, you may need to edit this. ",
     ),
-  // locations: yup
-  //   .object({
-  //     // assets: yup
-  //     //   .string()
-  //     //   .notRequired()
-  //     //   .default('./public/dist/static/')
-  //     //   .label(
-  //     //     'Where your site\'s assets files should be written to if you are using the Elder.js template. (Include ./public/)"',
-  //     //   ),
-  //     // public: yup
-  //     //   .string()
-  //     //   .notRequired()
-  //     //   .default('./public/')
-  //     //   .label(
-  //     //     'Where should files be written? This represents the "root" of your site and where your html will be built.',
-  //     //   ),
-  //     svelte: yup
-  //       .object()
-  //       .shape({
-  //         ssrComponents: yup
-  //           .string()
-  //           .notRequired()
-  //           .default('./___ELDER___/compiled/')
-  //           .label('Location where should SSR components be stored.'),
-  //         clientComponents: yup
-  //           .string()
-  //           .notRequired()
-  //           .default('./public/dist/svelte/')
-  //           .label(
-  //             'Location where Svelte components that are bundled for the client should be saved. (Include ./public/)',
-  //           ),
-  //       })
-  //       .notRequired(),
-  //     systemJs: yup
-  //       .string()
-  //       .notRequired()
-  //       .default('/dist/static/s.min.js')
-  //       .label(
-  //         'If you are using the recommended Elder.js rollup file it is using Systemjs. This defines is where the systemjs file will be found on your site. (exclude /public/)',
-  //       ),
-  //     srcFolder: yup
-  //       .string()
-  //       .notRequired()
-  //       .default('./src/')
-  //       .label('Elder.js and plugins use this to resolve where things should be in the expected file structure.'),
-
-  //     buildFolder: yup
-  //       .string()
-  //       .notRequired()
-  //       .default('')
-  //       .label(
-  //         `If Elder.js doesn't find the files it is looking for in the src folder, it will look in the build folder. (used for typescript)`,
-  //       ),
-
-  //     intersectionObserverPoly: yup
-  //       .string()
-  //       .notRequired()
-  //       .default('/dist/static/intersection-observer.js')
-  //       .label(
-  //         'Elder.js uses a poly fill for the intersection observer. This is where it will be found on your site. (exclude /public/)',
-  //       ),
-  //   })
-  //   .notRequired()
-  //   .label('Where various files are written and read from.'),
   debug: yup
     .object()
     .shape({

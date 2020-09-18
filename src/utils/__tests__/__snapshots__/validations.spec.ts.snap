@@ -22,7 +22,7 @@ ObjectSchema {
     "srcDir",
     "distDir",
     "rootDir",
-    "siteUrl",
+    "origin",
   ],
   "_options": Object {
     "abortEarly": true,
@@ -430,6 +430,33 @@ ObjectSchema {
       ],
       "type": "object",
     },
+    "origin": StringSchema {
+      "_blacklist": RefSet {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": Array [],
+      "_default": "",
+      "_deps": Array [],
+      "_exclusive": Object {},
+      "_label": "The domain your site is hosted on. https://yourdomain.com.",
+      "_mutate": undefined,
+      "_options": Object {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "string",
+      "_typeError": [Function],
+      "_whitelist": RefSet {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": Array [],
+      "transforms": Array [
+        [Function],
+      ],
+      "type": "string",
+    },
     "plugins": ObjectSchema {
       "_blacklist": RefSet {
         "list": Set {},
@@ -633,33 +660,6 @@ ObjectSchema {
         [Function],
       ],
       "type": "object",
-    },
-    "siteUrl": StringSchema {
-      "_blacklist": RefSet {
-        "list": Set {},
-        "refs": Map {},
-      },
-      "_conditions": Array [],
-      "_default": "",
-      "_deps": Array [],
-      "_exclusive": Object {},
-      "_label": "The domain your site is hosted on. https://yourdomain.com.",
-      "_mutate": undefined,
-      "_options": Object {
-        "abortEarly": true,
-        "recursive": true,
-      },
-      "_type": "string",
-      "_typeError": [Function],
-      "_whitelist": RefSet {
-        "list": Set {},
-        "refs": Map {},
-      },
-      "tests": Array [],
-      "transforms": Array [
-        [Function],
-      ],
-      "type": "string",
     },
     "srcDir": StringSchema {
       "_blacklist": RefSet {

@@ -39,7 +39,7 @@ describe('#validations', () => {
     hooks: {
       disable: [],
     },
-    siteUrl: '',
+    origin: '',
     plugins: {},
     server: {
       prefix: '',
