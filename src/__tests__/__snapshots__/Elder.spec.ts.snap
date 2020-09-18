@@ -92,7 +92,7 @@ Elder {
     Object {
       "advanced": true,
       "context": "Fired upon a request that originates from the express/polka middleware version of Elder.js. The hook has access to \\"req\\" and \\"next\\" common in express like middleware.",
-      "experimental": true,
+      "experimental": false,
       "hook": "middleware",
       "location": "prepareServer.ts",
       "mutable": Array [
@@ -215,7 +215,7 @@ Elder {
       "location": "Page.ts",
       "mutable": Array [
         "errors",
-        "routeHtml",
+        "templateHtml",
         "cssStack",
         "headStack",
         "customJsStack",
@@ -230,7 +230,7 @@ Elder {
         "cssStack",
         "headStack",
         "customJsStack",
-        "routeHtml",
+        "templateHtml",
         "shortcodes",
         "allRequests",
       ],
@@ -728,7 +728,7 @@ Elder {
     Object {
       "advanced": true,
       "context": "Fired upon a request that originates from the express/polka middleware version of Elder.js. The hook has access to \\"req\\" and \\"next\\" common in express like middleware.",
-      "experimental": true,
+      "experimental": false,
       "hook": "middleware",
       "location": "prepareServer.ts",
       "mutable": Array [
@@ -851,7 +851,7 @@ Elder {
       "location": "Page.ts",
       "mutable": Array [
         "errors",
-        "routeHtml",
+        "templateHtml",
         "cssStack",
         "headStack",
         "customJsStack",
@@ -866,7 +866,7 @@ Elder {
         "cssStack",
         "headStack",
         "customJsStack",
-        "routeHtml",
+        "templateHtml",
         "shortcodes",
         "allRequests",
       ],

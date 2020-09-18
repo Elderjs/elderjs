@@ -44,7 +44,7 @@ const hooks: Array<HookOptions> = [
       cssStack,
       headStack,
       customJsStack,
-      routeHtml,
+      templateHtml,
       shortcodes,
       allRequests,
     }) => {
@@ -61,10 +61,10 @@ const hooks: Array<HookOptions> = [
         allRequests,
       });
 
-      const html = await ShortcodeParser.parse(routeHtml);
+      const html = await ShortcodeParser.parse(templateHtml);
 
       return {
-        routeHtml: html,
+        templateHtml: html,
         headStack,
         cssStack,
         customJsStack,

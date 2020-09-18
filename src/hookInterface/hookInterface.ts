@@ -88,7 +88,7 @@ export const hookInterface: Array<HookInterface> = [
     <li>Anything you'd use an Express 'req' or 'next' for you can do and customize other parts of the Elder.js on this hook.</li>
     </ul>`,
     location: 'prepareServer.ts',
-    experimental: true,
+    experimental: false,
     advanced: true,
   },
 
@@ -166,11 +166,11 @@ export const hookInterface: Array<HookInterface> = [
       'cssStack',
       'headStack',
       'customJsStack',
-      'routeHtml',
+      'templateHtml',
       'shortcodes',
       'allRequests',
     ],
-    mutable: ['errors', 'routeHtml', 'cssStack', 'headStack', 'customJsStack'],
+    mutable: ['errors', 'templateHtml', 'cssStack', 'headStack', 'customJsStack'],
     context: `Executed after the route's html has been compiled, but before the layout html has been compiled.`,
     use: `<p>Elder.js uses this hook to process shortcodes. The vast majority of users won't need to use this hook, but if you were so inclined you could write your own shortcode parser or if you'd like to disable shortcodes completely, you can add 'elderProcessShortcodes' to hooks.disable in your elder.config.js file.</p>
     <p><strong>NOTE:</strong> Don't use this hook for anything besides shortcodes.</p>`,

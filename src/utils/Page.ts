@@ -38,7 +38,7 @@ const buildPage = async (page) => {
 
     // start building templates
     page.perf.start('html.template');
-    page.routeHtml = page.route.templateComponent({
+    page.templateHtml = page.route.templateComponent({
       page,
       props: {
         data: page.data,
@@ -59,7 +59,7 @@ const buildPage = async (page) => {
         helpers: page.helpers,
         settings: createReadOnlyProxy(page.settings, 'settings', `${page.request.route}: Svelte Layout`),
         request: createReadOnlyProxy(page.request, 'request', `${page.request.route}: Svelte Layout`),
-        routeHtml: page.routeHtml,
+        templateHtml: page.templateHtml,
       },
     });
     page.perf.end('html.layout');
@@ -139,7 +139,7 @@ class Page {
 
   layoutHtml: string;
 
-  routeHtml: string;
+  templateHtml: string;
 
   cssString: string;
 

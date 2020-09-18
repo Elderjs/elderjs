@@ -33,6 +33,11 @@ const hookEntityDefinitions = {
   req: "The 'req' object from Express or Polka when Elder.js is being used as a server.",
   next: "The 'next' object from Express or Polka when Elder.js is being used as a server.",
   res: "The 'res' object from Express or Polka when Elder.js is being used as a server.",
+  templateHtml: "The HTML string returned by the SSR'd Svelte template for the request's route.",
+  shortcodes: "An array of shortcode definitions that are processed on the 'shortcodes' hook.",
+  footerString: 'A HTML string that Elder.js will write to the footer.',
+  layoutHtml:
+    "The compiled HTML response for a route containing all of the HTML from the Route's layout and template. ",
 };
 
 // eslint-disable-next-line import/prefer-default-export

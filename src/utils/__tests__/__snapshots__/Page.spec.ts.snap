@@ -443,7 +443,6 @@ Page {
                 },
                 "type": "build",
               },
-              "routeHtml": undefined,
               "settings": Object {
                 "$$internal": Object {
                   "hashedComponents": Object {
@@ -494,6 +493,7 @@ Page {
                 "typescript": false,
                 "worker": true,
               },
+              "templateHtml": undefined,
             },
           },
         ],
@@ -593,7 +593,6 @@ Page {
       ],
     },
   },
-  "routeHtml": undefined,
   "routes": Object {
     "content": Object {
       "$$meta": Object {
@@ -672,6 +671,7 @@ Page {
   },
   "shortcodes": Array [],
   "styleTag": "<style>cssStack</style>",
+  "templateHtml": undefined,
   "timings": Array [],
   "uid": "xxxxxxxxxx",
 }
