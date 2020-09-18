@@ -91,7 +91,7 @@ class WorkerMock {
       this.handlers.message(['start']);
       this.handlers.message(['done']);
       if (this.withError) {
-        this.handlers.message(['requestComplete', 3, 0, 'ignoreMe', 'pushMeToErrors']);
+        this.handlers.message(['requestComplete', 3, 0, { errors: [`{"msg":"pushMeToErrors"}`] }]);
       } else {
         this.handlers.message(['requestComplete']);
       }
@@ -255,18 +255,24 @@ describe('#build', () => {
 
     global.Date.now = dateNowStub;
 
+    const realProcess = process;
+    const exitMock = jest.fn();
+    // @ts-ignore
+    global.process = { ...realProcess, exit: exitMock };
+
     expect(calledHooks).toEqual([]);
     // eslint-disable-next-line global-require
     const build = require('../build').default;
     await build();
-    jest.advanceTimersByTime(5000); // not all intervalls are cleared
+    jest.advanceTimersByTime(1000); // not all intervalls are cleared
+    expect(setInterval).toHaveBeenCalledTimes(2);
+    expect(exitMock).toHaveBeenCalled();
 
     // eslint-disable-next-line global-require
     expect(require('cluster').workers.map((w) => w.killed)).toEqual([true, true]);
 
     expect(calledHooks).toEqual([
-      'buildComplete-{"success":false,"errors":["bornToFail","pushMeToErrors"],"timings":[null,null]}',
+      'buildComplete-{"success":false,"errors":["bornToFail",{"errors":[{"msg":"pushMeToErrors"}]}],"timings":[null,null]}',
     ]);
-    expect(setInterval).toHaveBeenCalledTimes(2);
   });
 });
