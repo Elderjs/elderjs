@@ -65,13 +65,28 @@ export const hookInterface: Array<HookInterface> = [
       'serverLookupObject',
       'runHook',
       'shortcodes',
+      'request',
     ],
-    mutable: ['errors', 'query', 'helpers', 'data', 'settings', 'allRequests', 'routes', 'req', 'next', 'res'],
+    mutable: [
+      'errors',
+      'query',
+      'helpers',
+      'data',
+      'settings',
+      'allRequests',
+      'routes',
+      'req',
+      'next',
+      'res',
+      'request',
+    ],
     context:
       'Fired upon a request that originates from the express/polka middleware version of Elder.js. The hook has access to "req" and "next" common in express like middleware.',
     use: `<p>If you're looking to use Elder.js with express/polka to build a server rendered website, then you'll be interested in this hook as it includes the familiar 'req' and 'next' objects as often used in Express middleware.</p>
     <ul>
-    <li>This hook could be used to set user or session information stored on the 'req' prop anywhere it is needed such as on the Elder.js 'request' object or 'data' object.</li>
+    <li>Under the hook Elder.js uses this hook to power the server implementation.</li>
+    <li>If you want to change the route of a request, you can do so by modifying the 'request.route' to the name of the new request, and it will be picked up by the default Elder.js server.</li>
+    <li>If you're looking to set user or session information stored on the 'req' prop we recommend using a hook to modify the 'request' object or 'data' objects. Change to the request object will be passed down. </li>
     <li>If you're looking to pass in details about the query string deeper into your application, you could use this hook to do so.</li>
     <li>Anything you'd use an Express 'req' or 'next' for you can do and customize other parts of the Elder.js on this hook.</li>
     </ul>`,

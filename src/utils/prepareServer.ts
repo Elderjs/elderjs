@@ -9,6 +9,7 @@ function prepareServer({ bootstrapComplete }) {
       req,
       next,
       res,
+      request: {},
     });
   };
 }

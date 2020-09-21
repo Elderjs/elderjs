@@ -49,6 +49,7 @@ const hooks: Array<HookOptions> = [
       req,
       next,
       res,
+      request,
     }) => {
       if (req.path) {
         let reqPath = req.path;
@@ -71,15 +72,20 @@ const hooks: Array<HookOptions> = [
           requestObject = serverLookupObject[reqPath];
         }
 
+        let route = routes[requestObject.route];
+        if (request && request.route) {
+          route = routes[request.route];
+        }
+
         // if we have a requestObject then we know it is for ElderGuide
         if (requestObject) {
           const forPage = {
-            request: requestObject,
+            request: { ...requestObject, ...request },
             settings,
             query,
             helpers,
             data,
-            route: routes[requestObject.route],
+            route,
             runHook,
             allRequests,
             routes,
