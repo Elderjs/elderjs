@@ -62,6 +62,10 @@ function prepareShortcodeParser({
         ),
       });
 
+      if (settings.debug.shortcodes) {
+        console.log(`${shortcode.shortcode} returned`, shortcodeResponse);
+      }
+
       if (typeof shortcodeResponse === 'object') {
         const { html, css, js, head } = shortcodeResponse;
         if (css) {

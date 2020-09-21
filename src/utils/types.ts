@@ -21,6 +21,7 @@ type DebugOptions = {
   performance: boolean;
   build: boolean;
   automagic: boolean;
+  shortcodes: boolean;
 };
 
 // type PathOptions = {

@@ -37,11 +37,16 @@ const configSchema = yup.object({
     .shape({
       stacks: yup.boolean().notRequired().default(false).label('Outputs details of stack processing in the console.'),
       hooks: yup.boolean().notRequired().default(false).label('Output details of hook execution in the console.'),
+      shortcodes: yup
+        .boolean()
+        .notRequired()
+        .default(false)
+        .label('Output details of shortcode execution in the console.'),
       performance: yup
         .boolean()
         .notRequired()
         .default(false)
-        .label('Outputs a detauled speed report on each pageload.'),
+        .label('Outputs a detailed speed report on each pageload.'),
       build: yup.boolean().notRequired().default(false).label('Displays detailed build information for each worker.'),
       automagic: yup
         .boolean()

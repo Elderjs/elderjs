@@ -35,7 +35,15 @@ describe('#prepareShortcodeParser', () => {
     const shortcodeParser = prepareShortcodeParser({
       ...args,
       shortcodes: [],
+
       settings: {
+        debug: {
+          stacks: true,
+          hooks: true,
+          build: true,
+          automagic: true,
+          shortcodes: true,
+        },
         shortcodes: {
           openPattern: '\\[',
           closePattern: '\\]',
@@ -63,6 +71,13 @@ describe('#prepareShortcodeParser', () => {
           },
         ],
         settings: {
+          debug: {
+            stacks: true,
+            hooks: true,
+            build: true,
+            automagic: true,
+            shortcodes: true,
+          },
           shortcodes: {
             openPattern: '\\<',
             closePattern: '\\>',
@@ -84,6 +99,13 @@ describe('#prepareShortcodeParser', () => {
           },
         ],
         settings: {
+          debug: {
+            stacks: true,
+            hooks: true,
+            build: true,
+            automagic: true,
+            shortcodes: true,
+          },
           shortcodes: {
             openPattern: '\\<',
             closePattern: '\\>',
@@ -105,6 +127,13 @@ describe('#prepareShortcodeParser', () => {
         },
       ],
       settings: {
+        debug: {
+          stacks: true,
+          hooks: true,
+          build: true,
+          automagic: true,
+          shortcodes: true,
+        },
         shortcodes: {
           openPattern: '\\👍',
           closePattern: '\\👎',
@@ -141,6 +170,13 @@ describe('#prepareShortcodeParser', () => {
         },
       ],
       settings: {
+        debug: {
+          stacks: true,
+          hooks: true,
+          build: true,
+          automagic: true,
+          shortcodes: true,
+        },
         shortcodes: {
           openPattern: '\\66',
           closePattern: '\\33',

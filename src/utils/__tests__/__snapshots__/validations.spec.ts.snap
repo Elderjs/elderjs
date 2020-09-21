@@ -138,6 +138,7 @@ ObjectSchema {
         "automagic",
         "build",
         "performance",
+        "shortcodes",
         "hooks",
         "stacks",
       ],
@@ -242,7 +243,34 @@ ObjectSchema {
           "_default": false,
           "_deps": Array [],
           "_exclusive": Object {},
-          "_label": "Outputs a detauled speed report on each pageload.",
+          "_label": "Outputs a detailed speed report on each pageload.",
+          "_mutate": undefined,
+          "_options": Object {
+            "abortEarly": true,
+            "recursive": true,
+          },
+          "_type": "boolean",
+          "_typeError": [Function],
+          "_whitelist": RefSet {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "tests": Array [],
+          "transforms": Array [
+            [Function],
+          ],
+          "type": "boolean",
+        },
+        "shortcodes": BooleanSchema {
+          "_blacklist": RefSet {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "_conditions": Array [],
+          "_default": false,
+          "_deps": Array [],
+          "_exclusive": Object {},
+          "_label": "Output details of shortcode execution in the console.",
           "_mutate": undefined,
           "_options": Object {
             "abortEarly": true,

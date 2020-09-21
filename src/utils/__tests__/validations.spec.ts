@@ -35,6 +35,7 @@ describe('#validations', () => {
       hooks: false,
       performance: false,
       stacks: false,
+      shortcodes: false,
     },
     hooks: {
       disable: [],

@@ -42,4 +42,27 @@ describe('#prepareInlineShortcode', () => {
       }),
     ).toEqual("<Test foo='bar' answer='42' nested='{\"prop\":\"porp\"}'><div>Hi, I am content</div></Test>");
   });
+
+  it('works - with \\ for escaped regex options', () => {
+    const settings = {
+      shortcodes: {
+        openPattern: '\\[',
+        closePattern: '\\]',
+      },
+    };
+    const fn = prepareInlineShortcode({ settings });
+    expect(
+      fn({
+        name: 'Test',
+        props: {
+          foo: 'bar',
+          answer: 42,
+          nested: {
+            prop: 'porp',
+          },
+        },
+        content: '<div>Hi, I am content</div>',
+      }),
+    ).toEqual("[Test foo='bar' answer='42' nested='{\"prop\":\"porp\"}']<div>Hi, I am content</div>[/Test]");
+  });
 });
