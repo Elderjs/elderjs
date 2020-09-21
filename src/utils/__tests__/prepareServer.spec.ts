@@ -1,6 +1,13 @@
 import { prepareServer } from '../prepareServer';
 
-jest.mock('../Page');
+jest.mock('../Page', () => {
+  return {
+    default: jest.fn().mockImplementation(() => {
+      return {};
+    }),
+    html: () => 'html',
+  };
+});
 
 describe('#prepareServer', () => {
   it('works', async () => {
@@ -70,6 +77,7 @@ describe('#prepareServer', () => {
     const nextMock = jest.fn(() => 'nextMockResult');
     const setHeaderMock = jest.fn();
     const endMock = jest.fn();
+
     const res = {
       setHeader: setHeaderMock,
       end: endMock,
@@ -97,7 +105,6 @@ describe('#prepareServer', () => {
       ),
     ).toEqual(undefined);
     expect(hooks).toEqual(['middleware']);
-    expect(setHeaderMock).toHaveBeenCalledTimes(1);
     expect(endMock).toHaveBeenCalledTimes(1);
     expect(nextMock).toHaveBeenCalledTimes(1); // no new calls
     // no requestObject
@@ -112,6 +119,7 @@ describe('#prepareServer', () => {
     ).toEqual(undefined);
     expect(setHeaderMock).toHaveBeenCalledTimes(2);
     expect(endMock).toHaveBeenCalledTimes(2);
+    expect(setHeaderMock).toHaveBeenCalledTimes(1);
     expect(nextMock).toHaveBeenCalledTimes(2); // new call
   });
 });

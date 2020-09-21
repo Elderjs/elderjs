@@ -38,6 +38,8 @@ const hookEntityDefinitions = {
   footerString: 'A HTML string that Elder.js will write to the footer.',
   layoutHtml:
     "The compiled HTML response for a route containing all of the HTML from the Route's layout and template. ",
+  serverLookupObject: `A key value object where the key is the relative permalink and the object is the 'request' object used by the Elder.js server.`,
+  runHook: `The function that powers hooks. 'await runhook('hookName', objectContainingProps)`,
 };
 
 // eslint-disable-next-line import/prefer-default-export
