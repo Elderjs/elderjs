@@ -282,7 +282,7 @@ export const hookInterface: Array<HookInterface> = [
 
   {
     hook: 'buildComplete',
-    props: ['helpers', 'data', 'settings', 'timings', 'query', 'errors', 'routes'],
+    props: ['helpers', 'data', 'settings', 'timings', 'query', 'errors', 'routes', 'allRequests'],
     mutable: [],
     context: 'Executed after a build is complete',
     use: `<p>Contains whether the build was successful. If not it contains errors for the entire build. Also includes
