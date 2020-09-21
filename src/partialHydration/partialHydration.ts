@@ -28,7 +28,7 @@ const partialHydration = {
       return out.replace(wholeMatch, replacement);
     }, content);
 
-    const wrappingComponentPattern = /<([a-zA-Z]+)[^>]+hydrate-client={([^]*?})}[^/>]*\>[^>]*<\/([a-zA-Z]+)>/gim;
+    const wrappingComponentPattern = /<([a-zA-Z]+)[^>]+hydrate-client={([^]*?})}[^/>]*>[^>]*<\/([a-zA-Z]+)>/gim;
     // <Map hydrate-client={{}} ></Map>
     // <Map hydrate-client={{}}></Map>
     // <Map hydrate-client={{}}>Foo</Map>
