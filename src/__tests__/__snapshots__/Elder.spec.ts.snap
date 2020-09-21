@@ -406,6 +406,7 @@ Elder {
         "query",
         "errors",
         "routes",
+        "allRequests",
       ],
       "use": "<p>Contains whether the build was successful. If not it contains errors for the entire build. Also includes
       average performance details, and a granular performance object. Could be used to fire off additional scripts such as generating a sitemap or copying asset files to the public folder.</p>
@@ -1042,6 +1043,7 @@ Elder {
         "query",
         "errors",
         "routes",
+        "allRequests",
       ],
       "use": "<p>Contains whether the build was successful. If not it contains errors for the entire build. Also includes
       average performance details, and a granular performance object. Could be used to fire off additional scripts such as generating a sitemap or copying asset files to the public folder.</p>
