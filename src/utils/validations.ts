@@ -141,7 +141,7 @@ const pluginSchema = yup.object({
     .default({})
     .notRequired()
     .label('(optional) An object of default configs. These will be used when none are set in their elder.config.js.'),
-  shortcodes: yup.mixed().notRequired().default([]).label('Array of shortcodes'),
+  shortcodes: yup.array().notRequired().default([]).label('Array of shortcodes'),
 });
 
 const hookSchema = yup
