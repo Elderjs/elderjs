@@ -246,6 +246,7 @@ Array [
     "cache": true,
     "input": Array [
       "rc/components/*/*.svelte",
+      "rc/components/*.svelte",
     ],
     "output": Object {
       "dir": "test/public/svelte",
@@ -310,6 +311,7 @@ Array [
     "cache": true,
     "input": Array [
       "rc/components/*/*.svelte",
+      "rc/components/*.svelte",
     ],
     "output": Object {
       "dir": "test/___ELDER___/compiled",
