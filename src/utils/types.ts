@@ -50,6 +50,7 @@ export type ConfigOptions = {
   distDir: string;
   srcDir: string;
   rootDir: string;
+  origin: string;
 
   server: ServerOptions;
   build: BuildOptions;
