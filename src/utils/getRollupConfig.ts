@@ -208,7 +208,7 @@ export default function getRollupConfig({ svelteConfig }) {
     if (fs.existsSync(path.resolve(srcDir, `./components/`))) {
       configs.push(
         createBrowserConfig({
-          input: [`${relSrcDir}/components/*/*.svelte`],
+          input: [`${relSrcDir}/components/*/*.svelte`, `${relSrcDir}/components/*.svelte`],
           output: {
             dir: clientComponents,
             entryFileNames: 'entry[name]-[hash].js',
@@ -224,7 +224,7 @@ export default function getRollupConfig({ svelteConfig }) {
       );
       configs.push(
         createSSRConfig({
-          input: [`${relSrcDir}/components/*/*.svelte`],
+          input: [`${relSrcDir}/components/*/*.svelte`, `${relSrcDir}/components/*.svelte`],
           output: {
             dir: ssrComponents,
             format: 'cjs',
@@ -240,9 +240,11 @@ export default function getRollupConfig({ svelteConfig }) {
     }
   } else {
     // watch/dev build bundles each component individually for faster reload times during dev.
-
     if (fs.existsSync(path.resolve(srcDir, `./components/`))) {
-      glob.sync(path.resolve(srcDir, './components/*/*.svelte')).forEach((cv) => {
+      [
+        ...glob.sync(path.resolve(srcDir, './components/*/*.svelte')),
+        ...glob.sync(path.resolve(srcDir, './components/*.svelte')),
+      ].forEach((cv) => {
         const file = cv.replace(`${rootDir}/`, '');
         configs.push(
           createBrowserConfig({
