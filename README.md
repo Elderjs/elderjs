@@ -21,7 +21,7 @@
 
 <br />
 
-[Elder.js](https://github.com/elderjs/elderjs) is an opinionated static site generator and web framework built with SEO in mind. (Supports SSR and Static Site Generation.)
+[Elder.js](https://elderguide.com/tech/elderjs/) is an opinionated static site generator and web framework built with SEO in mind. (Supports SSR and Static Site Generation.)
 
 - [Full Docs](https://elderguide.com/tech/elderjs/)
 - [Template](https://github.com/Elderjs/template)
