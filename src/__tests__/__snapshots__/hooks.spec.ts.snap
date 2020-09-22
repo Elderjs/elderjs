@@ -70,15 +70,6 @@ Object {
 }
 `;
 
-exports[`#hooks elderProcessShortcodes 1`] = `
-Object {
-  "helpers": Object {
-    "old": [MockFunction],
-    "permalink": [MockFunction],
-  },
-}
-`;
-
 exports[`#hooks matchesSnapshot 1`] = `
 Array [
   Object {
