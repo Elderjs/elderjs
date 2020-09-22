@@ -1230,7 +1230,7 @@ ObjectSchema {
       ],
       "type": "object",
     },
-    "shortcodes": SchemaType {
+    "shortcodes": ArraySchema {
       "_blacklist": RefSet {
         "list": Set {},
         "refs": Map {},
@@ -1245,15 +1245,19 @@ ObjectSchema {
         "abortEarly": true,
         "recursive": true,
       },
-      "_type": "mixed",
+      "_subType": undefined,
+      "_type": "array",
       "_typeError": [Function],
       "_whitelist": RefSet {
         "list": Set {},
         "refs": Map {},
       },
+      "innerType": undefined,
       "tests": Array [],
-      "transforms": Array [],
-      "type": "mixed",
+      "transforms": Array [
+        [Function],
+      ],
+      "type": "array",
     },
   },
   "tests": Array [],
@@ -1332,7 +1336,7 @@ ObjectSchema {
       "_default": Object {},
       "_deps": Array [],
       "_exclusive": Object {},
-      "_label": "Async/sync function that returns a JS object. Can also be a plain JS object. Important: If this is a function it is passed a '{data}' parameter. This parameter should be mutated and returned to pick up any data populated via hooks or plugins.",
+      "_label": "Async/sync function that returns a JS object. Can also be a plain JS object.",
       "_mutate": undefined,
       "_options": Object {
         "abortEarly": true,
