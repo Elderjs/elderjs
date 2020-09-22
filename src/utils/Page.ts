@@ -2,7 +2,7 @@
 import getUniqueId from './getUniqueId';
 import perf from './perf';
 import prepareProcessStack from './prepareProcessStack';
-import { QueryOptions, Stack, SettingOptions, ConfigOptions, RequestOptions } from './types';
+import { QueryOptions, Stack, SettingOptions, ConfigOptions, RequestOptions, ShortcodeDefs } from './types';
 import { RoutesOptions } from '../routes/types';
 import createReadOnlyProxy from './createReadOnlyProxy';
 
@@ -26,8 +26,11 @@ const buildPage = async (page) => {
         perf: page.perf,
         allRequests: createReadOnlyProxy(page.allRequests, 'allRequests', `${page.request.route}: data function`),
       });
-      if (dataResponse) {
-        page.data = dataResponse;
+      if (dataResponse && Object.keys(dataResponse).length > 0) {
+        page.data = {
+          ...page.data,
+          ...dataResponse,
+        };
       }
     }
     page.perf.end('data');
@@ -35,64 +38,57 @@ const buildPage = async (page) => {
 
     // start building templates
     page.perf.start('html.template');
-
-    // template building starts here
-
-    const routeHTML = page.route.templateComponent({
+    page.templateHtml = page.route.templateComponent({
       page,
       props: {
         data: page.data,
         helpers: page.helpers,
-        settings: page.settings,
-        request: page.request,
+        settings: createReadOnlyProxy(page.settings, 'settings', `${page.request.route}: Svelte Template`),
+        request: createReadOnlyProxy(page.request, 'request', `${page.request.route}: Svelte Template`),
       },
     });
-
     page.perf.end('html.template');
 
+    await page.runHook('shortcodes', page);
+
     page.perf.start('html.layout');
-    const layoutHtml = page.route.layout({
+    page.layoutHtml = page.route.layout({
       page,
       props: {
         data: page.data,
         helpers: page.helpers,
-        settings: page.settings,
-        request: page.request,
-        routeHTML,
+        settings: createReadOnlyProxy(page.settings, 'settings', `${page.request.route}: Svelte Layout`),
+        request: createReadOnlyProxy(page.request, 'request', `${page.request.route}: Svelte Layout`),
+        templateHtml: page.templateHtml,
       },
     });
     page.perf.end('html.layout');
 
-    // Run header hooks / stacks to make headString
     await page.runHook('stacks', page);
+
+    // prepare for head hook
     page.head = page.processStack('headStack');
     page.cssString = '';
     page.cssString = page.processStack('cssStack');
-    page.styleTag = `<style data-name="cssStack">${page.cssString}</style>`;
+    page.styleTag = `<style>${page.cssString}</style>`;
     page.headString = `${page.head}${page.styleTag}`;
-    page.beforeHydrate = page.processStack('beforeHydrateStack');
-    page.hydrate = `<script data-name="hydrateStack">${page.processStack('hydrateStack')}</script>`;
-    page.customJs = page.processStack('customJsStack');
-    page.footer = page.processStack('footerStack');
 
     await page.runHook('head', page);
 
-    page.perf.start('html.createHtmlString');
-    page.htmlString = `<!DOCTYPE html>
-      <html lang="en">
-        <head>
-          ${page.headString}
-        </head>
-        <body class="${page.request.route}">
-          ${layoutHtml}
-          ${page.hydrateStack.length > 0 ? page.beforeHydrate : '' /* page.hydrateStack.length is correct here */}
-          ${page.hydrateStack.length > 0 ? page.hydrate : ''}
-          ${page.customJsStack.length > 0 ? page.customJs : ''}
-          ${page.footerStack.length > 0 ? page.footer : ''}
-        </body>
-      </html>
+    // prepare for compileHtml
+    const beforeHydrate = page.processStack('beforeHydrateStack');
+    const hydrate = `<script>${page.processStack('hydrateStack')}</script>`;
+    const customJs = page.processStack('customJsStack');
+    const footer = page.processStack('footerStack');
+
+    page.footerString = `
+    ${page.hydrateStack.length > 0 ? beforeHydrate : '' /* page.hydrateStack.length is correct here */}
+    ${page.hydrateStack.length > 0 ? hydrate : ''}
+    ${page.customJsStack.length > 0 ? customJs : ''}
+    ${page.footerStack.length > 0 ? footer : ''}
     `;
-    page.perf.end('html.createHtmlString');
+
+    await page.runHook('compileHtml', page);
 
     await page.runHook('html', page);
 
@@ -108,7 +104,6 @@ const buildPage = async (page) => {
       await page.runHook('error', page);
     }
   } catch (err) {
-    console.log(err, page.permalink);
     page.errors.push(err);
     await page.runHook('error', page);
   }
@@ -142,7 +137,11 @@ class Page {
 
   perf: any;
 
-  customProps: any;
+  layoutHtml: string;
+
+  templateHtml: string;
+
+  cssString: string;
 
   htmlString: string;
 
@@ -158,19 +157,9 @@ class Page {
 
   footerStack: Stack;
 
-  constructor({
-    request,
-    settings,
-    query,
-    helpers,
-    data,
-    route,
-    runHook,
-    allRequests,
-    routes,
-    errors,
-    customProps = {},
-  }) {
+  shortcodes: ShortcodeDefs;
+
+  constructor({ request, settings, query, helpers, data, route, runHook, allRequests, routes, errors, shortcodes }) {
     this.uid = getUniqueId();
     perf(this);
     this.perf.start('page');
@@ -185,36 +174,30 @@ class Page {
     this.query = query;
     this.errors = [...errors];
     this.routes = routes;
-    this.customProps = customProps;
+    this.cssString = '';
     this.htmlString = '';
-
     this.headStack = [];
     this.cssStack = [];
     this.beforeHydrateStack = [];
     this.hydrateStack = [];
     this.customJsStack = [];
     this.footerStack = [];
+    this.shortcodes = shortcodes;
 
     this.processStack = prepareProcessStack(this);
-
-    this.runHook('modifyCustomProps', this);
-
     this.perf.end('constructor');
-
     this.perf.start('initToBuildGap');
   }
 
   build() {
-    return buildPage(this);
+    return buildPage(this).then((page) => page);
   }
 
   html() {
     if (this.htmlString) {
       return this.htmlString;
     }
-    return buildPage(this)
-      .then((page) => page.htmlString)
-      .catch(JSON.stringify);
+    return buildPage(this).then((page) => page.htmlString);
   }
 }
 

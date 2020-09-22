@@ -11,7 +11,6 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
       throw new Error(`Hook ${hookName} not defined in hookInterface or via plugins.`);
     }
 
-    const customPropKeys = [];
     const hookProps = hookDefinition.props.reduce((out, cv) => {
       if (Object.hasOwnProperty.call(props, cv)) {
         if (!hookDefinition.mutable.includes(cv)) {
@@ -19,13 +18,6 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
         } else {
           out[cv] = props[cv];
         }
-      } else if (typeof props.customProps === 'object' && props.customProps[cv]) {
-        if (!hookDefinition.mutable.includes(cv)) {
-          out[cv] = createReadOnlyProxy(props.customProps[cv], cv, hookName);
-        } else {
-          out[cv] = props.customProps[cv];
-        }
-        customPropKeys.push(cv);
       } else {
         console.error(
           `Hook named '${hookName}' cannot be run because prop ${cv} is not in scope to pass to the hook. Hook contract broken.`,
@@ -38,7 +30,7 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
     const theseHooks = hooks.filter((h) => h.hook === hookName);
     if (theseHooks && Array.isArray(theseHooks) && theseHooks.length > 0) {
       // lower priority is more important.
-      const hookList = theseHooks.sort((a, b) => a.priority - b.priority);
+      const hookList = theseHooks.sort((a, b) => b.priority - a.priority);
 
       if (settings && settings.debug && settings.debug.hooks) {
         console.log(`Hooks registered on ${hookName}:`, hookList);
@@ -50,25 +42,30 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
       await hookList.reduce((p, hook) => {
         return p.then(async () => {
           if (props.perf) props.perf.start(`hook.${hookName}.${hook.name}`);
-          let hookResponse = await hook.run(hookProps);
+          try {
+            let hookResponse = await hook.run(hookProps);
 
-          if (!hookResponse) hookResponse = {};
+            if (!hookResponse) hookResponse = {};
 
-          if (settings && settings.debug && settings.debug.hooks) {
-            console.log(`${hook.name} ran on ${hookName} and returned`, hookResponse);
-          }
-
-          Object.keys(hookResponse).forEach((key) => {
-            if (hookDefinition.mutable && hookDefinition.mutable.includes(key)) {
-              hookOutput[key] = hookResponse[key];
-              hookProps[key] = hookResponse[key];
-            } else {
-              console.error(
-                `Received attempted mutation on "${hookName}" from "${hook.name}" on the object "${key}". ${key} is not mutable on this hook `,
-                hook.$$meta,
-              );
+            if (settings && settings.debug && settings.debug.hooks) {
+              console.log(`${hook.name} ran on ${hookName} and returned`, hookResponse);
             }
-          });
+
+            Object.keys(hookResponse).forEach((key) => {
+              if (hookDefinition.mutable && hookDefinition.mutable.includes(key)) {
+                hookOutput[key] = hookResponse[key];
+                hookProps[key] = hookResponse[key];
+              } else {
+                console.error(
+                  `Received attempted mutation on "${hookName}" from "${hook.name}" on the object "${key}". ${key} is not mutable on this hook `,
+                  hook.$$meta,
+                );
+              }
+            });
+          } catch (e) {
+            e.message = `Hook: "${hook.name}" threw an error: ${e.message}`;
+            props.errors.push(e);
+          }
           if (props.perf) props.perf.end(`hook.${hookName}.${hook.name}`);
         });
       }, Promise.resolve());
@@ -81,11 +78,7 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
       ) {
         hookDefinition.mutable.forEach((key) => {
           if ({}.hasOwnProperty.call(hookOutput, key)) {
-            if (customPropKeys.includes(key)) {
-              props.customProps[key] = hookOutput[key];
-            } else {
-              props[key] = hookOutput[key];
-            }
+            props[key] = hookOutput[key];
           }
         });
       }

@@ -26,34 +26,29 @@ describe('#validations', () => {
       numberOfWorkers: -1,
       shuffleRequests: false,
     },
+    rootDir: 'process.cwd()',
+    srcDir: 'src',
+    distDir: 'public',
     debug: {
       automagic: false,
       build: false,
       hooks: false,
       performance: false,
       stacks: false,
+      shortcodes: false,
     },
     hooks: {
       disable: [],
     },
-    siteUrl: '',
-    locations: {
-      assets: './public/dist/static/',
-      buildFolder: '',
-      intersectionObserverPoly: '/dist/static/intersection-observer.js',
-      public: './public/',
-      srcFolder: './src/',
-      svelte: {
-        clientComponents: './public/dist/svelte/',
-        ssrComponents: './___ELDER___/compiled/',
-      },
-      systemJs: '/dist/static/s.min.js',
-    },
+    origin: '',
     plugins: {},
     server: {
       prefix: '',
     },
-    typescript: false,
+    shortcodes: {
+      closePattern: '}}',
+      openPattern: '{{',
+    },
   };
   test('getDefaultConfig', () => {
     expect(getDefaultConfig()).toEqual(defaultConfig);
@@ -82,6 +77,7 @@ describe('#validations', () => {
       all: jest.fn(),
       permalink: jest.fn(),
       hooks: [],
+      data: {},
     };
     expect(validateRoute(validRoute, 'Home')).toEqual(validRoute);
     // works with valid hook
@@ -100,6 +96,7 @@ describe('#validations', () => {
       description: 'just for testing',
       init: jest.fn(), // FIXME: init should be required or test should allow not defined
       hooks: [1, 2, 3], // TODO: nested hook validation?
+      shortcodes: [],
     };
     expect(validatePlugin(validPlugin)).toEqual({ ...validPlugin, config: {}, routes: {} });
     expect(validatePlugin({ ...validPlugin, config: defaultConfig })).toEqual({

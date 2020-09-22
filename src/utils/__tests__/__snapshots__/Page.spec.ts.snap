@@ -28,8 +28,8 @@ Page {
   ],
   "beforeHydrateStack": Array [],
   "cssStack": Array [],
+  "cssString": "",
   "customJsStack": Array [],
-  "customProps": Object {},
   "data": Object {},
   "errors": Array [],
   "footerStack": Array [],
@@ -176,7 +176,7 @@ Page {
     "debug": Object {
       "automagic": false,
       "build": false,
-      "hooks": false,
+      "hooks": true,
       "performance": false,
       "stacks": false,
     },
@@ -206,6 +206,7 @@ Page {
     "typescript": false,
     "worker": true,
   },
+  "shortcodes": Array [],
   "uid": "xxxxxxxxxx",
 }
 `;
@@ -236,48 +237,37 @@ Page {
       "type": "build",
     },
   ],
-  "beforeHydrate": "beforeHydrateStack",
   "beforeHydrateStack": Array [],
   "cssStack": Array [],
   "cssString": "cssStack",
-  "customJs": "customJsStack",
   "customJsStack": Array [
     "customJsStack",
   ],
-  "customProps": Object {},
   "data": Object {
     "worldPopulation": 7805564950,
   },
   "errors": Array [],
-  "footer": "footerStack",
   "footerStack": Array [
     "footerStack",
   ],
+  "footerString": "
+    beforeHydrateStack
+    <script>hydrateStack</script>
+    customJsStack
+    footerStack
+    ",
   "head": "headStack",
   "headStack": Array [],
-  "headString": "headStack<style data-name=\\"cssStack\\">cssStack</style>",
+  "headString": "headStack<style>cssStack</style>",
   "helpers": Object {
     "metersInAMile": 0.00062137119224,
     "permalinks": Object {},
   },
-  "htmlString": "<!DOCTYPE html>
-      <html lang=\\"en\\">
-        <head>
-          headStack<style data-name=\\"cssStack\\">cssStack</style>
-        </head>
-        <body class=\\"cityNursingHomes\\">
-          <div class=\\"container\\"></div>
-          beforeHydrateStack
-          <script data-name=\\"hydrateStack\\">hydrateStack</script>
-          customJsStack
-          footerStack
-        </body>
-      </html>
-    ",
-  "hydrate": "<script data-name=\\"hydrateStack\\">hydrateStack</script>",
+  "htmlString": "",
   "hydrateStack": Array [
     "hydrateStack",
   ],
+  "layoutHtml": "<div class=\\"container\\"></div>",
   "perf": Object {
     "end": [MockFunction] {
       "calls": Array [
@@ -297,17 +287,10 @@ Page {
           "html.layout",
         ],
         Array [
-          "html.createHtmlString",
-        ],
-        Array [
           "page",
         ],
       ],
       "results": Array [
-        Object {
-          "type": "return",
-          "value": undefined,
-        },
         Object {
           "type": "return",
           "value": undefined,
@@ -354,15 +337,8 @@ Page {
         Array [
           "html.layout",
         ],
-        Array [
-          "html.createHtmlString",
-        ],
       ],
       "results": Array [
-        Object {
-          "type": "return",
-          "value": undefined,
-        },
         Object {
           "type": "return",
           "value": undefined,
@@ -467,7 +443,6 @@ Page {
                 },
                 "type": "build",
               },
-              "routeHTML": undefined,
               "settings": Object {
                 "$$internal": Object {
                   "hashedComponents": Object {
@@ -488,7 +463,7 @@ Page {
                 "debug": Object {
                   "automagic": false,
                   "build": false,
-                  "hooks": false,
+                  "hooks": true,
                   "performance": false,
                   "stacks": false,
                 },
@@ -518,6 +493,7 @@ Page {
                 "typescript": false,
                 "worker": true,
               },
+              "templateHtml": undefined,
             },
           },
         ],
@@ -575,7 +551,7 @@ Page {
                 "debug": Object {
                   "automagic": false,
                   "build": false,
-                  "hooks": false,
+                  "hooks": true,
                   "performance": false,
                   "stacks": false,
                 },
@@ -663,7 +639,7 @@ Page {
     "debug": Object {
       "automagic": false,
       "build": false,
-      "hooks": false,
+      "hooks": true,
       "performance": false,
       "stacks": false,
     },
@@ -693,7 +669,9 @@ Page {
     "typescript": false,
     "worker": true,
   },
-  "styleTag": "<style data-name=\\"cssStack\\">cssStack</style>",
+  "shortcodes": Array [],
+  "styleTag": "<style>cssStack</style>",
+  "templateHtml": undefined,
   "timings": Array [],
   "uid": "xxxxxxxxxx",
 }

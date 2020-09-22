@@ -39,4 +39,28 @@ test('#partialHydration', async () => {
       })
     ).code,
   ).toEqual(`<DatePicker hydrate-client="string />`);
+
+  await expect(async () => {
+    await partialHydration.markup({
+      content: `<Clock hydrate-client={{}}>Test</Clock>`,
+    });
+  }).rejects.toThrow();
+
+  await expect(async () => {
+    await partialHydration.markup({
+      content: `<Map hydrate-client={{}} ></Map>`,
+    });
+  }).rejects.toThrow();
+
+  await expect(async () => {
+    await partialHydration.markup({
+      content: `<Map hydrate-client={{}}></Map>`,
+    });
+  }).rejects.toThrow();
+
+  await expect(async () => {
+    await partialHydration.markup({
+      content: `<Clock hydrate-client={{}} /><Clock hydrate-client={{}}>Test</Clock>`,
+    });
+  }).rejects.not.toContain('<Clock hydrate-client={{}} />');
 });

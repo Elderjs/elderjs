@@ -1,4 +1,5 @@
 import path from 'path';
+import devalue from 'devalue';
 import getUniqueId from './getUniqueId';
 import IntersectionObserver from './IntersectionObserver';
 import { ComponentPayload } from './types';
@@ -29,28 +30,21 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
 
   if (!componentCache[cleanComponentName]) {
     const clientComponents = page.settings.$$internal.hashedComponents;
-    const ssrComponent = path.resolve(
-      process.cwd(),
-      `./${page.settings.locations.svelte.ssrComponents}${cleanComponentName}.js`,
-    );
-    let clientSvelteFolder = page.settings.locations.svelte.clientComponents.replace(
-      page.settings.locations.public,
-      '/',
-    );
-    if (clientSvelteFolder.indexOf('.') === 0) clientSvelteFolder = clientSvelteFolder.substring(1);
+    const ssrComponent = path.resolve(page.settings.$$internal.ssrComponents, `./${cleanComponentName}.js`);
+    const clientSvelteFolder = page.settings.$$internal.clientComponents.replace(page.settings.distDir, '');
 
     // eslint-disable-next-line global-require, import/no-dynamic-require
     const { render } = require(ssrComponent);
     componentCache[cleanComponentName] = {
       render,
-      clientSrc: `${clientSvelteFolder}${clientComponents[cleanComponentName]}.js`,
+      clientSrc: `${clientSvelteFolder}/${clientComponents[cleanComponentName]}.js`,
     };
   }
 
   const { render, clientSrc } = componentCache[cleanComponentName];
 
   try {
-    const { css, html: htmlOutput, head } = render({ ...props, link: page.helpers.permalinks });
+    const { css, html: htmlOutput, head } = render(props);
 
     if (css && css.code && css.code.length > 0 && page.cssStack) {
       page.cssStack.push({ source: componentName, priority: 50, string: css.code });
@@ -114,7 +108,7 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
 
     const clientJs = `
     System.import('${clientSrc}').then(({ default: App }) => {
-    new App({ target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'), hydrate: true, props: ${JSON.stringify(
+    new App({ target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'), hydrate: true, props: ${devalue(
       props,
     )} });
     });`;

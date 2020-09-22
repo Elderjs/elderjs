@@ -7,6 +7,7 @@ test('includes all', () => {
     'svelteComponent',
     'getHashedSvelteComponents',
     'getUniqueId',
+    'validateShortcode',
     'IntersectionObserver',
     'Page',
     'parseBuildPerf',
@@ -20,5 +21,7 @@ test('includes all', () => {
     'prepareServer',
     'prepareProcessStack',
     'getConfig',
+    'getRollupConfig',
+    'prepareInlineShortcode',
   ]);
 });

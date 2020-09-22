@@ -3,13 +3,15 @@ import fs from 'fs-extra';
 import { parseBuildPerf } from './utils';
 import externalHelpers from './externalHelpers';
 import { HookOptions } from './hookInterface/types';
+import prepareShortcodeParser from './utils/prepareShortcodeParser';
+import Page from './utils/Page';
 
 const hooks: Array<HookOptions> = [
   {
     hook: 'bootstrap',
     name: 'elderAddExternalHelpers',
     description: 'Adds external helpers to helpers object',
-    priority: 100,
+    priority: 1,
     run: async ({ helpers, query, settings }) => {
       let additionalHelpers = {};
       try {
@@ -29,10 +31,131 @@ const hooks: Array<HookOptions> = [
     },
   },
   {
+    hook: 'middleware',
+    name: 'elderExpressLikeMiddleware',
+    description: 'An express like middleware so requests can be served by Elder.js',
+    priority: 1,
+    run: async ({
+      serverLookupObject,
+      settings,
+      query,
+      helpers,
+      data,
+      routes,
+      allRequests,
+      runHook,
+      errors,
+      shortcodes,
+      req,
+      next,
+      res,
+      request,
+    }) => {
+      if (req.path) {
+        let reqPath = req.path;
+
+        if (settings.server.prefix && settings.server.prefix.length > 0) {
+          if (reqPath.indexOf(settings.server.prefix) !== 0) {
+            return next();
+          }
+        }
+
+        // see if we have a request object with the path as is. (could include / or not.)
+        let requestObject = serverLookupObject[reqPath];
+
+        if (!requestObject && reqPath[reqPath.length - 1] === '/') {
+          // check the path without a slash.
+          requestObject = serverLookupObject[reqPath.substring(0, reqPath.length - 1)];
+        } else if (!requestObject) {
+          // check the path with a slash.
+          reqPath += '/';
+          requestObject = serverLookupObject[reqPath];
+        }
+
+        // if we have a requestObject then we know it is for ElderGuide
+        if (requestObject) {
+          let route = routes[requestObject.route];
+          if (request && request.route) {
+            route = routes[request.route];
+          }
+          const forPage = {
+            request: { ...requestObject, ...request },
+            settings,
+            query,
+            helpers,
+            data,
+            route,
+            runHook,
+            allRequests,
+            routes,
+            errors,
+            shortcodes,
+          };
+
+          const page = new Page(forPage);
+
+          const html = await page.html();
+
+          if (html && !res.headerSent) {
+            res.setHeader('Content-Type', 'text/html');
+            res.end(html);
+          }
+        } else {
+          next();
+        }
+      } else {
+        next();
+      }
+      return {};
+    },
+  },
+  {
+    hook: 'shortcodes',
+    name: 'elderProcessShortcodes',
+    description:
+      "Builds the shortcode parser, parses shortcodes from the html returned by the route's html and appends anything needed to the stacks.",
+    priority: 50,
+    run: async ({
+      helpers,
+      data,
+      settings,
+      request,
+      query,
+      cssStack,
+      headStack,
+      customJsStack,
+      templateHtml,
+      shortcodes,
+      allRequests,
+    }) => {
+      const ShortcodeParser = prepareShortcodeParser({
+        shortcodes,
+        helpers,
+        data,
+        settings,
+        request,
+        query,
+        cssStack,
+        headStack,
+        customJsStack,
+        allRequests,
+      });
+
+      const html = await ShortcodeParser.parse(templateHtml);
+
+      return {
+        templateHtml: html,
+        headStack,
+        cssStack,
+        customJsStack,
+      };
+    },
+  },
+  {
     hook: 'stacks',
     name: 'elderAddMetaCharsetToHead',
     description: `Adds <meta charset="UTF-8" /> to the head.`,
-    priority: 1,
+    priority: 100,
     run: async ({ headStack }) => {
       return {
         headStack: [
@@ -40,7 +163,7 @@ const hooks: Array<HookOptions> = [
           {
             source: 'elderAddMetaCharsetToHead',
             string: `<meta charset="UTF-8" />`,
-            priority: 1,
+            priority: 100,
           },
         ],
       };
@@ -50,7 +173,7 @@ const hooks: Array<HookOptions> = [
     hook: 'stacks',
     name: 'elderAddMetaViewportToHead',
     description: `Adds <meta name="viewport" content="width=device-width, initial-scale=1" /> to the head.`,
-    priority: 10,
+    priority: 90,
     run: async ({ headStack }) => {
       return {
         headStack: [
@@ -58,7 +181,7 @@ const hooks: Array<HookOptions> = [
           {
             source: 'elderAddMetaViewportToHead',
             string: `<meta name="viewport" content="width=device-width, initial-scale=1" />`,
-            priority: 10,
+            priority: 90,
           },
         ],
       };
@@ -68,33 +191,24 @@ const hooks: Array<HookOptions> = [
     hook: 'stacks',
     name: 'elderAddDefaultIntersectionObserver',
     description: 'Sets up the default polyfill for the intersection observer',
-    priority: 1,
-    run: async ({ beforeHydrateStack, settings }) => {
-      if (settings && settings.locations && {}.hasOwnProperty.call(settings.locations, 'intersectionObserverPoly')) {
-        if (settings.locations.intersectionObserverPoly) {
-          return {
-            beforeHydrateStack: [
-              {
-                source: 'elderAddDefaultIntersectionObserver',
-                string: `<script type="text/javascript">
+    priority: 100,
+    run: async ({ beforeHydrateStack }) => {
+      return {
+        beforeHydrateStack: [
+          {
+            source: 'elderAddDefaultIntersectionObserver',
+            string: `<script type="text/javascript">
       if (!('IntersectionObserver' in window)) {
           var script = document.createElement("script");
-          script.src = "${settings.locations.intersectionObserverPoly}";
+          script.src = "/static/intersection-observer.js";
           document.getElementsByTagName('head')[0].appendChild(script);
       };
       </script>`,
-                priority: 1,
-              },
-              ...beforeHydrateStack,
-            ],
-          };
-        }
-      } else {
-        console.log(
-          'Not injecting intersection observer polyfill. To not see this warning set locations.intersectionObserverPoly = false in elder.config.js.',
-        );
-      }
-      return null;
+            priority: 100,
+          },
+          ...beforeHydrateStack,
+        ],
+      };
     },
   },
   {
@@ -102,54 +216,59 @@ const hooks: Array<HookOptions> = [
     name: 'elderAddSystemJs',
     description: 'AddsSystemJs to beforeHydrateStack also add preloading of systemjs to the headStack.',
     priority: 1,
-    run: async ({ beforeHydrateStack, headStack, settings }) => {
-      if (settings && settings.locations && {}.hasOwnProperty.call(settings.locations, 'systemJs')) {
-        if (settings.locations.systemJs) {
-          return {
-            beforeHydrateStack: [
-              {
-                source: 'elderAddSystemJs',
-                string: `<script data-name="systemjs" src="${settings.locations.systemJs}"></script>`,
-                priority: 2,
-              },
-              ...beforeHydrateStack,
-            ],
+    run: async ({ beforeHydrateStack, headStack }) => {
+      return {
+        beforeHydrateStack: [
+          {
+            source: 'elderAddSystemJs',
+            string: `<script src="/static/s.min.js"></script>`,
+            priority: 99,
+          },
+          ...beforeHydrateStack,
+        ],
 
-            headStack: [
-              {
-                source: 'elderAddSystemJs',
-                string: `<link rel="preload" href="${settings.locations.systemJs}" as="script">`,
-                priority: 2,
-              },
-              ...headStack,
-            ],
-          };
-        }
-      } else {
-        console.log(
-          'Not injecting systemjs. To not see this warning set locations.systemJs = false in elder.config.js.',
-        );
-      }
-      return null;
+        headStack: [
+          {
+            source: 'elderAddSystemJs',
+            string: `<link rel="preload" href="/static/s.min.js" as="script">`,
+            priority: 99,
+          },
+          ...headStack,
+        ],
+      };
     },
   },
+  {
+    hook: 'compileHtml',
+    name: 'elderCompileHtml',
+    description: 'Creates an HTML string out of the Svelte layout and stacks.',
+    priority: 50,
+    run: async ({ request, headString, footerString, layoutHtml }) => {
+      return {
+        htmlString: `<!DOCTYPE html><html lang="en"><head>${headString}</head><body class="${request.route}">${layoutHtml}${footerString}</body></html>`,
+      };
+    },
+  },
+
   {
     hook: 'error',
     name: 'elderConsoleLogErrors',
     description: 'Log any errors to the console.',
-    priority: 100,
-    run: async ({ errors }) => {
-      console.error(errors);
+    priority: 1,
+    run: async ({ errors, request, settings }) => {
+      if (!settings.worker) {
+        console.error(request.permalink, errors);
+      }
     },
   },
   {
     hook: 'requestComplete',
     name: 'elderWriteHtmlFileToPublic',
     description: 'Write the html output to public.',
-    priority: 100,
+    priority: 1,
     run: async ({ settings, request, htmlString, errors }) => {
       if (settings.build) {
-        const file = path.resolve(process.cwd(), `${settings.locations.public}${request.permalink}/index.html`);
+        const file = path.resolve(settings.distDir, `.${request.permalink}/index.html`);
         try {
           fs.outputFileSync(file, htmlString);
         } catch (e) {
@@ -198,9 +317,16 @@ const hooks: Array<HookOptions> = [
     priority: 50,
     run: async ({ errors, settings }) => {
       if (errors && errors.length > 0) {
-        const buildOutputLocation = path.resolve(process.cwd(), `./___ELDER___/build-${Date.now()}.json`);
-        console.log(`Writing details on the ${errors.length} build errors to: ${buildOutputLocation}`);
-        fs.writeJSONSync(buildOutputLocation, { errors, settings });
+        const buildOutputLocation = path.resolve(settings.rootDir, `./___ELDER___/build-errors-${Date.now()}.json`);
+        console.log(
+          `Errors during Elder.js build. Writing details on the ${errors.length} build errors to: ${buildOutputLocation}`,
+        );
+        fs.writeJSONSync(buildOutputLocation, { settings, buildErrors: errors });
+
+        errors.forEach((error) => {
+          console.error(error);
+          console.error(`------`);
+        });
       }
     },
   },

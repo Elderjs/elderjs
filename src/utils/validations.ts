@@ -1,85 +1,52 @@
 import * as yup from 'yup';
-import type { ConfigOptions, PluginOptions } from './types';
+import type { ConfigOptions, PluginOptions, ShortcodeDef } from './types';
 import type { RouteOptions } from '../routes/types';
 import type { HookOptions } from '../hookInterface/types';
 import hookInterface from '../hookInterface/hookInterface';
 
+const shortcodeSchema = yup.object({
+  shortcode: yup.string().required().label(`The 'name' of the shortcode. {{name /}}`),
+  run: yup
+    .mixed()
+    .required()
+    .test(
+      'isFunction',
+      'run() should be a function or async function',
+      (value) => typeof value === 'function' || (typeof value === 'object' && value.then === 'function'),
+    )
+    .label(`A sync/async function that returns the html, css, js, and head to be added to the html.`),
+});
+
 const configSchema = yup.object({
-  siteUrl: yup.string().notRequired().default('').label(`The domain your site is hosted on. https://yourdomain.com.`),
-  locations: yup
-    .object({
-      assets: yup
-        .string()
-        .notRequired()
-        .default('./public/dist/static/')
-        .label(
-          'Where your site\'s assets files should be written to if you are using the Elder.js template. (Include ./public/)"',
-        ),
-      public: yup
-        .string()
-        .notRequired()
-        .default('./public/')
-        .label(
-          'Where should files be written? This represents the "root" of your site and where your html will be built.',
-        ),
-      svelte: yup
-        .object()
-        .shape({
-          ssrComponents: yup
-            .string()
-            .notRequired()
-            .default('./___ELDER___/compiled/')
-            .label('Location where should SSR components be stored.'),
-          clientComponents: yup
-            .string()
-            .notRequired()
-            .default('./public/dist/svelte/')
-            .label(
-              'Location where Svelte components that are bundled for the client should be saved. (Include ./public/)',
-            ),
-        })
-        .notRequired(),
-      systemJs: yup
-        .string()
-        .notRequired()
-        .default('/dist/static/s.min.js')
-        .label(
-          'If you are using the recommended Elder.js rollup file it is using Systemjs. This defines is where the systemjs file will be found on your site. (exclude /public/)',
-        ),
-      srcFolder: yup
-        .string()
-        .notRequired()
-        .default('./src/')
-        .label('Elder.js and plugins use this to resolve where things should be in the expected file structure.'),
-
-      buildFolder: yup
-        .string()
-        .notRequired()
-        .default('')
-        .label(
-          `If Elder.js doesn't find the files it is looking for in the src folder, it will look in the build folder. (used for typescript)`,
-        ),
-
-      intersectionObserverPoly: yup
-        .string()
-        .notRequired()
-        .default('/dist/static/intersection-observer.js')
-        .label(
-          'Elder.js uses a poly fill for the intersection observer. This is where it will be found on your site. (exclude /public/)',
-        ),
-    })
+  origin: yup.string().notRequired().default('').label(`The domain your site is hosted on. https://yourdomain.com.`),
+  rootDir: yup.string().notRequired().default('process.cwd()').label('Here your package.json lives.'),
+  distDir: yup
+    .string()
     .notRequired()
-    .label('Where various files are written and read from.'),
+    .default('public')
+    .label('Where should files be written? This represents the "root" of your site and where your html will be built.'),
+  srcDir: yup
+    .string()
+    .notRequired()
+    .default('src')
+    .label(
+      "Where Elder.js should find it's expected file structure. If you are using a build step such as typescript on your project, you may need to edit this. ",
+    ),
   debug: yup
     .object()
     .shape({
       stacks: yup.boolean().notRequired().default(false).label('Outputs details of stack processing in the console.'),
       hooks: yup.boolean().notRequired().default(false).label('Output details of hook execution in the console.'),
+      shortcodes: yup
+        .boolean()
+        .notRequired()
+        .default(false)
+        .label('Output details of shortcode execution in the console.'),
       performance: yup
         .boolean()
         .notRequired()
         .default(false)
-        .label('Outputs a detauled speed report on each pageload.'),
+        .label('Outputs a detailed speed report on each pageload.'),
       build: yup.boolean().notRequired().default(false).label('Displays detailed build information for each worker.'),
       automagic: yup
         .boolean()
@@ -117,7 +84,10 @@ const configSchema = yup.object({
         `If you have some pages that take longer to generate than others, you may want to shuffle your requests so they are spread out more evenly across processes when building.`,
       ),
   }),
-  typescript: yup.boolean().default(false).label('This causes Elder.js to look in the /build/ folder '),
+  shortcodes: yup.object({
+    openPattern: yup.string().default('{{').label('Opening pattern for identifying shortcodes in html output.'),
+    closePattern: yup.string().default('}}').label('closing pattern for identifying shortcodes in html output.'),
+  }),
   plugins: yup.object().default({}).label('Used to define Elder.js plugins.'),
 });
 
@@ -143,11 +113,11 @@ const routeSchema = yup.object({
     .label(
       'Sync function that turns request objects from the all() function into permalinks which are relative to the site root',
     ),
-  hooks: yup
-    .array()
+  data: yup
+    .mixed()
     .notRequired()
-    .default([])
-    .label('An array of hooks. NOTE/TODO: These run on all routes, not just the one defined on.'),
+    .default({})
+    .label(`Async/sync function that returns a JS object. Can also be a plain JS object.`),
 });
 
 const pluginSchema = yup.object({
@@ -171,6 +141,7 @@ const pluginSchema = yup.object({
     .default({})
     .notRequired()
     .label('(optional) An object of default configs. These will be used when none are set in their elder.config.js.'),
+  shortcodes: yup.array().notRequired().default([]).label('Array of shortcodes'),
 });
 
 const hookSchema = yup
@@ -192,7 +163,7 @@ const hookSchema = yup
       .optional()
       .default(50)
       .label(
-        'The priority level a hook should run at. Elder.js hooks run at 1 or 100 where 1 is the highest priorty and 100 is the lowest priority.',
+        'The priority level a hook should run at. Elder.js hooks run here 100 is the highest priority and 1 is the lowest priority.',
       ),
     run: yup
       .mixed()
@@ -277,14 +248,35 @@ function validateHook(hook): HookOptions | false {
   }
 }
 
+function validateShortcode(shortcode): ShortcodeDef | false {
+  try {
+    shortcodeSchema.validateSync(shortcode);
+    const validated = shortcodeSchema.cast(shortcode);
+    return validated;
+  } catch (err) {
+    if (shortcode && shortcode.$$meta && shortcode.$$meta.type === 'plugin') {
+      console.error(
+        `Plugin ${shortcode.$$meta.addedBy} uses a shortcode, but it is ignored due to error(s). Please create a ticket with that plugin so the author can investigate it.`,
+        err.errors,
+        err.value,
+      );
+    } else {
+      console.error(`Hook ignored due to error(s).`, err.errors, err.value);
+    }
+    return false;
+  }
+}
+
 export {
   validateRoute,
   validatePlugin,
   validateHook,
+  validateShortcode,
   // validateConfig,
   getDefaultConfig,
   configSchema,
   hookSchema,
   routeSchema,
   pluginSchema,
+  shortcodeSchema,
 };
