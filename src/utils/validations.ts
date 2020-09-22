@@ -117,9 +117,7 @@ const routeSchema = yup.object({
     .mixed()
     .notRequired()
     .default({})
-    .label(
-      `Async/sync function that returns a JS object. Can also be a plain JS object. Important: If this is a function it is passed a '{data}' parameter. This parameter should be mutated and returned to pick up any data populated via hooks or plugins.`,
-    ),
+    .label(`Async/sync function that returns a JS object. Can also be a plain JS object.`),
 });
 
 const pluginSchema = yup.object({
