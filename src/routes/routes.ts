@@ -5,6 +5,7 @@ import type { RouteOptions } from './types';
 
 import { svelteComponent, capitalizeFirstLetter } from '../utils';
 import { ConfigOptions } from '../utils/types';
+import wrapPermalinkFn from '../utils/wrapPermalinkFn';
 
 function routes(settings: ConfigOptions) {
   if (settings.debug.automagic)
@@ -32,9 +33,11 @@ function routes(settings: ConfigOptions) {
       .filter((r) => r.includes(`/routes/${routeName}`))
       .filter((r) => !r.includes('route.js'));
 
-    if (typeof route.permalink !== 'string' && typeof route.permalink !== 'function') {
+    if (typeof route.permalink !== 'function') {
       throw new Error(`${cv} does not include a permalink attribute that is a string or function.`);
     }
+
+    route.permalink = wrapPermalinkFn(route.permalink, routeName);
 
     if (!route.all && (Array.isArray(route.all) || typeof route.all !== 'function')) {
       throw new Error(`${cv} does not include a all attribute that is is a function or an array.`);
