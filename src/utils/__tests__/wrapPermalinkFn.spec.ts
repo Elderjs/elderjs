@@ -9,6 +9,12 @@ describe('#wrapPermalinkFn', () => {
     expect(permalink).toEqual('/test/');
   });
 
+  it('works on homepage permalinks / ', () => {
+    const permalinkFn = () => '/';
+    const permalink = wrapPermalinkFn(permalinkFn, 'test')(payload);
+    expect(permalink).toEqual('/');
+  });
+
   it('it adds a beginning slash', () => {
     const permalinkFn = ({ request }) => `${request.slug}/`;
     const permalink = wrapPermalinkFn(permalinkFn, 'test')(payload);
