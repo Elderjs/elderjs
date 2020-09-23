@@ -46,7 +46,7 @@ function routes(settings: ConfigOptions) {
     route.permalink = wrapPermalinkFn({ permalinkFn: route.permalink, routeName, settings });
 
     if (!Array.isArray(route.all) && typeof route.all !== 'function') {
-      if (routeName === 'home') {
+      if (routeName.toLowerCase() === 'home') {
         route.all = [{ slug: '/' }];
       } else {
         route.all = [{ slug: kebabcase(routeName) }];
