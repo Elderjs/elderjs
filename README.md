@@ -58,6 +58,7 @@ Our goal is to keep the hookInterface, plugin interface, and general structure o
 
 This is a lot of words to say we’re not looking to ship a bunch if breaking changes any time soon, but will be shipping bug fixes and incremental changes that are mostly “under the hood.”
 
+For a clearer vision of what to expect from the Elder.js team along with what is "in scope" and what isn't, [please see this comment](https://github.com/Elderjs/elderjs/issues/31#issuecomment-690694857).
 
 ## Getting Started:
 
