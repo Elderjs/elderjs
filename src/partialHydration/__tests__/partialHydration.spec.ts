@@ -14,6 +14,16 @@ test('#partialHydration', async () => {
   expect(
     (
       await partialHydration.markup({
+        content: '<DatePicker hydrate-client={{ a: "b" }}/>',
+      })
+    ).code,
+  ).toEqual(
+    `<div class="ejs-component" data-ejs-component="DatePicker" data-ejs-props={JSON.stringify({ a: "b" })} data-ejs-options={JSON.stringify({"loading":"lazy"})} />`,
+  );
+
+  expect(
+    (
+      await partialHydration.markup({
         content: '<DatePicker hydrate-client={{ a: "b" }} hydrate-options={{ loading: "eager" }} />',
       })
     ).code,

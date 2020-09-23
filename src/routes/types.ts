@@ -26,6 +26,10 @@ type CriticalCssRequest = {
   state?: StateSlug;
 };
 
+type RequestObject = {
+  slug: string;
+};
+
 export type RouteOptions = {
   template?: string;
   templateComponent?: (string) => Object;
@@ -34,7 +38,7 @@ export type RouteOptions = {
   permalink: Permalink | any;
   parent?: string;
   breadcrumbLabel?: string | (() => string);
-  all?: [string] | ((Object) => [string] | Promise<any>);
+  all?: [RequestObject] | ((Object) => [RequestObject] | Promise<any>);
   sitemap?: SiteMap;
   lastUpdate?: any;
   hooks?: Array<HookOptions>;

@@ -1,5 +1,59 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`#routes Sets a default permalink function when undefined. 1`] = `
+Object {
+  "Content": Object {
+    "all": Array [
+      Object {
+        "slug": "content",
+      },
+    ],
+    "data": Object {
+      "foo": "bar",
+    },
+    "layout": "<div class=\\"svelteComponent\\">Layout</div>",
+    "permalink": [Function],
+    "template": "Default",
+    "templateComponent": "<div class=\\"svelteComponent\\">Default</div>",
+  },
+  "Home": Object {
+    "all": [Function],
+    "data": [Function],
+    "layout": "<div class=\\"svelteComponent\\">Layout.svelte</div>",
+    "permalink": [Function],
+    "template": "Home.svelte",
+    "templateComponent": "<div class=\\"svelteComponent\\">test/src/routes/Home/Home.svelte</div>",
+  },
+}
+`;
+
+exports[`#routes Sets a single request object for all array when when no all function 1`] = `
+Object {
+  "Content": Object {
+    "all": Array [
+      Object {
+        "slug": "content",
+      },
+    ],
+    "data": Object {
+      "foo": "bar",
+    },
+    "layout": "<div class=\\"svelteComponent\\">Layout</div>",
+    "permalink": [Function],
+    "template": "Default",
+    "templateComponent": "<div class=\\"svelteComponent\\">Default</div>",
+  },
+  "Home": Object {
+    "all": [Function],
+    "data": [Function],
+    "layout": "<div class=\\"svelteComponent\\">Layout.svelte</div>",
+    "permalink": [Function],
+    "template": "Home.svelte",
+    "templateComponent": "<div class=\\"svelteComponent\\">test/src/routes/Home/Home.svelte</div>",
+  },
+}
+`;
+
 exports[`#routes no template, ts imports 1`] = `
 Object {
   "Content": Object {

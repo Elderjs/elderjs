@@ -98,8 +98,9 @@ const routeSchema = yup.object({
     .required()
     .test(
       'isFunction',
-      'all() should be a function or async function',
-      (value) => typeof value === 'function' || (typeof value === 'object' && value.then === 'function'),
+      'all() should be a function or async function or an array',
+      (value) =>
+        typeof value === 'function' || Array.isArray(value) || (typeof value === 'object' && value.then === 'function'),
     )
     .label(`A sync/async function that returns an array of all of the 'request objects' for this route.`),
   permalink: yup

@@ -1,6 +1,7 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
 import glob from 'glob';
+import kebabcase from 'lodash.kebabcase';
 import type { RouteOptions } from './types';
 
 import { svelteComponent, capitalizeFirstLetter } from '../utils';
@@ -33,14 +34,31 @@ function routes(settings: ConfigOptions) {
       .filter((r) => r.includes(`/routes/${routeName}`))
       .filter((r) => !r.includes('route.js'));
 
-    if (typeof route.permalink !== 'function') {
-      throw new Error(`${cv} does not include a permalink attribute that is a string or function.`);
+    if (!route.permalink) {
+      if (settings.debug.automagic) {
+        console.log(
+          `debug.automagic:: No permalink function found for route "${routeName}". Setting default which will return / for home or /{request.slug}/.`,
+        );
+      }
+      route.permalink = ({ request }) => (request.slug === '/' ? request.slug : `/${request.slug}/`);
     }
 
-    route.permalink = wrapPermalinkFn(route.permalink, routeName);
+    route.permalink = wrapPermalinkFn({ permalinkFn: route.permalink, routeName, settings });
 
-    if (!route.all && (Array.isArray(route.all) || typeof route.all !== 'function')) {
-      throw new Error(`${cv} does not include a all attribute that is is a function or an array.`);
+    if (!Array.isArray(route.all) && typeof route.all !== 'function') {
+      if (routeName === 'home') {
+        route.all = [{ slug: '/' }];
+      } else {
+        route.all = [{ slug: kebabcase(routeName) }];
+      }
+
+      if (settings.debug.automagic) {
+        console.log(
+          `debug.automagic:: No all function or array found for route "${routeName}". Setting default which will return ${JSON.stringify(
+            route.all,
+          )}`,
+        );
+      }
     }
 
     if (route.template) {
