@@ -29,6 +29,31 @@ const wrapPermalinkFn = ({ permalinkFn, routeName, settings }) => (payload) => {
       permalink = `${permalink}/`;
     }
   }
+
+  if (permalink.indexOf('//') !== -1) {
+    throw new Error(
+      `Permalink issue. ${permalink} has two slashes. You should adjust the route's permalink function. This usually happens when one of the variables needed by the permalink function is undefined. request: ${JSON.stringify(
+        payload.request,
+      )}`,
+    );
+  }
+
+  if (permalink.indexOf('undefined') !== -1) {
+    console.warn(
+      `Potential permalink issue. ${permalink} has 'undefined' in it. Valid URLs can sometimes have the word undefined, but this usually happens when one of the variables needed by the permalink function is undefined. request: ${JSON.stringify(
+        payload.request,
+      )}`,
+    );
+  }
+
+  if (permalink.indexOf('null') !== -1) {
+    console.warn(
+      `Potential permalink issue. ${permalink} has 'null' in it. Valid URLs can sometimes have the word null, but this usually happens when one of the variables needed by the permalink function is undefined. request: ${JSON.stringify(
+        payload.request,
+      )}`,
+    );
+  }
+
   return permalink;
 };
 
