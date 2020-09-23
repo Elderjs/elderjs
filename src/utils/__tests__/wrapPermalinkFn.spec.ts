@@ -47,18 +47,18 @@ describe('#wrapPermalinkFn', () => {
   });
 
   it('it throws when permalink returns an undefined', () => {
-    const permalinkFn = ({ request }) => `//`;
+    const permalinkFn = () => `//`;
     expect(() => wrapPermalinkFn({ permalinkFn, routeName: 'test', settings })(payload)).toThrow();
   });
 
   it('it warn when permalink returns an undefined due to missing prop', () => {
-    const permalinkFn = ({ request }) => '/' + request.nope + '/';
+    const permalinkFn = ({ request }) => `/${request.nope}/`;
     wrapPermalinkFn({ permalinkFn, routeName: 'test', settings })(payload);
     expect(warn).toHaveBeenCalledTimes(1);
   });
 
   it('it warn when permalink returns an null due to missing prop', () => {
-    const permalinkFn = ({ request }) => '/null/';
+    const permalinkFn = () => '/null/';
     wrapPermalinkFn({ permalinkFn, routeName: 'test', settings })(payload);
     expect(warn).toHaveBeenCalledTimes(2);
   });
