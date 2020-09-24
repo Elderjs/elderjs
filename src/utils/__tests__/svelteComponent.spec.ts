@@ -48,6 +48,31 @@ describe('#svelteComponent', () => {
     expect(getComponentName('foo/bar///Home.svelte')).toEqual('Home');
   });
 
+  it('getClientSvelteFolder works', () => {
+    // eslint-disable-next-line global-require
+    const { getClientSvelteFolder } = require('../svelteComponent');
+    expect(
+      getClientSvelteFolder({
+        settings: {
+          distDir: '/test/public',
+          $$internal: {
+            clientComponents: '/test/public/svelte',
+          },
+        },
+      }),
+    ).toEqual('/svelte');
+    expect(
+      getClientSvelteFolder({
+        settings: {
+          distDir: '\\test\\public',
+          $$internal: {
+            clientComponents: '\\test\\public\\svelte',
+          },
+        },
+      }),
+    ).toEqual('/svelte');
+  });
+
   it('replaceSpecialCharacters works', () => {
     // eslint-disable-next-line global-require
     const { replaceSpecialCharacters } = require('../svelteComponent');

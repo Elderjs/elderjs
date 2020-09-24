@@ -4,6 +4,10 @@ import getUniqueId from './getUniqueId';
 import IntersectionObserver from './IntersectionObserver';
 import { ComponentPayload } from './types';
 
+export const getClientSvelteFolder = (page) => {
+  return page.settings.$$internal.clientComponents.replace(page.settings.distDir, '').replace(/\\/gm, '/'); // windows fix.
+};
+
 export const getComponentName = (str) => {
   let out = str.replace('.svelte', '').replace('.js', '');
   if (out.includes('/')) {
@@ -31,7 +35,7 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
   if (!componentCache[cleanComponentName]) {
     const clientComponents = page.settings.$$internal.hashedComponents;
     const ssrComponent = path.resolve(page.settings.$$internal.ssrComponents, `./${cleanComponentName}.js`);
-    const clientSvelteFolder = page.settings.$$internal.clientComponents.replace(page.settings.distDir, '');
+    const clientSvelteFolder = getClientSvelteFolder(page);
 
     // eslint-disable-next-line global-require, import/no-dynamic-require
     const { render } = require(ssrComponent);
