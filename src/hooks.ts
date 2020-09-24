@@ -214,26 +214,30 @@ const hooks: Array<HookOptions> = [
   {
     hook: 'stacks',
     name: 'elderAddSystemJs',
-    description: 'AddsSystemJs to beforeHydrateStack also add preloading of systemjs to the headStack.',
+    description: 'AddsSystemJs loading to the beforeHydrate stack for old browsers.',
     priority: 1,
-    run: async ({ beforeHydrateStack, headStack }) => {
+    run: async ({ beforeHydrateStack }) => {
       return {
         beforeHydrateStack: [
           {
             source: 'elderAddSystemJs',
-            string: `<script src="/static/s.min.js"></script>`,
+            string: `
+            <script nomodule>
+            if(!self.modern){
+              var sysjs = document.createElement("script");
+              sysjs.src = "/static/s.min.js";
+              document.getElementsByTagName('head')[0].appendChild(sysjs);  
+              
+              var sysjslink = document.createElement("link");
+              sysjslink.rel = "preload";
+              sysjslink.href=  "/static/s.min.js";
+              sysjslink.as = "script";
+              document.getElementsByTagName('head')[0].appendChild(sysjslink);  
+            }
+            </script>`,
             priority: 99,
           },
           ...beforeHydrateStack,
-        ],
-
-        headStack: [
-          {
-            source: 'elderAddSystemJs',
-            string: `<link rel="preload" href="/static/s.min.js" as="script">`,
-            priority: 99,
-          },
-          ...headStack,
         ],
       };
     },

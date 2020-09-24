@@ -81,6 +81,10 @@ const buildPage = async (page) => {
     const customJs = page.processStack('customJsStack');
     const footer = page.processStack('footerStack');
 
+    if (page.hydrateStack.length > 0) {
+      page.headString = `${page.headString}<script type=module>self.modern=1;</script>`;
+    }
+
     page.footerString = `
     ${page.hydrateStack.length > 0 ? beforeHydrate : '' /* page.hydrateStack.length is correct here */}
     ${page.hydrateStack.length > 0 ? hydrate : ''}

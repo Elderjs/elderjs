@@ -251,6 +251,21 @@ export default function getRollupConfig({ svelteConfig = {}, rollupConfig = {} }
           svelteConfig,
           rollupConfig,
         }),
+        createBrowserConfig({
+          input: [`${relSrcDir}/components/*/*.svelte`, `${relSrcDir}/components/*.svelte`],
+          output: {
+            dir: clientComponents,
+            entryFileNames: 'entry[name]-[hash].mjs',
+            sourcemap: !production,
+            format: 'esm',
+          },
+          multiInputConfig: multiInput({
+            relative: `${relSrcDir}/components`,
+            transformOutputPath: (output) => `${path.basename(output)}`,
+          }),
+          svelteConfig,
+          rollupConfig,
+        }),
       );
       configs.push(
         createSSRConfig({
@@ -285,6 +300,19 @@ export default function getRollupConfig({ svelteConfig = {}, rollupConfig = {} }
               entryFileNames: 'entry[name].js',
               sourcemap: !production,
               format: 'system',
+            },
+            svelteConfig,
+            rollupConfig,
+          }),
+        );
+        configs.push(
+          createBrowserConfig({
+            input: file,
+            output: {
+              dir: clientComponents,
+              entryFileNames: 'entry[name].mjs',
+              sourcemap: !production,
+              format: 'esm',
             },
             svelteConfig,
             rollupConfig,

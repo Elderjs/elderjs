@@ -32,6 +32,8 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
   const cleanComponentName = getComponentName(componentName);
   const id = getUniqueId();
 
+  console.log(page.settings.$$internal.hashedComponents);
+
   if (!componentCache[cleanComponentName]) {
     const clientComponents = page.settings.$$internal.hashedComponents;
     const ssrComponent = path.resolve(page.settings.$$internal.ssrComponents, `./${cleanComponentName}.js`);
@@ -41,11 +43,12 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
     const { render } = require(ssrComponent);
     componentCache[cleanComponentName] = {
       render,
-      clientSrc: `${clientSvelteFolder}/${clientComponents[cleanComponentName]}.js`,
+      clientSrcSystem: `${clientSvelteFolder}/${clientComponents[cleanComponentName].system}.js`,
+      clientSrcMjs: `${clientSvelteFolder}/${clientComponents[cleanComponentName].mjs}.mjs`,
     };
   }
 
-  const { render, clientSrc } = componentCache[cleanComponentName];
+  const { render, clientSrcSystem, clientSrcMjs } = componentCache[cleanComponentName];
 
   try {
     const { css, html: htmlOutput, head } = render(props);
@@ -106,16 +109,31 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
       page.headStack.push({
         source: componentName,
         priority: 50,
-        string: `<link rel="preload" href="${clientSrc}" as="script">`,
+        string: `<link rel="preload" href="${clientSrcMjs}" as="script">`,
       });
     }
 
+    // const clientJs = `
+    // System.import('${clientSrc}').then(({ default: App }) => {
+    // new App({ target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'), hydrate: true, props: ${devalue(
+    //   props,
+    // )} });
+    // });`;
+
     const clientJs = `
-    System.import('${clientSrc}').then(({ default: App }) => {
-    new App({ target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'), hydrate: true, props: ${devalue(
-      props,
-    )} });
-    });`;
+    var ${cleanComponentName.toLowerCase()}Props${id} = ${devalue(props)};
+    if(self.modern){
+      console.log('modern ${cleanComponentName.toLowerCase()}-${id}')
+      import("${clientSrcMjs}").then((Component)=>{
+        new Component.default({ target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'), hydrate: true, props: ${cleanComponentName.toLowerCase()}Props${id} });
+      });
+    } else {
+      console.log('system ${cleanComponentName.toLowerCase()}-${id}')
+      System.import('${clientSrcSystem}').then(({ default: App }) => {
+        new App({ target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'), hydrate: true, props: ${cleanComponentName.toLowerCase()}Props${id} });
+      });
+    }
+    `;
 
     if (hydrateOptions.loading === 'eager') {
       // this is eager loaded. Still requires System.js to be defined.
