@@ -164,3 +164,7 @@ export interface ComponentPayload {
   props: any;
   hydrateOptions?: HydrateOptions;
 }
+
+export interface RollupConfig {
+  replacements?: [string, string];
+}

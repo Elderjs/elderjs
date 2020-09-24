@@ -15,21 +15,35 @@ import path from 'path';
 import fs from 'fs-extra';
 import del from 'del';
 import { getElderConfig, partialHydration } from '../index';
-import { ConfigOptions } from './types';
+import { ConfigOptions, RollupConfig } from './types';
 
 const production = process.env.NODE_ENV === 'production' || !process.env.ROLLUP_WATCH;
 
-export function createBrowserConfig({ input, output, multiInputConfig = false, svelteConfig }) {
+export function createBrowserConfig({
+  input,
+  output,
+  multiInputConfig = false,
+  svelteConfig,
+  rollupConfig = {} as RollupConfig,
+}) {
+  let replacements = {
+    'process.env.componentType': "'browser'",
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+  };
+  if (rollupConfig && rollupConfig.replacements) {
+    replacements = {
+      ...replacements,
+      ...rollupConfig.replacements,
+    };
+  }
+
   const config = {
     cache: true,
     treeshake: true,
     input,
     output,
     plugins: [
-      replace({
-        'process.env.componentType': "'browser'",
-        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
-      }),
+      replace(replacements),
       json(),
       svelte({
         ...svelteConfig,
@@ -68,17 +82,30 @@ export function createBrowserConfig({ input, output, multiInputConfig = false, s
   return config;
 }
 
-export function createSSRConfig({ input, output, svelteConfig, multiInputConfig = false }) {
+export function createSSRConfig({
+  input,
+  output,
+  svelteConfig,
+  rollupConfig = {} as RollupConfig,
+  multiInputConfig = false,
+}) {
+  let replacements = {
+    'process.env.componentType': "'server'",
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+  };
+  if (rollupConfig && rollupConfig.replacements) {
+    replacements = {
+      ...replacements,
+      ...rollupConfig.replacements,
+    };
+  }
   const config = {
     cache: true,
     treeshake: true,
     input,
     output,
     plugins: [
-      replace({
-        'process.env.componentType': "'server'",
-        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
-      }),
+      replace(replacements),
       json(),
       svelte({
         ...svelteConfig,
@@ -129,7 +156,7 @@ export function getPluginPaths(elderConfig: ConfigOptions) {
   }, []);
 }
 
-export default function getRollupConfig({ svelteConfig }) {
+export default function getRollupConfig({ svelteConfig = {}, rollupConfig = {} }) {
   const elderConfig = getElderConfig();
   const { $$internal, distDir, srcDir, rootDir } = elderConfig;
   const { ssrComponents, clientComponents } = $$internal;
@@ -175,6 +202,7 @@ export default function getRollupConfig({ svelteConfig }) {
           exports: 'auto',
         },
         svelteConfig,
+        rollupConfig,
       }),
     );
     return out;
@@ -192,6 +220,7 @@ export default function getRollupConfig({ svelteConfig }) {
           exports: 'auto',
         },
         svelteConfig,
+        rollupConfig,
       }),
     );
 
@@ -220,6 +249,7 @@ export default function getRollupConfig({ svelteConfig }) {
             transformOutputPath: (output) => `${path.basename(output)}`,
           }),
           svelteConfig,
+          rollupConfig,
         }),
       );
       configs.push(
@@ -235,6 +265,7 @@ export default function getRollupConfig({ svelteConfig }) {
             transformOutputPath: (output) => `${path.basename(output)}`,
           }),
           svelteConfig,
+          rollupConfig,
         }),
       );
     }
@@ -256,6 +287,7 @@ export default function getRollupConfig({ svelteConfig }) {
               format: 'system',
             },
             svelteConfig,
+            rollupConfig,
           }),
         );
         configs.push(
@@ -267,6 +299,7 @@ export default function getRollupConfig({ svelteConfig }) {
               exports: 'auto',
             },
             svelteConfig,
+            rollupConfig,
           }),
         );
       });
@@ -288,6 +321,7 @@ export default function getRollupConfig({ svelteConfig }) {
           transformOutputPath: (output) => `${path.basename(output)}`,
         }),
         svelteConfig,
+        rollupConfig,
       }),
     );
     configs.push(
@@ -303,6 +337,7 @@ export default function getRollupConfig({ svelteConfig }) {
           transformOutputPath: (output) => `${path.basename(output)}`,
         }),
         svelteConfig,
+        rollupConfig,
       }),
     );
   });
