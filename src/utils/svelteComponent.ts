@@ -113,22 +113,15 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
       });
     }
 
-    // const clientJs = `
-    // System.import('${clientSrc}').then(({ default: App }) => {
-    // new App({ target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'), hydrate: true, props: ${devalue(
-    //   props,
-    // )} });
-    // });`;
-
     const clientJs = `
     var ${cleanComponentName.toLowerCase()}Props${id} = ${devalue(props)};
     if(self.modern){
-      console.log('modern ${cleanComponentName.toLowerCase()}-${id}')
       import("${clientSrcMjs}").then((Component)=>{
         new Component.default({ target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'), hydrate: true, props: ${cleanComponentName.toLowerCase()}Props${id} });
+      }).catch((e)=>{
+        console.error('Error loading ${clientSrcMjs}', e);
       });
     } else {
-      console.log('system ${cleanComponentName.toLowerCase()}-${id}')
       System.import('${clientSrcSystem}').then(({ default: App }) => {
         new App({ target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'), hydrate: true, props: ${cleanComponentName.toLowerCase()}Props${id} });
       });

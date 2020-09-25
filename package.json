@@ -21,8 +21,8 @@
     "build/**/*"
   ],
   "peerDependencies": {
-    "svelte": "^3.24.1",
     "intersection-observer": "^0.11.0",
+    "svelte": "^3.24.1",
     "systemjs": "^6.5.0"
   },
   "dependencies": {

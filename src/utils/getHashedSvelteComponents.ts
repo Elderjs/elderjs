@@ -23,7 +23,6 @@ const getHashedSvelteComponents = ({ ssrComponents, clientComponents }) => {
     const ssr = ssrFiles.map((s) => s.split('/').pop().split('.')[0]);
 
     const systemClient = systemJsClientFiles.map((s) => s.split('/').pop().split('.')[0]);
-    console.log(mjsClientFiles);
     const mjsClient = mjsClientFiles.map((s) => s.split('/').pop().split('.')[0]);
 
     // match the SSR version (no hash) to a hashed version.

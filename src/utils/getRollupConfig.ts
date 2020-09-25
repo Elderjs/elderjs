@@ -22,7 +22,7 @@ const production = process.env.NODE_ENV === 'production' || !process.env.ROLLUP_
 export function createBrowserConfig({
   input,
   output,
-  multiInputConfig = false,
+  multiInputConfig,
   svelteConfig,
   rollupConfig = {} as RollupConfig,
 }) {
@@ -39,7 +39,7 @@ export function createBrowserConfig({
 
   const config = {
     cache: true,
-    treeshake: true,
+    treeshake: production,
     input,
     output,
     plugins: [
@@ -60,9 +60,10 @@ export function createBrowserConfig({
         dedupe: ['svelte'],
         preferBuiltins: true,
       }),
-      commonjs(),
+      commonjs({ sourceMap: !production }),
     ],
   };
+
   // bundle splitting.
   if (multiInputConfig) {
     config.plugins.unshift(multiInputConfig);
@@ -101,7 +102,7 @@ export function createSSRConfig({
   }
   const config = {
     cache: true,
-    treeshake: true,
+    treeshake: production,
     input,
     output,
     plugins: [
@@ -238,27 +239,20 @@ export default function getRollupConfig({ svelteConfig = {}, rollupConfig = {} }
       configs.push(
         createBrowserConfig({
           input: [`${relSrcDir}/components/*/*.svelte`, `${relSrcDir}/components/*.svelte`],
-          output: {
-            dir: clientComponents,
-            entryFileNames: 'entry[name]-[hash].js',
-            sourcemap: !production,
-            format: 'system',
-          },
-          multiInputConfig: multiInput({
-            relative: `${relSrcDir}/components`,
-            transformOutputPath: (output) => `${path.basename(output)}`,
-          }),
-          svelteConfig,
-          rollupConfig,
-        }),
-        createBrowserConfig({
-          input: [`${relSrcDir}/components/*/*.svelte`, `${relSrcDir}/components/*.svelte`],
-          output: {
-            dir: clientComponents,
-            entryFileNames: 'entry[name]-[hash].mjs',
-            sourcemap: !production,
-            format: 'esm',
-          },
+          output: [
+            {
+              dir: clientComponents,
+              entryFileNames: 'entry[name]-[hash].js',
+              sourcemap: !production,
+              format: 'system',
+            },
+            {
+              dir: clientComponents,
+              entryFileNames: 'entry[name]-[hash].mjs',
+              sourcemap: !production,
+              format: 'esm',
+            },
+          ],
           multiInputConfig: multiInput({
             relative: `${relSrcDir}/components`,
             transformOutputPath: (output) => `${path.basename(output)}`,
@@ -288,36 +282,35 @@ export default function getRollupConfig({ svelteConfig = {}, rollupConfig = {} }
     // watch/dev build bundles each component individually for faster reload times during dev.
     if (fs.existsSync(path.resolve(srcDir, `./components/`))) {
       [
-        ...glob.sync(path.resolve(srcDir, './components/*/*.svelte')),
-        ...glob.sync(path.resolve(srcDir, './components/*.svelte')),
+        ...new Set([
+          ...glob.sync(path.resolve(srcDir, './components/*/*.svelte')),
+          ...glob.sync(path.resolve(srcDir, './components/*.svelte')),
+        ]),
       ].forEach((cv) => {
         const file = cv.replace(`${rootDir}/`, '');
         configs.push(
           createBrowserConfig({
             input: file,
-            output: {
-              dir: clientComponents,
-              entryFileNames: 'entry[name].js',
-              sourcemap: !production,
-              format: 'system',
-            },
+            output: [
+              {
+                dir: clientComponents,
+                entryFileNames: 'entry[name].js',
+                sourcemap: !production,
+                format: 'system',
+              },
+              {
+                dir: clientComponents,
+                entryFileNames: 'entry[name].mjs',
+                sourcemap: !production,
+                format: 'esm',
+              },
+            ],
             svelteConfig,
             rollupConfig,
+            multiInputConfig: false,
           }),
         );
-        configs.push(
-          createBrowserConfig({
-            input: file,
-            output: {
-              dir: clientComponents,
-              entryFileNames: 'entry[name].mjs',
-              sourcemap: !production,
-              format: 'esm',
-            },
-            svelteConfig,
-            rollupConfig,
-          }),
-        );
+
         configs.push(
           createSSRConfig({
             input: file,
@@ -338,12 +331,20 @@ export default function getRollupConfig({ svelteConfig = {}, rollupConfig = {} }
     configs.push(
       createBrowserConfig({
         input: [`${pluginPath}*.svelte`],
-        output: {
-          dir: clientComponents,
-          entryFileNames: 'entry[name]-[hash].js',
-          sourcemap: !production,
-          format: 'system',
-        },
+        output: [
+          {
+            dir: clientComponents,
+            entryFileNames: 'entry[name]-[hash].js',
+            sourcemap: !production,
+            format: 'system',
+          },
+          {
+            dir: clientComponents,
+            entryFileNames: 'entry[name].mjs',
+            sourcemap: !production,
+            format: 'esm',
+          },
+        ],
         multiInputConfig: multiInput({
           relative: pluginPath.replace(elderConfig.distDir, '').substr(1),
           transformOutputPath: (output) => `${path.basename(output)}`,
