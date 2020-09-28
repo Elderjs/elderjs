@@ -216,13 +216,14 @@ const hooks: Array<HookOptions> = [
     name: 'elderAddSystemJs',
     description: 'AddsSystemJs loading to the beforeHydrate stack for old browsers.',
     priority: 1,
-    run: async ({ beforeHydrateStack }) => {
-      return {
-        beforeHydrateStack: [
-          {
-            source: 'elderAddSystemJs',
-            string: `
-            <script nomodule>
+    run: async ({ settings, beforeHydrateStack }) => {
+      if (settings.legacy) {
+        return {
+          beforeHydrateStack: [
+            {
+              source: 'elderAddSystemJs',
+              string: `
+            <script nomodule="true">
             if(!self.modern){
               var sysjs = document.createElement("script");
               sysjs.src = "/static/s.min.js";
@@ -235,11 +236,12 @@ const hooks: Array<HookOptions> = [
               document.getElementsByTagName('head')[0].appendChild(sysjslink);  
             }
             </script>`,
-            priority: 99,
-          },
-          ...beforeHydrateStack,
-        ],
-      };
+              priority: 99,
+            },
+            ...beforeHydrateStack,
+          ],
+        };
+      }
     },
   },
   {

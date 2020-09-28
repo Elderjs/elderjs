@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import type { ConfigOptions, PluginOptions, ShortcodeDef } from './types';
+import type { ConfigOptions, PluginOptions, RollupSettings, ShortcodeDef } from './types';
 import type { RouteOptions } from '../routes/types';
 import type { HookOptions } from '../hookInterface/types';
 import hookInterface from '../hookInterface/hookInterface';
@@ -89,6 +89,12 @@ const configSchema = yup.object({
     closePattern: yup.string().default('}}').label('closing pattern for identifying shortcodes in html output.'),
   }),
   plugins: yup.object().default({}).label('Used to define Elder.js plugins.'),
+  legacy: yup
+    .boolean()
+    .default(false)
+    .label(
+      'Elder.js will use Systemjs instead of esm dynamic imports. You will still need to polyfill/babel other missing apis.',
+    ),
 });
 
 const routeSchema = yup.object({
@@ -182,21 +188,28 @@ const hookSchema = yup
   })
   .noUnknown(true);
 
-function getDefaultConfig(): ConfigOptions {
-  const validated = configSchema.cast();
+const rollupSchema = yup.object({
+  svelteConfig: yup.object().default({}).notRequired().label('Usually imported from ./svelte.config.js'),
+  rollupSettings: yup.object({
+    dev: yup.object({
+      splitComponents: yup
+        .boolean()
+        .default(false)
+        .notRequired()
+        .label(
+          "Dramatically speeds up development reloads but breaks some of Svelte's core functionality such as shared stores across hydrated components.",
+        ),
+    }),
+  }),
+});
 
-  return validated;
+function getDefaultRollup(): RollupSettings {
+  return rollupSchema.cast();
 }
 
-// function validateConfig(config = {}) {
-//   try {
-//     configSchema.validateSync(config);
-//     const validated: ConfigOptions = configSchema.cast(config);
-//     return validated;
-//   } catch (err) {
-//     return false;
-//   }
-// }
+function getDefaultConfig(): ConfigOptions {
+  return configSchema.cast();
+}
 
 function validateRoute(route, routeName: string): RouteOptions | false {
   try {
@@ -273,7 +286,7 @@ export {
   validatePlugin,
   validateHook,
   validateShortcode,
-  // validateConfig,
+  getDefaultRollup,
   getDefaultConfig,
   configSchema,
   hookSchema,

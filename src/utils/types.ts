@@ -67,6 +67,7 @@ export type ConfigOptions = {
     closePattern: string;
   };
   $$internal: Internal;
+  legacy: boolean;
 };
 
 export type SettingOptions = {
@@ -165,6 +166,16 @@ export interface ComponentPayload {
   hydrateOptions?: HydrateOptions;
 }
 
-export interface RollupConfig {
+export interface RollupDevOptions {
+  splitComponents: boolean;
+}
+
+export interface RollupSettings {
   replacements?: [string, string];
+  dev?: RollupDevOptions;
+}
+
+export interface RollupOptions {
+  svelteConfig: any;
+  rollupSettings: RollupSettings;
 }

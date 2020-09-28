@@ -43,12 +43,11 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
     const { render } = require(ssrComponent);
     componentCache[cleanComponentName] = {
       render,
-      clientSrcSystem: `${clientSvelteFolder}/${clientComponents[cleanComponentName].system}.js`,
-      clientSrcMjs: `${clientSvelteFolder}/${clientComponents[cleanComponentName].mjs}.mjs`,
+      client: `${clientSvelteFolder}/${clientComponents[cleanComponentName].client}.js`,
     };
   }
 
-  const { render, clientSrcSystem, clientSrcMjs } = componentCache[cleanComponentName];
+  const { render, client } = componentCache[cleanComponentName];
 
   try {
     const { css, html: htmlOutput, head } = render(props);
@@ -109,24 +108,22 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
       page.headStack.push({
         source: componentName,
         priority: 50,
-        string: `<link rel="preload" href="${clientSrcMjs}" as="script">`,
+        string: `<link rel="preload" href="${client}" as="script">`,
       });
     }
 
-    const clientJs = `
-    var ${cleanComponentName.toLowerCase()}Props${id} = ${devalue(props)};
-    if(self.modern){
-      import("${clientSrcMjs}").then((Component)=>{
+    let clientJs = `var ${cleanComponentName.toLowerCase()}Props${id} = ${devalue(props)};`;
+    if (page.settings.legacy) {
+      clientJs += `System.import('${client}').then(({ default: App }) => {
+        new App({ target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'), hydrate: true, props: ${cleanComponentName.toLowerCase()}Props${id} });
+      });`;
+    } else {
+      clientJs += `      import("${client}").then((Component)=>{
         new Component.default({ target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'), hydrate: true, props: ${cleanComponentName.toLowerCase()}Props${id} });
       }).catch((e)=>{
-        console.error('Error loading ${clientSrcMjs}', e);
-      });
-    } else {
-      System.import('${clientSrcSystem}').then(({ default: App }) => {
-        new App({ target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'), hydrate: true, props: ${cleanComponentName.toLowerCase()}Props${id} });
-      });
+        console.error('Error loading ${client}', e);
+      });`;
     }
-    `;
 
     if (hydrateOptions.loading === 'eager') {
       // this is eager loaded. Still requires System.js to be defined.
