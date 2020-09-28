@@ -31,6 +31,10 @@ const getHashedSvelteComponents = ({ ssrComponents, clientComponents }) => {
       if (typeof out[cv] !== 'object') out[cv] = {};
       const system = systemClient.find((c) => c.includes(`entry${cv}`));
       if (system) out[cv].system = system;
+
+      const iife = systemClient.find((c) => c.includes(`iife${cv}`));
+      if (iife) out[cv].iife = iife;
+
       const mjs = mjsClient.find((c) => c.includes(`entry${cv}`));
       if (mjsClient) out[cv].mjs = mjs;
       return out;
