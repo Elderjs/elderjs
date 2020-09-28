@@ -22,6 +22,7 @@ describe('#validations', () => {
   };
 
   const defaultConfig = {
+    legacy: true,
     build: {
       numberOfWorkers: -1,
       shuffleRequests: false,

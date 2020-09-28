@@ -1,4 +1,4 @@
-const defaultConfig = { debug: { automagic: true }, distDir: 'public', srcDir: 'src', rootDir: 'test' };
+const defaultConfig = { legacy: true, debug: { automagic: true }, distDir: 'public', srcDir: 'src', rootDir: 'test' };
 jest.mock('../validations.ts', () => ({
   getDefaultConfig: () => defaultConfig,
 }));

@@ -127,7 +127,7 @@ describe('#hooks', () => {
   });
   it('elderAddSystemJs', async () => {
     const hook = hooks.find((h) => h.name === 'elderAddSystemJs');
-    expect(await hook.run({ beforeHydrateStack: [], headStack: [] })).toMatchSnapshot();
+    expect(await hook.run({ beforeHydrateStack: [], headStack: [], settings: { legacy: true } })).toMatchSnapshot();
   });
 
   it('elderCompileHtml', async () => {

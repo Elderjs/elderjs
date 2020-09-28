@@ -90,7 +90,7 @@ export function createSSRConfig({
   output,
   svelteConfig,
   rollupConfig = {} as RollupSettings,
-  multiInputConfig = false,
+  multiInputConfig,
 }) {
   let replacements = {
     'process.env.componentType': "'server'",
@@ -162,7 +162,6 @@ export function getPluginPaths(elderConfig: ConfigOptions) {
 export default function getRollupConfig(options) {
   const defaultOptions = getDefaultRollup();
   const { svelteConfig, rollupConfig } = defaultsDeep(options, defaultOptions);
-  console.log(rollupConfig);
   const elderConfig = getElderConfig();
   const { $$internal, distDir, srcDir, rootDir, legacy } = elderConfig;
   const { ssrComponents, clientComponents } = $$internal;
@@ -255,6 +254,7 @@ export default function getRollupConfig(options) {
             },
             svelteConfig,
             rollupConfig,
+            multiInputConfig: false,
           }),
         );
       });

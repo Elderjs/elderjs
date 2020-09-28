@@ -26,9 +26,7 @@ const getHashedSvelteComponents = ({ ssrComponents, clientComponents }) => {
     // match the SSR version (no hash) to a hashed version.
     // allowing the correct file name to be looked up by the SSR key.
     results = ssr.reduce((out, cv) => {
-      if (typeof out[cv] !== 'object') out[cv] = {};
-      const client = clientFiles.find((c) => c.includes(`entry${cv}`));
-      if (client) out[cv].client = client;
+      out[cv] = clientFiles.find((c) => c.includes(`entry${cv}`));
 
       return out;
     }, {});

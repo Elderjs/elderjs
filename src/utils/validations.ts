@@ -91,7 +91,7 @@ const configSchema = yup.object({
   plugins: yup.object().default({}).label('Used to define Elder.js plugins.'),
   legacy: yup
     .boolean()
-    .default(false)
+    .default(true)
     .label(
       'Elder.js will use Systemjs instead of esm dynamic imports. You will still need to polyfill/babel other missing apis.',
     ),

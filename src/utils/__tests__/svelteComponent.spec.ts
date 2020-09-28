@@ -9,6 +9,7 @@ const componentProps = {
       permalinks: jest.fn(),
     },
     settings: {
+      legacy: true, // TODO: make tests for legacy: false
       distDir: 'test/public',
       rootDir: 'test',
       srcDir: 'test/src',
@@ -126,7 +127,7 @@ describe('#svelteComponent', () => {
     const svelteComponent = require('../svelteComponent').default;
     const home = svelteComponent('Home.svelte');
     expect(home(componentProps)).toEqual(
-      `<div class="svelte-datepicker"><div class="datepicker" id="datepicker-SwrzsrVDCd"><div>DATEPICKER</div></div></div>`,
+      `<div class="svelte-datepicker"><div class="datepicker" id="datepickerSwrzsrVDCd"><div>DATEPICKER</div></div></div>`,
     );
     expect(componentProps.page.hydrateStack).toEqual([
       {
@@ -135,9 +136,9 @@ describe('#svelteComponent', () => {
         string: `
         function initdatepickerSwrzsrVDCd() {
           
-    System.import('/svelte/Datepicker.a1b2c3.js').then(({ default: App }) => {
-    new App({ target: document.getElementById('datepicker-SwrzsrVDCd'), hydrate: true, props: {a:"b"} });
-    });
+      System.import('/svelte/Datepicker.a1b2c3.js').then((datepickerSwrzsrVDCd) => {
+        new datepickerSwrzsrVDCd.default({ target: document.getElementById('datepickerSwrzsrVDCd'), hydrate: true, props: {a:"b"} });
+      });
         }
         
       window.addEventListener('load', function (event) {
@@ -148,7 +149,7 @@ describe('#svelteComponent', () => {
           for (; objKi < objKl; objKi++) {
             var entry = entries[objK[objKi]];
             if (entry.isIntersecting) {
-              observer.unobserve(document.getElementById('datepicker-SwrzsrVDCd'));
+              observer.unobserve(document.getElementById('datepickerSwrzsrVDCd'));
               if (document.eg_datepicker) {
                 initdatepickerSwrzsrVDCd();
               } else {
@@ -161,7 +162,7 @@ describe('#svelteComponent', () => {
           rootMargin: '200px',
           threshold: 0
         });
-        observerSwrzsrVDCd.observe(document.getElementById('datepicker-SwrzsrVDCd'));
+        observerSwrzsrVDCd.observe(document.getElementById('datepickerSwrzsrVDCd'));
       });
     
       `,

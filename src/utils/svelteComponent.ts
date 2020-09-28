@@ -43,7 +43,7 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
     const { render } = require(ssrComponent);
     componentCache[cleanComponentName] = {
       render,
-      client: `${clientSvelteFolder}/${clientComponents[cleanComponentName].client}.js`,
+      client: `${clientSvelteFolder}/${clientComponents[cleanComponentName]}.js`,
     };
   }
 
@@ -103,7 +103,7 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
 
     // hydrate a component
 
-    // should we use the IntersectionObserver and / or adjust the distance?
+    // should we preload?
     if (hydrateOptions.preload) {
       page.headStack.push({
         source: componentName,
@@ -112,21 +112,30 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
       });
     }
 
-    let clientJs = `var ${cleanComponentName.toLowerCase()}Props${id} = ${devalue(props)};`;
+    const componentTarget = `${cleanComponentName.toLowerCase()}${id}`;
+
+    let clientJs;
+    // legacy uses System.js
     if (page.settings.legacy) {
-      clientJs += `System.import('${client}').then(({ default: App }) => {
-        new App({ target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'), hydrate: true, props: ${cleanComponentName.toLowerCase()}Props${id} });
+      clientJs = `
+      System.import('${client}').then((${componentTarget}) => {
+        new ${componentTarget}.default({ target: document.getElementById('${componentTarget}'), hydrate: true, props: ${devalue(
+        props,
+      )} });
       });`;
     } else {
-      clientJs += `      import("${client}").then((Component)=>{
-        new Component.default({ target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'), hydrate: true, props: ${cleanComponentName.toLowerCase()}Props${id} });
+      clientJs = `
+      import("${client}").then((${componentTarget} )=>{
+        new ${componentTarget}.default({ target: document.getElementById('${componentTarget}'), hydrate: true, props: ${devalue(
+        props,
+      )} });
       }).catch((e)=>{
         console.error('Error loading ${client}', e);
       });`;
     }
 
     if (hydrateOptions.loading === 'eager') {
-      // this is eager loaded. Still requires System.js to be defined.
+      // this is eager loaded.
       page.hydrateStack.push({
         source: componentName,
         priority: 50,
@@ -134,18 +143,19 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
       });
     } else {
       // we're lazy loading
+      // we use the IntersectionObserver and adjust the distance
       page.hydrateStack.push({
         source: componentName,
         priority: 50,
         string: `
-        function init${cleanComponentName.toLowerCase()}${id}() {
+        function init${componentTarget}() {
           ${clientJs}
         }
         ${IntersectionObserver({
-          el: `document.getElementById('${cleanComponentName.toLowerCase()}-${id}')`,
+          el: `document.getElementById('${componentTarget}')`,
           name: `${cleanComponentName.toLowerCase()}`,
-          loaded: `init${cleanComponentName.toLowerCase()}${id}();`,
-          notLoaded: `init${cleanComponentName.toLowerCase()}${id}();`,
+          loaded: `init${componentTarget}();`,
+          notLoaded: `init${componentTarget}();`,
           rootMargin: hydrateOptions.rootMargin || '200px',
           threshold: hydrateOptions.threshold || 0,
           id,
@@ -154,7 +164,7 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
       });
     }
 
-    return `<div class="${cleanComponentName.toLowerCase()}" id="${cleanComponentName.toLowerCase()}-${id}">${finalHtmlOuput}</div>`;
+    return `<div class="${cleanComponentName.toLowerCase()}" id="${componentTarget}">${finalHtmlOuput}</div>`;
   } catch (e) {
     console.log(e);
     page.errors.push(e);

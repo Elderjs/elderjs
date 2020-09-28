@@ -102,6 +102,7 @@ describe('#getRollupConfig', () => {
           format: 'system',
         },
         svelteConfig: {},
+        multiInputConfig: false,
       }).plugins,
     ).toEqual([
       {
@@ -251,6 +252,7 @@ describe('#getRollupConfig', () => {
             },
           ],
         },
+        multiInputConfig: false,
       }).plugins,
     ).toEqual([
       {
