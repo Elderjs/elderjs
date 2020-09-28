@@ -32,8 +32,6 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
   const cleanComponentName = getComponentName(componentName);
   const id = getUniqueId();
 
-  console.log(page.settings.$$internal.hashedComponents);
-
   if (!componentCache[cleanComponentName]) {
     const clientComponents = page.settings.$$internal.hashedComponents;
     const ssrComponent = path.resolve(page.settings.$$internal.ssrComponents, `./${cleanComponentName}.js`);
