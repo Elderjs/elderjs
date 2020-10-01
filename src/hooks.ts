@@ -204,7 +204,6 @@ const hooks: Array<HookOptions> = [
           document.getElementsByTagName('head')[0].appendChild(script);
       };
       </script>
-      <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script><script src="https://unpkg.com/unfetch/polyfill"></script>
       `,
             priority: 100,
           },

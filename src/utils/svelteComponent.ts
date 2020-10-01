@@ -135,7 +135,7 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
 
     page.hydrateStack.push({
       source: componentName,
-      string: `<script nomodule src="${iife}"></script>`,
+      string: `<script nomodule defer src="${iife}" onload="init${cleanComponentName.toLowerCase()}${id}()"></script>`,
       priority: 99,
     });
 
@@ -171,7 +171,7 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
       }
       ${
         hydrateOptions.loading === 'eager'
-          ? 'init${cleanComponentName.toLowerCase()}${id}();'
+          ? `init${cleanComponentName.toLowerCase()}${id}();`
           : `${IntersectionObserver({
               el: `document.getElementById('${cleanComponentName.toLowerCase()}-${id}')`,
               name: `${cleanComponentName.toLowerCase()}`,
