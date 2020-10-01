@@ -72,9 +72,6 @@ export function createBrowserConfig({
         hydratable: true,
         css: false,
       }),
-      externalGlobals({
-        systemjs: 'System',
-      }),
       nodeResolve({
         browser: true,
         dedupe: ['svelte'],
