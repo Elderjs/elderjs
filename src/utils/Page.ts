@@ -81,24 +81,12 @@ const buildPage = async (page) => {
     const beforeHydrate = page.processStack('beforeHydrateStack');
     const hydrate = page.processStack('hydrateStack');
 
-    const module = page.processStack('moduleStack');
-    const modulejs = page.processStack('moduleJsStack');
-
-    // const dataLink = page.request.permalink.substring(0, page.request.permalink.length - 1);
-    const moduleLink = `${page.request.permalink}module.mjs`;
-    fs.outputFileSync(path.resolve(page.settings.distDir, `.${moduleLink}`), module + modulejs);
-
     const customJs = page.processStack('customJsStack');
     const footer = page.processStack('footerStack');
-
-    if (page.hydrateStack.length > 0) {
-      page.headString = `${page.headString}<script type=module>self.modern=1;</script>`;
-    }
 
     page.footerString = `
     ${page.hydrateStack.length > 0 ? beforeHydrate : '' /* page.hydrateStack.length is correct here */}
     ${page.hydrateStack.length > 0 ? hydrate : ''}
-    ${false ? `<script defer type=module src="${moduleLink}"></script>` : ''}
     ${page.customJsStack.length > 0 ? customJs : ''}
     ${page.footerStack.length > 0 ? footer : ''}
     `;

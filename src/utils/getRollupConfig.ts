@@ -19,9 +19,24 @@ import { ConfigOptions, RollupConfig } from './types';
 
 const production = process.env.NODE_ENV === 'production' || !process.env.ROLLUP_WATCH;
 
-const ieBabelConfig = path.resolve(process.cwd(), './node_modules/@elderjs/elderjs/');
-
-console.log(ieBabelConfig);
+const babelIE11 = babel({
+  cwd: path.resolve(process.cwd(), './node_modules/@elderjs/elderjs/'),
+  extensions: ['.js', '.mjs', '.html', '.svelte'],
+  runtimeHelpers: true,
+  exclude: ['node_modules/@babel/**', 'node_modules/core-js/**'],
+  presets: [
+    [
+      '@babel/preset-env',
+      {
+        targets: {
+          browsers: ['> 0.25%', 'not dead', 'IE 11'],
+        },
+        useBuiltIns: 'usage',
+        corejs: 3,
+      },
+    ],
+  ],
+});
 
 export function createBrowserConfig({
   input,
@@ -87,26 +102,7 @@ export function createBrowserConfig({
   }
 
   if (ie11) {
-    const bableie11 = babel({
-      cwd: ieBabelConfig,
-      extensions: ['.js', '.mjs', '.html', '.svelte'],
-      runtimeHelpers: true,
-      exclude: ['node_modules/@babel/**', 'node_modules/core-js/**'],
-      presets: [
-        [
-          '@babel/preset-env',
-          {
-            targets: {
-              browsers: ['> 0.25%', 'not dead', 'IE 11'],
-            },
-            useBuiltIns: 'usage',
-            corejs: 3,
-          },
-        ],
-      ],
-    });
-    console.log(bableie11);
-    config.plugins.push(bableie11);
+    config.plugins.push(babelIE11);
   }
 
   return config;
