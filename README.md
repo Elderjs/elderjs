@@ -64,6 +64,18 @@ The ElderGuide.com team expects to maintain this project until 2023-2024. For a 
 
 The quickest way to get started is to get started with the [Elder.js template](https://github.com/Elderjs/template) using [degit](https://github.com/Rich-Harris/degit):
 
+```sh
+npx degit Elderjs/template elderjs-app
+
+cd $_
+
+npm install # or "yarn"
+
+npm start
+
+open http://localhost:3000
+```
+
 Here is a demo of the template: [https://elderjs.netlify.app/](https://elderjs.netlify.app/)
 
 ## Full documentation here: https://elderguide.com/tech/elderjs/
