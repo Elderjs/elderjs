@@ -124,14 +124,8 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
       });
     }
 
-    // page.hydrateStack.push({
-    //   source: componentName,
-    //   string: `<script nomodule src="https://unpkg.com/dimport/nomodule" data-main="${nomodule}"></script>`,
-    //   priority: 99,
-    // });
-
-    // iife
-
+    // iife -- working
+    // -----------------
     page.hydrateStack.push({
       source: componentName,
       string: `<script nomodule defer src="${iife}" onload="init${cleanComponentName.toLowerCase()}${id}()"></script>`,
@@ -152,6 +146,27 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
       }
       </script>`,
     });
+    // -----------------------
+
+    // non-working dimport
+    // page.hydrateStack.push({
+    //   source: componentName,
+    //   priority: 98,
+    //   string: `
+    //   <script nomodule src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script><script src="https://unpkg.com/unfetch/polyfill"></script>
+    //   <script nomodule src="https://unpkg.com/anchor-origin-polyfill"></script>
+    //   <script nomodule src="https://unpkg.com/dimport/legacy"></script>
+    //   <script nomodule>
+    //   console.log('nomodule');
+    //   dimport('${nomodule}').then(function(component){
+    //     new component.default({
+    //       target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'),
+    //       props: ${hasProps ? `${cleanComponentName.toLowerCase()}Props${id}` : '{}'},
+    //       hydrate: true
+    //       });
+    //   });
+    //   </script>`,
+    // });
 
     page.hydrateStack.push({
       source: componentName,
@@ -183,33 +198,6 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
       }
       </script>`,
     });
-
-    // if (hydrateOptions.loading === 'eager') {
-    //   // this is eager loaded. Still requires System.js to be defined.
-    //   page.hydrateStack.push({
-    //     source: componentName,
-    //     priority: 1,
-    //     string: `<script>init${cleanComponentName.toLowerCase()}${id}();</script>`,
-    //   });
-    // } else {
-    //   // we're lazy loading
-    //   page.hydrateStack.push({
-    //     source: componentName,
-    //     priority: 1,
-    //     string: `<script>
-    //     ${IntersectionObserver({
-    //       el: `document.getElementById('${cleanComponentName.toLowerCase()}-${id}')`,
-    //       name: `${cleanComponentName.toLowerCase()}`,
-    //       loaded: `init${cleanComponentName.toLowerCase()}${id}();`,
-    //       notLoaded: `init${cleanComponentName.toLowerCase()}${id}();`,
-    //       rootMargin: hydrateOptions.rootMargin || '200px',
-    //       threshold: hydrateOptions.threshold || 0,
-    //       id,
-    //     })}
-    //     </script>
-    //   `,
-    //   });
-    // }
 
     return `<div class="${cleanComponentName.toLowerCase()}" id="${cleanComponentName.toLowerCase()}-${id}">${finalHtmlOuput}</div>`;
   } catch (e) {

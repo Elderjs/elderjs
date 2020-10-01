@@ -26,7 +26,6 @@
   },
   "dependencies": {
     "@babel/core": "^7.11.6",
-    "@babel/plugin-transform-object-assign": "^7.10.4",
     "@babel/preset-env": "^7.11.5",
     "@elderjs/shortcodes": "^1.0.6",
     "@rollup/plugin-commonjs": "^14.0.0",

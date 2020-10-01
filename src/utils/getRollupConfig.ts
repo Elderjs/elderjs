@@ -304,6 +304,7 @@ export default function getRollupConfig(options) {
         input: [`${relSrcDir}/components/*/*.svelte`, `${relSrcDir}/components/*.svelte`],
         output: [
           {
+            name: `___elderjs_[name]`,
             dir: clientComponents,
             entryFileNames: 'nomodule[name]-[hash].js',
             sourcemap: !production,
