@@ -321,25 +321,6 @@ export default function getRollupConfig(options) {
       }),
     );
 
-    // configs.push(
-    //   createBrowserConfig({
-    //     input: [`${relSrcDir}/components/*/*.svelte`, `${relSrcDir}/components/*.svelte`],
-    //     output: [
-    //       {
-    //         name: `___elderjs_[name]`,
-    //         dir: clientComponents,
-    //         entryFileNames: 'iife[name]-[hash].js',
-    //         sourcemap: !production,
-    //         format: 'iife',
-    //       },
-    //     ],
-    //     svelteConfig,
-    //     rollupConfig,
-    //     multiInputConfig: false,
-    //     ie11: true,
-    //   }),
-    // );
-
     configs.push(
       createSSRConfig({
         input: [`${relSrcDir}/components/*/*.svelte`, `${relSrcDir}/components/*.svelte`],

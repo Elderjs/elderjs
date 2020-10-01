@@ -120,7 +120,7 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
       page.hydrateStack.push({
         source: componentName,
         string: `<script>var ${cleanComponentName.toLowerCase()}Props${id} = ${devalue(props)};</script>`,
-        priority: 1,
+        priority: 100,
       });
     }
 
