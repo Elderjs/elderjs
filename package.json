@@ -26,12 +26,16 @@
     "systemjs": "^6.5.0"
   },
   "dependencies": {
+    "@babel/core": "^7.11.6",
+    "@babel/plugin-transform-object-assign": "^7.10.4",
+    "@babel/preset-env": "^7.11.5",
     "@elderjs/shortcodes": "^1.0.6",
     "@rollup/plugin-commonjs": "^14.0.0",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^8.4.0",
     "@rollup/plugin-replace": "^2.3.3",
     "cli-progress": "^3.8.2",
+    "core-js": "^3.6.5",
     "cosmiconfig": "^7.0.0",
     "del": "^5.1.0",
     "devalue": "^2.0.1",

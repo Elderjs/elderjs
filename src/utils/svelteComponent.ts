@@ -122,24 +122,48 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
 
     const hasProps = Object.keys(props).length > 0;
 
-    // if (hasProps) {
-    //   page.hydrateStack.push({
-    //     source: componentName,
-    //     string: `<script>var ${cleanComponentName.toLowerCase()}Props${id} = ${devalue(props)};</script>`,
-    //   });
-    // }
+    if (hasProps) {
+      page.hydrateStack.push({
+        source: componentName,
+        string: `<script>var ${cleanComponentName.toLowerCase()}Props${id} = ${devalue(props)};</script>`,
+        priority: 1,
+      });
+    }
 
-    page.moduleStack.push({
+    // page.moduleStack.push({
+    //   source: componentName,
+    //   string: `import * as ${cleanComponentName} from "${clientSrcMjs}";`,
+    // });
+    // page.moduleJsStack.push({
+    //   source: componentName,
+    //   string: `
+    //   var ${cleanComponentName.toLowerCase()}Props${id} = ${devalue(props)};
+    //   new ${cleanComponentName}.default({ target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'), hydrate: true, ${
+    //     hasProps ? `props:${cleanComponentName.toLowerCase()}Props${id}` : ''
+    //   }});`,
+    // });
+
+    page.hydrateStack.push({
       source: componentName,
-      string: `import * as ${cleanComponentName} from "${clientSrcMjs}";`,
-    });
-    page.moduleJsStack.push({
-      source: componentName,
-      string: `
-      var ${cleanComponentName.toLowerCase()}Props${id} = ${devalue(props)};
-      new ${cleanComponentName}.default({ target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'), hydrate: true, ${
-        hasProps ? `props:${cleanComponentName.toLowerCase()}Props${id}` : ''
-      }});`,
+      string: `<script nomodule src="${iife}"></script>
+      <script nomodule>new ___elderjs_${componentName}({ 
+        target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'), 
+        props:  ${hasProps ? `${cleanComponentName.toLowerCase()}Props${id}` : '{}'},
+        hydrate: true,
+      });
+      </script>
+      
+      <!-- loads ESM for module with a dynamic import -->
+      <script type="module">
+      console.log('executed module');
+      import("${clientSrcMjs}").then((component)=>{
+        new component.default({ 
+          target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'),
+          props: ${hasProps ? `${cleanComponentName.toLowerCase()}Props${id}` : '{}'},
+          hydrate: true
+           });
+      })
+      </script>`,
     });
 
     const clientJs = `

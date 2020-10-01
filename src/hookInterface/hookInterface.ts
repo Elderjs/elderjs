@@ -204,7 +204,7 @@ export const hookInterface: Array<HookInterface> = [
           <p>This hook will mainly be used when you need to add arbitrary strings to the footer. In most cases, users should be using &lt;svelte:head&gt;&lt;/svelte:head&gt; to add content to the head.</p> 
           <ul>
             <li><strong>headStack:</strong> Internally all content used in <svelte:head></svelte:head> are added to the head stack. If you were looking to add ld+json to the page, you could do it here. If you're looking to write &lt;title&gt; tags, we recommend doing it within Svelte templates unless you are writing a plugin in which case you may want to also look at the 'head' hook.</li>
-            <li><strong>cssStack:</strong> The 'cssStack' represents all of the css strings emitted by the SSR Svelte components. Plugins can add css here (such as critical path CSS), but we recommend users add them directly in Svelte files. Note: Do not wrap strings added to the stack in &lt;style&gt;</style>.</li>
+            <li><strong>cssStack:</strong> The 'cssStack' represents all of the css strings emitted by the SSR Svelte components. Plugins can add css here (such as critical path CSS), but we recommend users add them directly in Svelte files. Note: Do not wrap strings added to the stack in &lt;style&gt;&lt;/style&gt;.</li>
             <li><strong>beforeHydrateStack:</strong> default this stack includes a polyfill for intersection observer and systemjs for loading svelte. This stack is not run unless there are Svelte components to be hydrated. </li>
             <li><strong>hydrateStack:</strong> the hydrateStack contains strings which represent all of the root svelte components which will be hydrated.</li>
             <li><strong>customJsStack:</strong> Used to add custom JS to the site. This is done after the Svelte components are written to the page. </li>
@@ -222,7 +222,7 @@ export const hookInterface: Array<HookInterface> = [
     mutable: ['errors', 'headString'],
     context: 'Executed just before writing the <head> tag to the page.',
     use: `<p>This hook's headSting represents everything that will be written to &lt;head&gt; tag.</p>
-       <p>There are many possible SEO uses to this hook, especially for plugins. That said, we recommend users who want to set common SEO elements such as tags &lt;title&gt; and meta descriptions programatically to do it from within Svelte templates using the &lt;svelte:head&gt;&lt;/svelte:head&gt; tag. Chances are you won't need this field unless you're a power user and need access to the raw head.</p>`,
+       <p>There are many possible SEO uses to this hook, especially for plugins. That said, we recommend users who want to set common SEO elements such as tags &lt;title&gt; and meta descriptions programmatically to do it from within Svelte templates using the &lt;svelte:head&gt;&lt;/svelte:head&gt; tag. Chances are you won't need this field unless you're a power user and need access to the raw head.</p>`,
     location: 'Page.ts',
     experimental: false,
     advanced: true,

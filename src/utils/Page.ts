@@ -98,7 +98,7 @@ const buildPage = async (page) => {
     page.footerString = `
     ${page.hydrateStack.length > 0 ? beforeHydrate : '' /* page.hydrateStack.length is correct here */}
     ${page.hydrateStack.length > 0 ? hydrate : ''}
-    <script defer type=module src="${moduleLink}"></script>
+    ${false ? `<script defer type=module src="${moduleLink}"></script>` : ''}
     ${page.customJsStack.length > 0 ? customJs : ''}
     ${page.footerStack.length > 0 ? footer : ''}
     `;
