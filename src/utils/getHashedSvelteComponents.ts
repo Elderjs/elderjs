@@ -15,25 +15,28 @@ const getHashedSvelteComponents = ({ ssrComponents, clientComponents }) => {
     ready = true;
 
     const ssrFiles = glob.sync(`${ssrComponents}/*.js`, {});
-    const systemJsClientFiles = glob.sync(`${clientComponents}/*.js`, {});
+    const jsClientFiles = glob.sync(`${clientComponents}/*.js`, {});
     const mjsClientFiles = glob.sync(`${clientComponents}/*.mjs`, {});
 
     // get an array with jus the file name before .js;
     // CityResults.js => CityResults
     const ssr = ssrFiles.map((s) => s.split('/').pop().split('.')[0]);
 
-    const systemClient = systemJsClientFiles.map((s) => s.split('/').pop().split('.')[0]);
+    const jsClient = jsClientFiles.map((s) => s.split('/').pop().split('.')[0]);
     const mjsClient = mjsClientFiles.map((s) => s.split('/').pop().split('.')[0]);
 
     // match the SSR version (no hash) to a hashed version.
     // allowing the correct file name to be looked up by the SSR key.
     results = ssr.reduce((out, cv) => {
       if (typeof out[cv] !== 'object') out[cv] = {};
-      const system = systemClient.find((c) => c.includes(`entry${cv}`));
+      const system = jsClient.find((c) => c.includes(`entry${cv}`));
       if (system) out[cv].system = system;
 
-      const iife = systemClient.find((c) => c.includes(`iife${cv}`));
+      const iife = jsClient.find((c) => c.includes(`iife${cv}`));
       if (iife) out[cv].iife = iife;
+
+      const nomodule = jsClient.find((c) => c.includes(`nomodule${cv}`));
+      if (nomodule) out[cv].nomodule = nomodule;
 
       const mjs = mjsClient.find((c) => c.includes(`entry${cv}`));
       if (mjsClient) out[cv].mjs = mjs;

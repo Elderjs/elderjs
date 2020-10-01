@@ -1,5 +1,13 @@
 {
   "presets": [
+    "@babel/plugin-syntax-dynamic-import",
+    [
+      "@babel/plugin-transform-runtime",
+      {
+        "regenerator": true,
+        "useESModules": true
+      }
+    ],
     [
       "@babel/preset-env",
       {

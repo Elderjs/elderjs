@@ -193,25 +193,24 @@ export default function getRollupConfig({ svelteConfig = {}, rollupConfig = {} }
   del.sync([`${ssrComponents}*`, `${clientComponents}*`]);
 
   // Add ElderJs Peer deps to public if they exist.
-  [
-    ['./node_modules/intersection-observer/intersection-observer.js', './static/intersection-observer.js'],
-    ['./node_modules/systemjs/dist/s.min.js', './static/s.min.js'],
-  ].forEach((dep) => {
-    if (!fs.existsSync(path.resolve(rootDir, dep[0]))) {
-      throw new Error(`Elder.js peer dependency not found at ${dep[0]}`);
-    }
-    configs.push({
-      input: dep[0],
-      output: [
-        {
-          file: path.resolve(distDir, dep[1]),
-          format: 'iife',
-          name: dep[1],
-          plugins: [terser()],
-        },
-      ],
-    });
-  });
+  [['./node_modules/intersection-observer/intersection-observer.js', './static/intersection-observer.js']].forEach(
+    (dep) => {
+      if (!fs.existsSync(path.resolve(rootDir, dep[0]))) {
+        throw new Error(`Elder.js peer dependency not found at ${dep[0]}`);
+      }
+      configs.push({
+        input: dep[0],
+        output: [
+          {
+            file: path.resolve(distDir, dep[1]),
+            format: 'iife',
+            name: dep[1],
+            plugins: [terser()],
+          },
+        ],
+      });
+    },
+  );
 
   const templates = createSSRConfig({
     input: [`${relSrcDir}/routes/*/*.svelte`, `${relSrcDir}/layouts/*.svelte`],
@@ -238,12 +237,6 @@ export default function getRollupConfig({ svelteConfig = {}, rollupConfig = {} }
       output: [
         {
           dir: clientComponents,
-          entryFileNames: 'entry[name]-[hash].js',
-          sourcemap: !production,
-          format: 'system',
-        },
-        {
-          dir: clientComponents,
           entryFileNames: 'entry[name]-[hash].mjs',
           sourcemap: !production,
           format: 'esm',
@@ -257,6 +250,46 @@ export default function getRollupConfig({ svelteConfig = {}, rollupConfig = {} }
       rollupConfig,
     }),
   );
+
+  configs.push(
+    createBrowserConfig({
+      input: [`${relSrcDir}/components/*/*.svelte`, `${relSrcDir}/components/*.svelte`],
+      output: [
+        {
+          dir: clientComponents,
+          entryFileNames: 'nomodule[name]-[hash].js',
+          sourcemap: !production,
+          format: 'esm',
+        },
+      ],
+      svelteConfig,
+      rollupConfig,
+      multiInputConfig: multiInput({
+        relative: `${relSrcDir}/components`,
+        transformOutputPath: (output) => `${path.basename(output)}`,
+      }),
+      ie11: true,
+    }),
+  );
+
+  // configs.push(
+  //   createBrowserConfig({
+  //     input: [`${relSrcDir}/components/*/*.svelte`, `${relSrcDir}/components/*.svelte`],
+  //     output: [
+  //       {
+  //         name: `___elderjs_[name]`,
+  //         dir: clientComponents,
+  //         entryFileNames: 'iife[name]-[hash].js',
+  //         sourcemap: !production,
+  //         format: 'iife',
+  //       },
+  //     ],
+  //     svelteConfig,
+  //     rollupConfig,
+  //     multiInputConfig: false,
+  //     ie11: true,
+  //   }),
+  // );
 
   configs.push(
     createSSRConfig({

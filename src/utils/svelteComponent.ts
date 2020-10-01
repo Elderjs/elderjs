@@ -46,10 +46,11 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
       clientSrcSystem: `${clientSvelteFolder}/${clientComponents[cleanComponentName].system}.js`,
       clientSrcMjs: `${clientSvelteFolder}/${clientComponents[cleanComponentName].mjs}.mjs`,
       iife: `${clientSvelteFolder}/${clientComponents[cleanComponentName].iife}.js`,
+      nomodule: `${clientSvelteFolder}/${clientComponents[cleanComponentName].nomodule}.js`,
     };
   }
 
-  const { render, clientSrcSystem, clientSrcMjs, iife } = componentCache[cleanComponentName];
+  const { render, clientSrcSystem, clientSrcMjs, iife, nomodule } = componentCache[cleanComponentName];
 
   try {
     const { css, html: htmlOutput, head } = render(props);
@@ -124,6 +125,14 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
       });
     }
 
+    // page.hydrateStack.push({
+    //   source: componentName,
+    //   string: `<script nomodule src="https://unpkg.com/dimport/nomodule" data-main="${nomodule}"></script>`,
+    //   priority: 99,
+    // });
+
+    // iife
+
     page.hydrateStack.push({
       source: componentName,
       string: `<script nomodule src="${iife}"></script>`,
@@ -136,8 +145,8 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
       string: `
       <script nomodule>
       function init${cleanComponentName.toLowerCase()}${id}(){
-        new ___elderjs_${componentName}({ 
-          target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'), 
+        new ___elderjs_${componentName}({
+          target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'),
           props:  ${hasProps ? `${cleanComponentName.toLowerCase()}Props${id}` : '{}'},
           hydrate: true,
         });
@@ -160,35 +169,48 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
             });
         });
       }
-      </script>`,
+      ${
+        hydrateOptions.loading === 'eager'
+          ? 'init${cleanComponentName.toLowerCase()}${id}();'
+          : `${IntersectionObserver({
+              el: `document.getElementById('${cleanComponentName.toLowerCase()}-${id}')`,
+              name: `${cleanComponentName.toLowerCase()}`,
+              loaded: `init${cleanComponentName.toLowerCase()}${id}();`,
+              notLoaded: `init${cleanComponentName.toLowerCase()}${id}();`,
+              rootMargin: hydrateOptions.rootMargin || '200px',
+              threshold: hydrateOptions.threshold || 0,
+              id,
+            })}`
+      }
+      </script>}`,
     });
 
-    if (hydrateOptions.loading === 'eager') {
-      // this is eager loaded. Still requires System.js to be defined.
-      page.hydrateStack.push({
-        source: componentName,
-        priority: 1,
-        string: `<script>init${cleanComponentName.toLowerCase()}${id}();</script>`,
-      });
-    } else {
-      // we're lazy loading
-      page.hydrateStack.push({
-        source: componentName,
-        priority: 1,
-        string: `<script>
-        ${IntersectionObserver({
-          el: `document.getElementById('${cleanComponentName.toLowerCase()}-${id}')`,
-          name: `${cleanComponentName.toLowerCase()}`,
-          loaded: `init${cleanComponentName.toLowerCase()}${id}();`,
-          notLoaded: `init${cleanComponentName.toLowerCase()}${id}();`,
-          rootMargin: hydrateOptions.rootMargin || '200px',
-          threshold: hydrateOptions.threshold || 0,
-          id,
-        })}
-        </script>
-      `,
-      });
-    }
+    // if (hydrateOptions.loading === 'eager') {
+    //   // this is eager loaded. Still requires System.js to be defined.
+    //   page.hydrateStack.push({
+    //     source: componentName,
+    //     priority: 1,
+    //     string: `<script>init${cleanComponentName.toLowerCase()}${id}();</script>`,
+    //   });
+    // } else {
+    //   // we're lazy loading
+    //   page.hydrateStack.push({
+    //     source: componentName,
+    //     priority: 1,
+    //     string: `<script>
+    //     ${IntersectionObserver({
+    //       el: `document.getElementById('${cleanComponentName.toLowerCase()}-${id}')`,
+    //       name: `${cleanComponentName.toLowerCase()}`,
+    //       loaded: `init${cleanComponentName.toLowerCase()}${id}();`,
+    //       notLoaded: `init${cleanComponentName.toLowerCase()}${id}();`,
+    //       rootMargin: hydrateOptions.rootMargin || '200px',
+    //       threshold: hydrateOptions.threshold || 0,
+    //       id,
+    //     })}
+    //     </script>
+    //   `,
+    //   });
+    // }
 
     return `<div class="${cleanComponentName.toLowerCase()}" id="${cleanComponentName.toLowerCase()}-${id}">${finalHtmlOuput}</div>`;
   } catch (e) {
