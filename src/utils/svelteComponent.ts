@@ -41,11 +41,14 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
     const { render } = require(ssrComponent);
     componentCache[cleanComponentName] = {
       render,
-      client: `${clientSvelteFolder}/${clientComponents[cleanComponentName]}.js`,
+      clientSrcSystem: `${clientSvelteFolder}/${clientComponents[cleanComponentName].system}.js`,
+      clientSrcMjs: `${clientSvelteFolder}/${clientComponents[cleanComponentName].mjs}.mjs`,
+      iife: `${clientSvelteFolder}/${clientComponents[cleanComponentName].iife}.js`,
+      nomodule: `${clientSvelteFolder}/${clientComponents[cleanComponentName].nomodule}.js`,
     };
   }
 
-  const { render, client } = componentCache[cleanComponentName];
+  const { render, clientSrcSystem, clientSrcMjs, iife, nomodule } = componentCache[cleanComponentName];
 
   try {
     const { css, html: htmlOutput, head } = render(props);
@@ -106,63 +109,109 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
       page.headStack.push({
         source: componentName,
         priority: 50,
-        string: `<link rel="preload" href="${client}" as="script">`,
+        string: `<link rel="preload" href="${clientSrcMjs}" as="script">`,
+        // string: `<link rel="modulepreload" href="${clientSrcMjs}">`, <-- can be an option for Chrome if browsers don't like this.
       });
     }
 
-    const componentTarget = `${cleanComponentName.toLowerCase()}${id}`;
+    const hasProps = Object.keys(props).length > 0;
 
-    let clientJs;
-    // legacy uses System.js
-    if (page.settings.legacy) {
-      clientJs = `
-      System.import('${client}').then((${componentTarget}) => {
-        new ${componentTarget}.default({ target: document.getElementById('${componentTarget}'), hydrate: true, props: ${devalue(
-        props,
-      )} });
-      });`;
-    } else {
-      clientJs = `
-      import("${client}").then((${componentTarget} )=>{
-        new ${componentTarget}.default({ target: document.getElementById('${componentTarget}'), hydrate: true, props: ${devalue(
-        props,
-      )} });
-      }).catch((e)=>{
-        console.error('Error loading ${client}', e);
-      });`;
-    }
-
-    if (hydrateOptions.loading === 'eager') {
-      // this is eager loaded.
+    if (hasProps) {
       page.hydrateStack.push({
         source: componentName,
-        priority: 50,
-        string: clientJs,
-      });
-    } else {
-      // we're lazy loading
-      // we use the IntersectionObserver and adjust the distance
-      page.hydrateStack.push({
-        source: componentName,
-        priority: 50,
-        string: `
-        function init${componentTarget}() {
-          ${clientJs}
-        }
-        ${IntersectionObserver({
-          el: `document.getElementById('${componentTarget}')`,
-          name: `${cleanComponentName.toLowerCase()}`,
-          loaded: `init${componentTarget}();`,
-          notLoaded: `init${componentTarget}();`,
-          rootMargin: hydrateOptions.rootMargin || '200px',
-          threshold: hydrateOptions.threshold || 0,
-          id,
-        })}
-      `,
+        string: `<script>var ${cleanComponentName.toLowerCase()}Props${id} = ${devalue(props)};</script>`,
+        priority: 1,
       });
     }
 
-    return `<div class="${cleanComponentName.toLowerCase()}" id="${componentTarget}">${finalHtmlOuput}</div>`;
+    // page.hydrateStack.push({
+    //   source: componentName,
+    //   string: `<script nomodule src="https://unpkg.com/dimport/nomodule" data-main="${nomodule}"></script>`,
+    //   priority: 99,
+    // });
+
+    // iife
+
+    page.hydrateStack.push({
+      source: componentName,
+      string: `<script nomodule defer src="${iife}" onload="init${cleanComponentName.toLowerCase()}${id}()"></script>`,
+      priority: 99,
+    });
+
+    page.hydrateStack.push({
+      source: componentName,
+      priority: 98,
+      string: `
+      <script nomodule>
+      function init${cleanComponentName.toLowerCase()}${id}(){
+        new ___elderjs_${componentName}({
+          target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'),
+          props:  ${hasProps ? `${cleanComponentName.toLowerCase()}Props${id}` : '{}'},
+          hydrate: true,
+        });
+      }
+      </script>`,
+    });
+
+    page.hydrateStack.push({
+      source: componentName,
+      priority: 30,
+      string: `     
+      <!-- loads ESM for module with a dynamic import -->
+      <script type="module">
+      function init${cleanComponentName.toLowerCase()}${id}(){
+        import("${clientSrcMjs}").then((component)=>{
+          new component.default({ 
+            target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'),
+            props: ${hasProps ? `${cleanComponentName.toLowerCase()}Props${id}` : '{}'},
+            hydrate: true
+            });
+        });
+      }
+      ${
+        hydrateOptions.loading === 'eager'
+          ? `init${cleanComponentName.toLowerCase()}${id}();`
+          : `${IntersectionObserver({
+              el: `document.getElementById('${cleanComponentName.toLowerCase()}-${id}')`,
+              name: `${cleanComponentName.toLowerCase()}`,
+              loaded: `init${cleanComponentName.toLowerCase()}${id}();`,
+              notLoaded: `init${cleanComponentName.toLowerCase()}${id}();`,
+              rootMargin: hydrateOptions.rootMargin || '200px',
+              threshold: hydrateOptions.threshold || 0,
+              id,
+            })}`
+      }
+      </script>`,
+    });
+
+    // if (hydrateOptions.loading === 'eager') {
+    //   // this is eager loaded. Still requires System.js to be defined.
+    //   page.hydrateStack.push({
+    //     source: componentName,
+    //     priority: 1,
+    //     string: `<script>init${cleanComponentName.toLowerCase()}${id}();</script>`,
+    //   });
+    // } else {
+    //   // we're lazy loading
+    //   page.hydrateStack.push({
+    //     source: componentName,
+    //     priority: 1,
+    //     string: `<script>
+    //     ${IntersectionObserver({
+    //       el: `document.getElementById('${cleanComponentName.toLowerCase()}-${id}')`,
+    //       name: `${cleanComponentName.toLowerCase()}`,
+    //       loaded: `init${cleanComponentName.toLowerCase()}${id}();`,
+    //       notLoaded: `init${cleanComponentName.toLowerCase()}${id}();`,
+    //       rootMargin: hydrateOptions.rootMargin || '200px',
+    //       threshold: hydrateOptions.threshold || 0,
+    //       id,
+    //     })}
+    //     </script>
+    //   `,
+    //   });
+    // }
+
+    return `<div class="${cleanComponentName.toLowerCase()}" id="${cleanComponentName.toLowerCase()}-${id}">${finalHtmlOuput}</div>`;
   } catch (e) {
     console.log(e);
     page.errors.push(e);

@@ -21,12 +21,32 @@ import { ConfigOptions, RollupSettings } from './types';
 
 const production = process.env.NODE_ENV === 'production' || !process.env.ROLLUP_WATCH;
 
+const babelIE11 = babel({
+  cwd: path.resolve(process.cwd(), './node_modules/@elderjs/elderjs/'),
+  extensions: ['.js', '.mjs', '.html', '.svelte'],
+  runtimeHelpers: true,
+  exclude: ['node_modules/@babel/**', 'node_modules/core-js/**'],
+  presets: [
+    [
+      '@babel/preset-env',
+      {
+        targets: {
+          browsers: ['> 0.25%', 'not dead', 'IE 11'],
+        },
+        useBuiltIns: 'usage',
+        corejs: 3,
+      },
+    ],
+  ],
+});
+
 export function createBrowserConfig({
   input,
   output,
   multiInputConfig,
   svelteConfig,
   rollupConfig = {} as RollupSettings,
+  ie11 = false as boolean,
 }) {
   let replacements = {
     'process.env.componentType': "'browser'",
@@ -54,9 +74,6 @@ export function createBrowserConfig({
         hydratable: true,
         css: false,
       }),
-      externalGlobals({
-        systemjs: 'System',
-      }),
       nodeResolve({
         browser: true,
         dedupe: ['svelte'],
@@ -82,6 +99,11 @@ export function createBrowserConfig({
     );
     config.plugins.push(terser());
   }
+
+  if (ie11) {
+    config.plugins.push(babelIE11);
+  }
+
   return config;
 }
 
@@ -174,12 +196,8 @@ export default function getRollupConfig(options) {
   // clear out components so there are no conflicts due to hashing.
   del.sync([`${ssrComponents}*`, `${clientComponents}*`]);
   // Add ElderJs Peer deps to public if they exist.
-  [
-    ['./node_modules/intersection-observer/intersection-observer.js', './static/intersection-observer.js'],
-    legacy && ['./node_modules/systemjs/dist/s.min.js', './static/s.min.js'],
-  ]
-    .filter((dep) => !!dep)
-    .forEach((dep) => {
+  [['./node_modules/intersection-observer/intersection-observer.js', './static/intersection-observer.js']].forEach(
+    (dep) => {
       if (!fs.existsSync(path.resolve(rootDir, dep[0]))) {
         throw new Error(`Elder.js peer dependency not found at ${dep[0]}`);
       }
@@ -194,7 +212,8 @@ export default function getRollupConfig(options) {
           },
         ],
       });
-    });
+    },
+  );
 
   // SSR /routes/ Svelte files.
   const routesAndLayouts = createSSRConfig({
@@ -233,9 +252,9 @@ export default function getRollupConfig(options) {
             output: [
               {
                 dir: clientComponents,
-                entryFileNames: 'entry[name].js',
+                entryFileNames: 'entry[name]-[hash].js',
                 sourcemap: !production,
-                format: legacy ? 'system' : 'esm',
+                format: 'esm',
               },
             ],
             svelteConfig,
@@ -260,43 +279,113 @@ export default function getRollupConfig(options) {
       });
     }
   } else {
-    // rollup together
-    if (fs.existsSync(path.resolve(srcDir, `./components/`))) {
-      configs.push(
-        createBrowserConfig({
-          input: [`${relSrcDir}/components/*/*.svelte`, `${relSrcDir}/components/*.svelte`],
-          output: [
-            {
-              dir: clientComponents,
-              entryFileNames: 'entry[name]-[hash].js',
-              sourcemap: !production,
-              format: legacy ? 'system' : 'esm',
-            },
-          ],
-          multiInputConfig: multiInput({
-            relative: `${relSrcDir}/components`,
-            transformOutputPath: (output) => `${path.basename(output)}`,
-          }),
-          svelteConfig,
-          rollupConfig,
-        }),
-      );
-      configs.push(
-        createSSRConfig({
-          input: [`${relSrcDir}/components/*/*.svelte`, `${relSrcDir}/components/*.svelte`],
-          output: {
-            dir: ssrComponents,
-            format: 'cjs',
-            exports: 'auto',
+    configs.push(
+      createBrowserConfig({
+        input: [`${relSrcDir}/components/*/*.svelte`, `${relSrcDir}/components/*.svelte`],
+        output: [
+          {
+            dir: clientComponents,
+            entryFileNames: 'entry[name]-[hash].mjs',
+            sourcemap: !production,
+            format: 'esm',
           },
-          multiInputConfig: multiInput({
-            relative: `${relSrcDir}/components`,
-            transformOutputPath: (output) => `${path.basename(output)}`,
-          }),
-          svelteConfig,
-          rollupConfig,
+        ],
+        multiInputConfig: multiInput({
+          relative: `${relSrcDir}/components`,
+          transformOutputPath: (output) => `${path.basename(output)}`,
         }),
-      );
+        svelteConfig,
+        rollupConfig,
+      }),
+    );
+
+    configs.push(
+      createBrowserConfig({
+        input: [`${relSrcDir}/components/*/*.svelte`, `${relSrcDir}/components/*.svelte`],
+        output: [
+          {
+            dir: clientComponents,
+            entryFileNames: 'nomodule[name]-[hash].js',
+            sourcemap: !production,
+            format: 'esm',
+          },
+        ],
+        svelteConfig,
+        rollupConfig,
+        multiInputConfig: multiInput({
+          relative: `${relSrcDir}/components`,
+          transformOutputPath: (output) => `${path.basename(output)}`,
+        }),
+        ie11: true,
+      }),
+    );
+
+    // configs.push(
+    //   createBrowserConfig({
+    //     input: [`${relSrcDir}/components/*/*.svelte`, `${relSrcDir}/components/*.svelte`],
+    //     output: [
+    //       {
+    //         name: `___elderjs_[name]`,
+    //         dir: clientComponents,
+    //         entryFileNames: 'iife[name]-[hash].js',
+    //         sourcemap: !production,
+    //         format: 'iife',
+    //       },
+    //     ],
+    //     svelteConfig,
+    //     rollupConfig,
+    //     multiInputConfig: false,
+    //     ie11: true,
+    //   }),
+    // );
+
+    configs.push(
+      createSSRConfig({
+        input: [`${relSrcDir}/components/*/*.svelte`, `${relSrcDir}/components/*.svelte`],
+        output: {
+          dir: ssrComponents,
+          format: 'cjs',
+          exports: 'auto',
+        },
+        multiInputConfig: multiInput({
+          relative: `${relSrcDir}/components`,
+          transformOutputPath: (output) => `${path.basename(output)}`,
+        }),
+        svelteConfig,
+        rollupConfig,
+      }),
+    );
+
+    if (legacy) {
+      if (fs.existsSync(path.resolve(srcDir, `./components/`))) {
+        [
+          ...new Set([
+            ...glob.sync(path.resolve(srcDir, './components/*/*.svelte')),
+            ...glob.sync(path.resolve(srcDir, './components/*.svelte')),
+          ]),
+        ].forEach((cv) => {
+          const file = cv.replace(`${rootDir}/`, '');
+          const parsed = path.parse(cv);
+          configs.push(
+            createBrowserConfig({
+              input: file,
+              output: [
+                {
+                  name: `___elderjs_${parsed.name}`,
+                  dir: clientComponents,
+                  entryFileNames: 'iife[name]-[hash].js',
+                  sourcemap: !production,
+                  format: 'iife',
+                },
+              ],
+              svelteConfig,
+              rollupConfig,
+              multiInputConfig: false,
+              ie11: true,
+            }),
+          );
+        });
+      }
     }
   }
 
@@ -309,7 +398,7 @@ export default function getRollupConfig(options) {
             dir: clientComponents,
             entryFileNames: 'entry[name]-[hash].js',
             sourcemap: !production,
-            format: legacy ? 'system' : 'esm',
+            format: 'esm',
           },
         ],
         multiInputConfig: multiInput({
@@ -320,6 +409,7 @@ export default function getRollupConfig(options) {
         rollupConfig,
       }),
     );
+
     configs.push(
       createSSRConfig({
         input: [`${pluginPath}*.svelte`],
@@ -336,6 +426,31 @@ export default function getRollupConfig(options) {
         rollupConfig,
       }),
     );
+
+    if (legacy) {
+      glob.sync(`${pluginPath}*.svelte`).forEach((cv) => {
+        const file = cv.replace(`${rootDir}/`, '');
+        const parsed = path.parse(cv);
+        configs.push(
+          createBrowserConfig({
+            input: file,
+            output: [
+              {
+                name: `___elderjs_${parsed.name}`,
+                dir: clientComponents,
+                entryFileNames: 'iife[name]-[hash].js',
+                sourcemap: !production,
+                format: 'iife',
+              },
+            ],
+            svelteConfig,
+            rollupConfig,
+            multiInputConfig: false,
+            ie11: true,
+          }),
+        );
+      });
+    }
   });
 
   return configs;

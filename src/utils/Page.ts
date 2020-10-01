@@ -1,4 +1,6 @@
 /* eslint-disable no-param-reassign */
+import fs from 'fs-extra';
+import path from 'path';
 import getUniqueId from './getUniqueId';
 import perf from './perf';
 import prepareProcessStack from './prepareProcessStack';
@@ -77,7 +79,8 @@ const buildPage = async (page) => {
 
     // prepare for compileHtml
     const beforeHydrate = page.processStack('beforeHydrateStack');
-    const hydrate = `<script>${page.processStack('hydrateStack')}</script>`;
+    const hydrate = page.processStack('hydrateStack');
+
     const customJs = page.processStack('customJsStack');
     const footer = page.processStack('footerStack');
 
@@ -145,6 +148,10 @@ class Page {
 
   htmlString: string;
 
+  moduleStack: Stack;
+
+  moduleJsStack: Stack;
+
   headStack: Stack;
 
   cssStack: Stack;
@@ -182,6 +189,8 @@ class Page {
     this.hydrateStack = [];
     this.customJsStack = [];
     this.footerStack = [];
+    this.moduleJsStack = [];
+    this.moduleStack = [];
     this.shortcodes = shortcodes;
 
     this.processStack = prepareProcessStack(this);

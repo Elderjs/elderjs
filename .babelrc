@@ -1,0 +1,22 @@
+{
+  "presets": [
+    "@babel/plugin-syntax-dynamic-import",
+    [
+      "@babel/plugin-transform-runtime",
+      {
+        "regenerator": true,
+        "useESModules": true
+      }
+    ],
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "browsers": ["> 0.25%", "not dead", "IE 11"]
+        },
+        "useBuiltIns": "usage",
+        "corejs": 3
+      }
+    ]
+  ]
+}

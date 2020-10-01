@@ -93,7 +93,7 @@ const configSchema = yup.object({
     .boolean()
     .default(true)
     .label(
-      'Elder.js will use Systemjs instead of esm dynamic imports. You will still need to polyfill/babel other missing apis.',
+      'Elder.js will add a IE11 friendly nomodule bundle. Please note, currently shared stores do not work but see this issue: https://github.com/Elderjs/elderjs/issues/44#issue-709580756',
     ),
 });
 
