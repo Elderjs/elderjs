@@ -62,8 +62,6 @@ describe('#getConfig', () => {
     // eslint-disable-next-line global-require
     const getConfig = require('../getConfig').default;
 
-    expect(getConfig('debug')).toEqual(output);
-    expect(getConfig('build')).toEqual(output);
-    expect(getConfig('random')).toEqual(output);
+    expect(getConfig()).toEqual(output);
   });
 });
