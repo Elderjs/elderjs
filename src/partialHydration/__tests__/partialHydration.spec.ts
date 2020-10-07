@@ -14,6 +14,16 @@ test('#partialHydration', async () => {
   expect(
     (
       await partialHydration.markup({
+        content: '<DatePicker hydrate-client={{ a: "b" }}/>',
+      })
+    ).code,
+  ).toEqual(
+    `<div class="ejs-component" data-ejs-component="DatePicker" data-ejs-props={JSON.stringify({ a: "b" })} data-ejs-options={JSON.stringify({"loading":"lazy"})} />`,
+  );
+
+  expect(
+    (
+      await partialHydration.markup({
         content: '<DatePicker hydrate-client={{ a: "b" }} hydrate-options={{ loading: "eager" }} />',
       })
     ).code,
@@ -39,4 +49,28 @@ test('#partialHydration', async () => {
       })
     ).code,
   ).toEqual(`<DatePicker hydrate-client="string />`);
+
+  await expect(async () => {
+    await partialHydration.markup({
+      content: `<Clock hydrate-client={{}}>Test</Clock>`,
+    });
+  }).rejects.toThrow();
+
+  await expect(async () => {
+    await partialHydration.markup({
+      content: `<Map hydrate-client={{}} ></Map>`,
+    });
+  }).rejects.toThrow();
+
+  await expect(async () => {
+    await partialHydration.markup({
+      content: `<Map hydrate-client={{}}></Map>`,
+    });
+  }).rejects.toThrow();
+
+  await expect(async () => {
+    await partialHydration.markup({
+      content: `<Clock hydrate-client={{}} /><Clock hydrate-client={{}}>Test</Clock>`,
+    });
+  }).rejects.not.toContain('<Clock hydrate-client={{}} />');
 });

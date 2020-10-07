@@ -19,7 +19,7 @@ const partialHydration = {
   markup: async ({ content }) => {
     // Note: this regex only supports self closing components.
     // Slots aren't supported for client hydration either.
-    const hydrateableComponentPattern = /<([a-zA-Z]+)[^>]+hydrate-client={([^]*?})}[^/>]+\/>/gim;
+    const hydrateableComponentPattern = /<([a-zA-Z]+)[^>]+hydrate-client={([^]*?})}[^/>]*\/>/gim;
     const matches = [...content.matchAll(hydrateableComponentPattern)];
 
     const output = matches.reduce((out, match) => {
@@ -27,6 +27,19 @@ const partialHydration = {
       const replacement = createReplacementString({ input: match.input, name, props });
       return out.replace(wholeMatch, replacement);
     }, content);
+
+    const wrappingComponentPattern = /<([a-zA-Z]+)[^>]+hydrate-client={([^]*?})}[^/>]*>[^>]*<\/([a-zA-Z]+)>/gim;
+    // <Map hydrate-client={{}} ></Map>
+    // <Map hydrate-client={{}}></Map>
+    // <Map hydrate-client={{}}>Foo</Map>
+
+    const wrappedComponents = [...output.matchAll(wrappingComponentPattern)];
+
+    if (wrappedComponents && wrappedComponents.length > 0) {
+      throw new Error(
+        `Elder.js only supports self-closing syntax on hydrated components. This means <Foo /> not <Foo></Foo> or <Foo>Something</Foo>. Offending component: ${wrappedComponents[0][0]}. Slots and child components aren't supported during hydration as it would result in huge HTML payloads. If you need this functionality try wrapping the offending component in a parent component without slots or child components and hydrate the parent component.`,
+      );
+    }
 
     return { code: output };
   },

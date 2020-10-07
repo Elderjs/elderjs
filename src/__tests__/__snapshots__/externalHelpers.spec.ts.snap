@@ -1,25 +1,25 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`#externalHelpers works - buildHelpers 1`] = `
+exports[`#externalHelpers works - userHelpers is a function 1`] = `
 Object {
   "userHelper": [Function],
 }
 `;
 
-exports[`#externalHelpers works - buildHelpers 2`] = `
+exports[`#externalHelpers works - userHelpers is a function 2`] = `
 Object {
   "userHelper": [Function],
 }
 `;
 
-exports[`#externalHelpers works - userHelpers 1`] = `
+exports[`#externalHelpers works - userHelpers is not a function 1`] = `
 Object {
-  "srcHelper": [MockFunction],
+  "userHelper": [Function],
 }
 `;
 
-exports[`#externalHelpers works - userHelpers 2`] = `
+exports[`#externalHelpers works - userHelpers is not a function 2`] = `
 Object {
-  "srcHelper": [MockFunction],
+  "userHelper": [Function],
 }
 `;

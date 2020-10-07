@@ -1,9 +1,12 @@
 process.cwd = () => 'test';
 
-jest.mock('path', () => ({
-  resolve: (...strings) => strings.join('/').replace('./', '').replace('//', '/').replace('/./', '/'),
-  join: (...strings) => strings.join('/').replace('./', '').replace('//', '/').replace('/./', '/'),
-}));
+jest.mock('path', () => {
+  return {
+    resolve: (...strings) => strings.join('/').replace('./', '').replace('//', '/').replace('/./', '/'),
+    join: (...strings) => strings.join('/').replace('./', '').replace('//', '/').replace('/./', '/'),
+    posix: () => ({ dirname: () => '' }),
+  };
+});
 
 jest.mock('../routes/routes', () => () => ({
   'route-a': {
@@ -20,17 +23,16 @@ jest.mock('../routes/routes', () => () => ({
 }));
 
 jest.mock('../utils/getConfig', () => () => ({
+  $$internal: {
+    clientComponents: 'test/public/svelte',
+    ssrComponents: 'test/___ELDER___/compiled',
+  },
   debug: {
     automagic: true,
   },
-  locations: {
-    srcFolder: './src/',
-    buildFolder: './__ELDER__/',
-    svelte: {
-      ssrComponents: './___ELDER___/compiled/',
-      clientComponents: './public/dist/svelte/',
-    },
-  },
+  distDir: 'test/public',
+  rootDir: 'test',
+  srcDir: 'test/src',
   server: {
     prefix: '/dev',
   },
@@ -38,7 +40,6 @@ jest.mock('../utils/getConfig', () => () => ({
     shuffleRequests: false,
     numberOfWorkers: 4,
   },
-  typescript: true,
   plugins: {
     'elder-plugin-upload-s3': {
       dataBucket: 'elderguide.com',
@@ -114,6 +115,7 @@ describe('#Elder', () => {
   it('plugin found but invalid', async () => {
     jest.mock('../utils/validations', () => ({
       validatePlugin: () => false,
+      validateShortcode: (i) => i,
     }));
     jest.mock('fs-extra', () => ({
       existsSync: () => true,
@@ -151,15 +153,14 @@ describe('#Elder', () => {
       bootstrapComplete: Promise.resolve({}),
       markBootstrapComplete: expect.any(Function),
       settings: {
-        $$internal: { hashedComponents: { File1: 'entryFile1', File2: 'entryFile2' } },
+        $$internal: {
+          clientComponents: 'test/public/svelte',
+          ssrComponents: 'test/___ELDER___/compiled',
+          hashedComponents: { File1: 'entryFile1', File2: 'entryFile2' },
+        },
         build: false,
         debug: { automagic: true },
         hooks: { disable: ['randomHook'] },
-        locations: {
-          buildFolder: './__ELDER__/',
-          srcFolder: './src/',
-          svelte: { clientComponents: './public/dist/svelte/', ssrComponents: './___ELDER___/compiled/' },
-        },
         plugins: {
           'elder-plugin-upload-s3': {
             dataBucket: 'elderguide.com',
@@ -168,7 +169,9 @@ describe('#Elder', () => {
           },
         },
         server: { prefix: '/dev' },
-        typescript: true,
+        distDir: 'test/public',
+        rootDir: 'test',
+        srcDir: 'test/src',
       },
     });
   });
@@ -178,6 +181,7 @@ describe('#Elder', () => {
       validatePlugin: (i) => i,
       validateHook: (i) => i,
       validateRoute: (i) => i,
+      validateShortcode: (i) => i,
     }));
     jest.mock('fs-extra', () => ({
       existsSync: () => true,
@@ -224,6 +228,7 @@ describe('#Elder', () => {
       validatePlugin: (i) => i,
       validateHook: (i) => i,
       validateRoute: (i) => i,
+      validateShortcode: (i) => i,
     }));
     jest.mock('fs-extra', () => ({
       existsSync: () => true,

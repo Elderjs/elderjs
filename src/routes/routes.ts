@@ -1,11 +1,12 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
 import glob from 'glob';
-import path from 'path';
+import kebabcase from 'lodash.kebabcase';
 import type { RouteOptions } from './types';
 
 import { svelteComponent, capitalizeFirstLetter } from '../utils';
 import { ConfigOptions } from '../utils/types';
+import wrapPermalinkFn from '../utils/wrapPermalinkFn';
 
 function routes(settings: ConfigOptions) {
   if (settings.debug.automagic)
@@ -15,14 +16,9 @@ function routes(settings: ConfigOptions) {
     `,
     );
 
-  const srcFolder = path.join(settings.locations.rootDir, settings.locations.srcFolder);
-  const buildFolder = path.join(settings.locations.rootDir, settings.locations.buildFolder);
-  let files = glob.sync(`${srcFolder}/routes/*/+(*.js|*.svelte)`);
-  if (settings.locations.buildFolder && settings.locations.buildFolder.length > 0) {
-    files = [...files, ...glob.sync(`${buildFolder}/routes/*/+(*.js|*.svelte)`)];
-  }
+  const files = glob.sync(`${settings.srcDir}/routes/*/+(*.js|*.svelte)`);
 
-  const ssrFolder = path.resolve(settings.locations.rootDir, settings.locations.svelte.ssrComponents);
+  const ssrFolder = settings.$$internal.ssrComponents;
 
   const ssrComponents = glob.sync(`${ssrFolder}/*.js`);
 
@@ -31,18 +27,38 @@ function routes(settings: ConfigOptions) {
   const output = routejsFiles.reduce((out, cv) => {
     const routeName = cv.replace('/route.js', '').split('/').pop();
     const capitalizedRoute = capitalizeFirstLetter(routeName);
-    // we need to look in the /build/ folder for all /src/ when it is typescript
-    const route: RouteOptions = settings.typescript ? require(cv).default : require(cv);
+
+    const routeReq = require(cv);
+    const route: RouteOptions = routeReq.default || routeReq;
     const filesForThisRoute = files
       .filter((r) => r.includes(`/routes/${routeName}`))
       .filter((r) => !r.includes('route.js'));
 
-    if (!route.permalink && (typeof route.permalink !== 'string' || typeof route.permalink !== 'function')) {
-      throw new Error(`${cv} does not include a permalink attribute that is a string or function.`);
+    if (!route.permalink) {
+      if (settings.debug.automagic) {
+        console.log(
+          `debug.automagic:: No permalink function found for route "${routeName}". Setting default which will return / for home or /{request.slug}/.`,
+        );
+      }
+      route.permalink = ({ request }) => (request.slug === '/' ? request.slug : `/${request.slug}/`);
     }
 
-    if (!route.all && (Array.isArray(route.all) || typeof route.all !== 'function')) {
-      throw new Error(`${cv} does not include a all attribute that is is a function or an array.`);
+    route.permalink = wrapPermalinkFn({ permalinkFn: route.permalink, routeName, settings });
+
+    if (!Array.isArray(route.all) && typeof route.all !== 'function') {
+      if (routeName.toLowerCase() === 'home') {
+        route.all = [{ slug: '/' }];
+      } else {
+        route.all = [{ slug: kebabcase(routeName) }];
+      }
+
+      if (settings.debug.automagic) {
+        console.log(
+          `debug.automagic:: No all function or array found for route "${routeName}". Setting default which will return ${JSON.stringify(
+            route.all,
+          )}`,
+        );
+      }
     }
 
     if (route.template) {
@@ -51,7 +67,7 @@ function routes(settings: ConfigOptions) {
         const ssrComponent = ssrComponents.find((f) => f.endsWith(`${componentName}.js`));
         if (!ssrComponent) {
           console.error(
-            `We see you want to load ${route.template}, but we don't see a compiled template in ${settings.locations.svelte.ssrComponents}. You'll probably see more errors in a second. Make sure you've run rollup.`,
+            `We see you want to load ${route.template}, but we don't see a compiled template in ${settings.$$internal.ssrComponents}. You'll probably see more errors in a second. Make sure you've run rollup.`,
           );
         }
 
@@ -74,7 +90,7 @@ function routes(settings: ConfigOptions) {
         const ssrComponent = ssrComponents.find((f) => f.endsWith(`${capitalizedRoute}.js`));
         if (!ssrComponent) {
           console.error(
-            `We see you want to load ${route.template}, but we don't see a compiled template in ${settings.locations.svelte.ssrComponents}. You'll probably see more errors in a second. Make sure you've run rollup.`,
+            `We see you want to load ${route.template}, but we don't see a compiled template in ${settings.$$internal.ssrComponents}. You'll probably see more errors in a second. Make sure you've run rollup.`,
           );
         }
       } else {
@@ -98,7 +114,8 @@ function routes(settings: ConfigOptions) {
       const dataFile = filesForThisRoute.find((f) => f.endsWith(`data.js`));
       if (dataFile) {
         // TODO: v1 removal
-        route.data = settings.typescript ? require(dataFile).default : require(dataFile);
+        const dataReq = require(dataFile);
+        route.data = dataReq.default || dataReq;
         console.warn(
           `WARN: Loading your /routes/${routeName}/data.js file. This functionality is deprecated. Please include your data function in your /routes/${routeName}/route.js object under the 'data' key. As a quick fix you can just import the existing data file and include it as "data" key.`,
         );

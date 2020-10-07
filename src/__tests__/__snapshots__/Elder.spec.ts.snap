@@ -4,7 +4,6 @@ exports[`#Elder hookSrcFile not found 1`] = `
 Elder {
   "allRequests": Array [],
   "bootstrapComplete": Promise {},
-  "customProps": Object {},
   "data": Object {},
   "errors": Array [],
   "helpers": Object {
@@ -14,26 +13,25 @@ Elder {
       "test-a": [Function],
       "test-b": [Function],
     },
+    "shortcode": [Function],
   },
   "hookInterface": Array [
     Object {
       "advanced": true,
-      "context": "Run before collecting all hooks.",
+      "context": "Used to modify what hooks can mutate which properties all hooks.",
       "experimental": true,
       "hook": "customizeHooks",
       "location": "Elder.ts",
       "mutable": Array [
         "hookInterface",
-        "customProps",
         "errors",
       ],
       "props": Array [
         "hookInterface",
-        "customProps",
         "errors",
       ],
       "use": "<p>This hook receives the hookInterface.ts file which defines all hook interactions. You can customize all 'props' and 'mutable' of
-      all hooks by using this hook. This is a power user hook and would often be used in conjunction with customProps.</p>",
+      all hooks by using this hook. This is a power user hook and unless you know Elder.js internals don't mess with it.</p>",
     },
     Object {
       "advanced": false,
@@ -64,7 +62,7 @@ Elder {
     </ul>",
     },
     Object {
-      "advanced": true,
+      "advanced": false,
       "context": "allRequests which represents all of the request objects have been collected from route and plugins. This makes the 'allRequests' array mutable.",
       "experimental": false,
       "hook": "allRequests",
@@ -94,68 +92,46 @@ Elder {
     Object {
       "advanced": true,
       "context": "Fired upon a request that originates from the express/polka middleware version of Elder.js. The hook has access to \\"req\\" and \\"next\\" common in express like middleware.",
-      "experimental": true,
+      "experimental": false,
       "hook": "middleware",
       "location": "prepareServer.ts",
       "mutable": Array [
         "errors",
-        "request",
         "query",
         "helpers",
         "data",
-        "route",
         "settings",
         "allRequests",
         "routes",
-        "customProps",
         "req",
         "next",
         "res",
+        "request",
       ],
       "props": Array [
         "errors",
-        "request",
         "query",
         "helpers",
         "data",
-        "route",
         "settings",
         "allRequests",
         "routes",
-        "customProps",
         "req",
         "next",
         "res",
+        "serverLookupObject",
+        "runHook",
+        "shortcodes",
+        "request",
       ],
       "use": "<p>If you're looking to use Elder.js with express/polka to build a server rendered website, then you'll be interested in this hook as it includes the familiar 'req' and 'next' objects as often used in Express middleware.</p>
     <ul>
-    <li>This hook could be used to set user or session information stored on the 'req' prop anywhere it is needed such as on the Elder.js 'request' object or 'data' object.</li>
+    <li>Under the hook Elder.js uses this hook to power the server implementation.</li>
+    <li>If you want to change the route of a request, you can do so by modifying the 'request.route' to the name of the new request, and it will be picked up by the default Elder.js server.</li>
+    <li>If you're looking to set user or session information stored on the 'req' prop we recommend using a hook to modify the 'request' object or 'data' objects. Change to the request object will be passed down. </li>
     <li>If you're looking to pass in details about the query string deeper into your application, you could use this hook to do so.</li>
     <li>Anything you'd use an Express 'req' or 'next' for you can do and customize other parts of the Elder.js on this hook.</li>
     </ul>",
-    },
-    Object {
-      "advanced": true,
-      "context": "This hook is run just after a Page.ts object is created for a request. Page.ts objects are the main object used during page generation.",
-      "experimental": true,
-      "hook": "modifyCustomProps",
-      "location": "Page.ts",
-      "mutable": Array [
-        "customProps",
-        "request",
-        "errors",
-        "helpers",
-        "query",
-      ],
-      "props": Array [
-        "customProps",
-        "request",
-        "errors",
-        "helpers",
-        "query",
-        "settings",
-      ],
-      "use": "<p>This hook is often used in conjunction with the 'customizeHooks' hook to modify 'customProps' based on the request. This is very much a power user hook.</p>",
     },
     Object {
       "advanced": false,
@@ -236,6 +212,36 @@ Elder {
     },
     Object {
       "advanced": true,
+      "context": "Executed after the route's html has been compiled, but before the layout html has been compiled.",
+      "experimental": false,
+      "hook": "shortcodes",
+      "location": "Page.ts",
+      "mutable": Array [
+        "errors",
+        "templateHtml",
+        "cssStack",
+        "headStack",
+        "customJsStack",
+      ],
+      "props": Array [
+        "helpers",
+        "data",
+        "settings",
+        "request",
+        "query",
+        "errors",
+        "cssStack",
+        "headStack",
+        "customJsStack",
+        "templateHtml",
+        "shortcodes",
+        "allRequests",
+      ],
+      "use": "<p>Elder.js uses this hook to process shortcodes. The vast majority of users won't need to use this hook, but if you were so inclined you could write your own shortcode parser or if you'd like to disable shortcodes completely, you can add 'elderProcessShortcodes' to hooks.disable in your elder.config.js file.</p>
+    <p><strong>NOTE:</strong> Don't use this hook for anything besides shortcodes.</p>",
+    },
+    Object {
+      "advanced": true,
       "context": "Executed just before processing all of the stacks into strings.",
       "experimental": false,
       "hook": "stacks",
@@ -294,8 +300,29 @@ Elder {
         "query",
         "errors",
       ],
-      "use": "<p>This hook's headSting represents everything that will be written to &lt;head&gt; tag excluding CSS (those are managed on the style hook).</p>
+      "use": "<p>This hook's headSting represents everything that will be written to &lt;head&gt; tag.</p>
        <p>There are many possible SEO uses to this hook, especially for plugins. That said, we recommend users who want to set common SEO elements such as tags &lt;title&gt; and meta descriptions programatically to do it from within Svelte templates using the &lt;svelte:head&gt;&lt;/svelte:head&gt; tag. Chances are you won't need this field unless you're a power user and need access to the raw head.</p>",
+    },
+    Object {
+      "advanced": true,
+      "context": "This is where Elder.js merges the html from the Svelte layout with stacks and wraps it in an <html> tag.",
+      "experimental": false,
+      "hook": "compileHtml",
+      "location": "Page.ts",
+      "mutable": Array [
+        "errors",
+        "htmlString",
+      ],
+      "props": Array [
+        "helpers",
+        "data",
+        "request",
+        "headString",
+        "footerString",
+        "layoutHtml",
+        "htmlString",
+      ],
+      "use": "<p>This hook should only be used when you need to have full control over the &lt;html&gt; document. Make sure if you use this to add 'elderCompileHtml' to the 'hooks.disable' array in your elder.config.js or your template will be overwritten.</p>",
     },
     Object {
       "advanced": false,
@@ -382,6 +409,7 @@ Elder {
         "query",
         "errors",
         "routes",
+        "allRequests",
       ],
       "use": "<p>Contains whether the build was successful. If not it contains errors for the entire build. Also includes
       average performance details, and a granular performance object. Could be used to fire off additional scripts such as generating a sitemap or copying asset files to the public folder.</p>
@@ -397,7 +425,51 @@ Elder {
       "description": "Adds external helpers to helpers object",
       "hook": "bootstrap",
       "name": "elderAddExternalHelpers",
+      "priority": 1,
+      "run": [Function],
+    },
+    Object {
+      "$$meta": Object {
+        "addedBy": "elder.js",
+        "type": "internal",
+      },
+      "description": "An express like middleware so requests can be served by Elder.js",
+      "hook": "middleware",
+      "name": "elderExpressLikeMiddleware",
+      "priority": 1,
+      "run": [Function],
+    },
+    Object {
+      "$$meta": Object {
+        "addedBy": "elder.js",
+        "type": "internal",
+      },
+      "description": "Builds the shortcode parser, parses shortcodes from the html returned by the route's html and appends anything needed to the stacks.",
+      "hook": "shortcodes",
+      "name": "elderProcessShortcodes",
+      "priority": 50,
+      "run": [Function],
+    },
+    Object {
+      "$$meta": Object {
+        "addedBy": "elder.js",
+        "type": "internal",
+      },
+      "description": "Adds <meta charset=\\"UTF-8\\" /> to the head.",
+      "hook": "stacks",
+      "name": "elderAddMetaCharsetToHead",
       "priority": 100,
+      "run": [Function],
+    },
+    Object {
+      "$$meta": Object {
+        "addedBy": "elder.js",
+        "type": "internal",
+      },
+      "description": "Adds <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\" /> to the head.",
+      "hook": "stacks",
+      "name": "elderAddMetaViewportToHead",
+      "priority": 90,
       "run": [Function],
     },
     Object {
@@ -408,7 +480,7 @@ Elder {
       "description": "Sets up the default polyfill for the intersection observer",
       "hook": "stacks",
       "name": "elderAddDefaultIntersectionObserver",
-      "priority": 1,
+      "priority": 100,
       "run": [Function],
     },
     Object {
@@ -427,10 +499,21 @@ Elder {
         "addedBy": "elder.js",
         "type": "internal",
       },
+      "description": "Creates an HTML string out of the Svelte layout and stacks.",
+      "hook": "compileHtml",
+      "name": "elderCompileHtml",
+      "priority": 50,
+      "run": [Function],
+    },
+    Object {
+      "$$meta": Object {
+        "addedBy": "elder.js",
+        "type": "internal",
+      },
       "description": "Log any errors to the console.",
       "hook": "error",
       "name": "elderConsoleLogErrors",
-      "priority": 100,
+      "priority": 1,
       "run": [Function],
     },
     Object {
@@ -441,7 +524,7 @@ Elder {
       "description": "Write the html output to public.",
       "hook": "requestComplete",
       "name": "elderWriteHtmlFileToPublic",
-      "priority": 100,
+      "priority": 1,
       "run": [Function],
     },
     Object {
@@ -475,26 +558,6 @@ Elder {
       "hook": "buildComplete",
       "name": "elderWriteBuildErrors",
       "priority": 50,
-      "run": [Function],
-    },
-    Object {
-      "$$meta": Object {
-        "addedBy": "route-a",
-        "type": "route",
-      },
-      "description": "test",
-      "hook": "routeHook",
-      "name": "route hook",
-      "run": [MockFunction],
-    },
-    Object {
-      "$$meta": Object {
-        "addedBy": "hooks.js",
-        "type": "hooks.js",
-      },
-      "description": "just for testing",
-      "hook": "bootstrap",
-      "name": "test hook from file",
       "run": [Function],
     },
   ],
@@ -538,27 +601,22 @@ Elder {
   "serverLookupObject": Object {},
   "settings": Object {
     "$$internal": Object {
+      "clientComponents": "test/public/svelte",
       "hashedComponents": Object {
         "File1": "entryFile1",
         "File2": "entryFile2",
       },
+      "ssrComponents": "test/___ELDER___/compiled",
     },
     "build": false,
     "debug": Object {
       "automagic": true,
     },
+    "distDir": "test/public",
     "hooks": Object {
       "disable": Array [
         "randomHook",
       ],
-    },
-    "locations": Object {
-      "buildFolder": "./__ELDER__/",
-      "srcFolder": "./src/",
-      "svelte": Object {
-        "clientComponents": "./public/dist/svelte/",
-        "ssrComponents": "./___ELDER___/compiled/",
-      },
     },
     "plugins": Object {
       "elder-plugin-upload-s3": Object {
@@ -567,11 +625,22 @@ Elder {
         "htmlBucket": "elderguide.com",
       },
     },
+    "rootDir": "test",
     "server": Object {
       "prefix": "/dev",
     },
-    "typescript": true,
+    "srcDir": "test/src",
   },
+  "shortcodes": Array [
+    Object {
+      "$$meta": Object {
+        "addedBy": "elder",
+        "type": "elder",
+      },
+      "run": [Function],
+      "shortcode": "svelteComponent",
+    },
+  ],
 }
 `;
 
@@ -586,7 +655,6 @@ Elder {
     },
   ],
   "bootstrapComplete": Promise {},
-  "customProps": Object {},
   "data": Object {},
   "errors": Array [],
   "helpers": Object {
@@ -596,26 +664,25 @@ Elder {
       "test-a": [Function],
       "test-b": [Function],
     },
+    "shortcode": [Function],
   },
   "hookInterface": Array [
     Object {
       "advanced": true,
-      "context": "Run before collecting all hooks.",
+      "context": "Used to modify what hooks can mutate which properties all hooks.",
       "experimental": true,
       "hook": "customizeHooks",
       "location": "Elder.ts",
       "mutable": Array [
         "hookInterface",
-        "customProps",
         "errors",
       ],
       "props": Array [
         "hookInterface",
-        "customProps",
         "errors",
       ],
       "use": "<p>This hook receives the hookInterface.ts file which defines all hook interactions. You can customize all 'props' and 'mutable' of
-      all hooks by using this hook. This is a power user hook and would often be used in conjunction with customProps.</p>",
+      all hooks by using this hook. This is a power user hook and unless you know Elder.js internals don't mess with it.</p>",
     },
     Object {
       "advanced": false,
@@ -646,7 +713,7 @@ Elder {
     </ul>",
     },
     Object {
-      "advanced": true,
+      "advanced": false,
       "context": "allRequests which represents all of the request objects have been collected from route and plugins. This makes the 'allRequests' array mutable.",
       "experimental": false,
       "hook": "allRequests",
@@ -676,68 +743,46 @@ Elder {
     Object {
       "advanced": true,
       "context": "Fired upon a request that originates from the express/polka middleware version of Elder.js. The hook has access to \\"req\\" and \\"next\\" common in express like middleware.",
-      "experimental": true,
+      "experimental": false,
       "hook": "middleware",
       "location": "prepareServer.ts",
       "mutable": Array [
         "errors",
-        "request",
         "query",
         "helpers",
         "data",
-        "route",
         "settings",
         "allRequests",
         "routes",
-        "customProps",
         "req",
         "next",
         "res",
+        "request",
       ],
       "props": Array [
         "errors",
-        "request",
         "query",
         "helpers",
         "data",
-        "route",
         "settings",
         "allRequests",
         "routes",
-        "customProps",
         "req",
         "next",
         "res",
+        "serverLookupObject",
+        "runHook",
+        "shortcodes",
+        "request",
       ],
       "use": "<p>If you're looking to use Elder.js with express/polka to build a server rendered website, then you'll be interested in this hook as it includes the familiar 'req' and 'next' objects as often used in Express middleware.</p>
     <ul>
-    <li>This hook could be used to set user or session information stored on the 'req' prop anywhere it is needed such as on the Elder.js 'request' object or 'data' object.</li>
+    <li>Under the hook Elder.js uses this hook to power the server implementation.</li>
+    <li>If you want to change the route of a request, you can do so by modifying the 'request.route' to the name of the new request, and it will be picked up by the default Elder.js server.</li>
+    <li>If you're looking to set user or session information stored on the 'req' prop we recommend using a hook to modify the 'request' object or 'data' objects. Change to the request object will be passed down. </li>
     <li>If you're looking to pass in details about the query string deeper into your application, you could use this hook to do so.</li>
     <li>Anything you'd use an Express 'req' or 'next' for you can do and customize other parts of the Elder.js on this hook.</li>
     </ul>",
-    },
-    Object {
-      "advanced": true,
-      "context": "This hook is run just after a Page.ts object is created for a request. Page.ts objects are the main object used during page generation.",
-      "experimental": true,
-      "hook": "modifyCustomProps",
-      "location": "Page.ts",
-      "mutable": Array [
-        "customProps",
-        "request",
-        "errors",
-        "helpers",
-        "query",
-      ],
-      "props": Array [
-        "customProps",
-        "request",
-        "errors",
-        "helpers",
-        "query",
-        "settings",
-      ],
-      "use": "<p>This hook is often used in conjunction with the 'customizeHooks' hook to modify 'customProps' based on the request. This is very much a power user hook.</p>",
     },
     Object {
       "advanced": false,
@@ -818,6 +863,36 @@ Elder {
     },
     Object {
       "advanced": true,
+      "context": "Executed after the route's html has been compiled, but before the layout html has been compiled.",
+      "experimental": false,
+      "hook": "shortcodes",
+      "location": "Page.ts",
+      "mutable": Array [
+        "errors",
+        "templateHtml",
+        "cssStack",
+        "headStack",
+        "customJsStack",
+      ],
+      "props": Array [
+        "helpers",
+        "data",
+        "settings",
+        "request",
+        "query",
+        "errors",
+        "cssStack",
+        "headStack",
+        "customJsStack",
+        "templateHtml",
+        "shortcodes",
+        "allRequests",
+      ],
+      "use": "<p>Elder.js uses this hook to process shortcodes. The vast majority of users won't need to use this hook, but if you were so inclined you could write your own shortcode parser or if you'd like to disable shortcodes completely, you can add 'elderProcessShortcodes' to hooks.disable in your elder.config.js file.</p>
+    <p><strong>NOTE:</strong> Don't use this hook for anything besides shortcodes.</p>",
+    },
+    Object {
+      "advanced": true,
       "context": "Executed just before processing all of the stacks into strings.",
       "experimental": false,
       "hook": "stacks",
@@ -876,8 +951,29 @@ Elder {
         "query",
         "errors",
       ],
-      "use": "<p>This hook's headSting represents everything that will be written to &lt;head&gt; tag excluding CSS (those are managed on the style hook).</p>
+      "use": "<p>This hook's headSting represents everything that will be written to &lt;head&gt; tag.</p>
        <p>There are many possible SEO uses to this hook, especially for plugins. That said, we recommend users who want to set common SEO elements such as tags &lt;title&gt; and meta descriptions programatically to do it from within Svelte templates using the &lt;svelte:head&gt;&lt;/svelte:head&gt; tag. Chances are you won't need this field unless you're a power user and need access to the raw head.</p>",
+    },
+    Object {
+      "advanced": true,
+      "context": "This is where Elder.js merges the html from the Svelte layout with stacks and wraps it in an <html> tag.",
+      "experimental": false,
+      "hook": "compileHtml",
+      "location": "Page.ts",
+      "mutable": Array [
+        "errors",
+        "htmlString",
+      ],
+      "props": Array [
+        "helpers",
+        "data",
+        "request",
+        "headString",
+        "footerString",
+        "layoutHtml",
+        "htmlString",
+      ],
+      "use": "<p>This hook should only be used when you need to have full control over the &lt;html&gt; document. Make sure if you use this to add 'elderCompileHtml' to the 'hooks.disable' array in your elder.config.js or your template will be overwritten.</p>",
     },
     Object {
       "advanced": false,
@@ -964,6 +1060,7 @@ Elder {
         "query",
         "errors",
         "routes",
+        "allRequests",
       ],
       "use": "<p>Contains whether the build was successful. If not it contains errors for the entire build. Also includes
       average performance details, and a granular performance object. Could be used to fire off additional scripts such as generating a sitemap or copying asset files to the public folder.</p>
@@ -979,7 +1076,51 @@ Elder {
       "description": "Adds external helpers to helpers object",
       "hook": "bootstrap",
       "name": "elderAddExternalHelpers",
+      "priority": 1,
+      "run": [Function],
+    },
+    Object {
+      "$$meta": Object {
+        "addedBy": "elder.js",
+        "type": "internal",
+      },
+      "description": "An express like middleware so requests can be served by Elder.js",
+      "hook": "middleware",
+      "name": "elderExpressLikeMiddleware",
+      "priority": 1,
+      "run": [Function],
+    },
+    Object {
+      "$$meta": Object {
+        "addedBy": "elder.js",
+        "type": "internal",
+      },
+      "description": "Builds the shortcode parser, parses shortcodes from the html returned by the route's html and appends anything needed to the stacks.",
+      "hook": "shortcodes",
+      "name": "elderProcessShortcodes",
+      "priority": 50,
+      "run": [Function],
+    },
+    Object {
+      "$$meta": Object {
+        "addedBy": "elder.js",
+        "type": "internal",
+      },
+      "description": "Adds <meta charset=\\"UTF-8\\" /> to the head.",
+      "hook": "stacks",
+      "name": "elderAddMetaCharsetToHead",
       "priority": 100,
+      "run": [Function],
+    },
+    Object {
+      "$$meta": Object {
+        "addedBy": "elder.js",
+        "type": "internal",
+      },
+      "description": "Adds <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\" /> to the head.",
+      "hook": "stacks",
+      "name": "elderAddMetaViewportToHead",
+      "priority": 90,
       "run": [Function],
     },
     Object {
@@ -990,7 +1131,7 @@ Elder {
       "description": "Sets up the default polyfill for the intersection observer",
       "hook": "stacks",
       "name": "elderAddDefaultIntersectionObserver",
-      "priority": 1,
+      "priority": 100,
       "run": [Function],
     },
     Object {
@@ -1009,10 +1150,21 @@ Elder {
         "addedBy": "elder.js",
         "type": "internal",
       },
+      "description": "Creates an HTML string out of the Svelte layout and stacks.",
+      "hook": "compileHtml",
+      "name": "elderCompileHtml",
+      "priority": 50,
+      "run": [Function],
+    },
+    Object {
+      "$$meta": Object {
+        "addedBy": "elder.js",
+        "type": "internal",
+      },
       "description": "Log any errors to the console.",
       "hook": "error",
       "name": "elderConsoleLogErrors",
-      "priority": 100,
+      "priority": 1,
       "run": [Function],
     },
     Object {
@@ -1023,7 +1175,7 @@ Elder {
       "description": "Write the html output to public.",
       "hook": "requestComplete",
       "name": "elderWriteHtmlFileToPublic",
-      "priority": 100,
+      "priority": 1,
       "run": [Function],
     },
     Object {
@@ -1091,16 +1243,6 @@ Elder {
     },
     Object {
       "$$meta": Object {
-        "addedBy": "route-a",
-        "type": "route",
-      },
-      "description": "test",
-      "hook": "routeHook",
-      "name": "route hook",
-      "run": [MockFunction],
-    },
-    Object {
-      "$$meta": Object {
         "addedBy": "hooks.js",
         "type": "hooks.js",
       },
@@ -1158,27 +1300,22 @@ Elder {
   },
   "settings": Object {
     "$$internal": Object {
+      "clientComponents": "test/public/svelte",
       "hashedComponents": Object {
         "File1": "entryFile1",
         "File2": "entryFile2",
       },
+      "ssrComponents": "test/___ELDER___/compiled",
     },
     "build": false,
     "debug": Object {
       "automagic": true,
     },
+    "distDir": "test/public",
     "hooks": Object {
       "disable": Array [
         "randomHook",
       ],
-    },
-    "locations": Object {
-      "buildFolder": "./__ELDER__/",
-      "srcFolder": "./src/",
-      "svelte": Object {
-        "clientComponents": "./public/dist/svelte/",
-        "ssrComponents": "./___ELDER___/compiled/",
-      },
     },
     "plugins": Object {
       "elder-plugin-upload-s3": Object {
@@ -1187,10 +1324,21 @@ Elder {
         "htmlBucket": "elderguide.com",
       },
     },
+    "rootDir": "test",
     "server": Object {
       "prefix": "/dev",
     },
-    "typescript": true,
+    "srcDir": "test/src",
   },
+  "shortcodes": Array [
+    Object {
+      "$$meta": Object {
+        "addedBy": "elder",
+        "type": "elder",
+      },
+      "run": [Function],
+      "shortcode": "svelteComponent",
+    },
+  ],
 }
 `;

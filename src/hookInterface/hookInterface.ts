@@ -6,11 +6,11 @@ import type { HookInterface } from './types';
 export const hookInterface: Array<HookInterface> = [
   {
     hook: 'customizeHooks',
-    props: ['hookInterface', 'customProps', 'errors'],
-    mutable: ['hookInterface', 'customProps', 'errors'],
-    context: 'Run before collecting all hooks.',
+    props: ['hookInterface', 'errors'],
+    mutable: ['hookInterface', 'errors'],
+    context: 'Used to modify what hooks can mutate which properties all hooks.',
     use: `<p>This hook receives the hookInterface.ts file which defines all hook interactions. You can customize all 'props' and 'mutable' of
-      all hooks by using this hook. This is a power user hook and would often be used in conjunction with customProps.</p>`,
+      all hooks by using this hook. This is a power user hook and unless you know Elder.js internals don't mess with it.</p>`,
     location: 'Elder.ts',
     experimental: true,
     advanced: true,
@@ -44,7 +44,7 @@ export const hookInterface: Array<HookInterface> = [
     <p><strong>NOTE:</strong> If you are modifying 'allRequests' you <strong>must</strong> set 'request.route' key for each request.</p>`,
     location: 'Elder.ts',
     experimental: false,
-    advanced: true,
+    advanced: false,
   },
 
   // above this is Elder.js
@@ -53,56 +53,45 @@ export const hookInterface: Array<HookInterface> = [
     hook: 'middleware',
     props: [
       'errors',
-      'request',
       'query',
       'helpers',
       'data',
-      'route',
       'settings',
       'allRequests',
       'routes',
-      'customProps',
       'req',
       'next',
       'res',
+      'serverLookupObject',
+      'runHook',
+      'shortcodes',
+      'request',
     ],
     mutable: [
       'errors',
-      'request',
       'query',
       'helpers',
       'data',
-      'route',
       'settings',
       'allRequests',
       'routes',
-      'customProps',
       'req',
       'next',
       'res',
+      'request',
     ],
     context:
       'Fired upon a request that originates from the express/polka middleware version of Elder.js. The hook has access to "req" and "next" common in express like middleware.',
     use: `<p>If you're looking to use Elder.js with express/polka to build a server rendered website, then you'll be interested in this hook as it includes the familiar 'req' and 'next' objects as often used in Express middleware.</p>
     <ul>
-    <li>This hook could be used to set user or session information stored on the 'req' prop anywhere it is needed such as on the Elder.js 'request' object or 'data' object.</li>
+    <li>Under the hook Elder.js uses this hook to power the server implementation.</li>
+    <li>If you want to change the route of a request, you can do so by modifying the 'request.route' to the name of the new request, and it will be picked up by the default Elder.js server.</li>
+    <li>If you're looking to set user or session information stored on the 'req' prop we recommend using a hook to modify the 'request' object or 'data' objects. Change to the request object will be passed down. </li>
     <li>If you're looking to pass in details about the query string deeper into your application, you could use this hook to do so.</li>
     <li>Anything you'd use an Express 'req' or 'next' for you can do and customize other parts of the Elder.js on this hook.</li>
     </ul>`,
     location: 'prepareServer.ts',
-    experimental: true,
-    advanced: true,
-  },
-
-  {
-    hook: 'modifyCustomProps',
-    props: ['customProps', 'request', 'errors', 'helpers', 'query', 'settings'],
-    mutable: ['customProps', 'request', 'errors', 'helpers', 'query'],
-    context:
-      'This hook is run just after a Page.ts object is created for a request. Page.ts objects are the main object used during page generation.',
-    use: `<p>This hook is often used in conjunction with the 'customizeHooks' hook to modify 'customProps' based on the request. This is very much a power user hook.</p>`,
-    location: 'Page.ts',
-    experimental: true,
+    experimental: false,
     advanced: true,
   },
 
@@ -169,6 +158,31 @@ export const hookInterface: Array<HookInterface> = [
   },
 
   {
+    hook: 'shortcodes',
+    props: [
+      'helpers',
+      'data',
+      'settings',
+      'request',
+      'query',
+      'errors',
+      'cssStack',
+      'headStack',
+      'customJsStack',
+      'templateHtml',
+      'shortcodes',
+      'allRequests',
+    ],
+    mutable: ['errors', 'templateHtml', 'cssStack', 'headStack', 'customJsStack'],
+    context: `Executed after the route's html has been compiled, but before the layout html has been compiled.`,
+    use: `<p>Elder.js uses this hook to process shortcodes. The vast majority of users won't need to use this hook, but if you were so inclined you could write your own shortcode parser or if you'd like to disable shortcodes completely, you can add 'elderProcessShortcodes' to hooks.disable in your elder.config.js file.</p>
+    <p><strong>NOTE:</strong> Don't use this hook for anything besides shortcodes.</p>`,
+    location: 'Page.ts',
+    experimental: false,
+    advanced: true,
+  },
+
+  {
     hook: 'stacks',
     props: [
       'helpers',
@@ -207,8 +221,19 @@ export const hookInterface: Array<HookInterface> = [
     props: ['helpers', 'data', 'settings', 'request', 'headString', 'query', 'errors'],
     mutable: ['errors', 'headString'],
     context: 'Executed just before writing the <head> tag to the page.',
-    use: `<p>This hook's headSting represents everything that will be written to &lt;head&gt; tag excluding CSS (those are managed on the style hook).</p>
+    use: `<p>This hook's headSting represents everything that will be written to &lt;head&gt; tag.</p>
        <p>There are many possible SEO uses to this hook, especially for plugins. That said, we recommend users who want to set common SEO elements such as tags &lt;title&gt; and meta descriptions programatically to do it from within Svelte templates using the &lt;svelte:head&gt;&lt;/svelte:head&gt; tag. Chances are you won't need this field unless you're a power user and need access to the raw head.</p>`,
+    location: 'Page.ts',
+    experimental: false,
+    advanced: true,
+  },
+
+  {
+    hook: 'compileHtml',
+    props: ['helpers', 'data', 'request', 'headString', 'footerString', 'layoutHtml', 'htmlString'],
+    mutable: ['errors', 'htmlString'],
+    context: 'This is where Elder.js merges the html from the Svelte layout with stacks and wraps it in an <html> tag.',
+    use: `<p>This hook should only be used when you need to have full control over the &lt;html&gt; document. Make sure if you use this to add 'elderCompileHtml' to the 'hooks.disable' array in your elder.config.js or your template will be overwritten.</p>`,
     location: 'Page.ts',
     experimental: false,
     advanced: true,
@@ -260,7 +285,7 @@ export const hookInterface: Array<HookInterface> = [
 
   {
     hook: 'buildComplete',
-    props: ['helpers', 'data', 'settings', 'timings', 'query', 'errors', 'routes'],
+    props: ['helpers', 'data', 'settings', 'timings', 'query', 'errors', 'routes', 'allRequests'],
     mutable: [],
     context: 'Executed after a build is complete',
     use: `<p>Contains whether the build was successful. If not it contains errors for the entire build. Also includes

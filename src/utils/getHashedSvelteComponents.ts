@@ -1,5 +1,4 @@
 import glob from 'glob';
-import path from 'path';
 
 let results = {};
 
@@ -11,12 +10,12 @@ let ready = false;
  *
  * @returns {Object}
  */
-const getHashedSvelteComponents = (config) => {
+const getHashedSvelteComponents = ({ ssrComponents, clientComponents }) => {
   if (!ready) {
     ready = true;
 
-    const ssrFiles = glob.sync(`${path.resolve(config.locations.rootDir, config.locations.svelte.ssrComponents)}/*.js`, {});
-    const clientFiles = glob.sync(`${path.resolve(config.locations.rootDir, config.locations.svelte.clientComponents)}/*.js`, {});
+    const ssrFiles = glob.sync(`${ssrComponents}/*.js`, {});
+    const clientFiles = glob.sync(`${clientComponents}/*.js`, {});
 
     // get an array with jus the file name before .js;
     // CityResults.js => CityResults

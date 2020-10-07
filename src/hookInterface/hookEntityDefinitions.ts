@@ -3,7 +3,6 @@ const hookEntityDefinitions = {
   allRequests: `Every request object collected from all routes during bootstrap. It is important to note that 'allRequests' will be different at the 'request' hook during a build because the requests are split between different processes during build time using the allRequests object.`,
   hookInterface:
     'The hook interface is what defines the "contract" for each hook. It includes what properties the hook has access to and which of those properties can be mutated.',
-  customProps: 'An object that represents any custom props added during the "customizeHook" hook',
   errors: 'An array of errors collected during the build process.',
   helpers:
     'An object of helpers loaded from `./src/helpers/index.js` in addition to the Elder.js provided helper functions.',
@@ -34,6 +33,13 @@ const hookEntityDefinitions = {
   req: "The 'req' object from Express or Polka when Elder.js is being used as a server.",
   next: "The 'next' object from Express or Polka when Elder.js is being used as a server.",
   res: "The 'res' object from Express or Polka when Elder.js is being used as a server.",
+  templateHtml: "The HTML string returned by the SSR'd Svelte template for the request's route.",
+  shortcodes: "An array of shortcode definitions that are processed on the 'shortcodes' hook.",
+  footerString: 'A HTML string that Elder.js will write to the footer.',
+  layoutHtml:
+    "The compiled HTML response for a route containing all of the HTML from the Route's layout and template. ",
+  serverLookupObject: `A key value object where the key is the relative permalink and the object is the 'request' object used by the Elder.js server.`,
+  runHook: `The function that powers hooks. 'await runhook('hookName', objectContainingProps)`,
 };
 
 // eslint-disable-next-line import/prefer-default-export

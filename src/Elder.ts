@@ -17,10 +17,12 @@ import {
   validateHook,
   validateRoute,
   validatePlugin,
+  validateShortcode,
   permalinks,
   asyncForEach,
   getHashedSvelteComponents,
   getConfig,
+  prepareInlineShortcode,
 } from './utils';
 import { RoutesOptions } from './routes/types';
 import { HookOptions } from './hookInterface/types';
@@ -32,12 +34,12 @@ import {
   RequestsOptions,
   PluginOptions,
   ExcludesFalse,
+  ShortcodeDefs,
 } from './utils/types';
 import createReadOnlyProxy from './utils/createReadOnlyProxy';
 import workerBuild from './workerBuild';
 import { inlineSvelteComponent } from './partialHydration/inlineSvelteComponent';
-
-const getElderConfig = getConfig;
+import elderJsShortcodes from './shortcodes';
 
 class Elder {
   bootstrapComplete: Promise<any>;
@@ -54,10 +56,6 @@ class Elder {
 
   runHook: (string, Object) => Promise<any>;
 
-  hookInterface: any;
-
-  customProps: any;
-
   query: QueryOptions;
 
   allRequests: Array<RequestOptions>;
@@ -72,23 +70,24 @@ class Elder {
 
   builder: any;
 
+  hookInterface: any;
+
+  shortcodes: ShortcodeDefs;
+
   constructor({ context, worker = false, configOptions = {} }) {
     this.bootstrapComplete = new Promise((resolve) => {
       this.markBootstrapComplete = resolve;
     });
 
-    const config = getConfig(context, configOptions);
-
-    const { rootDir, srcFolder, buildFolder } = config.locations;
+    const config = getConfig(configOptions);
 
     this.settings = {
       ...config,
       server: context === 'server' && config[context],
       build: context === 'build' && config[context],
-      $$internal: {
-        hashedComponents: getHashedSvelteComponents(config),
-      },
     };
+
+    this.settings.$$internal.hashedComponents = getHashedSvelteComponents({ ...config.$$internal });
 
     if (context === 'build' && worker) {
       this.settings.worker = worker;
@@ -105,7 +104,7 @@ class Elder {
      */
     let pluginRoutes: RoutesOptions = {};
     const pluginHooks: Array<HookOptions> = [];
-
+    const pluginShortcodes: ShortcodeDefs = [];
     const pluginNames = Object.keys(this.settings.plugins);
 
     for (let i = 0; i < pluginNames.length; i += 1) {
@@ -115,29 +114,24 @@ class Elder {
 
       let plugin: PluginOptions | undefined;
       const pluginPath = `./plugins/${pluginName}/index.js`;
-      const srcPlugin = path.resolve(rootDir, srcFolder, pluginPath);
+      const srcPlugin = path.resolve(this.settings.srcDir, pluginPath);
+
       if (fs.existsSync(srcPlugin)) {
         // eslint-disable-next-line import/no-dynamic-require
-        plugin = require(srcPlugin).default || require(srcPlugin);
-      }
-
-      if (!plugin && buildFolder.length > 0) {
-        const buildPlugin = path.resolve(rootDir, buildFolder, pluginPath);
-        if (fs.existsSync(buildPlugin)) {
-          // eslint-disable-next-line import/no-dynamic-require
-          plugin = require(buildPlugin).default || require(buildPlugin);
-        }
+        const pluginReq = require(srcPlugin);
+        plugin = pluginReq.default || pluginReq;
       }
 
       if (!plugin) {
-        const pkgPath = path.resolve(rootDir, './node_modules/', pluginName);
+        const pkgPath = path.resolve(this.settings.rootDir, './node_modules/', pluginName);
         if (fs.existsSync(pkgPath)) {
           // eslint-disable-next-line import/no-dynamic-require
           const pluginPackageJson = require(path.resolve(pkgPath, './package.json'));
           const pluginPkgPath = path.resolve(pkgPath, pluginPackageJson.main);
 
           // eslint-disable-next-line import/no-dynamic-require
-          plugin = require(pluginPkgPath).default || require(pluginPkgPath);
+          const nmPluginReq = require(pluginPkgPath);
+          plugin = nmPluginReq.default || nmPluginReq;
         }
       }
 
@@ -173,10 +167,6 @@ class Elder {
             run: async (payload: any = {}) => {
               // pass the plugin definition into the closure of every hook.
               let pluginDefinition = sanitizedPlugin;
-
-              // TODO: In a future release add in specific helpers to allow plugins to implement the
-              // same hook signature as we use on plugin.helpers; Plugin defined hooks will basically "shadow"
-              // system hooks.
 
               // eslint-disable-next-line no-param-reassign
               payload.plugin = pluginDefinition;
@@ -225,15 +215,11 @@ class Elder {
             plugin.routes[routeName].template.endsWith('.svelte')
           ) {
             const templateName = plugin.routes[routeName].template.replace('.svelte', '');
-            const ssrComponent = path.resolve(
-              rootDir,
-              this.settings.locations.svelte.ssrComponents,
-              `${templateName}.js`,
-            );
+            const ssrComponent = path.resolve(this.settings.$$internal.ssrComponents, `${templateName}.js`);
 
             if (!fs.existsSync(ssrComponent)) {
               console.warn(
-                `Plugin Route: ${routeName} has an error. No SSR svelte compontent found ${templateName} which was added by ${pluginName}. This may cause unexpected outcomes. If you believe this should be working, make sure rollup has run before this file is initialized. If the issue persists, please contact the plugin author. Expected location \`${ssrComponent}\``,
+                `Plugin Route: ${routeName} has an error. No SSR svelte component found ${templateName} which was added by ${pluginName}. This may cause unexpected outcomes. If you believe this should be working, make sure rollup has run before this file is initialized. If the issue persists, please contact the plugin author. Expected location \`${ssrComponent}\``,
               );
             }
 
@@ -248,12 +234,29 @@ class Elder {
           pluginRoutes = { ...pluginRoutes, ...sanitizedRoute };
         });
       }
+
+      if (plugin.shortcodes && plugin.shortcodes.length > 0) {
+        plugin.shortcodes.forEach((shortcode) => {
+          shortcode.$$meta = {
+            type: 'plugin',
+            addedBy: pluginName,
+          };
+          shortcode.plugin = sanitizedPlugin;
+          pluginShortcodes.push(shortcode);
+        });
+      }
     }
+
+    /**
+     * Finalize Routes
+     * Add in user routes
+     * Add in plugin routes
+     * Validate them
+     */
 
     // add meta to routes and collect hooks from routes
     const userRoutesJsFile = routes(this.settings);
 
-    const routeHooks: Array<HookOptions> = [];
     const userRoutes = Object.keys(userRoutesJsFile);
 
     userRoutes.forEach((routeName) => {
@@ -264,20 +267,6 @@ class Elder {
           addedBy: 'routejs',
         },
       };
-      const processedRoute = userRoutesJsFile[routeName];
-
-      if (processedRoute.hooks && Array.isArray(processedRoute.hooks)) {
-        processedRoute.hooks.forEach((hook) => {
-          const hookWithMeta: HookOptions = {
-            ...hook,
-            $$meta: {
-              type: 'route',
-              addedBy: routeName,
-            },
-          };
-          routeHooks.push(hookWithMeta);
-        });
-      }
     });
 
     // plugins should never overwrite user routes.
@@ -295,20 +284,19 @@ class Elder {
 
     this.routes = validatedRoutes;
 
+    /**
+     * Finalize hooks
+     * Import User Hooks.js
+     * Validate Hooks
+     * Filter out hooks that are disabled.
+     */
+
     let hooksJs: Array<HookOptions> = [];
-    const hookSrcPath = path.resolve(rootDir, srcFolder, './hooks.js');
-    const hookBuildPath = path.resolve(rootDir, buildFolder, './hooks.js');
+    const hookSrcPath = path.resolve(this.settings.srcDir, './hooks.js');
 
-    if (this.settings.debug.automagic) {
-      console.log(
-        `debug.automagic::Attempting to automagically pull in hooks from your ${hookSrcPath} ${
-          buildFolder ? `with a fallback to ${hookBuildPath}` : ''
-        }`,
-      );
-    }
     try {
-      const hookSrcFile: Array<HookOptions> = config.typescript ? require(hookSrcPath).default : require(hookSrcPath);
-
+      const hooksReq = require(hookSrcPath);
+      const hookSrcFile: Array<HookOptions> = hooksReq.default || hooksReq;
       hooksJs = hookSrcFile.map((hook) => ({
         ...hook,
         $$meta: {
@@ -318,31 +306,13 @@ class Elder {
       }));
     } catch (err) {
       if (err.code === 'MODULE_NOT_FOUND') {
-        if (buildFolder && buildFolder.length > 0) {
-          try {
-            const hookBuildFile: Array<HookOptions> = config.typescript
-              ? require(hookBuildPath).default
-              : require(hookBuildPath);
-            hooksJs = hookBuildFile.map((hook) => ({
-              ...hook,
-              $$meta: {
-                type: 'hooks.js',
-                addedBy: 'hooks.js',
-              },
-            }));
-          } catch (err2) {
-            if (err2.code !== 'MODULE_NOT_FOUND') {
-              console.error(err);
-            }
-          }
-        } else if (this.settings.debug.automagic) {
-          console.log(`No luck finding that hooks file. You can add one at ${hookSrcPath}`);
-        }
+        console.error(`Could not load hooks file from ${hookSrcPath}.`);
       } else {
         console.error(err);
       }
     }
 
+    // validate hooks
     const elderJsHooks: Array<HookOptions> = internalHooks.map((hook) => ({
       ...hook,
       $$meta: {
@@ -351,9 +321,8 @@ class Elder {
       },
     }));
 
-    const allSupportedHooks = hookInterface;
-
-    this.hooks = [...elderJsHooks, ...pluginHooks, ...routeHooks, ...hooksJs]
+    // validate hooks
+    this.hooks = [...elderJsHooks, ...pluginHooks, ...hooksJs]
       .map((hook) => validateHook(hook))
       .filter((Boolean as any) as ExcludesFalse);
 
@@ -361,20 +330,58 @@ class Elder {
       this.hooks = this.hooks.filter((h) => !this.settings.hooks.disable.includes(h.name));
     }
 
-    // TODO: plugins should be able to register their own hooks?
+    /**
+     * Finalize Shortcodes
+     * Import User Shortcodes.js
+     * Validate Shortcodes
+     */
+
+    let shortcodesJs: ShortcodeDefs = [];
+    const shortcodeSrcPath = path.resolve(this.settings.srcDir, './shortcodes.js');
+
+    try {
+      const shortcodeReq = require(shortcodeSrcPath);
+      const shortcodes: ShortcodeDefs = shortcodeReq.default || shortcodeReq;
+      shortcodesJs = shortcodes.map((shortcode) => ({
+        ...shortcode,
+        $$meta: {
+          type: 'shortcodes.js',
+          addedBy: 'shortcodes.js',
+        },
+      }));
+    } catch (err) {
+      if (err.code === 'MODULE_NOT_FOUND') {
+        console.error(
+          `Could not load shortcodes file from ${shortcodeSrcPath}. They are not required, but could be useful.`,
+        );
+      } else {
+        console.error(err);
+      }
+    }
+
+    // validate shortcodes
+    this.shortcodes = [...elderJsShortcodes, ...pluginShortcodes, ...shortcodesJs]
+      .map((shortcode) => validateShortcode(shortcode))
+      .filter((Boolean as any) as ExcludesFalse);
+
+    /**
+     *
+     * Almost ready for customize hooks and bootstrap
+     * Just wire up the last few things.
+     */
 
     this.data = {};
-    this.hookInterface = allSupportedHooks;
-    this.customProps = {};
 
     this.query = {};
     this.allRequests = [];
     this.serverLookupObject = {};
     this.errors = [];
+    this.hookInterface = hookInterface;
 
     this.helpers = {
       permalinks: permalinks({ routes: this.routes, settings: this.settings }),
       inlineSvelteComponent,
+      shortcode: prepareInlineShortcode({ settings: this.settings }),
     };
 
     if (context === 'server') {
@@ -385,15 +392,16 @@ class Elder {
     const hooksMinusPlugins = this.hooks.filter((h) => h.$$meta.type !== 'plugin');
     this.runHook = prepareRunHook({
       hooks: hooksMinusPlugins,
-      allSupportedHooks: this.hookInterface,
+      allSupportedHooks: hookInterface,
       settings: this.settings,
     });
 
     this.runHook('customizeHooks', this).then(async () => {
-      // we now have customProps and a new hookInterface.
+      // we now have any customizations to the hookInterface.
+      // we need to rebuild runHook with these customizations.
       this.runHook = prepareRunHook({
         hooks: this.hooks,
-        allSupportedHooks: this.hookInterface,
+        allSupportedHooks: hookInterface,
         settings: this.settings,
       });
 
@@ -405,10 +413,10 @@ class Elder {
         let allRequestsForRoute = [];
         if (typeof route.all === 'function') {
           allRequestsForRoute = await route.all({
-            settings: this.settings,
-            query: this.query,
-            helpers: this.helpers,
-            data: this.data,
+            settings: createReadOnlyProxy(this.settings, 'settings', `${routeName} all function`),
+            query: createReadOnlyProxy(this.query, 'query', `${routeName} all function`),
+            helpers: createReadOnlyProxy(this.helpers, 'helpers', `${routeName} all function`),
+            data: createReadOnlyProxy(this.data, 'data', `${routeName} all function`),
           });
         } else if (Array.isArray(route.all)) {
           allRequestsForRoute = route.all;
@@ -430,12 +438,21 @@ class Elder {
 
       await this.runHook('allRequests', this);
 
-      // TODO: We should validate that all requests have a request.route = '';
-      // sometimes the request object returned by the allRequests hook may not have it set.
-
       await asyncForEach(this.allRequests, async (request) => {
         if (!this.routes[request.route] || !this.routes[request.route].permalink) {
-          console.error(`request missing permalink, please create an issue. ${request}`);
+          if (!request.route) {
+            console.error(
+              `Request is missing a 'route' key. This usually happens when request objects have been added to the allRequests array via a hook or plugin. ${JSON.stringify(
+                request,
+              )}`,
+            );
+          } else {
+            console.error(
+              `Request missing permalink but has request.route defined. This shouldn't be an Elder.js issue but if you believe it could be please create an issue. ${JSON.stringify(
+                request,
+              )}`,
+            );
+          }
         }
         if (context === 'server') {
           request.type = 'server';
@@ -486,4 +503,4 @@ class Elder {
   }
 }
 
-export { Elder, getElderConfig, build, partialHydration };
+export { Elder, build, partialHydration };

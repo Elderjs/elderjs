@@ -4,12 +4,12 @@ exports[`#hooks elderAddDefaultIntersectionObserver 1`] = `
 Object {
   "beforeHydrateStack": Array [
     Object {
-      "priority": 1,
+      "priority": 100,
       "source": "elderAddDefaultIntersectionObserver",
       "string": "<script type=\\"text/javascript\\">
       if (!('IntersectionObserver' in window)) {
           var script = document.createElement(\\"script\\");
-          script.src = \\"foo\\";
+          script.src = \\"/static/intersection-observer.js\\";
           document.getElementsByTagName('head')[0].appendChild(script);
       };
       </script>",
@@ -27,20 +27,44 @@ Object {
 }
 `;
 
+exports[`#hooks elderAddMetaCharsetToHead 1`] = `
+Object {
+  "headStack": Array [
+    Object {
+      "priority": 100,
+      "source": "elderAddMetaCharsetToHead",
+      "string": "<meta charset=\\"UTF-8\\" />",
+    },
+  ],
+}
+`;
+
+exports[`#hooks elderAddMetaViewportToHead 1`] = `
+Object {
+  "headStack": Array [
+    Object {
+      "priority": 90,
+      "source": "elderAddMetaViewportToHead",
+      "string": "<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\" />",
+    },
+  ],
+}
+`;
+
 exports[`#hooks elderAddSystemJs 1`] = `
 Object {
   "beforeHydrateStack": Array [
     Object {
-      "priority": 2,
+      "priority": 99,
       "source": "elderAddSystemJs",
-      "string": "<script data-name=\\"systemjs\\" src=\\"foo\\"></script>",
+      "string": "<script src=\\"/static/s.min.js\\"></script>",
     },
   ],
   "headStack": Array [
     Object {
-      "priority": 2,
+      "priority": 99,
       "source": "elderAddSystemJs",
-      "string": "<link rel=\\"preload\\" href=\\"foo\\" as=\\"script\\">",
+      "string": "<link rel=\\"preload\\" href=\\"/static/s.min.js\\" as=\\"script\\">",
     },
   ],
 }
@@ -52,14 +76,42 @@ Array [
     "description": "Adds external helpers to helpers object",
     "hook": "bootstrap",
     "name": "elderAddExternalHelpers",
+    "priority": 1,
+    "run": [Function],
+  },
+  Object {
+    "description": "An express like middleware so requests can be served by Elder.js",
+    "hook": "middleware",
+    "name": "elderExpressLikeMiddleware",
+    "priority": 1,
+    "run": [Function],
+  },
+  Object {
+    "description": "Builds the shortcode parser, parses shortcodes from the html returned by the route's html and appends anything needed to the stacks.",
+    "hook": "shortcodes",
+    "name": "elderProcessShortcodes",
+    "priority": 50,
+    "run": [Function],
+  },
+  Object {
+    "description": "Adds <meta charset=\\"UTF-8\\" /> to the head.",
+    "hook": "stacks",
+    "name": "elderAddMetaCharsetToHead",
     "priority": 100,
+    "run": [Function],
+  },
+  Object {
+    "description": "Adds <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\" /> to the head.",
+    "hook": "stacks",
+    "name": "elderAddMetaViewportToHead",
+    "priority": 90,
     "run": [Function],
   },
   Object {
     "description": "Sets up the default polyfill for the intersection observer",
     "hook": "stacks",
     "name": "elderAddDefaultIntersectionObserver",
-    "priority": 1,
+    "priority": 100,
     "run": [Function],
   },
   Object {
@@ -70,17 +122,24 @@ Array [
     "run": [Function],
   },
   Object {
+    "description": "Creates an HTML string out of the Svelte layout and stacks.",
+    "hook": "compileHtml",
+    "name": "elderCompileHtml",
+    "priority": 50,
+    "run": [Function],
+  },
+  Object {
     "description": "Log any errors to the console.",
     "hook": "error",
     "name": "elderConsoleLogErrors",
-    "priority": 100,
+    "priority": 1,
     "run": [Function],
   },
   Object {
     "description": "Write the html output to public.",
     "hook": "requestComplete",
     "name": "elderWriteHtmlFileToPublic",
-    "priority": 100,
+    "priority": 1,
     "run": [Function],
   },
   Object {

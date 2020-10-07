@@ -9,18 +9,16 @@ const componentProps = {
       permalinks: jest.fn(),
     },
     settings: {
-      locations: {
-        public: '/',
-        svelte: {
-          ssrComponents: '___ELDER___/compiled/',
-          clientComponents: 'public/dist/svelte/',
-        },
-      },
+      distDir: 'test/public',
+      rootDir: 'test',
+      srcDir: 'test/src',
       $$internal: {
         hashedComponents: {
           Home: 'Home.a1b2c3',
           Datepicker: 'Datepicker.a1b2c3',
         },
+        clientComponents: 'test/public/svelte',
+        ssrComponents: 'test/___ELDER___/compiled',
       },
     },
   },
@@ -48,6 +46,31 @@ describe('#svelteComponent', () => {
     expect(getComponentName('Home.js')).toEqual('Home');
     expect(getComponentName('foo/bar/Home.js')).toEqual('Home');
     expect(getComponentName('foo/bar///Home.svelte')).toEqual('Home');
+  });
+
+  it('getClientSvelteFolder works', () => {
+    // eslint-disable-next-line global-require
+    const { getClientSvelteFolder } = require('../svelteComponent');
+    expect(
+      getClientSvelteFolder({
+        settings: {
+          distDir: '/test/public',
+          $$internal: {
+            clientComponents: '/test/public/svelte',
+          },
+        },
+      }),
+    ).toEqual('/svelte');
+    expect(
+      getClientSvelteFolder({
+        settings: {
+          distDir: '\\test\\public',
+          $$internal: {
+            clientComponents: '\\test\\public\\svelte',
+          },
+        },
+      }),
+    ).toEqual('/svelte');
   });
 
   it('replaceSpecialCharacters works', () => {
@@ -112,8 +135,8 @@ describe('#svelteComponent', () => {
         string: `
         function initdatepickerSwrzsrVDCd() {
           
-    System.import('public/dist/svelte/Datepicker.a1b2c3.js').then(({ default: App }) => {
-    new App({ target: document.getElementById('datepicker-SwrzsrVDCd'), hydrate: true, props: {"a":"b"} });
+    System.import('/svelte/Datepicker.a1b2c3.js').then(({ default: App }) => {
+    new App({ target: document.getElementById('datepicker-SwrzsrVDCd'), hydrate: true, props: {a:"b"} });
     });
         }
         

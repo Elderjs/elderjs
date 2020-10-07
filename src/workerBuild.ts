@@ -9,8 +9,8 @@ async function workerBuild({ bootstrapComplete, workerRequests }) {
     runHook,
     routes: workerRoutes,
     errors,
-    customProps,
     allRequests,
+    shortcodes,
   } = await bootstrapComplete;
 
   // potential issue that since builds are split across processes,
@@ -37,21 +37,24 @@ async function workerBuild({ bootstrapComplete, workerRequests }) {
       runHook,
       routes: workerRoutes,
       errors,
-      customProps,
+      shortcodes,
     });
-    const { errors: buildErrors, timings } = await page.build();
     i += 1;
+    const response: any = ['requestComplete', i];
+
+    // try {
+    const { errors: buildErrors, timings } = await page.build();
     bTimes.push(timings);
 
-    const response: any = ['requestComplete', i];
     if (buildErrors && buildErrors.length > 0) {
       errs += 1;
       response.push(errs);
-      response.push({ request, errors: buildErrors });
+      response.push({ request, errors: buildErrors.map((e) => JSON.stringify(e, Object.getOwnPropertyNames(e))) });
       bErrors.push({ request, errors: buildErrors });
     } else {
       response.push(errs);
     }
+    // } catch (e) {}
 
     if (process.send) {
       process.send(response);
