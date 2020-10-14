@@ -27,14 +27,14 @@ import {
 import { RoutesOptions } from './routes/types';
 import { HookOptions } from './hookInterface/types';
 import {
-  ConfigOptions,
-  SettingOptions,
+  SettingsOptions,
   QueryOptions,
   RequestOptions,
   RequestsOptions,
   PluginOptions,
   ExcludesFalse,
   ShortcodeDefs,
+  InitializationOptions,
 } from './utils/types';
 import createReadOnlyProxy from './utils/createReadOnlyProxy';
 import workerBuild from './workerBuild';
@@ -46,7 +46,7 @@ class Elder {
 
   markBootstrapComplete: (Object) => void;
 
-  settings: ConfigOptions & SettingOptions;
+  settings: SettingsOptions;
 
   routes: RoutesOptions;
 
@@ -74,31 +74,29 @@ class Elder {
 
   shortcodes: ShortcodeDefs;
 
-  constructor({ context, worker = false }) {
+  constructor(initializationOptions: InitializationOptions = {}) {
+    const initialOptions = { ...initializationOptions };
     this.bootstrapComplete = new Promise((resolve) => {
       this.markBootstrapComplete = resolve;
     });
 
-    const config = getConfig();
+    // merge the given config with the project and defaults;
+    this.settings = getConfig(initializationOptions);
+    this.settings.$$internal.hashedComponents = getHashedSvelteComponents({ ...this.settings.$$internal });
 
-    this.settings = {
-      ...config,
-      server: context === 'server' && config[context],
-      build: context === 'build' && config[context],
-    };
+    // overwrite anything that needs to be overwritten for legacy reasons based on the initialConfig
+    // todo: this can be refactored into getConfig.
+    this.settings.context = typeof initialOptions.context !== 'undefined' ? initialOptions.context : 'unknown';
+    this.settings.server = initialOptions.context === 'server' && this.settings.server;
+    this.settings.build = initialOptions.context === 'build' && this.settings.build;
+    this.settings.worker = !!initialOptions.worker;
 
-    this.settings.$$internal.hashedComponents = getHashedSvelteComponents({ ...config.$$internal });
-
-    if (context === 'build' && worker) {
-      this.settings.worker = worker;
-    }
-
-    if (!context || context === 'build') {
+    if (this.settings.context === 'build') {
       this.settings.debug.automagic = false;
     }
 
     /**
-     * Plugin initalization
+     * Plugin initialization
      * * Collect plugin routes
      * * Add plugin object and helpers to all plugin hook functions.
      */
@@ -384,7 +382,7 @@ class Elder {
       shortcode: prepareInlineShortcode({ settings: this.settings }),
     };
 
-    if (context === 'server') {
+    if (this.settings.context === 'server') {
       this.server = prepareServer({ bootstrapComplete: this.bootstrapComplete });
     }
 
@@ -454,13 +452,9 @@ class Elder {
             );
           }
         }
-        if (context === 'server') {
-          request.type = 'server';
-        } else if (context === 'build') {
-          request.type = 'build';
-        } else {
-          request.type = 'unknown';
-        }
+
+        request.type = this.settings.context;
+
         request.permalink = await this.routes[request.route].permalink({
           request,
           settings: { ...this.settings },
@@ -470,7 +464,7 @@ class Elder {
           request.permalink = this.settings.server.prefix + request.permalink;
         }
 
-        if (context === 'server') {
+        if (this.settings.context === 'server') {
           this.serverLookupObject[request.permalink] = request;
         }
       });

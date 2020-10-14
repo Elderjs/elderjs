@@ -15,7 +15,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import del from 'del';
 import { getElderConfig, partialHydration } from '../index';
-import { ConfigOptions, RollupConfig } from './types';
+import { SettingsOptions, RollupConfig } from './types';
 
 const production = process.env.NODE_ENV === 'production' || !process.env.ROLLUP_WATCH;
 
@@ -136,7 +136,7 @@ export function createSSRConfig({
   return config;
 }
 
-export function getPluginPaths(elderConfig: ConfigOptions) {
+export function getPluginPaths(elderConfig: SettingsOptions) {
   const pluginNames = Object.keys(elderConfig.plugins);
 
   return pluginNames.reduce((out, pluginName) => {

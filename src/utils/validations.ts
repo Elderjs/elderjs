@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import type { ConfigOptions, PluginOptions, ShortcodeDef } from './types';
+import type { SettingsOptions, PluginOptions, ShortcodeDef } from './types';
 import type { RouteOptions } from '../routes/types';
 import type { HookOptions } from '../hookInterface/types';
 import hookInterface from '../hookInterface/hookInterface';
@@ -180,7 +180,7 @@ const hookSchema = yup
   })
   .noUnknown(true);
 
-function getDefaultConfig(): ConfigOptions {
+function getDefaultConfig(): SettingsOptions {
   const validated = configSchema.cast();
 
   return validated;
@@ -189,7 +189,7 @@ function getDefaultConfig(): ConfigOptions {
 // function validateConfig(config = {}) {
 //   try {
 //     configSchema.validateSync(config);
-//     const validated: ConfigOptions = configSchema.cast(config);
+//     const validated: SettingsOptions = configSchema.cast(config);
 //     return validated;
 //   } catch (err) {
 //     return false;

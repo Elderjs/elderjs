@@ -80,7 +80,7 @@ describe('#Elder', () => {
       existsSync: () => false,
     }));
     // eslint-disable-next-line global-require
-    const { Elder } = require('../Elder');
+    const { Elder } = require('../index');
     await expect(async () => {
       await new Elder({ context: 'build', worker: false });
     }).rejects.toThrow('Plugin elder-plugin-upload-s3 not found in plugins or node_modules folder.');
@@ -106,7 +106,7 @@ describe('#Elder', () => {
       virtual: true,
     });
     // eslint-disable-next-line global-require
-    const { Elder } = require('../Elder');
+    const { Elder } = require('../index');
     await expect(async () => {
       await new Elder({ context: 'build', worker: false });
     }).rejects.toThrow('Plugin elder-plugin-upload-s3 not found in plugins or node_modules folder.');
@@ -146,7 +146,7 @@ describe('#Elder', () => {
       },
     );
     // eslint-disable-next-line global-require
-    const { Elder } = require('../Elder');
+    const { Elder } = require('../index');
     const elder = await new Elder({ context: 'server', worker: true });
     // await elder.bootstrap();
     expect(elder).toEqual({
@@ -172,6 +172,8 @@ describe('#Elder', () => {
         distDir: 'test/public',
         rootDir: 'test',
         srcDir: 'test/src',
+        context: 'server',
+        worker: true,
       },
     });
   });
@@ -216,7 +218,7 @@ describe('#Elder', () => {
       },
     );
     // eslint-disable-next-line global-require
-    const { Elder } = require('../Elder');
+    const { Elder } = require('../index');
     const elder = await new Elder({ context: 'server', worker: false });
     await elder.bootstrap();
     await elder.worker([]);
@@ -302,7 +304,7 @@ describe('#Elder', () => {
       },
     );
     // eslint-disable-next-line global-require
-    const { Elder } = require('../Elder');
+    const { Elder } = require('../index');
     const elder = await new Elder({ context: 'server', worker: false });
     await elder.bootstrap();
     expect(elder).toMatchSnapshot();
