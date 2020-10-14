@@ -3,6 +3,10 @@ import multiInput from 'rollup-plugin-multi-input';
 import path from 'path';
 import { createBrowserConfig, createSSRConfig } from '../getRollupConfig';
 
+// todo:
+// test replace
+// test splitComponents
+
 describe('#getRollupConfig', () => {
   beforeEach(() => {
     jest.resetModules();
