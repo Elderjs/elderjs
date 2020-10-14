@@ -64,6 +64,49 @@ The ElderGuide.com team expects to maintain this project until 2023-2024. For a 
 
 The quickest way to get started is to get started with the [Elder.js template](https://github.com/Elderjs/template) using [degit](https://github.com/Rich-Harris/degit):
 
+```sh
+npx degit Elderjs/template elderjs-app
+
+cd
+
+npm install # or "yarn"
+
+npm start
+
+open http://localhost:3000
+```
+
 Here is a demo of the template: [https://elderjs.netlify.app/](https://elderjs.netlify.app/)
+
+### Developing using the Template:
+
+For development, we recommend running two separate terminals. One for the server and the other for rollup.
+
+**Terminal 1: Server**
+
+```bash
+npm run dev:server # `npm start` above starts a server, but doesn't rebuild your Svelte components on change.
+```
+
+**Terminal 2: Rollup**
+
+```bash
+npm run dev:rollup # This rebuilds your svelte components on change.
+```
+
+Once you have these two terminals open, edit a component file in `src`, save it, and reload the page to see your changes.
+
+### To Build/Serve HTML Locally:
+
+```bash
+npm run build
+```
+
+Let the build finish.
+
+```bash
+npx sirv-cli public
+```
+
 
 ## Full documentation here: https://elderguide.com/tech/elderjs/
