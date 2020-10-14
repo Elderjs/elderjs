@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import type { ConfigOptions, PluginOptions, RollupSettings, ShortcodeDef } from './types';
+import type { SettingsOptions, PluginOptions, ShortcodeDef, RollupSettings } from './types';
 import type { RouteOptions } from '../routes/types';
 import type { HookOptions } from '../hookInterface/types';
 import hookInterface from '../hookInterface/hookInterface';
@@ -199,13 +199,14 @@ const rollupSchema = yup.object({
         ),
     }),
   }),
+  replacements: yup.array().of(yup.string()),
 });
 
 function getDefaultRollup(): RollupSettings {
   return rollupSchema.cast();
 }
 
-function getDefaultConfig(): ConfigOptions {
+function getDefaultConfig(): SettingsOptions {
   return configSchema.cast();
 }
 

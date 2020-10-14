@@ -4,7 +4,7 @@ import path from 'path';
 import getUniqueId from './getUniqueId';
 import perf from './perf';
 import prepareProcessStack from './prepareProcessStack';
-import { QueryOptions, Stack, SettingOptions, ConfigOptions, RequestOptions, ShortcodeDefs } from './types';
+import { QueryOptions, Stack, RequestOptions, ShortcodeDefs, SettingsOptions } from './types';
 import { RoutesOptions } from '../routes/types';
 import createReadOnlyProxy from './createReadOnlyProxy';
 
@@ -122,7 +122,7 @@ class Page {
 
   request: RequestOptions;
 
-  settings: ConfigOptions & SettingOptions;
+  settings: SettingsOptions;
 
   helpers: {};
 

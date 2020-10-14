@@ -17,7 +17,7 @@ import del from 'del';
 import defaultsDeep from 'lodash.defaultsdeep';
 import { getElderConfig, partialHydration } from '../index';
 import { getDefaultRollup } from './validations';
-import { ConfigOptions, RollupSettings } from './types';
+import { SettingsOptions, RollupSettings } from './types';
 
 const production = process.env.NODE_ENV === 'production' || !process.env.ROLLUP_WATCH;
 
@@ -161,7 +161,7 @@ export function createSSRConfig({
   return config;
 }
 
-export function getPluginPaths(elderConfig: ConfigOptions) {
+export function getPluginPaths(elderConfig: SettingsOptions) {
   const pluginNames = Object.keys(elderConfig.plugins);
 
   return pluginNames.reduce((out, pluginName) => {

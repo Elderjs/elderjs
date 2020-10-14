@@ -609,6 +609,7 @@ Elder {
       "ssrComponents": "test/___ELDER___/compiled",
     },
     "build": false,
+    "context": "server",
     "debug": Object {
       "automagic": true,
     },
@@ -630,6 +631,7 @@ Elder {
       "prefix": "/dev",
     },
     "srcDir": "test/src",
+    "worker": false,
   },
   "shortcodes": Array [
     Object {
@@ -1308,6 +1310,7 @@ Elder {
       "ssrComponents": "test/___ELDER___/compiled",
     },
     "build": false,
+    "context": "server",
     "debug": Object {
       "automagic": true,
     },
@@ -1329,6 +1332,7 @@ Elder {
       "prefix": "/dev",
     },
     "srcDir": "test/src",
+    "worker": false,
   },
   "shortcodes": Array [
     Object {
