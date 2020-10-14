@@ -10,23 +10,22 @@ describe('#getRollupConfig', () => {
 
   it('createBrowserConfig works', () => {
     [true, false].forEach((sourcemap) => {
-      expect(
-        createBrowserConfig({
-          input: [`./components/*/*.svelte`],
-          output: {
-            dir: './public/dist/svelte/',
-            entryFileNames: 'entry[name]-[hash].js',
-            sourcemap,
-            format: 'system',
-          },
-          multiInputConfig: multiInput({
-            // TODO: test with false
-            relative: `./components`,
-            transformOutputPath: (output) => `${path.basename(output)}`,
-          }),
-          svelteConfig: {},
+      const { plugins, ...config } = createBrowserConfig({
+        input: [`./components/*/*.svelte`],
+        output: {
+          dir: './public/dist/svelte/',
+          entryFileNames: 'entry[name]-[hash].js',
+          sourcemap,
+          format: 'system',
+        },
+        multiInputConfig: multiInput({
+          // TODO: test with false
+          relative: `./components`,
+          transformOutputPath: (output) => `${path.basename(output)}`,
         }),
-      ).toEqual({
+        svelteConfig: {},
+      });
+      expect(config).toEqual({
         cache: true,
         input: ['./components/*/*.svelte'],
         output: {
@@ -35,59 +34,9 @@ describe('#getRollupConfig', () => {
           format: 'system',
           sourcemap,
         },
-        plugins: [
-          {
-            options: expect.any(Function),
-            pluginName: 'rollup-plugin-multi-input',
-          },
-          {
-            name: 'replace',
-            renderChunk: expect.any(Function),
-            transform: expect.any(Function),
-          },
-          {
-            name: 'json',
-            transform: expect.any(Function),
-          },
-          {
-            generateBundle: expect.any(Function),
-            load: expect.any(Function),
-            name: 'svelte',
-            resolveId: expect.any(Function),
-            transform: expect.any(Function),
-          },
-          {
-            name: 'rollup-plugin-external-globals',
-            transform: expect.any(Function),
-          },
-          {
-            buildStart: expect.any(Function),
-            generateBundle: expect.any(Function),
-            getPackageInfoForId: expect.any(Function),
-            load: expect.any(Function),
-            name: 'node-resolve',
-            resolveId: expect.any(Function),
-          },
-          {
-            buildStart: expect.any(Function),
-            load: expect.any(Function),
-            name: 'commonjs',
-            resolveId: expect.any(Function),
-            transform: expect.any(Function),
-          },
-          {
-            load: expect.any(Function),
-            name: 'babel',
-            resolveId: expect.any(Function),
-            transform: expect.any(Function),
-          },
-          {
-            name: 'terser',
-            renderChunk: expect.any(Function),
-          },
-        ],
         treeshake: true,
       });
+      expect(plugins).toHaveLength(8);
     });
   });
 
@@ -103,80 +52,33 @@ describe('#getRollupConfig', () => {
         },
         svelteConfig: {},
         multiInputConfig: false,
-      }).plugins,
-    ).toEqual([
-      {
-        name: 'replace',
-        renderChunk: expect.any(Function),
-        transform: expect.any(Function),
-      },
-      {
-        name: 'json',
-        transform: expect.any(Function),
-      },
-      {
-        generateBundle: expect.any(Function),
-        load: expect.any(Function),
-        name: 'svelte',
-        resolveId: expect.any(Function),
-        transform: expect.any(Function),
-      },
-      {
-        name: 'rollup-plugin-external-globals',
-        transform: expect.any(Function),
-      },
-      {
-        buildStart: expect.any(Function),
-        generateBundle: expect.any(Function),
-        getPackageInfoForId: expect.any(Function),
-        load: expect.any(Function),
-        name: 'node-resolve',
-        resolveId: expect.any(Function),
-      },
-      {
-        buildStart: expect.any(Function),
-        load: expect.any(Function),
-        name: 'commonjs',
-        resolveId: expect.any(Function),
-        transform: expect.any(Function),
-      },
-      {
-        load: expect.any(Function),
-        name: 'babel',
-        resolveId: expect.any(Function),
-        transform: expect.any(Function),
-      },
-      {
-        name: 'terser',
-        renderChunk: expect.any(Function),
-      },
-    ]);
+      }).plugins.map((p) => p.name),
+    ).toEqual(['replace', 'json', 'svelte', 'node-resolve', 'commonjs', 'babel', 'terser']);
   });
 
   it('createSSRConfig works', () => {
-    expect(
-      createSSRConfig({
-        input: [`./components/*/*.svelte`],
-        output: {
-          dir: './___ELDER___/compiled/',
-          format: 'cjs',
-          exports: 'auto',
-        },
-        multiInputConfig: multiInput({
-          relative: `./components`,
-          transformOutputPath: (output) => `${path.basename(output)}`,
-        }),
-        svelteConfig: {
-          preprocess: [
-            {
-              style: ({ content }) => {
-                return content.toUpperCase();
-              },
-            },
-          ],
-        },
+    const { plugins, ...config } = createSSRConfig({
+      input: [`./components/*/*.svelte`],
+      output: {
+        dir: './___ELDER___/compiled/',
+        format: 'cjs',
+        exports: 'auto',
+      },
+      multiInputConfig: multiInput({
+        relative: `./components`,
+        transformOutputPath: (output) => `${path.basename(output)}`,
       }),
-    ).toEqual({
+      svelteConfig: {
+        preprocess: [
+          {
+            style: ({ content }) => {
+              return content.toUpperCase();
+            },
+          },
+        ],
+      },
+    });
+    expect(config).toEqual({
       cache: true,
       input: ['./components/*/*.svelte'],
       output: {
@@ -184,54 +86,10 @@ describe('#getRollupConfig', () => {
         exports: 'auto',
         format: 'cjs',
       },
-      plugins: [
-        {
-          options: expect.any(Function),
-          pluginName: 'rollup-plugin-multi-input',
-        },
-        {
-          name: 'replace',
-          renderChunk: expect.any(Function),
-          transform: expect.any(Function),
-        },
-        {
-          name: 'json',
-          transform: expect.any(Function),
-        },
-        {
-          generateBundle: expect.any(Function),
-          load: expect.any(Function),
-          name: 'svelte',
-          resolveId: expect.any(Function),
-          transform: expect.any(Function),
-        },
-        {
-          buildStart: expect.any(Function),
-          generateBundle: expect.any(Function),
-          getPackageInfoForId: expect.any(Function),
-          load: expect.any(Function),
-          name: 'node-resolve',
-          resolveId: expect.any(Function),
-        },
-        {
-          buildStart: expect.any(Function),
-          load: expect.any(Function),
-          name: 'commonjs',
-          resolveId: expect.any(Function),
-          transform: expect.any(Function),
-        },
-        {
-          generateBundle: expect.any(Function),
-          name: 'css',
-          transform: expect.any(Function),
-        },
-        {
-          name: 'terser',
-          renderChunk: expect.any(Function),
-        },
-      ],
       treeshake: true,
     });
+
+    expect(plugins).toHaveLength(8);
   });
 
   it('createSSRConfig multiInputConfig = false', () => {
@@ -253,49 +111,8 @@ describe('#getRollupConfig', () => {
           ],
         },
         multiInputConfig: false,
-      }).plugins,
-    ).toEqual([
-      {
-        name: 'replace',
-        renderChunk: expect.any(Function),
-        transform: expect.any(Function),
-      },
-      {
-        name: 'json',
-        transform: expect.any(Function),
-      },
-      {
-        generateBundle: expect.any(Function),
-        load: expect.any(Function),
-        name: 'svelte',
-        resolveId: expect.any(Function),
-        transform: expect.any(Function),
-      },
-      {
-        buildStart: expect.any(Function),
-        generateBundle: expect.any(Function),
-        getPackageInfoForId: expect.any(Function),
-        load: expect.any(Function),
-        name: 'node-resolve',
-        resolveId: expect.any(Function),
-      },
-      {
-        buildStart: expect.any(Function),
-        load: expect.any(Function),
-        name: 'commonjs',
-        resolveId: expect.any(Function),
-        transform: expect.any(Function),
-      },
-      {
-        generateBundle: expect.any(Function),
-        name: 'css',
-        transform: expect.any(Function),
-      },
-      {
-        name: 'terser',
-        renderChunk: expect.any(Function),
-      },
-    ]);
+      }).plugins.map((p) => p.name),
+    ).toEqual(['replace', 'json', 'svelte', 'node-resolve', 'commonjs', 'css', 'terser']);
   });
 
   it('getPluginPaths works', () => {

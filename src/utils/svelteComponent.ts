@@ -110,6 +110,8 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
 
     // hydrate a component
 
+    const uniqueComponentName = `${cleanComponentName.toLowerCase()}${id}`;
+
     // should we preload?
     if (hydrateOptions.preload) {
       page.headStack.push({
@@ -134,7 +136,7 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
     // -----------------
     page.hydrateStack.push({
       source: componentName,
-      string: `<script nomodule defer src="${iife}" onload="init${cleanComponentName.toLowerCase()}${id}()"></script>`,
+      string: `<script nomodule defer src="${iife}" onload="init${uniqueComponentName}()"></script>`,
       priority: 99,
     });
 
@@ -143,9 +145,9 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
       priority: 98,
       string: `
       <script nomodule>
-      function init${cleanComponentName.toLowerCase()}${id}(){
+      function init${uniqueComponentName}(){
         new ___elderjs_${componentName}({
-          target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'),
+          target: document.getElementById('${uniqueComponentName}'),
           props:  ${hasProps ? `${cleanComponentName.toLowerCase()}Props${id}` : '{}'},
           hydrate: true,
         });
@@ -159,10 +161,10 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
       string: `     
       <!-- loads ESM for module with a dynamic import -->
       <script type="module">
-      function init${cleanComponentName.toLowerCase()}${id}(){
+      function init${uniqueComponentName}(){
         import("${clientSrcMjs}").then((component)=>{
           new component.default({ 
-            target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'),
+            target: document.getElementById('${uniqueComponentName}'),
             props: ${hasProps ? `${cleanComponentName.toLowerCase()}Props${id}` : '{}'},
             hydrate: true
             });
@@ -170,12 +172,12 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
       }
       ${
         hydrateOptions.loading === 'eager'
-          ? `init${cleanComponentName.toLowerCase()}${id}();`
+          ? `init${uniqueComponentName}();`
           : `${IntersectionObserver({
-              el: `document.getElementById('${cleanComponentName.toLowerCase()}-${id}')`,
+              el: `document.getElementById('${uniqueComponentName}')`,
               name: `${cleanComponentName.toLowerCase()}`,
-              loaded: `init${cleanComponentName.toLowerCase()}${id}();`,
-              notLoaded: `init${cleanComponentName.toLowerCase()}${id}();`,
+              loaded: `init${uniqueComponentName}();`,
+              notLoaded: `init${uniqueComponentName}();`,
               rootMargin: hydrateOptions.rootMargin || '200px',
               threshold: hydrateOptions.threshold || 0,
               id,
@@ -184,7 +186,7 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
       </script>`,
     });
 
-    return `<div class="${cleanComponentName.toLowerCase()}" id="${cleanComponentName.toLowerCase()}-${id}">${finalHtmlOuput}</div>`;
+    return `<div class="${cleanComponentName.toLowerCase()}" id="${uniqueComponentName}">${finalHtmlOuput}</div>`;
   } catch (e) {
     console.log(e);
     page.errors.push(e);

@@ -40,6 +40,8 @@ Page {
   },
   "htmlString": "",
   "hydrateStack": Array [],
+  "moduleJsStack": Array [],
+  "moduleStack": Array [],
   "perf": Object {
     "end": [MockFunction] {
       "calls": Array [
@@ -252,7 +254,7 @@ Page {
   ],
   "footerString": "
     beforeHydrateStack
-    <script>hydrateStack</script>
+    hydrateStack
     customJsStack
     footerStack
     ",
@@ -268,6 +270,8 @@ Page {
     "hydrateStack",
   ],
   "layoutHtml": "<div class=\\"container\\"></div>",
+  "moduleJsStack": Array [],
+  "moduleStack": Array [],
   "perf": Object {
     "end": [MockFunction] {
       "calls": Array [

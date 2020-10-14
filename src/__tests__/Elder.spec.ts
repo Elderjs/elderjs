@@ -149,14 +149,13 @@ describe('#Elder', () => {
     const { Elder } = require('../index');
     const elder = await new Elder({ context: 'server', worker: true });
     // await elder.bootstrap();
-    expect(elder).toEqual({
+    expect({ ...elder }).toEqual({
       bootstrapComplete: Promise.resolve({}),
       markBootstrapComplete: expect.any(Function),
       settings: {
         $$internal: {
           clientComponents: 'test/public/svelte',
           ssrComponents: 'test/___ELDER___/compiled',
-          hashedComponents: { File1: 'entryFile1', File2: 'entryFile2' },
         },
         build: false,
         debug: { automagic: true },

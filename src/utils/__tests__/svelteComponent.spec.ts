@@ -134,45 +134,7 @@ describe('#svelteComponent', () => {
     expect(home(componentProps)).toEqual(
       `<div class="svelte-datepicker"><div class="datepicker" id="datepickerSwrzsrVDCd"><div>DATEPICKER</div></div></div>`,
     );
-    expect(componentProps.page.hydrateStack).toEqual([
-      {
-        priority: 50,
-        source: 'Datepicker',
-        string: `
-        function initdatepickerSwrzsrVDCd() {
-          
-      System.import('/svelte/Datepicker.a1b2c3.js').then((datepickerSwrzsrVDCd) => {
-        new datepickerSwrzsrVDCd.default({ target: document.getElementById('datepickerSwrzsrVDCd'), hydrate: true, props: {a:"b"} });
-      });
-        }
-        
-      window.addEventListener('load', function (event) {
-        var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {
-          var objK = Object.keys(entries);
-          var objKl = objK.length;
-          var objKi = 0;
-          for (; objKi < objKl; objKi++) {
-            var entry = entries[objK[objKi]];
-            if (entry.isIntersecting) {
-              observer.unobserve(document.getElementById('datepickerSwrzsrVDCd'));
-              if (document.eg_datepicker) {
-                initdatepickerSwrzsrVDCd();
-              } else {
-                document.eg_datepicker = true;
-                initdatepickerSwrzsrVDCd();
-              }
-            }
-          }
-        }, {
-          rootMargin: '200px',
-          threshold: 0
-        });
-        observerSwrzsrVDCd.observe(document.getElementById('datepickerSwrzsrVDCd'));
-      });
-    
-      `,
-      },
-    ]);
+    expect(componentProps.page.hydrateStack).toMatchSnapshot();
   });
 });
 

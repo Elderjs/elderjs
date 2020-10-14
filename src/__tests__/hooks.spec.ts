@@ -125,10 +125,6 @@ describe('#hooks', () => {
     const hook = hooks.find((h) => h.name === 'elderAddDefaultIntersectionObserver');
     expect(await hook.run({ beforeHydrateStack: [] })).toMatchSnapshot();
   });
-  it('elderAddSystemJs', async () => {
-    const hook = hooks.find((h) => h.name === 'elderAddSystemJs');
-    expect(await hook.run({ beforeHydrateStack: [], headStack: [], settings: { legacy: true } })).toMatchSnapshot();
-  });
 
   it('elderCompileHtml', async () => {
     const hook = hooks.find((h) => h.name === 'elderCompileHtml');

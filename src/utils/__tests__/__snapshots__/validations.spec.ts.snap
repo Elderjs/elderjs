@@ -13,6 +13,7 @@ ObjectSchema {
   "_exclusive": Object {},
   "_mutate": undefined,
   "_nodes": Array [
+    "legacy",
     "plugins",
     "shortcodes",
     "build",
@@ -457,6 +458,33 @@ ObjectSchema {
         [Function],
       ],
       "type": "object",
+    },
+    "legacy": BooleanSchema {
+      "_blacklist": RefSet {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": Array [],
+      "_default": true,
+      "_deps": Array [],
+      "_exclusive": Object {},
+      "_label": "Elder.js will add a IE11 friendly nomodule bundle. Please note, currently shared stores do not work but see this issue: https://github.com/Elderjs/elderjs/issues/44#issue-709580756",
+      "_mutate": undefined,
+      "_options": Object {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "boolean",
+      "_typeError": [Function],
+      "_whitelist": RefSet {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": Array [],
+      "transforms": Array [
+        [Function],
+      ],
+      "type": "boolean",
     },
     "origin": StringSchema {
       "_blacklist": RefSet {

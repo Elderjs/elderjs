@@ -51,6 +51,7 @@ describe('#getConfig', () => {
     },
     origin: '',
     plugins: {},
+    legacy: true,
   };
 
   beforeEach(() => {
