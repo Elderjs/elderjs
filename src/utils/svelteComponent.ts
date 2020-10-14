@@ -18,11 +18,11 @@ export const getComponentName = (str) => {
 
 export const replaceSpecialCharacters = (str) =>
   str
+    .replace(/\\\\n/gim, '\\n')
     .replace(/&quot;/gim, '"')
     .replace(/&lt;/gim, '<')
     .replace(/&gt;/gim, '>')
     .replace(/&#39;/gim, "'")
-    .replace(/\\\\n/gim, '')
     .replace(/\\"/gim, '"')
     .replace(/&amp;/gim, '&');
 
@@ -81,7 +81,15 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
 
       if (hydrateOptions) {
         throw new Error(
-          `Client side hydrated component includes client side hydrated sub component. This isn't supported.`,
+          `Client side hydrated component "${componentName}" includes client side hydrated sub component "${hydrateComponentName}." This isn't supported. \n
+           Debug: ${JSON.stringify({
+             componentName,
+             hydrateOptions,
+             hydrateComponentName,
+             hydrateComponentProps,
+             hydrateComponentOptions,
+           })}
+          `,
         );
       }
 

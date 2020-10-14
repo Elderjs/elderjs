@@ -76,7 +76,12 @@ describe('#svelteComponent', () => {
   it('replaceSpecialCharacters works', () => {
     // eslint-disable-next-line global-require
     const { replaceSpecialCharacters } = require('../svelteComponent');
-    expect(replaceSpecialCharacters('&quot;&lt;&gt;&#39;&quot;\\n\\\\n\\"&amp;')).toEqual('"<>\'"\\n"&');
+
+    expect(replaceSpecialCharacters('{&quot;nh_count&quot;:15966,&quot;classes&quot;:&quot;mt-3&quot;}')).toEqual(
+      '{"nh_count":15966,"classes":"mt-3"}',
+    );
+
+    expect(replaceSpecialCharacters('&quot;&lt;&gt;&#39;&quot;\\n\\\\n\\"&amp;')).toEqual('"<>\'"\\n\\n"&');
     expect(replaceSpecialCharacters('abcd 1234 <&""&>')).toEqual('abcd 1234 <&""&>');
   });
 
