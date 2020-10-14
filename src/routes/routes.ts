@@ -5,10 +5,10 @@ import kebabcase from 'lodash.kebabcase';
 import type { RouteOptions } from './types';
 
 import { svelteComponent, capitalizeFirstLetter } from '../utils';
-import { ConfigOptions } from '../utils/types';
+import { SettingsOptions } from '../utils/types';
 import wrapPermalinkFn from '../utils/wrapPermalinkFn';
 
-function routes(settings: ConfigOptions) {
+function routes(settings: SettingsOptions) {
   if (settings.debug.automagic)
     console.log(
       `debug.automagic::

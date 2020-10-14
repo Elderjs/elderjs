@@ -5,7 +5,7 @@ import cluster from 'cluster';
 import getElderConfig from '../utils/getConfig';
 import { Elder } from '../Elder';
 import shuffleArray from '../utils/shuffleArray';
-import { BuildResult } from '../utils/types';
+import { BuildResult, InitializationOptions } from '../utils/types';
 
 export function getWorkerCounts(counts) {
   return Object.keys(counts).reduce(
@@ -18,9 +18,11 @@ export function getWorkerCounts(counts) {
   );
 }
 
-async function build(): Promise<void> {
+async function build(initializationOptions: InitializationOptions = {}): Promise<void> {
   try {
-    const settings = getElderConfig();
+    const settings = getElderConfig({ ...initializationOptions, context: 'build' });
+
+    if (!settings.build) throw new Error('Is not a build. (Should never happen, for TS)');
 
     const multiLine = settings.debug.build;
 
@@ -83,7 +85,7 @@ async function build(): Promise<void> {
       let barInterval;
       let totalRequests: number = Infinity;
 
-      const mElder = new Elder({ context: 'build' });
+      const mElder = new Elder({ ...initializationOptions, context: 'build' });
 
       const mElderResults = await mElder.bootstrap();
 
@@ -256,7 +258,7 @@ async function build(): Promise<void> {
     } else {
       process.on('message', async (msg) => {
         if (msg.cmd === 'start') {
-          const wElder = new Elder({ context: 'build', worker: true });
+          const wElder = new Elder({ ...initializationOptions, context: 'build', worker: true });
 
           const results = await wElder.worker(msg.workerRequests);
 

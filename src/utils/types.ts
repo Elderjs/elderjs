@@ -46,32 +46,45 @@ type Internal = {
   clientComponents: string;
 };
 
-export type ConfigOptions = {
+export type InitializationOptions = {
+  distDir?: string;
+  srcDir?: string;
+  rootDir?: string;
+  origin?: string;
+  server?: ServerOptions;
+  build?: BuildOptions;
+  debug?: DebugOptions;
+  plugins?: any;
+  hooks?: {
+    disable?: string[];
+  };
+  shortcodes?: {
+    openPattern?: string;
+    closePattern?: string;
+  };
+  context?: string;
+  worker?: boolean;
+};
+
+export type SettingsOptions = {
   distDir: string;
   srcDir: string;
   rootDir: string;
   origin: string;
-
-  server: ServerOptions;
-  build: BuildOptions;
-  // paths: PathOptions;
+  server: ServerOptions | false;
+  build: BuildOptions | false;
   debug: DebugOptions;
   plugins?: any;
   hooks: {
     disable?: string[];
   };
-  // typescript: boolean;
-  worker: boolean;
   shortcodes: {
     openPattern: string;
     closePattern: string;
   };
   $$internal: Internal;
-};
-
-export type SettingOptions = {
-  server: boolean;
-  build: boolean;
+  context?: string;
+  worker?: boolean;
 };
 
 export type QueryOptions = {
@@ -81,7 +94,7 @@ export type QueryOptions = {
 export type ExternalHelperRequestOptions = {
   helpers: [];
   query: QueryOptions;
-  settings: ConfigOptions & SettingOptions;
+  settings: SettingsOptions;
 };
 
 export type RequestOptions = {

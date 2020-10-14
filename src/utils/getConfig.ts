@@ -1,19 +1,18 @@
 import { cosmiconfigSync } from 'cosmiconfig';
 import defaultsDeep from 'lodash.defaultsdeep';
 import path from 'path';
-import { ConfigOptions } from './types';
+import { SettingsOptions, InitializationOptions } from './types';
 import { getDefaultConfig } from './validations';
 
-function getConfig(configOptions?: object): ConfigOptions {
+function getConfig(initializationOptions: InitializationOptions = {}): SettingsOptions {
   const explorerSync = cosmiconfigSync('elder');
   const explorerSearch = explorerSync.search();
-  let loadedConfig = {};
+  let loadedConfig: InitializationOptions = {};
   if (explorerSearch && explorerSearch.config) {
     loadedConfig = explorerSearch.config;
   }
 
-  const defaultConfig = getDefaultConfig();
-  const config: ConfigOptions = defaultsDeep(configOptions, loadedConfig, defaultConfig);
+  const config: SettingsOptions = defaultsDeep(initializationOptions, loadedConfig, getDefaultConfig());
 
   const rootDir = config.rootDir === 'process.cwd()' ? process.cwd() : path.resolve(config.rootDir);
   config.rootDir = rootDir;
