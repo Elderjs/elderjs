@@ -219,6 +219,7 @@ export default function getRollupConfig(options) {
 
   if (!production && dev && dev.splitComponents) {
     // watch/dev build bundles each component individually for faster reload times during dev.
+    // we don't need iifes on dev.
     console.log(
       `NOTE: Splitting components into separate rollup objects, this breaks some svelte features such as stores.`,
     );
@@ -280,28 +281,6 @@ export default function getRollupConfig(options) {
         }),
         svelteConfig,
         replacements,
-      }),
-    );
-
-    configs.push(
-      createBrowserConfig({
-        input: [`${relSrcDir}/components/*/*.svelte`, `${relSrcDir}/components/*.svelte`],
-        output: [
-          {
-            name: `___elderjs_[name]`,
-            dir: clientComponents,
-            entryFileNames: 'nomodule[name]-[hash].js',
-            sourcemap: !production,
-            format: 'esm',
-          },
-        ],
-        svelteConfig,
-        replacements,
-        multiInputConfig: multiInput({
-          relative: `${relSrcDir}/components`,
-          transformOutputPath: (output) => `${path.basename(output)}`,
-        }),
-        ie11: true,
       }),
     );
 
