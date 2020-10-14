@@ -41,14 +41,12 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
     const { render } = require(ssrComponent);
     componentCache[cleanComponentName] = {
       render,
-      clientSrcSystem: `${clientSvelteFolder}/${clientComponents[cleanComponentName].system}.js`,
       clientSrcMjs: `${clientSvelteFolder}/${clientComponents[cleanComponentName].mjs}.mjs`,
       iife: `${clientSvelteFolder}/${clientComponents[cleanComponentName].iife}.js`,
-      nomodule: `${clientSvelteFolder}/${clientComponents[cleanComponentName].nomodule}.js`,
     };
   }
 
-  const { render, clientSrcSystem, clientSrcMjs, iife, nomodule } = componentCache[cleanComponentName];
+  const { render, clientSrcMjs, iife } = componentCache[cleanComponentName];
 
   try {
     const { css, html: htmlOutput, head } = render(props);
@@ -154,27 +152,6 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
       }
       </script>`,
     });
-    // -----------------------
-
-    // non-working dimport
-    // page.hydrateStack.push({
-    //   source: componentName,
-    //   priority: 98,
-    //   string: `
-    //   <script nomodule src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script><script src="https://unpkg.com/unfetch/polyfill"></script>
-    //   <script nomodule src="https://unpkg.com/anchor-origin-polyfill"></script>
-    //   <script nomodule src="https://unpkg.com/dimport/legacy"></script>
-    //   <script nomodule>
-    //   console.log('nomodule');
-    //   dimport('${nomodule}').then(function(component){
-    //     new component.default({
-    //       target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'),
-    //       props: ${hasProps ? `${cleanComponentName.toLowerCase()}Props${id}` : '{}'},
-    //       hydrate: true
-    //       });
-    //   });
-    //   </script>`,
-    // });
 
     page.hydrateStack.push({
       source: componentName,

@@ -1,6 +1,4 @@
 /* eslint-disable no-param-reassign */
-import fs from 'fs-extra';
-import path from 'path';
 import getUniqueId from './getUniqueId';
 import perf from './perf';
 import prepareProcessStack from './prepareProcessStack';

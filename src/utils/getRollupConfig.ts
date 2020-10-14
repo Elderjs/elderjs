@@ -219,7 +219,9 @@ export default function getRollupConfig(options) {
 
   if (!production && dev && dev.splitComponents) {
     // watch/dev build bundles each component individually for faster reload times during dev.
-    console.log(`NOTE: Splitting components into separate rollup objects, this breaks some svelte features.`);
+    console.log(
+      `NOTE: Splitting components into separate rollup objects, this breaks some svelte features such as stores.`,
+    );
     if (fs.existsSync(path.resolve(srcDir, `./components/`))) {
       [
         ...new Set([
