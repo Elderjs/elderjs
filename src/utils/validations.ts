@@ -188,18 +188,20 @@ const hookSchema = yup
 
 const rollupSchema = yup.object({
   svelteConfig: yup.object().default({}).notRequired().label('Usually imported from ./svelte.config.js'),
-  rollupSettings: yup.object({
-    dev: yup.object({
-      splitComponents: yup
-        .boolean()
-        .default(false)
-        .notRequired()
-        .label(
-          "Dramatically speeds up development reloads but breaks some of Svelte's core functionality such as shared stores across hydrated components.",
-        ),
-    }),
+  dev: yup.object({
+    splitComponents: yup
+      .boolean()
+      .default(false)
+      .notRequired()
+      .label(
+        "Dramatically speeds up development reloads but breaks some of Svelte's core functionality such as shared stores across hydrated components.",
+      ),
   }),
-  replacements: yup.array().of(yup.string()),
+  replacements: yup
+    .object()
+    .default({})
+    .notRequired()
+    .label('Replaces the key with the value when rolling up templates'),
 });
 
 function getDefaultRollup(): RollupSettings {

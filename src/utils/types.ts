@@ -184,11 +184,7 @@ export interface RollupDevOptions {
 }
 
 export interface RollupSettings {
-  replacements?: [string, string];
+  svelteConfig?: any;
+  replacements?: Object;
   dev?: RollupDevOptions;
-}
-
-export interface RollupOptions {
-  svelteConfig: any;
-  rollupSettings: RollupSettings;
 }

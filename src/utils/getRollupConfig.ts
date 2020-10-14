@@ -1,5 +1,3 @@
-/* eslint-disable no-lonely-if */
-// require('dotenv').config();
 import svelte from 'rollup-plugin-svelte';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
@@ -7,7 +5,6 @@ import { terser } from 'rollup-plugin-terser';
 import babel from 'rollup-plugin-babel';
 import css from 'rollup-plugin-css-only';
 import multiInput from 'rollup-plugin-multi-input';
-import externalGlobals from 'rollup-plugin-external-globals';
 import replace from '@rollup/plugin-replace';
 import json from '@rollup/plugin-json';
 import glob from 'glob';
@@ -17,7 +14,7 @@ import del from 'del';
 import defaultsDeep from 'lodash.defaultsdeep';
 import { getElderConfig, partialHydration } from '../index';
 import { getDefaultRollup } from './validations';
-import { SettingsOptions, RollupSettings } from './types';
+import { SettingsOptions } from './types';
 
 const production = process.env.NODE_ENV === 'production' || !process.env.ROLLUP_WATCH;
 
@@ -45,19 +42,14 @@ export function createBrowserConfig({
   output,
   multiInputConfig,
   svelteConfig,
-  rollupConfig = {} as RollupSettings,
+  replacements = {},
   ie11 = false as boolean,
 }) {
-  let replacements = {
+  const toReplace = {
     'process.env.componentType': "'browser'",
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+    ...replacements,
   };
-  if (rollupConfig && rollupConfig.replacements) {
-    replacements = {
-      ...replacements,
-      ...rollupConfig.replacements,
-    };
-  }
 
   const config = {
     cache: true,
@@ -65,7 +57,7 @@ export function createBrowserConfig({
     input,
     output,
     plugins: [
-      replace(replacements),
+      replace(toReplace),
       json(),
       svelte({
         ...svelteConfig,
@@ -107,30 +99,20 @@ export function createBrowserConfig({
   return config;
 }
 
-export function createSSRConfig({
-  input,
-  output,
-  svelteConfig,
-  rollupConfig = {} as RollupSettings,
-  multiInputConfig,
-}) {
-  let replacements = {
+export function createSSRConfig({ input, output, svelteConfig, replacements = {}, multiInputConfig }) {
+  const toReplace = {
     'process.env.componentType': "'server'",
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+    ...replacements,
   };
-  if (rollupConfig && rollupConfig.replacements) {
-    replacements = {
-      ...replacements,
-      ...rollupConfig.replacements,
-    };
-  }
+
   const config = {
     cache: true,
     treeshake: production,
     input,
     output,
     plugins: [
-      replace(replacements),
+      replace(toReplace),
       json(),
       svelte({
         ...svelteConfig,
@@ -183,7 +165,7 @@ export function getPluginPaths(elderConfig: SettingsOptions) {
 
 export default function getRollupConfig(options) {
   const defaultOptions = getDefaultRollup();
-  const { svelteConfig, rollupConfig } = defaultsDeep(options, defaultOptions);
+  const { svelteConfig, replacements, dev } = defaultsDeep(options, defaultOptions);
   const elderConfig = getElderConfig();
   const { $$internal, distDir, srcDir, rootDir, legacy } = elderConfig;
   const { ssrComponents, clientComponents } = $$internal;
@@ -228,14 +210,14 @@ export default function getRollupConfig(options) {
       transformOutputPath: (output) => `${path.basename(output)}`,
     }),
     svelteConfig,
-    rollupConfig,
+    replacements,
   });
 
   const pluginPaths = getPluginPaths(elderConfig);
 
   configs = [...configs, routesAndLayouts];
 
-  if (!production && rollupConfig.dev && rollupConfig.dev.splitComponents) {
+  if (!production && dev && dev.splitComponents) {
     // watch/dev build bundles each component individually for faster reload times during dev.
     console.log(`NOTE: Splitting components into separate rollup objects, this breaks some svelte features.`);
     if (fs.existsSync(path.resolve(srcDir, `./components/`))) {
@@ -258,7 +240,7 @@ export default function getRollupConfig(options) {
               },
             ],
             svelteConfig,
-            rollupConfig,
+            replacements,
             multiInputConfig: false,
           }),
         );
@@ -272,7 +254,7 @@ export default function getRollupConfig(options) {
               exports: 'auto',
             },
             svelteConfig,
-            rollupConfig,
+            replacements,
             multiInputConfig: false,
           }),
         );
@@ -295,7 +277,7 @@ export default function getRollupConfig(options) {
           transformOutputPath: (output) => `${path.basename(output)}`,
         }),
         svelteConfig,
-        rollupConfig,
+        replacements,
       }),
     );
 
@@ -312,7 +294,7 @@ export default function getRollupConfig(options) {
           },
         ],
         svelteConfig,
-        rollupConfig,
+        replacements,
         multiInputConfig: multiInput({
           relative: `${relSrcDir}/components`,
           transformOutputPath: (output) => `${path.basename(output)}`,
@@ -334,7 +316,7 @@ export default function getRollupConfig(options) {
           transformOutputPath: (output) => `${path.basename(output)}`,
         }),
         svelteConfig,
-        rollupConfig,
+        replacements,
       }),
     );
 
@@ -361,7 +343,7 @@ export default function getRollupConfig(options) {
                 },
               ],
               svelteConfig,
-              rollupConfig,
+              replacements,
               multiInputConfig: false,
               ie11: true,
             }),
@@ -388,7 +370,7 @@ export default function getRollupConfig(options) {
           transformOutputPath: (output) => `${path.basename(output)}`,
         }),
         svelteConfig,
-        rollupConfig,
+        replacements,
       }),
     );
 
@@ -405,7 +387,7 @@ export default function getRollupConfig(options) {
           transformOutputPath: (output) => `${path.basename(output)}`,
         }),
         svelteConfig,
-        rollupConfig,
+        replacements,
       }),
     );
 
@@ -426,7 +408,7 @@ export default function getRollupConfig(options) {
               },
             ],
             svelteConfig,
-            rollupConfig,
+            replacements,
             multiInputConfig: false,
             ie11: true,
           }),
