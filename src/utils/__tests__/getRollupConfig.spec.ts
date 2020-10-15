@@ -60,6 +60,23 @@ describe('#getRollupConfig', () => {
     ).toEqual(['replace', 'json', 'svelte', 'node-resolve', 'commonjs', 'babel', 'terser']);
   });
 
+  it('createBrowserConfig multiInputConfig = false, ie11 = true', () => {
+    expect(
+      createBrowserConfig({
+        input: [`./components/*/*.svelte`],
+        output: {
+          dir: './public/dist/svelte/',
+          entryFileNames: 'entry[name]-[hash].js',
+          sourcemap: true,
+          format: 'system',
+        },
+        svelteConfig: {},
+        ie11: true,
+        multiInputConfig: false,
+      }).plugins.map((p) => p.name),
+    ).toEqual(['replace', 'json', 'svelte', 'node-resolve', 'commonjs', 'babel', 'terser', 'babel']); // babel + babel for ie11
+  });
+
   it('createSSRConfig works', () => {
     const { plugins, ...config } = createSSRConfig({
       input: [`./components/*/*.svelte`],
