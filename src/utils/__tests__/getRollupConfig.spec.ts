@@ -168,7 +168,6 @@ describe('#getRollupConfig', () => {
     ).toEqual(['src/plugins/pluginA/', '/node_modules/pluginB/']);
   });
 
-  // TODO: test also with legacy: true
   it('getRollupConfig as a whole works - default options', () => {
     jest.mock('../validations.ts', () => ({
       getDefaultRollup: () => ({
@@ -224,6 +223,69 @@ describe('#getRollupConfig', () => {
     expect(configs).toMatchSnapshot();
   });
 
+  it('getRollupConfig as a whole works - legacy: true', () => {
+    jest.mock('../validations.ts', () => ({
+      getDefaultRollup: () => ({
+        replacements: {},
+        dev: { splitComponents: false },
+        svelteConfig: {},
+      }),
+    }));
+    // getElderConfig() mock
+    jest.mock('../getConfig', () => () => ({
+      $$internal: {
+        clientComponents: 'test/public/svelte',
+        ssrComponents: 'test/___ELDER___/compiled',
+      },
+      distDir: './dist',
+      srcDir: './src',
+      rootDir: './',
+      plugins: {
+        pluginA: {},
+        pluginB: {},
+      },
+      legacy: true,
+    }));
+
+    jest.mock('path', () => ({
+      resolve: (...strings) => strings.join('/').replace('./', '').replace('//', '/').replace('/./', '/'),
+      posix: () => ({ dirname: () => '' }),
+      parse: (str) => {
+        const split = str.split('/');
+        return split[split.length - 1].split('.')[0];
+      },
+    }));
+    jest.mock('del');
+    jest.mock('fs-extra', () => ({
+      existsSync: jest.fn().mockImplementation(() => true),
+    }));
+    jest.mock('glob', () => ({
+      sync: jest
+        .fn()
+        .mockImplementationOnce(() => ['pluginAComponent1.svelte', 'pluginAComponent2.svelte', 'AnythingCanBeHere']) // getPluginPaths
+        .mockImplementationOnce(() => ['pluginBComponent1.svelte', 'pluginBComponent2.svelte', 'AnythingCanBeHere']) // getPluginPaths
+        .mockImplementationOnce(() => ['NestedSrcComponent.svelte']) // nested
+        .mockImplementationOnce(() => ['SrcComponent.svlete', 'SrcComponent2.svelte']) // src
+        .mockImplementationOnce(() => ['LegacyPluginAComponent3.svelte', 'LegacyPluginAComponent4.svelte']) // legacy pluginA components
+        .mockImplementationOnce(() => ['LegacyPluginBComponent3.svelte']), // legacy pluginB components
+    }));
+
+    const svelteConfig = {
+      preprocess: [
+        {
+          style: ({ content }) => {
+            return content.toUpperCase();
+          },
+        },
+      ],
+    };
+
+    // would be nice to mock getPluginPaths if it's extracted to separate file
+    const configs = require('../getRollupConfig').default({ svelteConfig });
+    expect(configs).toHaveLength(14);
+    expect(configs).toMatchSnapshot();
+  });
+
   it('getRollupConfig as a whole works - splitComponents: true, legacy: true', () => {
     process.env.ROLLUP_WATCH = 'true'; // for production to be false
     jest.mock('../validations.ts', () => ({
@@ -269,8 +331,8 @@ describe('#getRollupConfig', () => {
         .mockImplementationOnce(() => ['pluginBComponent1.svelte', 'pluginBComponent2.svelte']) // getPluginPaths
         .mockImplementationOnce(() => ['NestedSrcComponent.svelte']) // srcComponentsNested
         .mockImplementationOnce(() => ['SrcComponent.svelte', 'SrcComponent2.svelte']) // srcComponents
-        .mockImplementationOnce(() => ['LegacyPluginAComponent3.svelte', 'LegacyPluginAComponent4.svelte']) // legacy pluginA components
-        .mockImplementationOnce(() => ['LegacyPluginBComponent3.svelte']), // legacy pluginB components
+        .mockImplementationOnce(() => ['LegacyPluginAComponent1.svelte', 'LegacyPluginAComponent2.svelte']) // legacy pluginA components
+        .mockImplementationOnce(() => ['LegacyPluginBComponent1.svelte']), // legacy pluginB components
     }));
 
     const svelteConfig = {
