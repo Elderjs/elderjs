@@ -224,12 +224,9 @@ export default function getRollupConfig(options) {
       `NOTE: Splitting components into separate rollup objects, this breaks some svelte features such as stores.`,
     );
     if (fs.existsSync(path.resolve(srcDir, `./components/`))) {
-      [
-        ...new Set([
-          ...glob.sync(path.resolve(srcDir, './components/*/*.svelte')),
-          ...glob.sync(path.resolve(srcDir, './components/*.svelte')),
-        ]),
-      ].forEach((cv) => {
+      const srcComponentsNested = glob.sync(path.resolve(srcDir, './components/*/*.svelte'));
+      const srcComponents = glob.sync(path.resolve(srcDir, './components/*.svelte'));
+      [...new Set([...srcComponentsNested, ...srcComponents])].forEach((cv) => {
         const file = cv.replace(`${rootDir}/`, '');
         configs.push(
           createBrowserConfig({
@@ -303,12 +300,9 @@ export default function getRollupConfig(options) {
 
     if (legacy) {
       if (fs.existsSync(path.resolve(srcDir, `./components/`))) {
-        [
-          ...new Set([
-            ...glob.sync(path.resolve(srcDir, './components/*/*.svelte')),
-            ...glob.sync(path.resolve(srcDir, './components/*.svelte')),
-          ]),
-        ].forEach((cv) => {
+        const srcComponentsNested = glob.sync(path.resolve(srcDir, './components/*/*.svelte'));
+        const srcComponents = glob.sync(path.resolve(srcDir, './components/*.svelte'));
+        [...new Set([...srcComponentsNested, ...srcComponents])].forEach((cv) => {
           const file = cv.replace(`${rootDir}/`, '');
           const parsed = path.parse(cv);
           configs.push(
@@ -373,7 +367,8 @@ export default function getRollupConfig(options) {
     );
 
     if (legacy) {
-      glob.sync(`${pluginPath}*.svelte`).forEach((cv) => {
+      const legacyPluginFiles = glob.sync(`${pluginPath}*.svelte`);
+      legacyPluginFiles.forEach((cv) => {
         const file = cv.replace(`${rootDir}/`, '');
         const parsed = path.parse(cv);
         configs.push(

@@ -3,9 +3,7 @@ import multiInput from 'rollup-plugin-multi-input';
 import path from 'path';
 import { createBrowserConfig, createSSRConfig } from '../getRollupConfig';
 
-// todo:
-// test replace
-// test splitComponents
+// TODO: test replace
 
 describe('#getRollupConfig', () => {
   beforeEach(() => {
@@ -170,7 +168,16 @@ describe('#getRollupConfig', () => {
     ).toEqual(['src/plugins/pluginA/', '/node_modules/pluginB/']);
   });
 
-  it('getRollupConfig as a whole works', () => {
+  // TODO: test also with legacy: true
+  it('getRollupConfig as a whole works - default options', () => {
+    jest.mock('../validations.ts', () => ({
+      getDefaultRollup: () => ({
+        replacements: {},
+        dev: { splitComponents: false },
+        svelteConfig: {},
+      }),
+    }));
+    // getElderConfig() mock
     jest.mock('../getConfig', () => () => ({
       $$internal: {
         clientComponents: 'test/public/svelte',
@@ -183,6 +190,7 @@ describe('#getRollupConfig', () => {
         pluginA: {},
         pluginB: {},
       },
+      legacy: false,
     }));
 
     jest.mock('path', () => ({
@@ -196,10 +204,8 @@ describe('#getRollupConfig', () => {
     jest.mock('glob', () => ({
       sync: jest
         .fn()
-        .mockImplementationOnce(() => ['route1.svelte', 'route2.svelte'])
-        .mockImplementationOnce(() => ['layout1.svelte', 'layout2.svelte'])
-        .mockImplementationOnce(() => ['pluginA.svelte', 'pluginB.svelte'])
-        .mockImplementationOnce(() => ['foo.svelte', 'bar.svelte']),
+        .mockImplementationOnce(() => ['pluginAComponent1.svelte', 'pluginAComponent2.svelte', 'AnythingCanBeHere']) // getPluginPaths
+        .mockImplementationOnce(() => ['pluginBComponent1.svelte', 'pluginBComponent2.svelte', 'AnythingCanBeHere']), // getPluginPaths
     }));
 
     const svelteConfig = {
@@ -211,6 +217,74 @@ describe('#getRollupConfig', () => {
         },
       ],
     };
-    expect(require('../getRollupConfig').default({ svelteConfig })).toMatchSnapshot();
+
+    // would be nice to mock getPluginPaths if it's extracted to separate file
+    const configs = require('../getRollupConfig').default({ svelteConfig });
+    expect(configs).toHaveLength(8);
+    expect(configs).toMatchSnapshot();
+  });
+
+  it('getRollupConfig as a whole works - splitComponents: true, legacy: true', () => {
+    process.env.ROLLUP_WATCH = 'true'; // for production to be false
+    jest.mock('../validations.ts', () => ({
+      getDefaultRollup: () => ({
+        replacements: {},
+        dev: { splitComponents: true },
+        svelteConfig: {},
+      }),
+    }));
+    // getElderConfig() mock
+    jest.mock('../getConfig', () => () => ({
+      $$internal: {
+        clientComponents: 'test/public/svelte',
+        ssrComponents: 'test/___ELDER___/compiled',
+      },
+      distDir: './dist',
+      srcDir: './src',
+      rootDir: './',
+      plugins: {
+        pluginA: {},
+        pluginB: {},
+      },
+      legacy: true,
+    }));
+
+    jest.mock('path', () => ({
+      resolve: (...strings) => strings.join('/').replace('./', '').replace('//', '/').replace('/./', '/'),
+      posix: () => ({ dirname: () => '' }),
+      parse: (str) => {
+        const split = str.split('/');
+        return split[split.length - 1].split('.')[0];
+      },
+    }));
+    jest.mock('del');
+    jest.mock('fs-extra', () => ({
+      existsSync: jest.fn().mockImplementation(() => true),
+    }));
+    jest.mock('glob', () => ({
+      sync: jest
+        .fn()
+        // mock folder file contents - exact order matters
+        .mockImplementationOnce(() => ['pluginAComponent1.svelte', 'pluginAComponent2.svelte']) // getPluginPaths
+        .mockImplementationOnce(() => ['pluginBComponent1.svelte', 'pluginBComponent2.svelte']) // getPluginPaths
+        .mockImplementationOnce(() => ['NestedSrcComponent.svelte']) // srcComponentsNested
+        .mockImplementationOnce(() => ['SrcComponent.svelte', 'SrcComponent2.svelte']) // srcComponents
+        .mockImplementationOnce(() => ['LegacyPluginAComponent3.svelte', 'LegacyPluginAComponent4.svelte']) // legacy pluginA components
+        .mockImplementationOnce(() => ['LegacyPluginBComponent3.svelte']), // legacy pluginB components
+    }));
+
+    const svelteConfig = {
+      preprocess: [
+        {
+          style: ({ content }) => {
+            return content.toUpperCase();
+          },
+        },
+      ],
+    };
+
+    const configs = require('../getRollupConfig').default({ svelteConfig });
+    expect(configs).toHaveLength(15);
+    expect(configs).toMatchSnapshot();
   });
 });

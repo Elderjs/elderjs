@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`#getRollupConfig getRollupConfig as a whole works 1`] = `
+exports[`#getRollupConfig getRollupConfig as a whole works - default options 1`] = `
 Array [
   Object {
     "input": "./node_modules/intersection-observer/intersection-observer.js",
@@ -438,6 +438,741 @@ Array [
       },
     ],
     "treeshake": true,
+  },
+]
+`;
+
+exports[`#getRollupConfig getRollupConfig as a whole works - splitComponents: true, legacy: true 1`] = `
+Array [
+  Object {
+    "input": "./node_modules/intersection-observer/intersection-observer.js",
+    "output": Array [
+      Object {
+        "file": "dist/static/intersection-observer.js",
+        "format": "iife",
+        "name": "./static/intersection-observer.js",
+        "plugins": Array [
+          Object {
+            "name": "terser",
+            "renderChunk": [Function],
+          },
+        ],
+      },
+    ],
+  },
+  Object {
+    "cache": true,
+    "input": Array [
+      "rc/layouts/*.svelte",
+      "rc/routes/*/*.svelte",
+    ],
+    "output": Object {
+      "dir": "test/___ELDER___/compiled",
+      "exports": "auto",
+      "format": "cjs",
+    },
+    "plugins": Array [
+      Object {
+        "options": [Function],
+        "pluginName": "rollup-plugin-multi-input",
+      },
+      Object {
+        "name": "replace",
+        "renderChunk": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "name": "json",
+        "transform": [Function],
+      },
+      Object {
+        "generateBundle": [Function],
+        "load": [Function],
+        "name": "svelte",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "generateBundle": [Function],
+        "getPackageInfoForId": [Function],
+        "load": [Function],
+        "name": "node-resolve",
+        "resolveId": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "load": [Function],
+        "name": "commonjs",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "generateBundle": [Function],
+        "name": "css",
+        "transform": [Function],
+      },
+      false,
+    ],
+    "treeshake": false,
+  },
+  Object {
+    "cache": true,
+    "input": "NestedSrcComponent.svelte",
+    "output": Array [
+      Object {
+        "dir": "test/public/svelte",
+        "entryFileNames": "entry[name]-[hash].js",
+        "format": "esm",
+        "sourcemap": true,
+      },
+    ],
+    "plugins": Array [
+      Object {
+        "name": "replace",
+        "renderChunk": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "name": "json",
+        "transform": [Function],
+      },
+      Object {
+        "generateBundle": [Function],
+        "load": [Function],
+        "name": "svelte",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "generateBundle": [Function],
+        "getPackageInfoForId": [Function],
+        "load": [Function],
+        "name": "node-resolve",
+        "resolveId": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "load": [Function],
+        "name": "commonjs",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+    ],
+    "treeshake": false,
+  },
+  Object {
+    "cache": true,
+    "input": "NestedSrcComponent.svelte",
+    "output": Object {
+      "dir": "test/___ELDER___/compiled",
+      "exports": "auto",
+      "format": "cjs",
+    },
+    "plugins": Array [
+      Object {
+        "name": "replace",
+        "renderChunk": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "name": "json",
+        "transform": [Function],
+      },
+      Object {
+        "generateBundle": [Function],
+        "load": [Function],
+        "name": "svelte",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "generateBundle": [Function],
+        "getPackageInfoForId": [Function],
+        "load": [Function],
+        "name": "node-resolve",
+        "resolveId": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "load": [Function],
+        "name": "commonjs",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "generateBundle": [Function],
+        "name": "css",
+        "transform": [Function],
+      },
+      false,
+    ],
+    "treeshake": false,
+  },
+  Object {
+    "cache": true,
+    "input": "SrcComponent.svelte",
+    "output": Array [
+      Object {
+        "dir": "test/public/svelte",
+        "entryFileNames": "entry[name]-[hash].js",
+        "format": "esm",
+        "sourcemap": true,
+      },
+    ],
+    "plugins": Array [
+      Object {
+        "name": "replace",
+        "renderChunk": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "name": "json",
+        "transform": [Function],
+      },
+      Object {
+        "generateBundle": [Function],
+        "load": [Function],
+        "name": "svelte",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "generateBundle": [Function],
+        "getPackageInfoForId": [Function],
+        "load": [Function],
+        "name": "node-resolve",
+        "resolveId": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "load": [Function],
+        "name": "commonjs",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+    ],
+    "treeshake": false,
+  },
+  Object {
+    "cache": true,
+    "input": "SrcComponent.svelte",
+    "output": Object {
+      "dir": "test/___ELDER___/compiled",
+      "exports": "auto",
+      "format": "cjs",
+    },
+    "plugins": Array [
+      Object {
+        "name": "replace",
+        "renderChunk": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "name": "json",
+        "transform": [Function],
+      },
+      Object {
+        "generateBundle": [Function],
+        "load": [Function],
+        "name": "svelte",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "generateBundle": [Function],
+        "getPackageInfoForId": [Function],
+        "load": [Function],
+        "name": "node-resolve",
+        "resolveId": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "load": [Function],
+        "name": "commonjs",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "generateBundle": [Function],
+        "name": "css",
+        "transform": [Function],
+      },
+      false,
+    ],
+    "treeshake": false,
+  },
+  Object {
+    "cache": true,
+    "input": "SrcComponent2.svelte",
+    "output": Array [
+      Object {
+        "dir": "test/public/svelte",
+        "entryFileNames": "entry[name]-[hash].js",
+        "format": "esm",
+        "sourcemap": true,
+      },
+    ],
+    "plugins": Array [
+      Object {
+        "name": "replace",
+        "renderChunk": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "name": "json",
+        "transform": [Function],
+      },
+      Object {
+        "generateBundle": [Function],
+        "load": [Function],
+        "name": "svelte",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "generateBundle": [Function],
+        "getPackageInfoForId": [Function],
+        "load": [Function],
+        "name": "node-resolve",
+        "resolveId": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "load": [Function],
+        "name": "commonjs",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+    ],
+    "treeshake": false,
+  },
+  Object {
+    "cache": true,
+    "input": "SrcComponent2.svelte",
+    "output": Object {
+      "dir": "test/___ELDER___/compiled",
+      "exports": "auto",
+      "format": "cjs",
+    },
+    "plugins": Array [
+      Object {
+        "name": "replace",
+        "renderChunk": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "name": "json",
+        "transform": [Function],
+      },
+      Object {
+        "generateBundle": [Function],
+        "load": [Function],
+        "name": "svelte",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "generateBundle": [Function],
+        "getPackageInfoForId": [Function],
+        "load": [Function],
+        "name": "node-resolve",
+        "resolveId": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "load": [Function],
+        "name": "commonjs",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "generateBundle": [Function],
+        "name": "css",
+        "transform": [Function],
+      },
+      false,
+    ],
+    "treeshake": false,
+  },
+  Object {
+    "cache": true,
+    "input": Array [
+      "src/plugins/pluginA/*.svelte",
+    ],
+    "output": Array [
+      Object {
+        "dir": "test/public/svelte",
+        "entryFileNames": "entry[name]-[hash].js",
+        "format": "esm",
+        "sourcemap": true,
+      },
+    ],
+    "plugins": Array [
+      Object {
+        "options": [Function],
+        "pluginName": "rollup-plugin-multi-input",
+      },
+      Object {
+        "name": "replace",
+        "renderChunk": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "name": "json",
+        "transform": [Function],
+      },
+      Object {
+        "generateBundle": [Function],
+        "load": [Function],
+        "name": "svelte",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "generateBundle": [Function],
+        "getPackageInfoForId": [Function],
+        "load": [Function],
+        "name": "node-resolve",
+        "resolveId": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "load": [Function],
+        "name": "commonjs",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+    ],
+    "treeshake": false,
+  },
+  Object {
+    "cache": true,
+    "input": Array [
+      "src/plugins/pluginA/*.svelte",
+    ],
+    "output": Object {
+      "dir": "test/___ELDER___/compiled",
+      "exports": "auto",
+      "format": "cjs",
+    },
+    "plugins": Array [
+      Object {
+        "options": [Function],
+        "pluginName": "rollup-plugin-multi-input",
+      },
+      Object {
+        "name": "replace",
+        "renderChunk": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "name": "json",
+        "transform": [Function],
+      },
+      Object {
+        "generateBundle": [Function],
+        "load": [Function],
+        "name": "svelte",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "generateBundle": [Function],
+        "getPackageInfoForId": [Function],
+        "load": [Function],
+        "name": "node-resolve",
+        "resolveId": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "load": [Function],
+        "name": "commonjs",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "generateBundle": [Function],
+        "name": "css",
+        "transform": [Function],
+      },
+      false,
+    ],
+    "treeshake": false,
+  },
+  Object {
+    "cache": true,
+    "input": "LegacyPluginAComponent3.svelte",
+    "output": Array [
+      Object {
+        "dir": "test/public/svelte",
+        "entryFileNames": "iife[name]-[hash].js",
+        "format": "iife",
+        "name": "___elderjs_undefined",
+        "sourcemap": true,
+      },
+    ],
+    "plugins": Array [
+      Object {
+        "name": "replace",
+        "renderChunk": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "name": "json",
+        "transform": [Function],
+      },
+      Object {
+        "generateBundle": [Function],
+        "load": [Function],
+        "name": "svelte",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "generateBundle": [Function],
+        "getPackageInfoForId": [Function],
+        "load": [Function],
+        "name": "node-resolve",
+        "resolveId": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "load": [Function],
+        "name": "commonjs",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "load": [Function],
+        "name": "babel",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+    ],
+    "treeshake": false,
+  },
+  Object {
+    "cache": true,
+    "input": "LegacyPluginAComponent4.svelte",
+    "output": Array [
+      Object {
+        "dir": "test/public/svelte",
+        "entryFileNames": "iife[name]-[hash].js",
+        "format": "iife",
+        "name": "___elderjs_undefined",
+        "sourcemap": true,
+      },
+    ],
+    "plugins": Array [
+      Object {
+        "name": "replace",
+        "renderChunk": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "name": "json",
+        "transform": [Function],
+      },
+      Object {
+        "generateBundle": [Function],
+        "load": [Function],
+        "name": "svelte",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "generateBundle": [Function],
+        "getPackageInfoForId": [Function],
+        "load": [Function],
+        "name": "node-resolve",
+        "resolveId": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "load": [Function],
+        "name": "commonjs",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "load": [Function],
+        "name": "babel",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+    ],
+    "treeshake": false,
+  },
+  Object {
+    "cache": true,
+    "input": Array [
+      "src/plugins/pluginB/*.svelte",
+    ],
+    "output": Array [
+      Object {
+        "dir": "test/public/svelte",
+        "entryFileNames": "entry[name]-[hash].js",
+        "format": "esm",
+        "sourcemap": true,
+      },
+    ],
+    "plugins": Array [
+      Object {
+        "options": [Function],
+        "pluginName": "rollup-plugin-multi-input",
+      },
+      Object {
+        "name": "replace",
+        "renderChunk": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "name": "json",
+        "transform": [Function],
+      },
+      Object {
+        "generateBundle": [Function],
+        "load": [Function],
+        "name": "svelte",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "generateBundle": [Function],
+        "getPackageInfoForId": [Function],
+        "load": [Function],
+        "name": "node-resolve",
+        "resolveId": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "load": [Function],
+        "name": "commonjs",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+    ],
+    "treeshake": false,
+  },
+  Object {
+    "cache": true,
+    "input": Array [
+      "src/plugins/pluginB/*.svelte",
+    ],
+    "output": Object {
+      "dir": "test/___ELDER___/compiled",
+      "exports": "auto",
+      "format": "cjs",
+    },
+    "plugins": Array [
+      Object {
+        "options": [Function],
+        "pluginName": "rollup-plugin-multi-input",
+      },
+      Object {
+        "name": "replace",
+        "renderChunk": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "name": "json",
+        "transform": [Function],
+      },
+      Object {
+        "generateBundle": [Function],
+        "load": [Function],
+        "name": "svelte",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "generateBundle": [Function],
+        "getPackageInfoForId": [Function],
+        "load": [Function],
+        "name": "node-resolve",
+        "resolveId": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "load": [Function],
+        "name": "commonjs",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "generateBundle": [Function],
+        "name": "css",
+        "transform": [Function],
+      },
+      false,
+    ],
+    "treeshake": false,
+  },
+  Object {
+    "cache": true,
+    "input": "LegacyPluginBComponent3.svelte",
+    "output": Array [
+      Object {
+        "dir": "test/public/svelte",
+        "entryFileNames": "iife[name]-[hash].js",
+        "format": "iife",
+        "name": "___elderjs_undefined",
+        "sourcemap": true,
+      },
+    ],
+    "plugins": Array [
+      Object {
+        "name": "replace",
+        "renderChunk": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "name": "json",
+        "transform": [Function],
+      },
+      Object {
+        "generateBundle": [Function],
+        "load": [Function],
+        "name": "svelte",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "generateBundle": [Function],
+        "getPackageInfoForId": [Function],
+        "load": [Function],
+        "name": "node-resolve",
+        "resolveId": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "load": [Function],
+        "name": "commonjs",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "load": [Function],
+        "name": "babel",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+    ],
+    "treeshake": false,
   },
 ]
 `;
