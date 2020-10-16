@@ -168,6 +168,35 @@ describe('#getRollupConfig', () => {
     ).toEqual(['src/plugins/pluginA/', '/node_modules/pluginB/']);
   });
 
+  it('getRollupConfig - throws error if intersection-observer doesnt exist', () => {
+    jest.mock('../validations.ts', () => ({
+      getDefaultRollup: () => ({}),
+    }));
+    jest.mock('path', () => ({
+      resolve: (...strings) => strings.join('/').replace('./', '').replace('//', '/').replace('/./', '/'),
+      posix: () => ({ dirname: () => '' }),
+    }));
+    jest.mock('del');
+    // getElderConfig() mock
+    jest.mock('../getConfig', () => () => ({
+      $$internal: {
+        clientComponents: 'test/public/svelte',
+        ssrComponents: 'test/___ELDER___/compiled',
+      },
+      distDir: './dist',
+      srcDir: './src',
+      rootDir: './',
+      plugins: {},
+      legacy: false,
+    }));
+    jest.mock('fs-extra', () => ({
+      existsSync: jest.fn().mockImplementationOnce(() => false),
+    }));
+    expect(() => require('../getRollupConfig').default()).toThrow(
+      `Elder.js peer dependency not found at ./node_modules/intersection-observer/intersection-observer.js`,
+    );
+  });
+
   it('getRollupConfig as a whole works - default options', () => {
     jest.mock('../validations.ts', () => ({
       getDefaultRollup: () => ({
