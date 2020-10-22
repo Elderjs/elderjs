@@ -255,6 +255,9 @@ async function build(initializationOptions: InitializationOptions = {}): Promise
       if (!success) {
         throw new Error(`Build did not complete successfully.`);
       }
+      
+      process.exit(0);
+      
     } else {
       process.on('message', async (msg) => {
         if (msg.cmd === 'start') {
@@ -266,6 +269,7 @@ async function build(initializationOptions: InitializationOptions = {}): Promise
         }
       });
     }
+    
   } catch (e) {
     if (e.message === 'Build did not complete successfully.') {
       process.exit(1);
