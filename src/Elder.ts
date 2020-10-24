@@ -137,6 +137,9 @@ class Elder {
         throw new Error(`Plugin ${pluginName} not found in plugins or node_modules folder.`);
       }
 
+      const validatedPlugin = validatePlugin(plugin);
+      if (!validatedPlugin) return;
+
       plugin =
         plugin.init({
           ...plugin,
@@ -144,8 +147,6 @@ class Elder {
           settings: createReadOnlyProxy(this.settings, 'Settings', 'plugin init()'),
         }) || plugin;
 
-      const validatedPlugin = validatePlugin(plugin);
-      if (!validatedPlugin) return;
       plugin = validatedPlugin;
 
       // clean props the plugin shouldn't be able to change between hook... specifically their hooks;

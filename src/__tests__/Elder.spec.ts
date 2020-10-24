@@ -120,6 +120,7 @@ describe('#Elder', () => {
     jest.mock('fs-extra', () => ({
       existsSync: () => true,
     }));
+    const pluginInitSpy = jest.fn();
     jest.mock(
       'test/src/plugins/elder-plugin-upload-s3/index.js',
       () => ({
@@ -139,7 +140,7 @@ describe('#Elder', () => {
         config: {},
         name: 'test',
         description: 'test',
-        init: jest.fn(),
+        init: pluginInitSpy,
       }),
       {
         virtual: true,
@@ -149,6 +150,7 @@ describe('#Elder', () => {
     const { Elder } = require('../index');
     const elder = await new Elder({ context: 'server', worker: true });
     // await elder.bootstrap();
+    expect(pluginInitSpy).not.toHaveBeenCalled();
     expect(elder).toEqual({
       bootstrapComplete: Promise.resolve({}),
       markBootstrapComplete: expect.any(Function),
