@@ -137,12 +137,14 @@ class Elder {
         throw new Error(`Plugin ${pluginName} not found in plugins or node_modules folder.`);
       }
 
-      plugin =
-        plugin.init({
-          ...plugin,
-          config: defaultsDeep(pluginConfigFromConfig, plugin.config),
-          settings: createReadOnlyProxy(this.settings, 'Settings', 'plugin init()'),
-        }) || plugin;
+      if (typeof plugin.init === 'function') {
+        plugin =
+          plugin.init({
+            ...plugin,
+            config: defaultsDeep(pluginConfigFromConfig, plugin.config),
+            settings: createReadOnlyProxy(this.settings, 'Settings', 'plugin init()'),
+          }) || plugin;
+      }
 
       const validatedPlugin = validatePlugin(plugin);
       if (!validatedPlugin) return;
