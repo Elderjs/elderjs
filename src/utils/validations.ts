@@ -4,6 +4,11 @@ import type { RouteOptions } from '../routes/types';
 import type { HookOptions } from '../hookInterface/types';
 import hookInterface from '../hookInterface/hookInterface';
 
+/**
+ * Important note:
+ * These validations are used to build the docs for Elder.js.
+ */
+
 const shortcodeSchema = yup.object({
   shortcode: yup.string().required().label(`The 'name' of the shortcode. {{name /}}`),
   run: yup
@@ -91,6 +96,9 @@ const configSchema = yup.object({
   plugins: yup.object().default({}).label('Used to define Elder.js plugins.'),
 });
 
+/**
+ * Defaults are set when routes are imported in route.ts
+ */
 const routeSchema = yup.object({
   template: yup.string().required().label('Svelte file for your route. Defaults to RouteName.svelte if not defined.'),
   all: yup
