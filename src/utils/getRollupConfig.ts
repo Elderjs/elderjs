@@ -17,9 +17,10 @@ import { getDefaultRollup } from './validations';
 import { SettingsOptions } from './types';
 
 const production = process.env.NODE_ENV === 'production' || !process.env.ROLLUP_WATCH;
+const elderJsDir = path.resolve(process.cwd(), './node_modules/@elderjs/elderjs/');
 
 const babelIE11 = babel({
-  cwd: path.resolve(process.cwd(), './node_modules/@elderjs/elderjs/'),
+  cwd: elderJsDir,
   extensions: ['.js', '.mjs', '.html', '.svelte'],
   runtimeHelpers: true,
   exclude: ['node_modules/@babel/**', 'node_modules/core-js/**'],
@@ -31,9 +32,27 @@ const babelIE11 = babel({
           browsers: ['> 0.25%', 'not dead', 'IE 11'],
         },
         useBuiltIns: 'usage',
-        corejs: 3,
+        forceAllTransforms: false,
+        corejs: {
+          version: 3.6,
+          proposals: true,
+        },
       },
     ],
+  ],
+  plugins: [
+    // [
+    //   '@babel/plugin-transform-runtime',
+    //   {
+    //     corejs: {
+    //       version: 3,
+    //       proposals: true,
+    //     },
+    //     regenerator: true,
+    //     useESModules: false,
+    //     absoluteRuntime: path.resolve(process.cwd(), './node_modules/@elderjs/elderjs/node_modules/'),
+    //   },
+    // ],
   ],
 });
 
@@ -79,21 +98,28 @@ export function createBrowserConfig({
   if (multiInputConfig) {
     config.plugins.unshift(multiInputConfig);
   }
-  // if is production let's babelify everything and minify it.
-  if (production) {
-    config.plugins.push(
-      babel({
-        extensions: ['.js', '.mjs', '.cjs', '.html', '.svelte'],
-        include: ['node_modules/**', 'src/**'],
-        exclude: ['node_modules/@babel/**'],
-        runtimeHelpers: true,
-      }),
-    );
-    config.plugins.push(terser());
-  }
 
+  // ie11 babel
   if (ie11) {
     config.plugins.push(babelIE11);
+  }
+
+  // if is production let's babelify everything and minify it.
+  if (production) {
+    // don't babel if it has been done
+    if (!ie11) {
+      config.plugins.push(
+        babel({
+          extensions: ['.js', '.mjs', '.cjs', '.html', '.svelte'],
+          include: ['node_modules/**', 'src/**'],
+          exclude: ['node_modules/@babel/**'],
+          runtimeHelpers: true,
+        }),
+      );
+    }
+
+    // terser on prod
+    config.plugins.push(terser());
   }
 
   return config;
@@ -298,6 +324,7 @@ export default function getRollupConfig(options) {
       }),
     );
 
+    // legacy is only done on production or not split modes.
     if (legacy) {
       if (fs.existsSync(path.resolve(srcDir, `./components/`))) {
         const srcComponentsNested = glob.sync(path.resolve(srcDir, './components/*/*.svelte'));

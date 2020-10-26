@@ -1,6 +1,5 @@
 {
   "presets": [
-    "@babel/plugin-syntax-dynamic-import",
     [
       "@babel/plugin-transform-runtime",
       {
@@ -15,10 +14,10 @@
           "browsers": ["> 0.25%", "not dead", "IE 11"]
         },
         "useBuiltIns": "usage",
-        "forceAllTransforms": true,
+        "forceAllTransforms": false,
         "corejs": {
           "version": 3,
-          "proposals": false
+          "proposals": true
         },
         "modules": false
       }
