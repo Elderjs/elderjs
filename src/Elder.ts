@@ -137,7 +137,7 @@ class Elder {
         throw new Error(`Plugin ${pluginName} not found in plugins or node_modules folder.`);
       }
 
-      if (plugin.init) {
+      if (typeof plugin.init === 'function') {
         plugin =
           plugin.init({
             ...plugin,
