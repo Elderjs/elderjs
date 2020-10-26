@@ -50,6 +50,7 @@ async function plugins(elder: Elder) {
 
     if (!plugin) {
       console.error(new Error(`Plugin ${pluginName} not found in plugins or node_modules folder. Skipping.`));
+      continue;
     }
 
     if (typeof plugin.init === 'function' || (plugin.init && typeof plugin.init.then === 'function')) {
@@ -117,7 +118,9 @@ async function plugins(elder: Elder) {
       if (Object.hasOwnProperty.call(plugin, 'routes')) {
         const routeNames = Object.keys(plugin.routes);
         // eslint-disable-next-line no-loop-func
-        routeNames.forEach((routeName) => {
+        for (let ii = 0; ii < routeNames.length; ii += 1) {
+          const routeName = routeNames[ii];
+
           // don't allow plugins to add hooks via the routes definitions like users can.
           if (plugin.routes[routeName].hooks)
             console.error(
@@ -132,15 +135,54 @@ async function plugins(elder: Elder) {
             plugin.routes[routeName].template.endsWith('.svelte')
           ) {
             const templateName = plugin.routes[routeName].template.replace('.svelte', '');
-            const ssrComponent = path.resolve(elder.settings.$$internal.ssrComponents, `${templateName}.js`);
+            const ssrComponent = path.resolve(
+              elder.settings.$$internal.ssrComponents,
+              `./plugins/${pluginName}/${templateName}.js`,
+            );
 
             if (!fs.existsSync(ssrComponent)) {
               console.warn(
-                `Plugin Route: ${routeName} has an error. No SSR svelte component found ${templateName} which was added by ${pluginName}. This may cause unexpected outcomes. If you believe this should be working, make sure rollup has run before this file is initialized. If the issue persists, please contact the plugin author. Expected location \`${ssrComponent}\``,
+                `Plugin Route: ${routeName} added by plugin ${pluginName} has an error. No SSR svelte component found ${templateName}. This may cause unexpected outcomes. If you believe this should be working, make sure rollup has run before this file is initialized. If the issue persists, please contact the plugin author. Expected location \`${ssrComponent}\``,
               );
             }
 
             plugin.routes[routeName].templateComponent = svelteComponent(templateName);
+          } else {
+            console.error(
+              Error(
+                `Plugin Route: ${routeName} added by plugin ${pluginName} does not have a template defined. Disabling this route.`,
+              ),
+            );
+            continue;
+          }
+
+          if (
+            typeof plugin.routes[routeName].layout === 'string' &&
+            plugin.routes[routeName].layout.endsWith('.svelte')
+          ) {
+            const layoutName = plugin.routes[routeName].layout.replace('.svelte', '');
+            const ssrComponent = path.resolve(
+              elder.settings.$$internal.ssrComponents,
+              `./plugins/${pluginName}/${layoutName}.js`,
+            );
+
+            if (!fs.existsSync(ssrComponent)) {
+              console.warn(
+                `Plugin Route: ${routeName} added by plugin ${pluginName} has an error. No SSR svelte component found ${layoutName}. This may cause unexpected outcomes. If you believe this should be working, make sure rollup has run before this file is initialized. If the issue persists, please contact the plugin author. Expected location \`${ssrComponent}\``,
+              );
+            }
+            plugin.routes[routeName].layoutComponent = svelteComponent(layoutName);
+          } else {
+            plugin.routes[routeName].layout = 'Layout.svelte';
+            const ssrComponent = path.resolve(elder.settings.$$internal.ssrComponents, `./layouts/Layout.js`);
+
+            if (!fs.existsSync(ssrComponent)) {
+              console.error(
+                `Plugin Route: ${routeName} added by plugin ${pluginName} requires a /src/layouts/Layout.svelte to be compiled at ${ssrComponent}. Disabling this route.`,
+              );
+              continue;
+            }
+            plugin.routes[routeName].layoutComponent = svelteComponent('Layout.svelte');
           }
 
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -149,7 +191,7 @@ async function plugins(elder: Elder) {
           sanitizedRoute[routeName] = { ...sanitizedRouteDeets, $$meta: { type: 'plugin', addedBy: pluginName } };
 
           pluginRoutes = { ...pluginRoutes, ...sanitizedRoute };
-        });
+        }
       }
 
       if (plugin.shortcodes && plugin.shortcodes.length > 0) {
