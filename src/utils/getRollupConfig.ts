@@ -14,7 +14,8 @@ import del from 'del';
 import defaultsDeep from 'lodash.defaultsdeep';
 import { getElderConfig, partialHydration } from '../index';
 import { getDefaultRollup } from './validations';
-import { SettingsOptions } from './types';
+import handleCss from './rollupPluginHandleCss';
+import getPluginLocations from './getPluginLocations';
 
 const production = process.env.NODE_ENV === 'production' || !process.env.ROLLUP_WATCH;
 const elderJsDir = path.resolve(process.cwd(), './node_modules/@elderjs/elderjs/');
@@ -32,7 +33,7 @@ const babelIE11 = babel({
           browsers: ['> 0.25%', 'not dead', 'IE 11'],
         },
         useBuiltIns: 'usage',
-        forceAllTransforms: false,
+        forceAllTransforms: true,
         corejs: {
           version: 3.6,
           proposals: true,
@@ -55,6 +56,23 @@ const babelIE11 = babel({
     // ],
   ],
 });
+
+const ssrOutputPath = (str) => {
+  let name = '';
+  const split = str.split(path.sep);
+  if (!str.includes('node_modules')) {
+    if (!str.includes('plugins')) {
+      name = [split.shift(), split.pop()].join(path.sep);
+    } else {
+      name = str;
+    }
+  } else {
+    const last = split.pop();
+    name = ['plugins', split.pop(), last].join(path.sep);
+  }
+  console.log(str, name);
+  return name;
+};
 
 export function createBrowserConfig({
   input,
@@ -146,6 +164,7 @@ export function createSSRConfig({ input, output, svelteConfig, replacements = {}
         hydratable: true,
         generate: 'ssr',
         css: true,
+        emitCss: true,
         extensions: '.svelte',
         preprocess: [...svelteConfig.preprocess, partialHydration],
       }),
@@ -155,9 +174,10 @@ export function createSSRConfig({ input, output, svelteConfig, replacements = {}
         dedupe: ['svelte'],
       }),
       commonjs({ sourceMap: true }),
-      css({
-        ignore: true,
-      }),
+      // css({
+      //   ignore: true,
+      // }),
+      handleCss(),
       production && terser(),
     ],
   };
@@ -167,26 +187,6 @@ export function createSSRConfig({ input, output, svelteConfig, replacements = {}
   }
 
   return config;
-}
-
-export function getPluginPaths(elderConfig: SettingsOptions) {
-  const pluginNames = Object.keys(elderConfig.plugins);
-
-  return pluginNames.reduce((out, pluginName) => {
-    const pluginPath = path.resolve(elderConfig.srcDir, `./plugins/${pluginName}`);
-    const nmPluginPath = path.resolve(elderConfig.rootDir, `./node_modules/${pluginName}`);
-    if (fs.existsSync(`${pluginPath}/index.js`)) {
-      const svelteFiles = glob.sync(`${pluginPath}/*.svelte`);
-      if (svelteFiles.length > 0) {
-        out.push(`${pluginPath}/`);
-      }
-    } else if (fs.existsSync(`${nmPluginPath}/package.json`)) {
-      if (glob.sync(`${nmPluginPath}/*.svelte`).length > 0) {
-        out.push(`${nmPluginPath}/`);
-      }
-    }
-    return out;
-  }, []);
 }
 
 export default function getRollupConfig(options) {
@@ -199,7 +199,7 @@ export default function getRollupConfig(options) {
 
   console.log(`Elder.js using rollup in ${production ? 'production' : 'development'} mode.`);
 
-  let configs = [];
+  const configs = [];
 
   // clear out components so there are no conflicts due to hashing.
   del.sync([`${ssrComponents}*`, `${clientComponents}*`]);
@@ -223,25 +223,17 @@ export default function getRollupConfig(options) {
     },
   );
 
-  // SSR /routes/ Svelte files.
-  const routesAndLayouts = createSSRConfig({
-    input: [`${relSrcDir}/layouts/*.svelte`, `${relSrcDir}/routes/*/*.svelte`],
-    output: {
-      dir: ssrComponents,
-      format: 'cjs',
-      exports: 'auto',
-    },
-    multiInputConfig: multiInput({
-      relative: `${relSrcDir}/`,
-      transformOutputPath: (output) => `${path.basename(output)}`,
-    }),
-    svelteConfig,
-    replacements,
-  });
+  const { paths: pluginPaths, files: pluginFiles } = getPluginLocations(elderConfig);
+  const pluginGlobs = pluginPaths.map((plugin) => `${plugin}*.svelte`);
 
-  const pluginPaths = getPluginPaths(elderConfig);
-
-  configs = [...configs, routesAndLayouts];
+  const components = fs.existsSync(path.resolve(srcDir, `./components/`))
+    ? [
+        ...new Set([
+          ...glob.sync(path.resolve(srcDir, './components/*/*.svelte')),
+          ...glob.sync(path.resolve(srcDir, './components/*.svelte')),
+        ]),
+      ]
+    : [];
 
   if (!production && dev && dev.splitComponents) {
     // watch/dev build bundles each component individually for faster reload times during dev.
@@ -249,43 +241,57 @@ export default function getRollupConfig(options) {
     console.log(
       `NOTE: Splitting components into separate rollup objects, this breaks some svelte features such as stores.`,
     );
-    if (fs.existsSync(path.resolve(srcDir, `./components/`))) {
-      const srcComponentsNested = glob.sync(path.resolve(srcDir, './components/*/*.svelte'));
-      const srcComponents = glob.sync(path.resolve(srcDir, './components/*.svelte'));
-      [...new Set([...srcComponentsNested, ...srcComponents])].forEach((cv) => {
-        const file = cv.replace(`${rootDir}/`, '');
-        configs.push(
-          createBrowserConfig({
-            input: file,
-            output: [
-              {
-                dir: clientComponents,
-                entryFileNames: 'entry[name]-[hash].js',
-                sourcemap: !production,
-                format: 'esm',
-              },
-            ],
-            svelteConfig,
-            replacements,
-            multiInputConfig: false,
-          }),
-        );
 
-        configs.push(
-          createSSRConfig({
-            input: file,
-            output: {
-              dir: ssrComponents,
-              format: 'cjs',
-              exports: 'auto',
+    configs.push(
+      // SSR /routes/ Svelte files.
+      createSSRConfig({
+        input: [`${relSrcDir}/layouts/*.svelte`, `${relSrcDir}/routes/*/*.svelte`, ...pluginGlobs],
+        output: {
+          dir: ssrComponents,
+          format: 'cjs',
+          exports: 'auto',
+        },
+        multiInputConfig: multiInput({
+          transformOutputPath: (output) => ssrOutputPath(output),
+        }),
+        svelteConfig,
+        replacements,
+      }),
+    );
+
+    [...components, ...pluginFiles].forEach((cv) => {
+      const file = cv.replace(`${rootDir}/`, '');
+      configs.push(
+        createBrowserConfig({
+          input: file,
+          output: [
+            {
+              dir: clientComponents,
+              entryFileNames: 'entry[name]-[hash].mjs',
+              sourcemap: !production,
+              format: 'esm',
             },
-            svelteConfig,
-            replacements,
-            multiInputConfig: false,
-          }),
-        );
-      });
-    }
+          ],
+          svelteConfig,
+          replacements,
+          multiInputConfig: false,
+        }),
+      );
+
+      configs.push(
+        createSSRConfig({
+          input: file,
+          output: {
+            dir: ssrComponents,
+            format: 'cjs',
+            exports: 'auto',
+          },
+          svelteConfig,
+          replacements,
+          multiInputConfig: false,
+        }),
+      );
+    });
   } else {
     configs.push(
       createBrowserConfig({
@@ -299,7 +305,6 @@ export default function getRollupConfig(options) {
           },
         ],
         multiInputConfig: multiInput({
-          relative: `${relSrcDir}/components`,
           transformOutputPath: (output) => `${path.basename(output)}`,
         }),
         svelteConfig,
@@ -309,15 +314,20 @@ export default function getRollupConfig(options) {
 
     configs.push(
       createSSRConfig({
-        input: [`${relSrcDir}/components/*/*.svelte`, `${relSrcDir}/components/*.svelte`],
+        input: [
+          `${relSrcDir}/layouts/*.svelte`,
+          `${relSrcDir}/routes/*/*.svelte`,
+          `${relSrcDir}/components/*/*.svelte`,
+          `${relSrcDir}/components/*.svelte`,
+          ...pluginGlobs,
+        ],
         output: {
           dir: ssrComponents,
           format: 'cjs',
           exports: 'auto',
         },
         multiInputConfig: multiInput({
-          relative: `${relSrcDir}/components`,
-          transformOutputPath: (output) => `${path.basename(output)}`,
+          transformOutputPath: (output) => ssrOutputPath(output),
         }),
         svelteConfig,
         replacements,
@@ -325,77 +335,8 @@ export default function getRollupConfig(options) {
     );
 
     // legacy is only done on production or not split modes.
-    if (legacy) {
-      if (fs.existsSync(path.resolve(srcDir, `./components/`))) {
-        const srcComponentsNested = glob.sync(path.resolve(srcDir, './components/*/*.svelte'));
-        const srcComponents = glob.sync(path.resolve(srcDir, './components/*.svelte'));
-        [...new Set([...srcComponentsNested, ...srcComponents])].forEach((cv) => {
-          const file = cv.replace(`${rootDir}/`, '');
-          const parsed = path.parse(cv);
-          configs.push(
-            createBrowserConfig({
-              input: file,
-              output: [
-                {
-                  name: `___elderjs_${parsed.name}`,
-                  dir: clientComponents,
-                  entryFileNames: 'iife[name]-[hash].js',
-                  sourcemap: !production,
-                  format: 'iife',
-                },
-              ],
-              svelteConfig,
-              replacements,
-              multiInputConfig: false,
-              ie11: true,
-            }),
-          );
-        });
-      }
-    }
-  }
-
-  pluginPaths.forEach((pluginPath) => {
-    configs.push(
-      createBrowserConfig({
-        input: [`${pluginPath}*.svelte`],
-        output: [
-          {
-            dir: clientComponents,
-            entryFileNames: 'entry[name]-[hash].js',
-            sourcemap: !production,
-            format: 'esm',
-          },
-        ],
-        multiInputConfig: multiInput({
-          relative: pluginPath.replace(elderConfig.distDir, '').substr(1),
-          transformOutputPath: (output) => `${path.basename(output)}`,
-        }),
-        svelteConfig,
-        replacements,
-      }),
-    );
-
-    configs.push(
-      createSSRConfig({
-        input: [`${pluginPath}*.svelte`],
-        output: {
-          dir: ssrComponents,
-          format: 'cjs',
-          exports: 'auto',
-        },
-        multiInputConfig: multiInput({
-          relative: pluginPath.replace(elderConfig.distDir, '').substr(1),
-          transformOutputPath: (output) => `${path.basename(output)}`,
-        }),
-        svelteConfig,
-        replacements,
-      }),
-    );
-
-    if (legacy) {
-      const legacyPluginFiles = glob.sync(`${pluginPath}*.svelte`);
-      legacyPluginFiles.forEach((cv) => {
+    if (legacy && production) {
+      [...components, ...pluginFiles].forEach((cv) => {
         const file = cv.replace(`${rootDir}/`, '');
         const parsed = path.parse(cv);
         configs.push(
@@ -418,7 +359,72 @@ export default function getRollupConfig(options) {
         );
       });
     }
-  });
+  }
+
+  // pluginPaths.forEach((pluginPath) => {
+  //   configs.push(
+  //     createBrowserConfig({
+  //       input: [`${pluginPath}*.svelte`],
+  //       output: [
+  //         {
+  //           dir: clientComponents,
+  //           entryFileNames: 'entry[name]-[hash].js',
+  //           sourcemap: !production,
+  //           format: 'esm',
+  //         },
+  //       ],
+  //       multiInputConfig: multiInput({
+  //         relative: pluginPath.replace(elderConfig.distDir, '').substr(1),
+  //         transformOutputPath: (output) => `${path.basename(output)}`,
+  //       }),
+  //       svelteConfig,
+  //       replacements,
+  //     }),
+  //   );
+
+  //   configs.push(
+  //     createSSRConfig({
+  //       input: [`${pluginPath}*.svelte`],
+  //       output: {
+  //         dir: ssrComponents,
+  //         format: 'cjs',
+  //         exports: 'auto',
+  //       },
+  //       multiInputConfig: multiInput({
+  //         relative: pluginPath.replace(elderConfig.distDir, '').substr(1),
+  //         transformOutputPath: (output) => `${path.basename(output)}`,
+  //       }),
+  //       svelteConfig,
+  //       replacements,
+  //     }),
+  //   );
+
+  //   if (legacy) {
+  //     const legacyPluginFiles = glob.sync(`${pluginPath}*.svelte`);
+  //     legacyPluginFiles.forEach((cv) => {
+  //       const file = cv.replace(`${rootDir}/`, '');
+  //       const parsed = path.parse(cv);
+  //       configs.push(
+  //         createBrowserConfig({
+  //           input: file,
+  //           output: [
+  //             {
+  //               name: `___elderjs_${parsed.name}`,
+  //               dir: clientComponents,
+  //               entryFileNames: 'iife[name]-[hash].js',
+  //               sourcemap: !production,
+  //               format: 'iife',
+  //             },
+  //           ],
+  //           svelteConfig,
+  //           replacements,
+  //           multiInputConfig: false,
+  //           ie11: true,
+  //         }),
+  //       );
+  //     });
+  //   }
+  // });
 
   return configs;
 }

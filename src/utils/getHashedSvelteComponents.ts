@@ -28,7 +28,7 @@ const getHashedSvelteComponents = ({ srcDir, $$internal: { ssrComponents, client
 
     // get an array with jus the file name before .js;
     // CityResults.js => CityResults
-    const ssr = globBasenames(`${ssrComponents}/*.js`);
+    const ssr = globBasenames(`${ssrComponents}/*/*.js`);
     const iifes = globBasenames(`${clientComponents}/*.js`);
     const mjss = globBasenames(`${clientComponents}/*.mjs`);
 
@@ -41,7 +41,7 @@ const getHashedSvelteComponents = ({ srcDir, $$internal: { ssrComponents, client
       out[cv].iife = iifes.find((c) => c.includes(`iife${cv}`));
       out[cv].mjs = mjss.find((c) => c.includes(`entry${cv}`));
 
-      if ((!out[cv].iife || !out[cv].mjs) && hydrateableComponents.includes(cv)) {
+      if (!out[cv].mjs && hydrateableComponents.includes(cv)) {
         missing.push(cv);
       }
 

@@ -212,15 +212,50 @@ class Elder {
             plugin.routes[routeName].template.endsWith('.svelte')
           ) {
             const templateName = plugin.routes[routeName].template.replace('.svelte', '');
-            const ssrComponent = path.resolve(this.settings.$$internal.ssrComponents, `${templateName}.js`);
+            const ssrComponent = path.resolve(
+              this.settings.$$internal.ssrComponents,
+              `./plugins/${pluginName}/${templateName}.js`,
+            );
 
             if (!fs.existsSync(ssrComponent)) {
               console.warn(
-                `Plugin Route: ${routeName} has an error. No SSR svelte component found ${templateName} which was added by ${pluginName}. This may cause unexpected outcomes. If you believe this should be working, make sure rollup has run before this file is initialized. If the issue persists, please contact the plugin author. Expected location \`${ssrComponent}\``,
+                `Plugin Route: ${routeName} added by plugin ${pluginName} has an error. No SSR svelte component found ${templateName}. This may cause unexpected outcomes. If you believe this should be working, make sure rollup has run before this file is initialized. If the issue persists, please contact the plugin author. Expected location \`${ssrComponent}\``,
               );
             }
 
-            plugin.routes[routeName].templateComponent = svelteComponent(templateName);
+            plugin.routes[routeName].templateComponent = svelteComponent(templateName, 'routes');
+          } else {
+            throw new Error(
+              `Plugin Route: ${routeName} added by plugin ${pluginName} does not have a template defined.`,
+            );
+          }
+
+          if (
+            typeof plugin.routes[routeName].layout === 'string' &&
+            plugin.routes[routeName].layout.endsWith('.svelte')
+          ) {
+            const layoutName = plugin.routes[routeName].layout.replace('.svelte', '');
+            const ssrComponent = path.resolve(
+              this.settings.$$internal.ssrComponents,
+              `./plugins/${pluginName}/${layoutName}.js`,
+            );
+
+            if (!fs.existsSync(ssrComponent)) {
+              console.warn(
+                `Plugin Route: ${routeName} added by plugin ${pluginName} has an error. No SSR svelte component found ${layoutName}. This may cause unexpected outcomes. If you believe this should be working, make sure rollup has run before this file is initialized. If the issue persists, please contact the plugin author. Expected location \`${ssrComponent}\``,
+              );
+            }
+            plugin.routes[routeName].layoutComponent = svelteComponent(layoutName, 'layouts');
+          } else {
+            plugin.routes[routeName].layout = 'Layout.svelte';
+            const ssrComponent = path.resolve(this.settings.$$internal.ssrComponents, `./layouts/Layout.js`);
+
+            if (!fs.existsSync(ssrComponent)) {
+              console.warn(
+                `Plugin Route: ${routeName} added by plugin ${pluginName} requires a /src/layouts/Layout.svelte to be compiled at ${ssrComponent}`,
+              );
+            }
+            plugin.routes[routeName].layoutComponent = svelteComponent('Layout.svelte', 'layouts');
           }
 
           // eslint-disable-next-line @typescript-eslint/no-unused-vars

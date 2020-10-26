@@ -28,31 +28,53 @@ export const replaceSpecialCharacters = (str) =>
 
 const componentCache = {};
 
-const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: ComponentPayload): string => {
+const notProduction = String(process.env.NODE_ENV).toLowerCase() !== 'production';
+
+const svelteComponent = (componentName: String, ssrFolder: String = 'components') => ({
+  page,
+  props,
+  hydrateOptions,
+}: ComponentPayload): string => {
   const cleanComponentName = getComponentName(componentName);
   const id = getUniqueId();
 
   if (!componentCache[cleanComponentName]) {
     const clientComponents = page.settings.$$internal.hashedComponents;
-    const ssrComponent = path.resolve(page.settings.$$internal.ssrComponents, `./${cleanComponentName}.js`);
+    const ssrComponent = path.resolve(
+      page.settings.$$internal.ssrComponents,
+      `./${ssrFolder}/${cleanComponentName}.js`,
+    );
     const clientSvelteFolder = getClientSvelteFolder(page);
 
     // eslint-disable-next-line global-require, import/no-dynamic-require
-    const { render } = require(ssrComponent);
+    const { render, _css, _cssMap } = require(ssrComponent);
+
     componentCache[cleanComponentName] = {
       render,
       clientSrcMjs: `${clientSvelteFolder}/${clientComponents[cleanComponentName].mjs}.mjs`,
-      iife: `${clientSvelteFolder}/${clientComponents[cleanComponentName].iife}.js`,
+      iife: clientComponents[cleanComponentName].iife
+        ? `${clientSvelteFolder}/${clientComponents[cleanComponentName].iife}.js`
+        : false,
+      css: JSON.parse(_css),
+      cssMap: JSON.parse(_cssMap),
     };
   }
 
-  const { render, clientSrcMjs, iife } = componentCache[cleanComponentName];
+  const { render, clientSrcMjs, iife, css, cssMap } = componentCache[cleanComponentName];
 
   try {
-    const { css, html: htmlOutput, head } = render(props);
+    const { html: htmlOutput, head } = render(props);
 
-    if (css && css.code && css.code.length > 0 && page.cssStack) {
-      page.cssStack.push({ source: componentName, priority: 50, string: css.code });
+    if (css && css.length > 0 && page.cssStack) {
+      css.forEach((c) => {
+        page.cssStack.push({ source: componentName, priority: 50, string: c });
+      });
+    }
+
+    if (cssMap && cssMap.length > 0 && page.cssStack && notProduction) {
+      cssMap.forEach((c) => {
+        page.cssStack.push({ source: componentName, priority: 1, string: c });
+      });
     }
 
     if (head && page.headStack) {
@@ -61,7 +83,7 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
 
     let finalHtmlOuput = htmlOutput;
     const matches = finalHtmlOuput.matchAll(
-      /<div class="ejs-component" data-ejs-component="([A-Za-z]+)" data-ejs-props="({[^]*?})" data-ejs-options="({[^]*?})"><\/div>/gim,
+      /<div class="ejs-component[^]*?" data-ejs-component="([A-Za-z]+)" data-ejs-props="({[^]*?})" data-ejs-options="({[^]*?})"><\/div>/gim,
     );
 
     for (const match of matches) {
@@ -132,18 +154,19 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
       });
     }
 
-    // iife -- working
-    // -----------------
-    page.hydrateStack.push({
-      source: componentName,
-      string: `<script nomodule defer src="${iife}" onload="init${uniqueComponentName}()"></script>`,
-      priority: 99,
-    });
+    if (iife) {
+      // iife -- working in IE. Users must import some polyfills.
+      // -----------------
+      page.hydrateStack.push({
+        source: componentName,
+        string: `<script nomodule defer src="${iife}" onload="init${uniqueComponentName}()"></script>`,
+        priority: 99,
+      });
 
-    page.hydrateStack.push({
-      source: componentName,
-      priority: 98,
-      string: `
+      page.hydrateStack.push({
+        source: componentName,
+        priority: 98,
+        string: `
       <script nomodule>
       function init${uniqueComponentName}(){
         new ___elderjs_${componentName}({
@@ -153,13 +176,13 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
         });
       }
       </script>`,
-    });
+      });
+    }
 
     page.hydrateStack.push({
       source: componentName,
       priority: 30,
       string: `     
-      <!-- loads ESM for module with a dynamic import -->
       <script type="module">
       function init${uniqueComponentName}(){
         import("${clientSrcMjs}").then((component)=>{
