@@ -75,108 +75,6 @@ jest.mock('../utils/prepareRunHook', () => (page) =>
 describe('#Elder', () => {
   beforeEach(() => jest.resetModules());
 
-  it('throws when plugin not found', async () => {
-    jest.mock('fs-extra', () => ({
-      existsSync: () => false,
-    }));
-    // eslint-disable-next-line global-require
-    const { Elder } = require('../index');
-    await expect(async () => {
-      await new Elder({ context: 'build', worker: false });
-    }).rejects.toThrow('Plugin elder-plugin-upload-s3 not found in plugins or node_modules folder.');
-    await expect(async () => {
-      await new Elder({ context: 'build', worker: true });
-    }).rejects.toThrow('Plugin elder-plugin-upload-s3 not found in plugins or node_modules folder.');
-  });
-
-  it('plugin file found in node modules, but is empty', async () => {
-    jest.mock('fs-extra', () => ({
-      existsSync: () => true,
-    }));
-    jest.mock('test/src/plugins/elder-plugin-upload-s3/index.js', () => '', {
-      virtual: true,
-    });
-    jest.mock('test/__ELDER__/plugins/elder-plugin-upload-s3/index.js', () => '', {
-      virtual: true,
-    });
-    jest.mock('test/node_modules/elder-plugin-upload-s3/package.json', () => ({ main: './index.js' }), {
-      virtual: true,
-    });
-    jest.mock('test/node_modules/elder-plugin-upload-s3/index.js', () => '', {
-      virtual: true,
-    });
-    // eslint-disable-next-line global-require
-    const { Elder } = require('../index');
-    await expect(async () => {
-      await new Elder({ context: 'build', worker: false });
-    }).rejects.toThrow('Plugin elder-plugin-upload-s3 not found in plugins or node_modules folder.');
-  });
-
-  it('plugin found but invalid', async () => {
-    jest.mock('../utils/validations', () => ({
-      validatePlugin: () => false,
-      validateShortcode: (i) => i,
-    }));
-    jest.mock('fs-extra', () => ({
-      existsSync: () => true,
-    }));
-    jest.mock(
-      'test/src/plugins/elder-plugin-upload-s3/index.js',
-      () => ({
-        hooks: [
-          {
-            hook: 'customizeHooks',
-            name: 'test hook',
-            description: 'just for testing',
-            run: jest.fn(),
-            $$meta: {
-              type: 'hooks.js',
-              addedBy: 'validations.spec.ts',
-            },
-          },
-        ],
-        routes: {},
-        config: {},
-        name: 'test',
-        description: 'test',
-        init: jest.fn(),
-      }),
-      {
-        virtual: true,
-      },
-    );
-    // eslint-disable-next-line global-require
-    const { Elder } = require('../index');
-    const elder = await new Elder({ context: 'server', worker: true });
-    // await elder.bootstrap();
-    expect({ ...elder }).toEqual({
-      bootstrapComplete: Promise.resolve({}),
-      markBootstrapComplete: expect.any(Function),
-      settings: {
-        $$internal: {
-          clientComponents: 'test/public/svelte',
-          ssrComponents: 'test/___ELDER___/compiled',
-        },
-        build: false,
-        debug: { automagic: true },
-        hooks: { disable: ['randomHook'] },
-        plugins: {
-          'elder-plugin-upload-s3': {
-            dataBucket: 'elderguide.com',
-            deployId: '11111111',
-            htmlBucket: 'elderguide.com',
-          },
-        },
-        server: { prefix: '/dev' },
-        distDir: 'test/public',
-        rootDir: 'test',
-        srcDir: 'test/src',
-        context: 'server',
-        worker: true,
-      },
-    });
-  });
-
   it('hookSrcFile not found', async () => {
     jest.mock('../utils/validations', () => ({
       validatePlugin: (i) => i,
@@ -296,7 +194,7 @@ describe('#Elder', () => {
         config: {},
         name: 'test',
         description: 'test',
-        init: jest.fn(),
+        init: jest.fn().mockImplementation((p) => p),
       }),
       {
         virtual: true,
