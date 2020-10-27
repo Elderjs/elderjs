@@ -128,7 +128,7 @@ function routes(settings: SettingsOptions) {
 
     if (route.layout) {
       if (typeof route.layout === 'string' && route.layout.endsWith('.svelte')) {
-        route.layout = svelteComponent(route.layout.replace('.svelte', ''));
+        route.layoutComponent = svelteComponent(route.layout.replace('.svelte', ''));
       }
     } else {
       if (settings.debug.automagic) {
@@ -136,7 +136,8 @@ function routes(settings: SettingsOptions) {
           `debug.automagic:: The route at /routes/${routeName}/route.js doesn't have a layout specified so going to look for a Layout.svelte file.`,
         );
       }
-      route.layout = svelteComponent('Layout.svelte');
+      route.layout = 'Layout.svelte';
+      route.layoutComponent = svelteComponent('Layout.svelte');
     }
     // console.log(route);
     out[routeName] = route;

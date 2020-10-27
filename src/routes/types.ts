@@ -33,7 +33,8 @@ type RequestObject = {
 export type RouteOptions = {
   template?: string;
   templateComponent?: (string) => Object;
-  layout?: string | ((string) => Object);
+  layout?: string;
+  layoutComponent?: (string) => Object;
   data?: Object | (() => Object);
   permalink: Permalink | any;
   parent?: string;
