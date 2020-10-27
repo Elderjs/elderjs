@@ -55,8 +55,8 @@ const svelteComponent = (componentName: String, ssrFolder: String = 'components'
       iife: clientComponents[cleanComponentName].iife
         ? `${clientSvelteFolder}/${clientComponents[cleanComponentName].iife}.js`
         : false,
-      css: JSON.parse(_css),
-      cssMap: JSON.parse(_cssMap),
+      css: _css,
+      cssMap: _cssMap,
     };
   }
 
@@ -82,6 +82,8 @@ const svelteComponent = (componentName: String, ssrFolder: String = 'components'
     }
 
     let finalHtmlOuput = htmlOutput;
+
+    // sometimes svelte adds a class to our inlining.
     const matches = finalHtmlOuput.matchAll(
       /<div class="ejs-component[^]*?" data-ejs-component="([A-Za-z]+)" data-ejs-props="({[^]*?})" data-ejs-options="({[^]*?})"><\/div>/gim,
     );

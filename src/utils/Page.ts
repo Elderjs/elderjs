@@ -52,7 +52,7 @@ const buildPage = async (page) => {
     await page.runHook('shortcodes', page);
 
     page.perf.start('html.layout');
-    page.layoutHtml = page.route.layout({
+    page.layoutHtml = page.route.layoutComponent({
       page,
       props: {
         data: page.data,

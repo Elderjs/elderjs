@@ -16,6 +16,7 @@ import { getElderConfig, partialHydration } from '../index';
 import { getDefaultRollup } from './validations';
 import handleCss from './rollupPluginHandleCss';
 import getPluginLocations from './getPluginLocations';
+import ssrOutputPath from './ssrOutputPath';
 
 const production = process.env.NODE_ENV === 'production' || !process.env.ROLLUP_WATCH;
 const elderJsDir = path.resolve(process.cwd(), './node_modules/@elderjs/elderjs/');
@@ -56,23 +57,6 @@ const babelIE11 = babel({
     // ],
   ],
 });
-
-const ssrOutputPath = (str) => {
-  let name = '';
-  const split = str.split(path.sep);
-  if (!str.includes('node_modules')) {
-    if (!str.includes('plugins')) {
-      name = [split.shift(), split.pop()].join(path.sep);
-    } else {
-      name = str;
-    }
-  } else {
-    const last = split.pop();
-    name = ['plugins', split.pop(), last].join(path.sep);
-  }
-  console.log(str, name);
-  return name;
-};
 
 export function createBrowserConfig({
   input,
@@ -143,7 +127,16 @@ export function createBrowserConfig({
   return config;
 }
 
-export function createSSRConfig({ input, output, svelteConfig, replacements = {}, multiInputConfig }) {
+export function createSSRConfig({
+  input,
+  output,
+  svelteConfig,
+  replacements = {},
+  multiInputConfig,
+  distDir,
+  srcDir,
+  rootDir,
+}) {
   const toReplace = {
     'process.env.componentType': "'server'",
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
@@ -177,7 +170,7 @@ export function createSSRConfig({ input, output, svelteConfig, replacements = {}
       // css({
       //   ignore: true,
       // }),
-      handleCss(),
+      handleCss({ distDir, production, srcDir, rootDir }),
       production && terser(),
     ],
   };
@@ -242,25 +235,9 @@ export default function getRollupConfig(options) {
       `NOTE: Splitting components into separate rollup objects, this breaks some svelte features such as stores.`,
     );
 
-    configs.push(
-      // SSR /routes/ Svelte files.
-      createSSRConfig({
-        input: [`${relSrcDir}/layouts/*.svelte`, `${relSrcDir}/routes/*/*.svelte`, ...pluginGlobs],
-        output: {
-          dir: ssrComponents,
-          format: 'cjs',
-          exports: 'auto',
-        },
-        multiInputConfig: multiInput({
-          transformOutputPath: (output) => ssrOutputPath(output),
-        }),
-        svelteConfig,
-        replacements,
-      }),
-    );
-
     [...components, ...pluginFiles].forEach((cv) => {
       const file = cv.replace(`${rootDir}/`, '');
+
       configs.push(
         createBrowserConfig({
           input: file,
@@ -277,25 +254,36 @@ export default function getRollupConfig(options) {
           multiInputConfig: false,
         }),
       );
-
-      configs.push(
-        createSSRConfig({
-          input: file,
-          output: {
-            dir: ssrComponents,
-            format: 'cjs',
-            exports: 'auto',
-          },
-          svelteConfig,
-          replacements,
-          multiInputConfig: false,
-        }),
-      );
     });
+
+    configs.push(
+      // SSR /routes/ Svelte files.
+      createSSRConfig({
+        input: [
+          `${relSrcDir}/layouts/*.svelte`,
+          `${relSrcDir}/routes/*/*.svelte`,
+          `${relSrcDir}/components/**/*.svelte`,
+          ...pluginGlobs,
+        ],
+        output: {
+          dir: ssrComponents,
+          format: 'cjs',
+          exports: 'auto',
+        },
+        multiInputConfig: multiInput({
+          transformOutputPath: (output) => ssrOutputPath(output),
+        }),
+        svelteConfig,
+        replacements,
+        distDir,
+        srcDir,
+        rootDir,
+      }),
+    );
   } else {
     configs.push(
       createBrowserConfig({
-        input: [`${relSrcDir}/components/*/*.svelte`, `${relSrcDir}/components/*.svelte`],
+        input: [`${relSrcDir}/components/**/*.svelte`],
         output: [
           {
             dir: clientComponents,
@@ -317,8 +305,7 @@ export default function getRollupConfig(options) {
         input: [
           `${relSrcDir}/layouts/*.svelte`,
           `${relSrcDir}/routes/*/*.svelte`,
-          `${relSrcDir}/components/*/*.svelte`,
-          `${relSrcDir}/components/*.svelte`,
+          `${relSrcDir}/components/**/*.svelte`,
           ...pluginGlobs,
         ],
         output: {
@@ -331,6 +318,9 @@ export default function getRollupConfig(options) {
         }),
         svelteConfig,
         replacements,
+        distDir,
+        srcDir,
+        rootDir,
       }),
     );
 
@@ -360,71 +350,6 @@ export default function getRollupConfig(options) {
       });
     }
   }
-
-  // pluginPaths.forEach((pluginPath) => {
-  //   configs.push(
-  //     createBrowserConfig({
-  //       input: [`${pluginPath}*.svelte`],
-  //       output: [
-  //         {
-  //           dir: clientComponents,
-  //           entryFileNames: 'entry[name]-[hash].js',
-  //           sourcemap: !production,
-  //           format: 'esm',
-  //         },
-  //       ],
-  //       multiInputConfig: multiInput({
-  //         relative: pluginPath.replace(elderConfig.distDir, '').substr(1),
-  //         transformOutputPath: (output) => `${path.basename(output)}`,
-  //       }),
-  //       svelteConfig,
-  //       replacements,
-  //     }),
-  //   );
-
-  //   configs.push(
-  //     createSSRConfig({
-  //       input: [`${pluginPath}*.svelte`],
-  //       output: {
-  //         dir: ssrComponents,
-  //         format: 'cjs',
-  //         exports: 'auto',
-  //       },
-  //       multiInputConfig: multiInput({
-  //         relative: pluginPath.replace(elderConfig.distDir, '').substr(1),
-  //         transformOutputPath: (output) => `${path.basename(output)}`,
-  //       }),
-  //       svelteConfig,
-  //       replacements,
-  //     }),
-  //   );
-
-  //   if (legacy) {
-  //     const legacyPluginFiles = glob.sync(`${pluginPath}*.svelte`);
-  //     legacyPluginFiles.forEach((cv) => {
-  //       const file = cv.replace(`${rootDir}/`, '');
-  //       const parsed = path.parse(cv);
-  //       configs.push(
-  //         createBrowserConfig({
-  //           input: file,
-  //           output: [
-  //             {
-  //               name: `___elderjs_${parsed.name}`,
-  //               dir: clientComponents,
-  //               entryFileNames: 'iife[name]-[hash].js',
-  //               sourcemap: !production,
-  //               format: 'iife',
-  //             },
-  //           ],
-  //           svelteConfig,
-  //           replacements,
-  //           multiInputConfig: false,
-  //           ie11: true,
-  //         }),
-  //       );
-  //     });
-  //   }
-  // });
 
   return configs;
 }

@@ -23,7 +23,7 @@ const getHashedSvelteComponents = ({ srcDir, $$internal: { ssrComponents, client
 
     const hydrateableComponents = [
       ...globBasenames(`${srcDir}/components/*.svelte`),
-      ...globBasenames(`${srcDir}/components/**/*.svelte`),
+      ...globBasenames(`${srcDir}/components/*/*.svelte`),
     ];
 
     // get an array with jus the file name before .js;
