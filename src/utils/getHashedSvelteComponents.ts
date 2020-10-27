@@ -58,6 +58,7 @@ const getHashedSvelteComponents = ({ srcDir, $$internal: { ssrComponents, client
 
     return results;
   }
+
   return results;
 };
 

@@ -127,7 +127,8 @@ Page {
     },
     "data": [Function],
     "hooks": Array [],
-    "layout": [MockFunction],
+    "layout": "Layout.svelte",
+    "layoutComponent": [MockFunction],
     "parent": "home",
     "template": "Content.svelte",
     "templateComponent": [MockFunction],
@@ -423,7 +424,8 @@ Page {
     },
     "data": [Function],
     "hooks": Array [],
-    "layout": [MockFunction] {
+    "layout": "Layout.svelte",
+    "layoutComponent": [MockFunction] {
       "calls": Array [
         Array [
           Object {

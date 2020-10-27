@@ -86,15 +86,16 @@ describe('#svelteComponent', () => {
     expect(replaceSpecialCharacters('abcd 1234 <&""&>')).toEqual('abcd 1234 <&""&>');
   });
 
-  it('svelteComponent works', () => {
+  it('svelteComponent works assuming components folder for SSR', () => {
     jest.mock(
-      'test/___ELDER___/compiled/Home.js',
+      'test/___ELDER___/compiled/components/Home.js',
       () => ({
         render: () => ({
           head: '<head>',
           css: { code: '<css>' },
           html: '<div class="svelte-home">mock html output</div>',
         }),
+        _css: ['<css>'],
       }),
       { virtual: true },
     );
@@ -104,27 +105,67 @@ describe('#svelteComponent', () => {
     expect(home(componentProps)).toEqual(`<div class="svelte-home">mock html output</div>`);
   });
 
-  it('svelteComponent works with partial hydration of subcomponent', () => {
+  it('svelteComponent works with routes folder for SSR', () => {
     jest.mock(
-      'test/___ELDER___/compiled/Home.js',
+      'test/___ELDER___/compiled/routes/Home.js',
       () => ({
         render: () => ({
           head: '<head>',
           css: { code: '<css>' },
+          html: '<div class="svelte-home">mock html output</div>',
+        }),
+        _css: ['<css>'],
+      }),
+      { virtual: true },
+    );
+    // eslint-disable-next-line global-require
+    const svelteComponent = require('../svelteComponent').default;
+    const home = svelteComponent('Home.svelte', 'routes');
+    expect(home(componentProps)).toEqual(`<div class="svelte-home">mock html output</div>`);
+  });
+
+  it('svelteComponent works with layouts folder for SSR', () => {
+    jest.mock(
+      'test/___ELDER___/compiled/layouts/Home.js',
+      () => ({
+        render: () => ({
+          head: '<head>',
+          css: { code: '<css>' },
+          html: '<div class="svelte-home">mock html output</div>',
+        }),
+        _css: ['<css>'],
+      }),
+      { virtual: true },
+    );
+    // eslint-disable-next-line global-require
+    const svelteComponent = require('../svelteComponent').default;
+    const home = svelteComponent('Home.svelte', 'layouts');
+    expect(home(componentProps)).toEqual(`<div class="svelte-home">mock html output</div>`);
+  });
+
+  it('svelteComponent works with partial hydration of subcomponent', () => {
+    jest.mock(
+      'test/___ELDER___/compiled/components/Home.js',
+      () => ({
+        render: () => ({
+          head: '<head>',
+          css: { code: '<old>' },
           html:
             '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "lazy" }"></div></div>',
         }),
+        _css: ['<css>', '<css2>'],
       }),
       { virtual: true },
     );
     jest.mock(
-      'test/___ELDER___/compiled/Datepicker.js',
+      'test/___ELDER___/compiled/components/Datepicker.js',
       () => ({
         render: () => ({
           head: '<head>',
-          css: { code: '<css>' },
+          css: { code: '<old>' },
           html: '<div>DATEPICKER</div>',
         }),
+        _css: ['<css>'],
       }),
       { virtual: true },
     );

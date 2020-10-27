@@ -8,29 +8,9 @@ Array [
     "string": "<script>var datepickerPropsSwrzsrVDCd = {a:\\"b\\"};</script>",
   },
   Object {
-    "priority": 99,
-    "source": "Datepicker",
-    "string": "<script nomodule defer src=\\"/svelte/undefined.js\\" onload=\\"initdatepickerSwrzsrVDCd()\\"></script>",
-  },
-  Object {
-    "priority": 98,
-    "source": "Datepicker",
-    "string": "
-      <script nomodule>
-      function initdatepickerSwrzsrVDCd(){
-        new ___elderjs_Datepicker({
-          target: document.getElementById('datepickerSwrzsrVDCd'),
-          props:  datepickerPropsSwrzsrVDCd,
-          hydrate: true,
-        });
-      }
-      </script>",
-  },
-  Object {
     "priority": 30,
     "source": "Datepicker",
     "string": "     
-      <!-- loads ESM for module with a dynamic import -->
       <script type=\\"module\\">
       function initdatepickerSwrzsrVDCd(){
         import(\\"/svelte/undefined.mjs\\").then((component)=>{

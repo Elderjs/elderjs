@@ -80,7 +80,7 @@ beforeEach(() => {
   jest.resetModules();
 });
 
-describe.only('#rollupPluginHandleCss', () => {
+describe('#rollupPluginHandleCss', () => {
   const { name } = rollupPluginHandleCss({ rootDir: 'test' });
   test('name', () => expect(name).toBe('elderjs-handle-css'));
 
