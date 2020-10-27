@@ -2,11 +2,10 @@ import fs from 'fs-extra';
 import defaultsDeep from 'lodash.defaultsdeep';
 
 import path from 'path';
-import { validatePlugin, validateHook, svelteComponent } from '.';
-import { HookOptions, ShortcodeDefs, PluginOptions } from '..';
+import { validatePlugin, validateHook, svelteComponent, HookOptions, ShortcodeDefs, PluginOptions } from '..';
 import { Elder } from '../Elder';
 import { RoutesOptions } from '../routes/types';
-import createReadOnlyProxy from './createReadOnlyProxy';
+import createReadOnlyProxy from '../utils/createReadOnlyProxy';
 
 async function plugins(elder: Elder) {
   /**

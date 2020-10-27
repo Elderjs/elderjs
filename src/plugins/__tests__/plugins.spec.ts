@@ -10,7 +10,7 @@ describe('#plugins', () => {
   beforeEach(() => jest.resetModules());
   it('no plugins in settings', async () => {
     // eslint-disable-next-line global-require
-    const plugins = require('../plugins').default;
+    const plugins = require('../index').default;
     const { pluginRoutes, pluginHooks, pluginShortcodes } = await plugins({
       settings: {
         plugins: {},
@@ -30,7 +30,7 @@ describe('#plugins', () => {
       existsSync: () => false,
     }));
     // eslint-disable-next-line global-require
-    const plugins = require('../plugins').default;
+    const plugins = require('../index').default;
     const { pluginRoutes, pluginHooks, pluginShortcodes } = await plugins({
       settings: {
         plugins: {
@@ -68,7 +68,7 @@ describe('#plugins', () => {
       virtual: true,
     });
     // eslint-disable-next-line global-require
-    const plugins = require('../plugins').default;
+    const plugins = require('../index').default;
     const { pluginRoutes, pluginHooks, pluginShortcodes } = await plugins({
       settings: {
         plugins: {
@@ -90,7 +90,7 @@ describe('#plugins', () => {
   });
 
   it('plugin file found but is invalid', async () => {
-    jest.mock('../validations', () => ({
+    jest.mock('../../utils/validations', () => ({
       validatePlugin: () => false,
       validateShortcode: (i) => i,
     }));
@@ -124,7 +124,7 @@ describe('#plugins', () => {
       },
     );
     // eslint-disable-next-line global-require
-    const plugins = require('../plugins').default;
+    const plugins = require('../index').default;
     const { pluginRoutes, pluginHooks, pluginShortcodes } = await plugins({
       settings: {
         plugins: {
@@ -147,7 +147,7 @@ describe('#plugins', () => {
   });
 
   it('plugin has routes, hooks and shortcodes', async () => {
-    jest.mock('../validations', () => ({
+    jest.mock('../../utils/validations', () => ({
       validatePlugin: (i) => i,
       validateHook: () => true,
       validateShortcode: (i) => i,
@@ -198,7 +198,7 @@ describe('#plugins', () => {
       },
     );
     // eslint-disable-next-line global-require
-    const plugins = require('../plugins').default;
+    const plugins = require('../index').default;
     const { pluginRoutes, pluginHooks, pluginShortcodes } = await plugins({
       settings: {
         plugins: {

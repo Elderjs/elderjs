@@ -3,7 +3,7 @@
 import path from 'path';
 
 import routes from './routes/routes';
-import plugins from './utils/plugins';
+import plugins from './plugins';
 import { hookInterface } from './hookInterface/hookInterface';
 import internalHooks from './hooks';
 import build from './build/build';
