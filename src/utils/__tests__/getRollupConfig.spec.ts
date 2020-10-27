@@ -72,7 +72,7 @@ describe('#getRollupConfig', () => {
         ie11: true,
         multiInputConfig: false,
       }).plugins.map((p) => p.name),
-    ).toEqual(['replace', 'json', 'svelte', 'node-resolve', 'commonjs', 'babel', 'terser', 'babel']); // babel + babel for ie11
+    ).toEqual(['replace', 'json', 'svelte', 'node-resolve', 'commonjs', 'babel', 'terser']);
   });
 
   it('createSSRConfig works', () => {
@@ -131,7 +131,7 @@ describe('#getRollupConfig', () => {
         },
         multiInputConfig: false,
       }).plugins.map((p) => p.name),
-    ).toEqual(['replace', 'json', 'svelte', 'node-resolve', 'commonjs', 'css', 'terser']);
+    ).toEqual(['replace', 'json', 'svelte', 'node-resolve', 'commonjs', 'elderjs-handle-css', 'terser']);
   });
 
   it('getPluginPaths works', () => {

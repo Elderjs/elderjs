@@ -3,7 +3,6 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import { terser } from 'rollup-plugin-terser';
 import babel from 'rollup-plugin-babel';
-import css from 'rollup-plugin-css-only';
 import multiInput from 'rollup-plugin-multi-input';
 import replace from '@rollup/plugin-replace';
 import json from '@rollup/plugin-json';
@@ -127,16 +126,7 @@ export function createBrowserConfig({
   return config;
 }
 
-export function createSSRConfig({
-  input,
-  output,
-  svelteConfig,
-  replacements = {},
-  multiInputConfig,
-  distDir,
-  srcDir,
-  rootDir,
-}) {
+export function createSSRConfig({ input, output, svelteConfig, replacements = {}, multiInputConfig, rootDir }) {
   const toReplace = {
     'process.env.componentType': "'server'",
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
@@ -170,7 +160,7 @@ export function createSSRConfig({
       // css({
       //   ignore: true,
       // }),
-      handleCss({ distDir, production, srcDir, rootDir }),
+      handleCss({ rootDir }),
       production && terser(),
     ],
   };
@@ -275,8 +265,6 @@ export default function getRollupConfig(options) {
         }),
         svelteConfig,
         replacements,
-        distDir,
-        srcDir,
         rootDir,
       }),
     );
@@ -318,8 +306,6 @@ export default function getRollupConfig(options) {
         }),
         svelteConfig,
         replacements,
-        distDir,
-        srcDir,
         rootDir,
       }),
     );
