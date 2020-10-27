@@ -97,6 +97,7 @@ describe('#plugins', () => {
     jest.mock('fs-extra', () => ({
       existsSync: () => true,
     }));
+    const initMock = jest.fn().mockImplementation((p) => Promise.resolve(p));
     jest.mock(
       'test/src/plugins/elder-plugin-upload-s3/index.js',
       () => ({
@@ -116,7 +117,7 @@ describe('#plugins', () => {
         config: {},
         name: 'test',
         description: 'test',
-        init: jest.fn().mockImplementation((p) => p),
+        init: initMock,
       }),
       {
         virtual: true,
@@ -142,5 +143,6 @@ describe('#plugins', () => {
     expect(pluginRoutes).toEqual({});
     expect(pluginHooks).toEqual([]);
     expect(pluginShortcodes).toEqual([]);
+    expect(initMock).toHaveBeenCalled();
   });
 });
