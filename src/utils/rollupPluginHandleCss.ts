@@ -4,7 +4,7 @@ import ssrOutputPath from './ssrOutputPath';
 const cssMap = new Map();
 
 export default function elderjsHandleCss({ distDir, production, srcDir, rootDir }) {
-  const isCss = (id) => id.includes('.css');
+  const isCss = (id) => id.endsWith('.css');
 
   const mapIntro = `/*# sourceMappingURL=data:application/json;charset=utf-8;base64,`;
 
