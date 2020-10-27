@@ -50,6 +50,7 @@ async function plugins(elder: Elder) {
 
     if (!plugin) {
       console.error(new Error(`Plugin ${pluginName} not found in plugins or node_modules folder. Skipping.`));
+      // eslint-disable-next-line no-continue
       continue;
     }
 
@@ -153,6 +154,7 @@ async function plugins(elder: Elder) {
                 `Plugin Route: ${routeName} added by plugin ${pluginName} does not have a template defined. Disabling this route.`,
               ),
             );
+            // eslint-disable-next-line no-continue
             continue;
           }
 
@@ -180,6 +182,7 @@ async function plugins(elder: Elder) {
               console.error(
                 `Plugin Route: ${routeName} added by plugin ${pluginName} requires a /src/layouts/Layout.svelte to be compiled at ${ssrComponent}. Disabling this route.`,
               );
+              // eslint-disable-next-line no-continue
               continue;
             }
             plugin.routes[routeName].layoutComponent = svelteComponent('Layout.svelte');
