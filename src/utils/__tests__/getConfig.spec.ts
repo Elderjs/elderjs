@@ -13,8 +13,8 @@ jest.mock('cosmiconfig', () => {
 describe('#getConfig', () => {
   const output = {
     $$internal: {
-      clientComponents: process.cwd() + '/public/svelte',
-      ssrComponents: process.cwd() + '/___ELDER___/compiled',
+      clientComponents: `${process.cwd()}/public/svelte`,
+      ssrComponents: `${process.cwd()}/___ELDER___/compiled`,
     },
     build: {
       numberOfWorkers: -1,
@@ -28,9 +28,9 @@ describe('#getConfig', () => {
       shortcodes: false,
       stacks: false,
     },
-    distDir: process.cwd() + '/public',
+    distDir: `${process.cwd()}/public`,
     rootDir: process.cwd(),
-    srcDir: process.cwd() + '/src',
+    srcDir: `${process.cwd()}/src`,
     server: {
       prefix: '',
     },
@@ -73,12 +73,12 @@ describe('#getConfig', () => {
     expect(getConfig({ context: 'serverless', rootDir: 't' })).toStrictEqual(
       expect.objectContaining({
         context: 'serverless',
-        distDir: process.cwd() + '/t/public',
-        rootDir: process.cwd() + '/t',
-        srcDir: process.cwd() + '/t/src',
+        distDir: `${process.cwd()}/t/public`,
+        rootDir: `${process.cwd()}/t`,
+        srcDir: `${process.cwd()}/t/src`,
         $$internal: {
-          clientComponents: process.cwd() + '/t/public/svelte',
-          ssrComponents: process.cwd() + '/t/___ELDER___/compiled',
+          clientComponents: `${process.cwd()}/t/public/svelte`,
+          ssrComponents: `${process.cwd()}/t/___ELDER___/compiled`,
         },
       }),
     );

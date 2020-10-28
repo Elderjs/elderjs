@@ -322,7 +322,7 @@ describe('#getRollupConfig', () => {
           pluginB: {},
         },
       }),
-    ).toEqual([process.cwd() + '/src/plugins/pluginA/', process.cwd() + '/node_modules/pluginB/']);
+    ).toEqual([`${process.cwd()}/src/plugins/pluginA/`, `${process.cwd()}/node_modules/pluginB/`]);
   });
 
   it('getRollupConfig as a whole works', () => {
@@ -362,12 +362,601 @@ describe('#getRollupConfig', () => {
         },
       ],
     };
-    expect(require('../getRollupConfig').default({ svelteConfig })).toStrictEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          input: './node_modules/intersection-observer/intersection-observer.js',
-        }),
-      ]),
-    );
+    expect(require('../getRollupConfig').default({ svelteConfig })).toStrictEqual([
+      {
+        input: './node_modules/intersection-observer/intersection-observer.js',
+        output: [
+          {
+            file: `${process.cwd()}/dist/static/intersection-observer.js`,
+            format: 'iife',
+            name: './static/intersection-observer.js',
+            plugins: [
+              {
+                name: 'terser',
+                renderChunk: expect.any(Function),
+              },
+            ],
+          },
+        ],
+      },
+      {
+        input: './node_modules/systemjs/dist/s.min.js',
+        output: [
+          {
+            file: `${process.cwd()}/dist/static/s.min.js`,
+            format: 'iife',
+            name: './static/s.min.js',
+            plugins: [
+              {
+                name: 'terser',
+                renderChunk: expect.any(Function),
+              },
+            ],
+          },
+        ],
+      },
+      {
+        cache: true,
+        input: 'route1.svelte',
+        output: {
+          dir: 'test/___ELDER___/compiled',
+          exports: 'auto',
+          format: 'cjs',
+        },
+        plugins: [
+          {
+            name: 'replace',
+            renderChunk: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            name: 'json',
+            transform: expect.any(Function),
+          },
+          {
+            generateBundle: expect.any(Function),
+            load: expect.any(Function),
+            name: 'svelte',
+            resolveId: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            buildStart: expect.any(Function),
+            generateBundle: expect.any(Function),
+            getPackageInfoForId: expect.any(Function),
+            load: expect.any(Function),
+            name: 'node-resolve',
+            resolveId: expect.any(Function),
+          },
+          {
+            buildStart: expect.any(Function),
+            load: expect.any(Function),
+            name: 'commonjs',
+            resolveId: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            generateBundle: expect.any(Function),
+            name: 'css',
+            transform: expect.any(Function),
+          },
+          {
+            name: 'terser',
+            renderChunk: expect.any(Function),
+          },
+        ],
+        treeshake: true,
+      },
+      {
+        cache: true,
+        input: 'route2.svelte',
+        output: {
+          dir: 'test/___ELDER___/compiled',
+          exports: 'auto',
+          format: 'cjs',
+        },
+        plugins: [
+          {
+            name: 'replace',
+            renderChunk: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            name: 'json',
+            transform: expect.any(Function),
+          },
+          {
+            generateBundle: expect.any(Function),
+            load: expect.any(Function),
+            name: 'svelte',
+            resolveId: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            buildStart: expect.any(Function),
+            generateBundle: expect.any(Function),
+            getPackageInfoForId: expect.any(Function),
+            load: expect.any(Function),
+            name: 'node-resolve',
+            resolveId: expect.any(Function),
+          },
+          {
+            buildStart: expect.any(Function),
+            load: expect.any(Function),
+            name: 'commonjs',
+            resolveId: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            generateBundle: expect.any(Function),
+            name: 'css',
+            transform: expect.any(Function),
+          },
+          {
+            name: 'terser',
+            renderChunk: expect.any(Function),
+          },
+        ],
+        treeshake: true,
+      },
+      {
+        cache: true,
+        input: 'layout1.svelte',
+        output: {
+          dir: 'test/___ELDER___/compiled',
+          exports: 'auto',
+          format: 'cjs',
+        },
+        plugins: [
+          {
+            name: 'replace',
+            renderChunk: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            name: 'json',
+            transform: expect.any(Function),
+          },
+          {
+            generateBundle: expect.any(Function),
+            load: expect.any(Function),
+            name: 'svelte',
+            resolveId: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            buildStart: expect.any(Function),
+            generateBundle: expect.any(Function),
+            getPackageInfoForId: expect.any(Function),
+            load: expect.any(Function),
+            name: 'node-resolve',
+            resolveId: expect.any(Function),
+          },
+          {
+            buildStart: expect.any(Function),
+            load: expect.any(Function),
+            name: 'commonjs',
+            resolveId: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            generateBundle: expect.any(Function),
+            name: 'css',
+            transform: expect.any(Function),
+          },
+          {
+            name: 'terser',
+            renderChunk: expect.any(Function),
+          },
+        ],
+        treeshake: true,
+      },
+      {
+        cache: true,
+        input: 'layout2.svelte',
+        output: {
+          dir: 'test/___ELDER___/compiled',
+          exports: 'auto',
+          format: 'cjs',
+        },
+        plugins: [
+          {
+            name: 'replace',
+            renderChunk: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            name: 'json',
+            transform: expect.any(Function),
+          },
+          {
+            generateBundle: expect.any(Function),
+            load: expect.any(Function),
+            name: 'svelte',
+            resolveId: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            buildStart: expect.any(Function),
+            generateBundle: expect.any(Function),
+            getPackageInfoForId: expect.any(Function),
+            load: expect.any(Function),
+            name: 'node-resolve',
+            resolveId: expect.any(Function),
+          },
+          {
+            buildStart: expect.any(Function),
+            load: expect.any(Function),
+            name: 'commonjs',
+            resolveId: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            generateBundle: expect.any(Function),
+            name: 'css',
+            transform: expect.any(Function),
+          },
+          {
+            name: 'terser',
+            renderChunk: expect.any(Function),
+          },
+        ],
+        treeshake: true,
+      },
+      {
+        cache: true,
+        input: ['rc/components/*/*.svelte', 'rc/components/*.svelte'],
+        output: {
+          dir: 'test/public/svelte',
+          entryFileNames: 'entry[name]-[hash].js',
+          format: 'system',
+          sourcemap: false,
+        },
+        plugins: [
+          {
+            options: expect.any(Function),
+            pluginName: 'rollup-plugin-multi-input',
+          },
+          {
+            name: 'replace',
+            renderChunk: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            name: 'json',
+            transform: expect.any(Function),
+          },
+          {
+            generateBundle: expect.any(Function),
+            load: expect.any(Function),
+            name: 'svelte',
+            resolveId: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            name: 'rollup-plugin-external-globals',
+            transform: expect.any(Function),
+          },
+          {
+            buildStart: expect.any(Function),
+            generateBundle: expect.any(Function),
+            getPackageInfoForId: expect.any(Function),
+            load: expect.any(Function),
+            name: 'node-resolve',
+            resolveId: expect.any(Function),
+          },
+          {
+            buildStart: expect.any(Function),
+            load: expect.any(Function),
+            name: 'commonjs',
+            resolveId: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            load: expect.any(Function),
+            name: 'babel',
+            resolveId: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            name: 'terser',
+            renderChunk: expect.any(Function),
+          },
+        ],
+        treeshake: true,
+      },
+      {
+        cache: true,
+        input: ['rc/components/*/*.svelte', 'rc/components/*.svelte'],
+        output: {
+          dir: 'test/___ELDER___/compiled',
+          exports: 'auto',
+          format: 'cjs',
+        },
+        plugins: [
+          {
+            options: expect.any(Function),
+            pluginName: 'rollup-plugin-multi-input',
+          },
+          {
+            name: 'replace',
+            renderChunk: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            name: 'json',
+            transform: expect.any(Function),
+          },
+          {
+            generateBundle: expect.any(Function),
+            load: expect.any(Function),
+            name: 'svelte',
+            resolveId: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            buildStart: expect.any(Function),
+            generateBundle: expect.any(Function),
+            getPackageInfoForId: expect.any(Function),
+            load: expect.any(Function),
+            name: 'node-resolve',
+            resolveId: expect.any(Function),
+          },
+          {
+            buildStart: expect.any(Function),
+            load: expect.any(Function),
+            name: 'commonjs',
+            resolveId: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            generateBundle: expect.any(Function),
+            name: 'css',
+            transform: expect.any(Function),
+          },
+          {
+            name: 'terser',
+            renderChunk: expect.any(Function),
+          },
+        ],
+        treeshake: true,
+      },
+      {
+        cache: true,
+        input: [`${process.cwd()}/src/plugins/pluginA/*.svelte`],
+        output: {
+          dir: 'test/public/svelte',
+          entryFileNames: 'entry[name]-[hash].js',
+          format: 'system',
+          sourcemap: false,
+        },
+        plugins: [
+          {
+            options: expect.any(Function),
+            pluginName: 'rollup-plugin-multi-input',
+          },
+          {
+            name: 'replace',
+            renderChunk: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            name: 'json',
+            transform: expect.any(Function),
+          },
+          {
+            generateBundle: expect.any(Function),
+            load: expect.any(Function),
+            name: 'svelte',
+            resolveId: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            name: 'rollup-plugin-external-globals',
+            transform: expect.any(Function),
+          },
+          {
+            buildStart: expect.any(Function),
+            generateBundle: expect.any(Function),
+            getPackageInfoForId: expect.any(Function),
+            load: expect.any(Function),
+            name: 'node-resolve',
+            resolveId: expect.any(Function),
+          },
+          {
+            buildStart: expect.any(Function),
+            load: expect.any(Function),
+            name: 'commonjs',
+            resolveId: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            load: expect.any(Function),
+            name: 'babel',
+            resolveId: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            name: 'terser',
+            renderChunk: expect.any(Function),
+          },
+        ],
+        treeshake: true,
+      },
+      {
+        cache: true,
+        input: [`${process.cwd()}/src/plugins/pluginA/*.svelte`],
+        output: {
+          dir: 'test/___ELDER___/compiled',
+          exports: 'auto',
+          format: 'cjs',
+        },
+        plugins: [
+          {
+            options: expect.any(Function),
+            pluginName: 'rollup-plugin-multi-input',
+          },
+          {
+            name: 'replace',
+            renderChunk: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            name: 'json',
+            transform: expect.any(Function),
+          },
+          {
+            generateBundle: expect.any(Function),
+            load: expect.any(Function),
+            name: 'svelte',
+            resolveId: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            buildStart: expect.any(Function),
+            generateBundle: expect.any(Function),
+            getPackageInfoForId: expect.any(Function),
+            load: expect.any(Function),
+            name: 'node-resolve',
+            resolveId: expect.any(Function),
+          },
+          {
+            buildStart: expect.any(Function),
+            load: expect.any(Function),
+            name: 'commonjs',
+            resolveId: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            generateBundle: expect.any(Function),
+            name: 'css',
+            transform: expect.any(Function),
+          },
+          {
+            name: 'terser',
+            renderChunk: expect.any(Function),
+          },
+        ],
+        treeshake: true,
+      },
+      {
+        cache: true,
+        input: [`${process.cwd()}/src/plugins/pluginB/*.svelte`],
+        output: {
+          dir: 'test/public/svelte',
+          entryFileNames: 'entry[name]-[hash].js',
+          format: 'system',
+          sourcemap: false,
+        },
+        plugins: [
+          {
+            options: expect.any(Function),
+            pluginName: 'rollup-plugin-multi-input',
+          },
+          {
+            name: 'replace',
+            renderChunk: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            name: 'json',
+            transform: expect.any(Function),
+          },
+          {
+            generateBundle: expect.any(Function),
+            load: expect.any(Function),
+            name: 'svelte',
+            resolveId: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            name: 'rollup-plugin-external-globals',
+            transform: expect.any(Function),
+          },
+          {
+            buildStart: expect.any(Function),
+            generateBundle: expect.any(Function),
+            getPackageInfoForId: expect.any(Function),
+            load: expect.any(Function),
+            name: 'node-resolve',
+            resolveId: expect.any(Function),
+          },
+          {
+            buildStart: expect.any(Function),
+            load: expect.any(Function),
+            name: 'commonjs',
+            resolveId: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            load: expect.any(Function),
+            name: 'babel',
+            resolveId: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            name: 'terser',
+            renderChunk: expect.any(Function),
+          },
+        ],
+        treeshake: true,
+      },
+      {
+        cache: true,
+        input: [`${process.cwd()}/src/plugins/pluginB/*.svelte`],
+        output: {
+          dir: 'test/___ELDER___/compiled',
+          exports: 'auto',
+          format: 'cjs',
+        },
+        plugins: [
+          {
+            options: expect.any(Function),
+            pluginName: 'rollup-plugin-multi-input',
+          },
+          {
+            name: 'replace',
+            renderChunk: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            name: 'json',
+            transform: expect.any(Function),
+          },
+          {
+            generateBundle: expect.any(Function),
+            load: expect.any(Function),
+            name: 'svelte',
+            resolveId: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            buildStart: expect.any(Function),
+            generateBundle: expect.any(Function),
+            getPackageInfoForId: expect.any(Function),
+            load: expect.any(Function),
+            name: 'node-resolve',
+            resolveId: expect.any(Function),
+          },
+          {
+            buildStart: expect.any(Function),
+            load: expect.any(Function),
+            name: 'commonjs',
+            resolveId: expect.any(Function),
+            transform: expect.any(Function),
+          },
+          {
+            generateBundle: expect.any(Function),
+            name: 'css',
+            transform: expect.any(Function),
+          },
+          {
+            name: 'terser',
+            renderChunk: expect.any(Function),
+          },
+        ],
+        treeshake: true,
+      },
+    ]);
   });
 });

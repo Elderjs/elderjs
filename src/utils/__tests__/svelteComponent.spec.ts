@@ -82,7 +82,7 @@ describe('#svelteComponent', () => {
 
   it('svelteComponent works', () => {
     jest.mock(
-      process.cwd() + '/test/___ELDER___/compiled/Home.js',
+      `${process.cwd()}/test/___ELDER___/compiled/Home.js`,
       () => ({
         render: () => ({
           head: '<head>',
@@ -100,7 +100,7 @@ describe('#svelteComponent', () => {
 
   it('svelteComponent works with partial hydration of subcomponent', () => {
     jest.mock(
-      process.cwd() + '/test/___ELDER___/compiled/Home.js',
+      `${process.cwd()}/test/___ELDER___/compiled/Home.js`,
       () => ({
         render: () => ({
           head: '<head>',
@@ -112,7 +112,7 @@ describe('#svelteComponent', () => {
       { virtual: true },
     );
     jest.mock(
-      process.cwd() + '/test/___ELDER___/compiled/Datepicker.js',
+      `${process.cwd()}/test/___ELDER___/compiled/Datepicker.js`,
       () => ({
         render: () => ({
           head: '<head>',

@@ -17,13 +17,6 @@ jest.mock('../utils/Page', () => {
   }));
 });
 
-process.cwd = () => 'test';
-
-jest.mock('path', () => ({
-  resolve: (...strings) => strings.join('/').replace('./', '').replace('//', '/'),
-  posix: () => ({ dirname: () => '' }),
-}));
-
 jest.mock('fs-extra', () => ({
   writeJSONSync: jest.fn(),
   outputFileSync: jest
@@ -165,7 +158,7 @@ describe('#hooks', () => {
         request: { permalink: '/foo' },
         htmlString: '<html>string</html>',
         errors: [],
-        settings: { build: './build', locations: { public: './public' } },
+        settings: { build: './build', locations: { public: './public' }, distDir: process.cwd() },
       }),
     ).toBe(null);
     expect(
@@ -173,7 +166,7 @@ describe('#hooks', () => {
         request: { permalink: '/foo' },
         htmlString: '<html>string</html>',
         errors: [],
-        settings: { build: './build', locations: { public: './public' } },
+        settings: { build: './build', locations: { public: './public' }, distDir: process.cwd() },
       }),
     ).toEqual({ errors: [new Error('Failed to write')] });
   });
@@ -213,7 +206,7 @@ describe('#hooks', () => {
     expect(
       await hook.run({
         errors: ['error1', 'error2'],
-        settings: { debug: { performance: true } },
+        settings: { debug: { performance: true }, rootDir: process.cwd() },
       }),
     ).toBe(undefined);
   });
