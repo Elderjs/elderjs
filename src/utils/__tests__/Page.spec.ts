@@ -79,7 +79,6 @@ const settings = {
       ssrComponents: './___ELDER___/compiled/',
       clientComponents: './public/dist/svelte/',
     },
-    systemJs: '/dist/static/s.min.js',
     intersectionObserverPoly: '/dist/static/intersection-observer.js',
     buildFolder: '',
     srcFolder: './src/',

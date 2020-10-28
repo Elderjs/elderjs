@@ -196,7 +196,6 @@ Page {
         "clientComponents": "./public/dist/svelte/",
         "ssrComponents": "./___ELDER___/compiled/",
       },
-      "systemJs": "/dist/static/s.min.js",
     },
     "plugins": Object {
       "elder-plugin-upload-s3": Object {
@@ -486,7 +485,6 @@ Page {
                     "clientComponents": "./public/dist/svelte/",
                     "ssrComponents": "./___ELDER___/compiled/",
                   },
-                  "systemJs": "/dist/static/s.min.js",
                 },
                 "plugins": Object {
                   "elder-plugin-upload-s3": Object {
@@ -574,7 +572,6 @@ Page {
                     "clientComponents": "./public/dist/svelte/",
                     "ssrComponents": "./___ELDER___/compiled/",
                   },
-                  "systemJs": "/dist/static/s.min.js",
                 },
                 "plugins": Object {
                   "elder-plugin-upload-s3": Object {
@@ -662,7 +659,6 @@ Page {
         "clientComponents": "./public/dist/svelte/",
         "ssrComponents": "./___ELDER___/compiled/",
       },
-      "systemJs": "/dist/static/s.min.js",
     },
     "plugins": Object {
       "elder-plugin-upload-s3": Object {

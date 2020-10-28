@@ -24,22 +24,6 @@ type DebugOptions = {
   shortcodes: boolean;
 };
 
-// type PathOptions = {
-/*
-  assets: string;
-  public: string;
-  svelte: SvelteOptions;
-  systemJs: string;
-  intersectionObserverPoly: string;
-  srcFolder: string;
-   buildFolder: string;
-*/
-
-// distDir: string;
-// srcDir: string;
-// rootDir: string;
-// };
-
 type Internal = {
   hashedComponents?: {};
   ssrComponents: string;
