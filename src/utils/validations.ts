@@ -98,7 +98,7 @@ const configSchema = yup.object({
     .boolean()
     .default(false)
     .label(
-      'Elder.js will add an IE11 friendly iife bundle for each component. Please note, currently shared stores do not work but see this issue: https://github.com/Elderjs/elderjs/issues/44#issue-709580756 and you may need to bring your own polyfills.',
+      'EXPERIMENTAL: Elder.js will attempt to add an IE11 friendly iife bundle for each component. Please note, currently shared stores do not work but see this issue: https://github.com/Elderjs/elderjs/issues/44#issue-709580756 and you may need to bring your own polyfills.',
     ),
 });
 
