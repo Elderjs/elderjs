@@ -28,11 +28,6 @@ const componentProps = {
 describe('#svelteComponent', () => {
   beforeAll(() => {
     jest.mock('../getUniqueId', () => () => 'SwrzsrVDCd');
-    process.cwd = () => 'test';
-
-    jest.mock('path', () => ({
-      resolve: (...strings) => strings.join('/').replace('./', ''),
-    }));
   });
 
   beforeEach(() => {
@@ -87,7 +82,7 @@ describe('#svelteComponent', () => {
 
   it('svelteComponent works', () => {
     jest.mock(
-      'test/___ELDER___/compiled/Home.js',
+      process.cwd() + '/test/___ELDER___/compiled/Home.js',
       () => ({
         render: () => ({
           head: '<head>',
@@ -105,7 +100,7 @@ describe('#svelteComponent', () => {
 
   it('svelteComponent works with partial hydration of subcomponent', () => {
     jest.mock(
-      'test/___ELDER___/compiled/Home.js',
+      process.cwd() + '/test/___ELDER___/compiled/Home.js',
       () => ({
         render: () => ({
           head: '<head>',
@@ -117,7 +112,7 @@ describe('#svelteComponent', () => {
       { virtual: true },
     );
     jest.mock(
-      'test/___ELDER___/compiled/Datepicker.js',
+      process.cwd() + '/test/___ELDER___/compiled/Datepicker.js',
       () => ({
         render: () => ({
           head: '<head>',

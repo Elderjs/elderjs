@@ -1,9 +1,5 @@
 process.cwd = () => 'test';
 
-jest.mock('path', () => ({
-  join: (...strings) => strings.join('/').replace('./', '').replace('//', '/'),
-}));
-
 const settings = {
   debug: {
     automagic: true,

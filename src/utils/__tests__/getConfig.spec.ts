@@ -10,19 +10,11 @@ jest.mock('cosmiconfig', () => {
   };
 });
 
-jest.mock('path', () => {
-  return {
-    resolve: (...strings) => strings.join('/').replace('./', '').replace('test/test', 'test'),
-  };
-});
-
-process.cwd = () => 'test';
-
 describe('#getConfig', () => {
   const output = {
     $$internal: {
-      clientComponents: 'test/public/svelte/',
-      ssrComponents: 'test/___ELDER___/compiled/',
+      clientComponents: process.cwd() + '/public/svelte',
+      ssrComponents: process.cwd() + '/___ELDER___/compiled',
     },
     build: {
       numberOfWorkers: -1,
@@ -36,9 +28,9 @@ describe('#getConfig', () => {
       shortcodes: false,
       stacks: false,
     },
-    distDir: 'test/public',
-    rootDir: 'test',
-    srcDir: 'test/src',
+    distDir: process.cwd() + '/public',
+    rootDir: process.cwd(),
+    srcDir: process.cwd() + '/src',
     server: {
       prefix: '',
     },
@@ -78,17 +70,18 @@ describe('#getConfig', () => {
     // eslint-disable-next-line global-require
     const getConfig = require('../getConfig').default;
 
-    expect(getConfig({ context: 'serverless', rootDir: 't' })).toEqual({
-      ...output,
-      context: 'serverless',
-      distDir: 't/public',
-      rootDir: 't',
-      srcDir: 't/src',
-      $$internal: {
-        clientComponents: 't/public/svelte/',
-        ssrComponents: 't/___ELDER___/compiled/',
-      },
-    });
+    expect(getConfig({ context: 'serverless', rootDir: 't' })).toStrictEqual(
+      expect.objectContaining({
+        context: 'serverless',
+        distDir: process.cwd() + '/t/public',
+        rootDir: process.cwd() + '/t',
+        srcDir: process.cwd() + '/t/src',
+        $$internal: {
+          clientComponents: process.cwd() + '/t/public/svelte',
+          ssrComponents: process.cwd() + '/t/___ELDER___/compiled',
+        },
+      }),
+    );
   });
 
   it('works', () => {

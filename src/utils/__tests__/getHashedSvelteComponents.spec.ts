@@ -1,11 +1,5 @@
 // import getHashedSvelteComponents from '../getHashedSvelteComponents';
 
-jest.mock('path', () => {
-  return {
-    resolve: (...strings) => strings.join('/'),
-  };
-});
-
 process.cwd = () => 'test';
 
 const config = {

@@ -6,7 +6,7 @@ Array [
     "input": "./node_modules/intersection-observer/intersection-observer.js",
     "output": Array [
       Object {
-        "file": "dist/static/intersection-observer.js",
+        "file": "/Users/lukewatts/oss/elderjs/dist/static/intersection-observer.js",
         "format": "iife",
         "name": "./static/intersection-observer.js",
         "plugins": Array [
@@ -22,7 +22,7 @@ Array [
     "input": "./node_modules/systemjs/dist/s.min.js",
     "output": Array [
       Object {
-        "file": "dist/static/s.min.js",
+        "file": "/Users/lukewatts/oss/elderjs/dist/static/s.min.js",
         "format": "iife",
         "name": "./static/s.min.js",
         "plugins": Array [
@@ -369,7 +369,7 @@ Array [
   Object {
     "cache": true,
     "input": Array [
-      "src/plugins/pluginA/*.svelte",
+      "/Users/lukewatts/oss/elderjs/src/plugins/pluginA/*.svelte",
     ],
     "output": Object {
       "dir": "test/public/svelte",
@@ -433,7 +433,7 @@ Array [
   Object {
     "cache": true,
     "input": Array [
-      "src/plugins/pluginA/*.svelte",
+      "/Users/lukewatts/oss/elderjs/src/plugins/pluginA/*.svelte",
     ],
     "output": Object {
       "dir": "test/___ELDER___/compiled",
@@ -491,7 +491,7 @@ Array [
   Object {
     "cache": true,
     "input": Array [
-      "src/plugins/pluginB/*.svelte",
+      "/Users/lukewatts/oss/elderjs/src/plugins/pluginB/*.svelte",
     ],
     "output": Object {
       "dir": "test/public/svelte",
@@ -555,7 +555,7 @@ Array [
   Object {
     "cache": true,
     "input": Array [
-      "src/plugins/pluginB/*.svelte",
+      "/Users/lukewatts/oss/elderjs/src/plugins/pluginB/*.svelte",
     ],
     "output": Object {
       "dir": "test/___ELDER___/compiled",

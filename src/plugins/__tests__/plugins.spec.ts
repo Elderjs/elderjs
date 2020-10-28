@@ -1,11 +1,3 @@
-jest.mock('path', () => {
-  return {
-    resolve: (...strings) => strings.join('/').replace('./', '').replace('//', '/').replace('/./', '/'),
-    join: (...strings) => strings.join('/').replace('./', '').replace('//', '/').replace('/./', '/'),
-    posix: () => ({ dirname: () => '' }),
-  };
-});
-
 describe('#plugins', () => {
   beforeEach(() => jest.resetModules());
   it('no plugins in settings', async () => {
@@ -55,16 +47,17 @@ describe('#plugins', () => {
     jest.mock('fs-extra', () => ({
       existsSync: () => true,
     }));
-    jest.mock('test/src/plugins/elder-plugin-upload-s3/index.js', () => '', {
+    jest.mock(process.cwd() + '/test/src/plugins/elder-plugin-upload-s3/index.js', () => '', {
       virtual: true,
     });
-    // jest.mock('test/__ELDER__/plugins/elder-plugin-upload-s3/index.js', () => '', {
-    //   virtual: true,
-    // });
-    jest.mock('test/node_modules/elder-plugin-upload-s3/package.json', () => ({ main: './index.js' }), {
-      virtual: true,
-    });
-    jest.mock('test/node_modules/elder-plugin-upload-s3/index.js', () => '', {
+    jest.mock(
+      process.cwd() + '/test/node_modules/elder-plugin-upload-s3/package.json',
+      () => ({ main: './index.js' }),
+      {
+        virtual: true,
+      },
+    );
+    jest.mock(process.cwd() + '/test/node_modules/elder-plugin-upload-s3/index.js', () => '', {
       virtual: true,
     });
     // eslint-disable-next-line global-require
@@ -99,7 +92,7 @@ describe('#plugins', () => {
     }));
     const initMock = jest.fn().mockImplementation((p) => Promise.resolve(p));
     jest.mock(
-      'test/src/plugins/elder-plugin-upload-s3/index.js',
+      process.cwd() + '/test/src/plugins/elder-plugin-upload-s3/index.js',
       () => ({
         hooks: [
           {
@@ -157,7 +150,7 @@ describe('#plugins', () => {
     }));
     const initMock = jest.fn().mockImplementation((p) => Promise.resolve(p));
     jest.mock(
-      'test/src/plugins/elder-plugin-upload-s3/index.js',
+      process.cwd() + '/test/src/plugins/elder-plugin-upload-s3/index.js',
       () => ({
         hooks: [
           {
