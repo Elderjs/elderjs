@@ -20,11 +20,12 @@ import ssrOutputPath from './ssrOutputPath';
 const production = process.env.NODE_ENV === 'production' || !process.env.ROLLUP_WATCH;
 const elderJsDir = path.resolve(process.cwd(), './node_modules/@elderjs/elderjs/');
 
+console.log(elderJsDir);
+
 const babelIE11 = babel({
-  cwd: elderJsDir,
   extensions: ['.js', '.mjs', '.html', '.svelte'],
   runtimeHelpers: true,
-  exclude: ['node_modules/@babel/**', 'node_modules/core-js/**'],
+  exclude: ['node_modules/@babel/**', 'node_modules/core-js/**', /\/core-js\//],
   presets: [
     [
       '@babel/preset-env',
@@ -40,20 +41,6 @@ const babelIE11 = babel({
         },
       },
     ],
-  ],
-  plugins: [
-    // [
-    //   '@babel/plugin-transform-runtime',
-    //   {
-    //     corejs: {
-    //       version: 3,
-    //       proposals: true,
-    //     },
-    //     regenerator: true,
-    //     useESModules: false,
-    //     absoluteRuntime: path.resolve(process.cwd(), './node_modules/@elderjs/elderjs/node_modules/'),
-    //   },
-    // ],
   ],
 });
 
@@ -88,8 +75,9 @@ export function createBrowserConfig({
       }),
       nodeResolve({
         browser: true,
-        dedupe: ['svelte'],
+        dedupe: ['svelte', 'core-js'],
         preferBuiltins: true,
+        rootDir: ie11 ? elderJsDir : process.cwd(),
       }),
       commonjs({ sourceMap: !production }),
     ],

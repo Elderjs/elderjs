@@ -96,9 +96,9 @@ const configSchema = yup.object({
   plugins: yup.object().default({}).label('Used to define Elder.js plugins.'),
   legacy: yup
     .boolean()
-    .default(true)
+    .default(false)
     .label(
-      'Elder.js will add a IE11 friendly nomodule bundle. Please note, currently shared stores do not work but see this issue: https://github.com/Elderjs/elderjs/issues/44#issue-709580756',
+      'Elder.js will add an IE11 friendly iife bundle for each component. Please note, currently shared stores do not work but see this issue: https://github.com/Elderjs/elderjs/issues/44#issue-709580756 and you may need to bring your own polyfills.',
     ),
 });
 
