@@ -137,7 +137,7 @@ describe('#hooks', () => {
     const hook = hooks.find((h) => h.name === 'elderConsoleLogErrors');
     expect(
       await hook.run({ settings: { worker: false }, request: { permalink: '/foo' }, errors: ['foo', 'bar'] }),
-    ).toBe(undefined);
+    ).toBeUndefined();
   });
   it('elderWriteHtmlFileToPublic', async () => {
     const hook = hooks.find((h) => h.name === 'elderWriteHtmlFileToPublic');
@@ -148,7 +148,7 @@ describe('#hooks', () => {
         errors: [],
         settings: {},
       }),
-    ).toBe(null);
+    ).toBeNull();
     expect(
       await hook.run({
         request: { permalink: '/foo' },
@@ -156,7 +156,7 @@ describe('#hooks', () => {
         errors: [],
         settings: { build: './build', locations: { public: './public' }, distDir: process.cwd() },
       }),
-    ).toBe(null);
+    ).toBeNull();
     expect(
       await hook.run({
         request: { permalink: '/foo' },
@@ -177,7 +177,7 @@ describe('#hooks', () => {
         ],
         settings: { debug: { performance: true } },
       }),
-    ).toBe(undefined);
+    ).toBeUndefined();
   });
   it('elderShowParsedBuildTimes', async () => {
     const hook = hooks.find((h) => h.name === 'elderShowParsedBuildTimes');
@@ -195,7 +195,7 @@ describe('#hooks', () => {
         ],
         settings: { debug: { performance: true } },
       }),
-    ).toBe(undefined);
+    ).toBeUndefined();
   });
   it('elderWriteBuildErrors', async () => {
     const hook = hooks.find((h) => h.name === 'elderWriteBuildErrors');
@@ -204,6 +204,6 @@ describe('#hooks', () => {
         errors: ['error1', 'error2'],
         settings: { debug: { performance: true }, rootDir: process.cwd() },
       }),
-    ).toBe(undefined);
+    ).toBeUndefined();
   });
 });

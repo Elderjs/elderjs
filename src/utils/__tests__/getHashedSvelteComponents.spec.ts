@@ -1,7 +1,3 @@
-// import getHashedSvelteComponents from '../getHashedSvelteComponents';
-
-process.cwd = () => 'test';
-
 const config = {
   srcDir: 'test',
   $$internal: {
