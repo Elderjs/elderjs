@@ -71,7 +71,6 @@ const svelteComponent = (componentName: String, ssrFolder: String = 'components'
       });
     }
 
-    console.log(page.request);
     if (cssMap && cssMap.length > 0 && page.cssStack && notProduction && page.request.type !== 'build') {
       cssMap.forEach((c) => {
         page.cssStack.push({ source: componentName, priority: 1, string: c });
