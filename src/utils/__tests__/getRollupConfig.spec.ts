@@ -252,15 +252,6 @@ describe('#getRollupConfig', () => {
       legacy: true,
     }));
 
-    jest.mock('path', () => ({
-      resolve: (...strings) => strings.join('/').replace('./', '').replace('//', '/').replace('/./', '/'),
-      posix: () => ({ dirname: () => '' }),
-      parse: (str) => {
-        const split = str.split('/');
-        return split[split.length - 1].split('.')[0];
-      },
-    }));
-    jest.mock('del');
     jest.mock('fs-extra', () => ({
       existsSync: jest.fn().mockImplementation(() => true),
     }));
@@ -323,14 +314,6 @@ describe('#getRollupConfig', () => {
       legacy: true,
     }));
 
-    jest.mock('path', () => ({
-      resolve: (...strings) => strings.join('/').replace('./', '').replace('//', '/').replace('/./', '/'),
-      posix: () => ({ dirname: () => '' }),
-      parse: (str) => {
-        const split = str.split('/');
-        return split[split.length - 1].split('.')[0];
-      },
-    }));
     jest.mock('del');
     jest.mock('fs-extra', () => ({
       existsSync: jest.fn().mockImplementation(() => true),
@@ -360,5 +343,13 @@ describe('#getRollupConfig', () => {
     const configs = require('../getRollupConfig').default({ svelteConfig });
     expect(configs).toHaveLength(8);
     expect(configs).toMatchSnapshot();
+
+    expect(require('../getRollupConfig').default({ svelteConfig })).toStrictEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          input: './node_modules/intersection-observer/intersection-observer.js',
+        }),
+      ]),
+    );
   });
 });

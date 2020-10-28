@@ -1,13 +1,5 @@
 // import getHashedSvelteComponents from '../getHashedSvelteComponents';
 
-jest.mock('path', () => {
-  return {
-    resolve: (...strings) => strings.join('/'),
-    extname: (pattern) => pattern.split('.').pop(),
-    basename: (file) => file.split('/').pop().split('.')[0].replace('ssr', ''),
-  };
-});
-
 process.cwd = () => 'test';
 
 const config = {

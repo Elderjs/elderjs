@@ -1,3 +1,5 @@
+const { resolve } = require('path');
+
 const componentProps = {
   page: {
     hydrateStack: [],
@@ -29,11 +31,6 @@ const componentProps = {
 describe('#svelteComponent', () => {
   beforeAll(() => {
     jest.mock('../getUniqueId', () => () => 'SwrzsrVDCd');
-    process.cwd = () => 'test';
-
-    jest.mock('path', () => ({
-      resolve: (...strings) => strings.join('/').replace('./', ''),
-    }));
   });
 
   beforeEach(() => {
@@ -88,7 +85,7 @@ describe('#svelteComponent', () => {
 
   it('svelteComponent works assuming components folder for SSR', () => {
     jest.mock(
-      'test/___ELDER___/compiled/components/Home.js',
+      resolve(process.cwd(), './test/___ELDER___/compiled/Home.js'),
       () => ({
         render: () => ({
           head: '<head>',
@@ -107,7 +104,7 @@ describe('#svelteComponent', () => {
 
   it('svelteComponent works with routes folder for SSR', () => {
     jest.mock(
-      'test/___ELDER___/compiled/routes/Home.js',
+      resolve(process.cwd(), './test/___ELDER___/compiled/Home.js'),
       () => ({
         render: () => ({
           head: '<head>',
@@ -158,7 +155,7 @@ describe('#svelteComponent', () => {
       { virtual: true },
     );
     jest.mock(
-      'test/___ELDER___/compiled/components/Datepicker.js',
+      resolve(process.cwd(), './test/___ELDER___/compiled/Datepicker.js'),
       () => ({
         render: () => ({
           head: '<head>',

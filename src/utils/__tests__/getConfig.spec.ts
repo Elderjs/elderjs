@@ -1,8 +1,10 @@
+const { resolve } = require('path');
+
 const defaultConfig = {
   debug: { automagic: false, build: false, hooks: false, performance: false, shortcodes: false, stacks: false },
   distDir: 'public',
   srcDir: 'src',
-  rootDir: 'test',
+  rootDir: process.cwd(),
   build: {
     numberOfWorkers: -1,
     shuffleRequests: false,
@@ -33,19 +35,11 @@ jest.mock('cosmiconfig', () => {
   };
 });
 
-jest.mock('path', () => {
-  return {
-    resolve: (...strings) => strings.join('/').replace('./', '').replace('test/test', 'test'),
-  };
-});
-
-process.cwd = () => 'test';
-
 describe('#getConfig', () => {
   const output = {
     $$internal: {
-      clientComponents: 'test/public/svelte/',
-      ssrComponents: 'test/___ELDER___/compiled/',
+      clientComponents: resolve(process.cwd(), './public/svelte'),
+      ssrComponents: resolve(process.cwd(), './___ELDER___/compiled'),
     },
     debug: {
       automagic: false,
@@ -55,9 +49,12 @@ describe('#getConfig', () => {
       shortcodes: false,
       stacks: false,
     },
-    distDir: 'test/public',
-    rootDir: 'test',
-    srcDir: 'test/src',
+    distDir: resolve(process.cwd(), './public'),
+    rootDir: process.cwd(),
+    srcDir: resolve(process.cwd(), './src'),
+    server: {
+      prefix: '',
+    },
     shortcodes: {
       closePattern: '}}',
       openPattern: '{{',
@@ -99,12 +96,12 @@ describe('#getConfig', () => {
     const getConfig = require('../getConfig').default;
 
     const common = {
-      distDir: 't/public',
-      rootDir: 't',
-      srcDir: 't/src',
+      distDir: resolve(process.cwd(), './t/public'),
+      rootDir: resolve(process.cwd(), './t'),
+      srcDir: resolve(process.cwd(), './t/src'),
       $$internal: {
-        clientComponents: 't/public/svelte/',
-        ssrComponents: 't/___ELDER___/compiled/',
+        clientComponents: resolve(process.cwd(), './t/public/svelte'),
+        ssrComponents: resolve(process.cwd(), './t/___ELDER___/compiled'),
       },
     };
 
@@ -132,6 +129,12 @@ describe('#getConfig', () => {
         shuffleRequests: false,
       },
     });
+    expect(getConfig({ context: 'serverless', rootDir: 't' })).toStrictEqual(
+      expect.objectContaining({
+        context: 'serverless',
+        ...common,
+      }),
+    );
   });
 
   it('works', () => {
