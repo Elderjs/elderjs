@@ -41,6 +41,10 @@ describe('#getConfig', () => {
       clientComponents: resolve(process.cwd(), './public/svelte'),
       ssrComponents: resolve(process.cwd(), './___ELDER___/compiled'),
     },
+    build: {
+      numberOfWorkers: -1,
+      shuffleRequests: false,
+    },
     debug: {
       automagic: false,
       build: false,

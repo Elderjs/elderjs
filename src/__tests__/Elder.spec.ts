@@ -91,7 +91,7 @@ describe('#Elder', () => {
       { virtual: true },
     );
     jest.mock(
-      process.cwd() + '/test/src/plugins/elder-plugin-upload-s3/index.js',
+      `${process.cwd()}/test/src/plugins/elder-plugin-upload-s3/index.js`,
       () => ({
         hooks: [],
         routes: { 'test-a': { hooks: [], template: 'fakepath/Test.svelte', all: [] }, 'test-b': { data: () => {} } },
@@ -122,9 +122,9 @@ describe('#Elder', () => {
     jest.mock('fs-extra', () => ({
       existsSync: () => true,
     }));
-    jest.mock(process.cwd() + '/test/___ELDER___/compiled/fakepath/Test.js', () => () => ({}), { virtual: true });
+    jest.mock(`${process.cwd()}/test/___ELDER___/compiled/fakepath/Test.js`, () => () => ({}), { virtual: true });
     jest.mock(
-      process.cwd() + '/test/src/hooks.js',
+      `${process.cwd()}/test/src/hooks.js`,
       () => ({
         default: [
           {
@@ -138,7 +138,7 @@ describe('#Elder', () => {
       { virtual: true },
     );
     jest.mock(
-      process.cwd() + '/test/src/plugins/elder-plugin-upload-s3/index.js',
+      `${process.cwd()}/test/src/plugins/elder-plugin-upload-s3/index.js`,
       () => ({
         hooks: [
           {

@@ -47,17 +47,17 @@ describe('#plugins', () => {
     jest.mock('fs-extra', () => ({
       existsSync: () => true,
     }));
-    jest.mock(process.cwd() + '/test/src/plugins/elder-plugin-upload-s3/index.js', () => '', {
+    jest.mock(`${process.cwd()}/test/src/plugins/elder-plugin-upload-s3/index.js`, () => '', {
       virtual: true,
     });
     jest.mock(
-      process.cwd() + '/test/node_modules/elder-plugin-upload-s3/package.json',
+      `${process.cwd()}/test/node_modules/elder-plugin-upload-s3/package.json`,
       () => ({ main: './index.js' }),
       {
         virtual: true,
       },
     );
-    jest.mock(process.cwd() + '/test/node_modules/elder-plugin-upload-s3/index.js', () => '', {
+    jest.mock(`${process.cwd()}/test/node_modules/elder-plugin-upload-s3/index.js`, () => '', {
       virtual: true,
     });
     // eslint-disable-next-line global-require
@@ -92,7 +92,7 @@ describe('#plugins', () => {
     }));
     const initMock = jest.fn().mockImplementation((p) => Promise.resolve(p));
     jest.mock(
-      process.cwd() + '/test/src/plugins/elder-plugin-upload-s3/index.js',
+      `${process.cwd()}/test/src/plugins/elder-plugin-upload-s3/index.js`,
       () => ({
         hooks: [
           {
@@ -150,7 +150,7 @@ describe('#plugins', () => {
     }));
     const initMock = jest.fn().mockImplementation((p) => Promise.resolve(p));
     jest.mock(
-      process.cwd() + '/test/src/plugins/elder-plugin-upload-s3/index.js',
+      `${process.cwd()}/test/src/plugins/elder-plugin-upload-s3/index.js`,
       () => ({
         hooks: [
           {
