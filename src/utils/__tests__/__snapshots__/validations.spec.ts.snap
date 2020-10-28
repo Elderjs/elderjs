@@ -465,10 +465,10 @@ ObjectSchema {
         "refs": Map {},
       },
       "_conditions": Array [],
-      "_default": true,
+      "_default": false,
       "_deps": Array [],
       "_exclusive": Object {},
-      "_label": "Elder.js will add a IE11 friendly nomodule bundle. Please note, currently shared stores do not work but see this issue: https://github.com/Elderjs/elderjs/issues/44#issue-709580756",
+      "_label": "Elder.js will add an IE11 friendly iife bundle for each component. Please note, currently shared stores do not work but see this issue: https://github.com/Elderjs/elderjs/issues/44#issue-709580756 and you may need to bring your own polyfills.",
       "_mutate": undefined,
       "_options": Object {
         "abortEarly": true,

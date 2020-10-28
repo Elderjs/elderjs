@@ -1,4 +1,4 @@
-import { glob } from 'glob';
+import glob from 'glob';
 import path from 'path';
 import fs from 'fs-extra';
 import { SettingsOptions } from '..';
@@ -10,6 +10,7 @@ export default function getPluginLocations(elderConfig: SettingsOptions) {
     (out, pluginName) => {
       const pluginPath = path.resolve(elderConfig.srcDir, `./plugins/${pluginName}`);
       const nmPluginPath = path.resolve(elderConfig.rootDir, `./node_modules/${pluginName}`);
+
       if (fs.existsSync(`${pluginPath}/index.js`)) {
         const svelteFiles = glob.sync(`${pluginPath}/*.svelte`);
         if (svelteFiles.length > 0) {
