@@ -1,5 +1,6 @@
 import type { StateSlug, RoutesOptions } from '../routes/types';
-import type { HookOptions } from '../hookInterface/types';
+import type { HookOptions } from '../hooks/types';
+import type { ShortcodeDefs } from '../shortcodes/types';
 
 type ServerOptions = {
   prefix: string;
@@ -132,25 +133,6 @@ export type Stack = Array<StackItem>;
 interface Init {
   (input: any): any;
 }
-
-export interface ShortcodeResponse {
-  html?: string;
-  css?: string;
-  js?: string;
-  head?: string;
-}
-
-export interface ShortcodeDef {
-  shortcode: string;
-  run: (any) => ShortcodeResponse | Promise<ShortcodeResponse>;
-  plugin?: any; // reference to the plugin closure scope.
-  $$meta: {
-    addedBy: string;
-    type: string;
-  };
-}
-
-export type ShortcodeDefs = Array<ShortcodeDef>;
 
 export type PluginOptions = {
   name: string;

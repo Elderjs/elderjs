@@ -1,8 +1,9 @@
 import * as yup from 'yup';
-import type { SettingsOptions, PluginOptions, ShortcodeDef } from './types';
+import type { SettingsOptions, PluginOptions } from './types';
+import type { ShortcodeDef } from '../shortcodes/types';
 import type { RouteOptions } from '../routes/types';
-import type { HookOptions } from '../hookInterface/types';
-import hookInterface from '../hookInterface/hookInterface';
+import type { HookOptions } from '../hooks/types';
+import hookInterface from '../hooks/hookInterface';
 
 /**
  * Important note:

@@ -1,8 +1,8 @@
-import hooks from '../hooks';
+import hooks from '../index';
 
-jest.mock('../externalHelpers', () => () => Promise.resolve({ permalink: jest.fn() }));
+jest.mock('../../externalHelpers', () => () => Promise.resolve({ permalink: jest.fn() }));
 
-jest.mock('../utils/prepareShortcodeParser', () => ({ customJsStack, cssStack, headStack }) => ({
+jest.mock('../../utils/prepareShortcodeParser', () => ({ customJsStack, cssStack, headStack }) => ({
   parse: (templateHtml) => {
     customJsStack.push('console.log("test");');
     cssStack.push('body{display:none;}');
@@ -11,7 +11,7 @@ jest.mock('../utils/prepareShortcodeParser', () => ({ customJsStack, cssStack, h
   },
 }));
 
-jest.mock('../utils/Page', () => {
+jest.mock('../../utils/Page', () => {
   return jest.fn(() => ({
     html: () => Promise.resolve(`<html>new page</html>`),
   }));

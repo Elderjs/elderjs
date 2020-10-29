@@ -1,5 +1,5 @@
 // import { Interface } from 'readline';
-import type { HookOptions } from '../hookInterface/types';
+import type { HookOptions } from '../hooks/types';
 
 interface Permalink {
   (input?: Object): string;

@@ -1,4 +1,4 @@
-import { ShortcodeDefs } from './utils/types';
+import { ShortcodeDefs } from './types';
 
 const shortcodes: ShortcodeDefs = [
   {

@@ -1,4 +1,4 @@
-import shortcodes from '../shortcodes';
+import shortcodes from '..';
 
 describe('#shortcodes', () => {
   it('contains all shortcodes we want', () => {

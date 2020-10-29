@@ -4,7 +4,7 @@ import path from 'path';
 
 import routes from './routes/routes';
 import plugins from './plugins';
-import { hookInterface } from './hookInterface/hookInterface';
+import { hookInterface } from './hooks/hookInterface';
 import internalHooks from './hooks';
 import build from './build/build';
 import partialHydration from './partialHydration/partialHydration';
@@ -22,7 +22,7 @@ import {
   prepareInlineShortcode,
 } from './utils';
 import { RoutesOptions } from './routes/types';
-import { HookOptions } from './hookInterface/types';
+import { HookOptions } from './hooks/types';
 import {
   SettingsOptions,
   QueryOptions,
