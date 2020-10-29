@@ -23,13 +23,13 @@ import {
 } from './utils';
 import { RoutesOptions } from './routes/types';
 import { HookOptions } from './hooks/types';
+import { ShortcodeDefs } from './shortcodes/types';
 import {
   SettingsOptions,
   QueryOptions,
   RequestOptions,
   RequestsOptions,
   ExcludesFalse,
-  ShortcodeDefs,
   InitializationOptions,
 } from './utils/types';
 import createReadOnlyProxy from './utils/createReadOnlyProxy';

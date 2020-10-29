@@ -2,7 +2,8 @@ import fs from 'fs-extra';
 import defaultsDeep from 'lodash.defaultsdeep';
 
 import path from 'path';
-import { validatePlugin, validateHook, svelteComponent, HookOptions, ShortcodeDefs, PluginOptions } from '..';
+import { ShortcodeDefs } from '../shortcodes/types';
+import { validatePlugin, validateHook, svelteComponent, HookOptions, PluginOptions } from '..';
 import { Elder } from '../Elder';
 import { RoutesOptions } from '../routes/types';
 import createReadOnlyProxy from '../utils/createReadOnlyProxy';
