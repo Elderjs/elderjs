@@ -41,10 +41,7 @@ describe('#getConfig', () => {
       clientComponents: resolve(process.cwd(), './public/svelte'),
       ssrComponents: resolve(process.cwd(), './___ELDER___/compiled'),
     },
-    build: {
-      numberOfWorkers: -1,
-      shuffleRequests: false,
-    },
+    build: false,
     debug: {
       automagic: false,
       build: false,
@@ -56,9 +53,7 @@ describe('#getConfig', () => {
     distDir: resolve(process.cwd(), './public'),
     rootDir: process.cwd(),
     srcDir: resolve(process.cwd(), './src'),
-    server: {
-      prefix: '',
-    },
+    server: false,
     shortcodes: {
       closePattern: '}}',
       openPattern: '{{',
@@ -68,10 +63,8 @@ describe('#getConfig', () => {
     },
     origin: '',
     plugins: {},
-    build: false,
     context: 'unknown',
     worker: false,
-    server: false,
   };
 
   beforeEach(() => {
@@ -109,30 +102,33 @@ describe('#getConfig', () => {
       },
     };
 
-    expect(getConfig({ context: 'serverless', rootDir: 't' })).toEqual({
-      ...output,
-      ...common,
-      context: 'serverless',
-    });
+    expect(getConfig({ context: 'serverless', rootDir: 't' })).toStrictEqual(
+      expect.objectContaining({
+        ...common,
+        context: 'serverless',
+      }),
+    );
 
-    expect(getConfig({ context: 'server', rootDir: 't' })).toEqual({
-      ...output,
-      ...common,
-      context: 'server',
-      server: {
-        prefix: '',
-      },
-    });
+    expect(getConfig({ context: 'server', rootDir: 't' })).toStrictEqual(
+      expect.objectContaining({
+        ...common,
+        context: 'server',
+        server: {
+          prefix: '',
+        },
+      }),
+    );
 
-    expect(getConfig({ context: 'build', rootDir: 't' })).toEqual({
-      ...output,
-      ...common,
-      context: 'build',
-      build: {
-        numberOfWorkers: -1,
-        shuffleRequests: false,
-      },
-    });
+    expect(getConfig({ context: 'build', rootDir: 't' })).toStrictEqual(
+      expect.objectContaining({
+        ...common,
+        context: 'build',
+        build: {
+          numberOfWorkers: -1,
+          shuffleRequests: false,
+        },
+      }),
+    );
     expect(getConfig({ context: 'serverless', rootDir: 't' })).toStrictEqual(
       expect.objectContaining({
         context: 'serverless',

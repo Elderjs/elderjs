@@ -6,7 +6,7 @@ Array [
     "input": "./node_modules/intersection-observer/intersection-observer.js",
     "output": Array [
       Object {
-        "file": "dist/static/intersection-observer.js",
+        "file": "/dist/static/intersection-observer.js",
         "format": "iife",
         "name": "./static/intersection-observer.js",
         "plugins": Array [
@@ -150,7 +150,7 @@ Array [
     "input": "./node_modules/intersection-observer/intersection-observer.js",
     "output": Array [
       Object {
-        "file": "dist/static/intersection-observer.js",
+        "file": "/dist/static/intersection-observer.js",
         "format": "iife",
         "name": "./static/intersection-observer.js",
         "plugins": Array [
@@ -293,7 +293,7 @@ Array [
         "dir": "test/public/svelte",
         "entryFileNames": "iife[name]-[hash].js",
         "format": "iife",
-        "name": "___elderjs_undefined",
+        "name": "___elderjs_pluginAComponent1",
         "sourcemap": false,
       },
     ],
@@ -350,7 +350,7 @@ Array [
         "dir": "test/public/svelte",
         "entryFileNames": "iife[name]-[hash].js",
         "format": "iife",
-        "name": "___elderjs_undefined",
+        "name": "___elderjs_pluginAComponent2",
         "sourcemap": false,
       },
     ],
@@ -407,7 +407,7 @@ Array [
         "dir": "test/public/svelte",
         "entryFileNames": "iife[name]-[hash].js",
         "format": "iife",
-        "name": "___elderjs_undefined",
+        "name": "___elderjs_AnythingCanBeHere",
         "sourcemap": false,
       },
     ],
@@ -464,7 +464,7 @@ Array [
         "dir": "test/public/svelte",
         "entryFileNames": "iife[name]-[hash].js",
         "format": "iife",
-        "name": "___elderjs_undefined",
+        "name": "___elderjs_pluginBComponent1",
         "sourcemap": false,
       },
     ],
@@ -515,26 +515,13 @@ Array [
   },
   Object {
     "cache": true,
-<<<<<<< HEAD
     "input": "pluginBComponent2.svelte",
     "output": Array [
-=======
-    "input": Array [
-      "/Users/lukewatts/oss/elderjs/src/plugins/pluginA/*.svelte",
-    ],
-    "output": Object {
-      "dir": "test/public/svelte",
-      "entryFileNames": "entry[name]-[hash].js",
-      "format": "system",
-      "sourcemap": false,
-    },
-    "plugins": Array [
->>>>>>> 7f5d524... test: remove mocks for nodejs internals
       Object {
         "dir": "test/public/svelte",
         "entryFileNames": "iife[name]-[hash].js",
         "format": "iife",
-        "name": "___elderjs_undefined",
+        "name": "___elderjs_pluginBComponent2",
         "sourcemap": false,
       },
     ],
@@ -591,7 +578,7 @@ Array [
         "dir": "test/public/svelte",
         "entryFileNames": "iife[name]-[hash].js",
         "format": "iife",
-        "name": "___elderjs_undefined",
+        "name": "___elderjs_SimplePlugin",
         "sourcemap": false,
       },
     ],
@@ -642,25 +629,13 @@ Array [
   },
   Object {
     "cache": true,
-<<<<<<< HEAD
     "input": "/src/plugins/elderjs-plugin-reload/Test.svelte",
     "output": Array [
-=======
-    "input": Array [
-      "/Users/lukewatts/oss/elderjs/src/plugins/pluginA/*.svelte",
-    ],
-    "output": Object {
-      "dir": "test/___ELDER___/compiled",
-      "exports": "auto",
-      "format": "cjs",
-    },
-    "plugins": Array [
->>>>>>> 7f5d524... test: remove mocks for nodejs internals
       Object {
         "dir": "test/public/svelte",
         "entryFileNames": "iife[name]-[hash].js",
         "format": "iife",
-        "name": "___elderjs_undefined",
+        "name": "___elderjs_Test",
         "sourcemap": false,
       },
     ],
@@ -718,7 +693,7 @@ Array [
     "input": "./node_modules/intersection-observer/intersection-observer.js",
     "output": Array [
       Object {
-        "file": "dist/static/intersection-observer.js",
+        "file": "/dist/static/intersection-observer.js",
         "format": "iife",
         "name": "./static/intersection-observer.js",
         "plugins": Array [
