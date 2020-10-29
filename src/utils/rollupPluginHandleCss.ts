@@ -1,4 +1,6 @@
 import devalue from 'devalue';
+import path from 'path';
+
 import ssrOutputPath from './ssrOutputPath';
 
 const cssMap = new Map();
@@ -13,7 +15,7 @@ export const splitCssSourceMap = (code) => {
 };
 
 export default function elderjsHandleCss({ rootDir }) {
-  const isCss = (id) => id.endsWith('.css');
+  const isCss = (id) => path.parse(id).ext === '.css';
 
   const relDir = (str) => {
     return ssrOutputPath(str.replace(`${rootDir}/`, ''));
