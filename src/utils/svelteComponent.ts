@@ -28,8 +28,6 @@ export const replaceSpecialCharacters = (str) =>
 
 const componentCache = {};
 
-const notProduction = String(process.env.NODE_ENV).toLowerCase() !== 'production';
-
 const svelteComponent = (componentName: String, ssrFolder: String = 'components') => ({
   page,
   props,
@@ -65,16 +63,8 @@ const svelteComponent = (componentName: String, ssrFolder: String = 'components'
   try {
     const { html: htmlOutput, head } = render(props);
 
-    if (css && css.length > 0 && page.cssStack) {
-      css.forEach((c) => {
-        page.cssStack.push({ source: componentName, priority: 50, string: c });
-      });
-    }
-
-    if (cssMap && cssMap.length > 0 && page.cssStack && notProduction && page.request.type !== 'build') {
-      cssMap.forEach((c) => {
-        page.cssStack.push({ source: componentName, priority: 1, string: c });
-      });
+    if (css && css.length > 0 && page.svelteCss) {
+      page.svelteCss.push({ css, cssMap });
     }
 
     if (head && page.headStack) {

@@ -209,6 +209,7 @@ Page {
     "worker": true,
   },
   "shortcodes": Array [],
+  "svelteCss": Array [],
   "uid": "xxxxxxxxxx",
 }
 `;
@@ -673,6 +674,7 @@ Page {
   },
   "shortcodes": Array [],
   "styleTag": "<style>cssStack</style>",
+  "svelteCss": Array [],
   "templateHtml": undefined,
   "timings": Array [],
   "uid": "xxxxxxxxxx",

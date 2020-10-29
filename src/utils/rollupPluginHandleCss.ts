@@ -1,17 +1,25 @@
-import devalue from 'devalue';
 import path from 'path';
+import CleanCSS from 'clean-css';
+import atob from 'atob';
+import btoa from 'btoa';
 
 import ssrOutputPath from './ssrOutputPath';
 
 const cssMap = new Map();
 
-export const splitCssSourceMap = (code) => {
-  const mapIntro = `/*# sourceMappingURL=data:application/json;charset=utf-8;base64,`;
-  // eslint-disable-next-line prefer-const
-  let [css, map] = code.split(mapIntro);
+const cleanCss = new CleanCSS({ sourceMap: true, sourceMapInlineSources: true, level: 0 });
 
-  map = `${mapIntro}${map}`;
+const mapIntro = `/*# sourceMappingURL=data:application/json;charset=utf-8;base64,`;
+
+export const splitCssSourceMap = (code) => {
+  // eslint-disable-next-line prefer-const
+  let [css, map]: [String, String] = code.split(mapIntro);
+  map = map.substring(0, map.length - 2); // trim "*/"
   return [css.trim(), map];
+};
+
+export const encodeSourceMap = (map) => {
+  return `${mapIntro}${btoa(map.toString())} */`;
 };
 
 export default function elderjsHandleCss({ rootDir }) {
@@ -25,7 +33,8 @@ export default function elderjsHandleCss({ rootDir }) {
     name: 'elderjs-handle-css',
     transform(code, id) {
       if (isCss(id)) {
-        cssMap.set(relDir(id), code);
+        console.log(code, id);
+        cssMap.set(relDir(id), [code, id]);
         return '';
       }
       return null;
@@ -39,21 +48,32 @@ export default function elderjsHandleCss({ rootDir }) {
 
         chunk.imports.forEach((i) => requiredCss.add(i.replace('.js', '.css')));
 
-        const { css, map, matches } = [...requiredCss].reduce(
+        const { cssChunks, matches } = [...requiredCss].reduce(
           (out, key) => {
             if (cssMap.has(key)) {
-              const [thisCss, thisMap] = splitCssSourceMap(cssMap.get(key));
-              out.css.push(thisCss);
-              out.map.push(thisMap);
-              out.matches.push(key);
+              const [codeChunk, id] = cssMap.get(key);
+              const [thisCss, thisMap] = splitCssSourceMap(codeChunk);
+
+              // eslint-disable-next-line no-param-reassign
+              if (thisCss.length > 0) {
+                out.cssChunks[id] = {
+                  styles: thisCss,
+                  sourceMap: atob(thisMap),
+                };
+                out.matches.push(key);
+              }
             }
             return out;
           },
-          { css: [], map: [], matches: [] },
+          { cssChunks: {}, matches: [] },
         );
 
-        code += `\nmodule.exports._css = ${devalue(css)};`;
-        code += `\nmodule.exports._cssMap = ${devalue(map)};`;
+        console.log(cssChunks);
+
+        const cssOutput = cleanCss.minify(cssChunks);
+
+        code += `\nmodule.exports._css = "${cssOutput.styles}";`;
+        code += `\nmodule.exports._cssMap = "${encodeSourceMap(cssOutput.sourceMap)}";`;
         code += `\nmodule.exports._cssIncluded = ${JSON.stringify(matches)}`;
         return code;
       }
