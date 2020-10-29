@@ -67,8 +67,6 @@ export default function elderjsHandleCss({ rootDir }) {
           { cssChunks: {}, matches: [] },
         );
 
-        console.log(cssChunks);
-
         const cssOutput = cleanCss.minify(cssChunks);
 
         code += `\nmodule.exports._css = "${cssOutput.styles}";`;
