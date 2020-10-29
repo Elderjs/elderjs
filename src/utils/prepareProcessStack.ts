@@ -1,6 +1,10 @@
 function prepareProcessStack(page) {
   return function processStack(name) {
     page.perf.start(`stack.${name}`);
+
+    // used to check if we've already add this string to the stack.
+    const seen = new Set();
+
     const str = page[name]
       .map((s) => ({ ...s, priority: s.priority || 50 }))
       .sort((a, b) => b.priority - a.priority)
@@ -10,8 +14,9 @@ function prepareProcessStack(page) {
           console.log(`Adding to ${name} from ${cv.source}`);
           console.log(cv);
         }
-        if (cv.string && cv.string.length > 0) {
+        if (cv.string && cv.string.length > 0 && !seen.has(cv.string)) {
           out = `${out}${cv.string}`;
+          seen.add(cv.string);
         }
 
         return out;

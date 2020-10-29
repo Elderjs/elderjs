@@ -11,7 +11,7 @@ Object {
     "data": Object {
       "foo": "bar",
     },
-    "layout": "Layout.svelte",
+    "layout": "Layout",
     "layoutComponent": "<div class=\\"svelteComponent\\">Layout</div>",
     "permalink": [Function],
     "template": "Default",
@@ -40,7 +40,7 @@ Object {
     "data": Object {
       "foo": "bar",
     },
-    "layout": "Layout.svelte",
+    "layout": "Layout",
     "layoutComponent": "<div class=\\"svelteComponent\\">Layout</div>",
     "permalink": [Function],
     "template": "Default",
@@ -82,7 +82,7 @@ Object {
     "data": Object {
       "foo": "bar",
     },
-    "layout": "Layout.svelte",
+    "layout": "Layout",
     "layoutComponent": "<div class=\\"svelteComponent\\">Layout</div>",
     "permalink": [Function],
     "template": "Content.svelte",
@@ -107,7 +107,7 @@ Object {
     "data": Object {
       "foo": "bar",
     },
-    "layout": "Layout.svelte",
+    "layout": "Layout",
     "layoutComponent": "<div class=\\"svelteComponent\\">Layout</div>",
     "permalink": [Function],
     "template": "Default",

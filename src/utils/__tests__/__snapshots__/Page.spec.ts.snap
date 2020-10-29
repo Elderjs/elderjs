@@ -40,6 +40,8 @@ Page {
   },
   "htmlString": "",
   "hydrateStack": Array [],
+  "moduleJsStack": Array [],
+  "moduleStack": Array [],
   "perf": Object {
     "end": [MockFunction] {
       "calls": Array [
@@ -125,7 +127,8 @@ Page {
     },
     "data": [Function],
     "hooks": Array [],
-    "layout": [MockFunction],
+    "layout": "Layout.svelte",
+    "layoutComponent": [MockFunction],
     "parent": "home",
     "template": "Content.svelte",
     "templateComponent": [MockFunction],
@@ -193,7 +196,6 @@ Page {
         "clientComponents": "./public/dist/svelte/",
         "ssrComponents": "./___ELDER___/compiled/",
       },
-      "systemJs": "/dist/static/s.min.js",
     },
     "plugins": Object {
       "elder-plugin-upload-s3": Object {
@@ -207,6 +209,7 @@ Page {
     "worker": true,
   },
   "shortcodes": Array [],
+  "svelteCss": Array [],
   "uid": "xxxxxxxxxx",
 }
 `;
@@ -252,7 +255,7 @@ Page {
   ],
   "footerString": "
     beforeHydrateStack
-    <script>hydrateStack</script>
+    hydrateStack
     customJsStack
     footerStack
     ",
@@ -268,6 +271,8 @@ Page {
     "hydrateStack",
   ],
   "layoutHtml": "<div class=\\"container\\"></div>",
+  "moduleJsStack": Array [],
+  "moduleStack": Array [],
   "perf": Object {
     "end": [MockFunction] {
       "calls": Array [
@@ -419,7 +424,8 @@ Page {
     },
     "data": [Function],
     "hooks": Array [],
-    "layout": [MockFunction] {
+    "layout": "Layout.svelte",
+    "layoutComponent": [MockFunction] {
       "calls": Array [
         Array [
           Object {
@@ -480,7 +486,6 @@ Page {
                     "clientComponents": "./public/dist/svelte/",
                     "ssrComponents": "./___ELDER___/compiled/",
                   },
-                  "systemJs": "/dist/static/s.min.js",
                 },
                 "plugins": Object {
                   "elder-plugin-upload-s3": Object {
@@ -568,7 +573,6 @@ Page {
                     "clientComponents": "./public/dist/svelte/",
                     "ssrComponents": "./___ELDER___/compiled/",
                   },
-                  "systemJs": "/dist/static/s.min.js",
                 },
                 "plugins": Object {
                   "elder-plugin-upload-s3": Object {
@@ -656,7 +660,6 @@ Page {
         "clientComponents": "./public/dist/svelte/",
         "ssrComponents": "./___ELDER___/compiled/",
       },
-      "systemJs": "/dist/static/s.min.js",
     },
     "plugins": Object {
       "elder-plugin-upload-s3": Object {
@@ -671,6 +674,7 @@ Page {
   },
   "shortcodes": Array [],
   "styleTag": "<style>cssStack</style>",
+  "svelteCss": Array [],
   "templateHtml": undefined,
   "timings": Array [],
   "uid": "xxxxxxxxxx",

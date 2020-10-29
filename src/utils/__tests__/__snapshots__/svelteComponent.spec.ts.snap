@@ -1,0 +1,52 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`#svelteComponent svelteComponent works with partial hydration of subcomponent 1`] = `
+Array [
+  Object {
+    "priority": 100,
+    "source": "Datepicker",
+    "string": "<script>var datepickerPropsSwrzsrVDCd = {a:\\"b\\"};</script>",
+  },
+  Object {
+    "priority": 30,
+    "source": "Datepicker",
+    "string": "     
+      <script type=\\"module\\">
+      function initdatepickerSwrzsrVDCd(){
+        import(\\"/svelte/undefined.mjs\\").then((component)=>{
+          new component.default({ 
+            target: document.getElementById('datepickerSwrzsrVDCd'),
+            props: datepickerPropsSwrzsrVDCd,
+            hydrate: true
+            });
+        });
+      }
+      
+      window.addEventListener('load', function (event) {
+        var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {
+          var objK = Object.keys(entries);
+          var objKl = objK.length;
+          var objKi = 0;
+          for (; objKi < objKl; objKi++) {
+            var entry = entries[objK[objKi]];
+            if (entry.isIntersecting) {
+              observer.unobserve(document.getElementById('datepickerSwrzsrVDCd'));
+              if (document.eg_datepicker) {
+                initdatepickerSwrzsrVDCd();
+              } else {
+                document.eg_datepicker = true;
+                initdatepickerSwrzsrVDCd();
+              }
+            }
+          }
+        }, {
+          rootMargin: '200px',
+          threshold: 0
+        });
+        observerSwrzsrVDCd.observe(document.getElementById('datepickerSwrzsrVDCd'));
+      });
+    
+      </script>",
+  },
+]
+`;

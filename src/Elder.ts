@@ -78,7 +78,6 @@ class Elder {
 
     // merge the given config with the project and defaults;
     this.settings = getConfig(initializationOptions);
-    this.settings.$$internal.hashedComponents = getHashedSvelteComponents({ ...this.settings.$$internal });
 
     // overwrite anything that needs to be overwritten for legacy reasons based on the initialConfig
     // todo: this can be refactored into getConfig.
@@ -332,6 +331,8 @@ class Elder {
           }
         }
 
+        // do this last to try and prevent a common race condition.
+        this.settings.$$internal.hashedComponents = getHashedSvelteComponents(this.settings);
         this.markBootstrapComplete(this);
       });
     });

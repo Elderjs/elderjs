@@ -1,6 +1,29 @@
-const { getDefaultConfig } = require('../validations');
+const defaultConfig = {
+  debug: { automagic: false, build: false, hooks: false, performance: false, shortcodes: false, stacks: false },
+  distDir: 'public',
+  srcDir: 'src',
+  rootDir: 'test',
+  build: {
+    numberOfWorkers: -1,
+    shuffleRequests: false,
+  },
+  server: {
+    prefix: '',
+  },
+  shortcodes: {
+    closePattern: '}}',
+    openPattern: '{{',
+  },
+  hooks: {
+    disable: [],
+  },
+  origin: '',
+  plugins: {},
+};
 
-const defaultConfig = getDefaultConfig();
+jest.mock('../validations.ts', () => ({
+  getDefaultConfig: () => defaultConfig,
+}));
 
 jest.mock('cosmiconfig', () => {
   return {
@@ -24,10 +47,6 @@ describe('#getConfig', () => {
       clientComponents: 'test/public/svelte/',
       ssrComponents: 'test/___ELDER___/compiled/',
     },
-    build: {
-      numberOfWorkers: -1,
-      shuffleRequests: false,
-    },
     debug: {
       automagic: false,
       build: false,
@@ -39,9 +58,6 @@ describe('#getConfig', () => {
     distDir: 'test/public',
     rootDir: 'test',
     srcDir: 'test/src',
-    server: {
-      prefix: '',
-    },
     shortcodes: {
       closePattern: '}}',
       openPattern: '{{',
@@ -51,6 +67,10 @@ describe('#getConfig', () => {
     },
     origin: '',
     plugins: {},
+    build: false,
+    context: 'unknown',
+    worker: false,
+    server: false,
   };
 
   beforeEach(() => {
@@ -78,15 +98,38 @@ describe('#getConfig', () => {
     // eslint-disable-next-line global-require
     const getConfig = require('../getConfig').default;
 
-    expect(getConfig({ context: 'serverless', rootDir: 't' })).toEqual({
-      ...output,
-      context: 'serverless',
+    const common = {
       distDir: 't/public',
       rootDir: 't',
       srcDir: 't/src',
       $$internal: {
         clientComponents: 't/public/svelte/',
         ssrComponents: 't/___ELDER___/compiled/',
+      },
+    };
+
+    expect(getConfig({ context: 'serverless', rootDir: 't' })).toEqual({
+      ...output,
+      ...common,
+      context: 'serverless',
+    });
+
+    expect(getConfig({ context: 'server', rootDir: 't' })).toEqual({
+      ...output,
+      ...common,
+      context: 'server',
+      server: {
+        prefix: '',
+      },
+    });
+
+    expect(getConfig({ context: 'build', rootDir: 't' })).toEqual({
+      ...output,
+      ...common,
+      context: 'build',
+      build: {
+        numberOfWorkers: -1,
+        shuffleRequests: false,
       },
     });
   });
