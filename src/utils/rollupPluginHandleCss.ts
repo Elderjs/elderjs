@@ -33,7 +33,6 @@ export default function elderjsHandleCss({ rootDir }) {
     name: 'elderjs-handle-css',
     transform(code, id) {
       if (isCss(id)) {
-        console.log(code, id);
         cssMap.set(relDir(id), [code, id]);
         return '';
       }
