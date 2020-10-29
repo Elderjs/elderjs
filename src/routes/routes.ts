@@ -1,5 +1,6 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
+import * as path from 'path';
 import glob from 'glob';
 import kebabcase from 'lodash.kebabcase';
 import type { RouteOptions } from './types';
@@ -16,23 +17,24 @@ function routes(settings: SettingsOptions) {
     `,
     );
 
-  const files = glob.sync(`${settings.srcDir}/routes/*/+(*.js|*.svelte)`);
+  const files = glob.sync(`${settings.srcDir}/routes/*/+(*.js|*.ts|*.svelte)`);
 
   const ssrFolder = settings.$$internal.ssrComponents;
 
   const ssrComponents = glob.sync(`${ssrFolder}/*.js`);
 
-  const routejsFiles = files.filter((f) => f.endsWith('/route.js'));
+  const routeJsRegex = /route.t|js$/;
+  const routejsFiles = files.filter((f) => routeJsRegex.test(f));
 
   const output = routejsFiles.reduce((out, cv) => {
-    const routeName = cv.replace('/route.js', '').split('/').pop();
+    const routeName = path.dirname(cv).split('/').pop();
     const capitalizedRoute = capitalizeFirstLetter(routeName);
 
     const routeReq = require(cv);
     const route: RouteOptions = routeReq.default || routeReq;
     const filesForThisRoute = files
       .filter((r) => r.includes(`/routes/${routeName}`))
-      .filter((r) => !r.includes('route.js'));
+      .filter((r) => !routeJsRegex.test(r));
 
     if (!route.permalink) {
       if (settings.debug.automagic) {

@@ -136,13 +136,13 @@ class Elder {
 
       /**
        * Finalize hooks
-       * Import User Hooks.js
+       * Import User defined Hooks
        * Validate Hooks
        * Filter out hooks that are disabled.
        */
 
       let hooksJs: Array<HookOptions> = [];
-      const hookSrcPath = path.resolve(this.settings.srcDir, './hooks.js');
+      const hookSrcPath = path.resolve(this.settings.srcDir, './hooks');
 
       try {
         const hooksReq = require(hookSrcPath);
@@ -182,12 +182,12 @@ class Elder {
 
       /**
        * Finalize Shortcodes
-       * Import User Shortcodes.js
+       * Import User defined Shortcodes
        * Validate Shortcodes
        */
 
       let shortcodesJs: ShortcodeDefs = [];
-      const shortcodeSrcPath = path.resolve(this.settings.srcDir, './shortcodes.js');
+      const shortcodeSrcPath = path.resolve(this.settings.srcDir, './shortcodes');
 
       try {
         const shortcodeReq = require(shortcodeSrcPath);
