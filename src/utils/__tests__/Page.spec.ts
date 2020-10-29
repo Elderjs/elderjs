@@ -79,7 +79,6 @@ const settings = {
       ssrComponents: './___ELDER___/compiled/',
       clientComponents: './public/dist/svelte/',
     },
-    systemJs: '/dist/static/s.min.js',
     intersectionObserverPoly: '/dist/static/intersection-observer.js',
     buildFolder: '',
     srcFolder: './src/',
@@ -151,7 +150,8 @@ const route = {
   template: 'Content.svelte',
   data: () => Promise.resolve({ worldPopulation: 7805564950 }),
   templateComponent: jest.fn(),
-  layout: jest.fn(() => '<div class="container"></div>'),
+  layout: 'Layout.svelte',
+  layoutComponent: jest.fn(() => '<div class="container"></div>'),
   parent: 'home',
   $$meta: {
     type: 'route',
@@ -209,6 +209,7 @@ describe('#Page', () => {
     const page = new Page(pageInput);
     expect(page).toMatchSnapshot();
     await page.build();
+
     expect(hooks).toEqual([
       'request',
       'data',

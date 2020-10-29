@@ -203,37 +203,11 @@ const hooks: Array<HookOptions> = [
           script.src = "/static/intersection-observer.js";
           document.getElementsByTagName('head')[0].appendChild(script);
       };
-      </script>`,
+      </script>
+      `,
             priority: 100,
           },
           ...beforeHydrateStack,
-        ],
-      };
-    },
-  },
-  {
-    hook: 'stacks',
-    name: 'elderAddSystemJs',
-    description: 'AddsSystemJs to beforeHydrateStack also add preloading of systemjs to the headStack.',
-    priority: 1,
-    run: async ({ beforeHydrateStack, headStack }) => {
-      return {
-        beforeHydrateStack: [
-          {
-            source: 'elderAddSystemJs',
-            string: `<script src="/static/s.min.js"></script>`,
-            priority: 99,
-          },
-          ...beforeHydrateStack,
-        ],
-
-        headStack: [
-          {
-            source: 'elderAddSystemJs',
-            string: `<link rel="preload" href="/static/s.min.js" as="script">`,
-            priority: 99,
-          },
-          ...headStack,
         ],
       };
     },

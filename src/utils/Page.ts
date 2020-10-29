@@ -6,6 +6,7 @@ import { ShortcodeDefs } from '../shortcodes/types';
 import { QueryOptions, Stack, RequestOptions, SettingsOptions } from './types';
 import { RoutesOptions } from '../routes/types';
 import createReadOnlyProxy from './createReadOnlyProxy';
+import outputStyles from './outputStyles';
 
 const buildPage = async (page) => {
   try {
@@ -53,7 +54,7 @@ const buildPage = async (page) => {
     await page.runHook('shortcodes', page);
 
     page.perf.start('html.layout');
-    page.layoutHtml = page.route.layout({
+    page.layoutHtml = page.route.layoutComponent({
       page,
       props: {
         data: page.data,
@@ -69,16 +70,18 @@ const buildPage = async (page) => {
 
     // prepare for head hook
     page.head = page.processStack('headStack');
+
     page.cssString = '';
     page.cssString = page.processStack('cssStack');
-    page.styleTag = `<style>${page.cssString}</style>`;
+    page.styleTag = outputStyles(page);
     page.headString = `${page.head}${page.styleTag}`;
 
     await page.runHook('head', page);
 
     // prepare for compileHtml
     const beforeHydrate = page.processStack('beforeHydrateStack');
-    const hydrate = `<script>${page.processStack('hydrateStack')}</script>`;
+    const hydrate = page.processStack('hydrateStack');
+
     const customJs = page.processStack('customJsStack');
     const footer = page.processStack('footerStack');
 
@@ -110,6 +113,11 @@ const buildPage = async (page) => {
   }
   return page;
 };
+
+interface SvelteCss {
+  cssMap: String;
+  css: String;
+}
 
 class Page {
   uid: string;
@@ -144,7 +152,13 @@ class Page {
 
   cssString: string;
 
+  svelteCss: Array<SvelteCss>;
+
   htmlString: string;
+
+  moduleStack: Stack;
+
+  moduleJsStack: Stack;
 
   headStack: Stack;
 
@@ -183,7 +197,10 @@ class Page {
     this.hydrateStack = [];
     this.customJsStack = [];
     this.footerStack = [];
+    this.moduleJsStack = [];
+    this.moduleStack = [];
     this.shortcodes = shortcodes;
+    this.svelteCss = [];
 
     this.processStack = prepareProcessStack(this);
     this.perf.end('constructor');

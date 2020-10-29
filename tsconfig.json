@@ -14,12 +14,6 @@
     "resolveJsonModule": true,
     "declaration": true
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "node_modules",
-    "**/__tests__/**",
-    "dist"
-  ]
+  "include": ["src"],
+  "exclude": ["node_modules", "**/__tests__/**", "dist"]
 }

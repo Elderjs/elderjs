@@ -19,6 +19,11 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
   config.srcDir = path.resolve(rootDir, `./${config.srcDir}`);
   config.distDir = path.resolve(rootDir, `./${config.distDir}`);
 
+  config.context = typeof initializationOptions.context !== 'undefined' ? initializationOptions.context : 'unknown';
+  config.server = initializationOptions.context === 'server' && config.server;
+  config.build = initializationOptions.context === 'build' && config.build;
+  config.worker = !!initializationOptions.worker;
+
   const ssrComponents = path.resolve(config.rootDir, './___ELDER___/compiled/');
   const clientComponents = path.resolve(config.distDir, './svelte/');
 

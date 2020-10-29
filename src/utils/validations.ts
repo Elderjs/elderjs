@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import type { SettingsOptions, PluginOptions } from './types';
+import type { SettingsOptions, PluginOptions, RollupSettings } from './types';
 import type { ShortcodeDef } from '../shortcodes/types';
 import type { RouteOptions } from '../routes/types';
 import type { HookOptions } from '../hooks/types';
@@ -95,6 +95,12 @@ const configSchema = yup.object({
     closePattern: yup.string().default('}}').label('closing pattern for identifying shortcodes in html output.'),
   }),
   plugins: yup.object().default({}).label('Used to define Elder.js plugins.'),
+  legacy: yup
+    .boolean()
+    .default(false)
+    .label(
+      'EXPERIMENTAL: This implementation will not work in all scenarios, may change in the future, or be dropped completely... but Elder.js will attempt to add an IE11/nomodule friendly iife bundle for each component on production rollup builds. Please note, currently shared stores do not work but see this issue: https://github.com/Elderjs/elderjs/issues/44#issue-709580756 and you may need to bring your own polyfills.',
+    ),
 });
 
 /**
@@ -189,21 +195,31 @@ const hookSchema = yup
   })
   .noUnknown(true);
 
-function getDefaultConfig(): SettingsOptions {
-  const validated = configSchema.cast();
+const rollupSchema = yup.object({
+  svelteConfig: yup.object().default({}).notRequired().label('Usually imported from ./svelte.config.js'),
+  dev: yup.object({
+    splitComponents: yup
+      .boolean()
+      .default(false)
+      .notRequired()
+      .label(
+        "Dramatically speeds up development reloads but breaks some of Svelte's core functionality such as shared stores across hydrated components.",
+      ),
+  }),
+  replacements: yup
+    .object()
+    .default({})
+    .notRequired()
+    .label('Replaces the key with the value when rolling up templates'),
+});
 
-  return validated;
+function getDefaultRollup(): RollupSettings {
+  return rollupSchema.cast();
 }
 
-// function validateConfig(config = {}) {
-//   try {
-//     configSchema.validateSync(config);
-//     const validated: SettingsOptions = configSchema.cast(config);
-//     return validated;
-//   } catch (err) {
-//     return false;
-//   }
-// }
+function getDefaultConfig(): SettingsOptions {
+  return configSchema.cast();
+}
 
 function validateRoute(route, routeName: string): RouteOptions | false {
   try {
@@ -280,7 +296,7 @@ export {
   validatePlugin,
   validateHook,
   validateShortcode,
-  // validateConfig,
+  getDefaultRollup,
   getDefaultConfig,
   configSchema,
   hookSchema,

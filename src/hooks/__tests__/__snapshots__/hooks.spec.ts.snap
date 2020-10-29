@@ -12,7 +12,8 @@ Object {
           script.src = \\"/static/intersection-observer.js\\";
           document.getElementsByTagName('head')[0].appendChild(script);
       };
-      </script>",
+      </script>
+      ",
     },
   ],
 }
@@ -46,25 +47,6 @@ Object {
       "priority": 90,
       "source": "elderAddMetaViewportToHead",
       "string": "<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\" />",
-    },
-  ],
-}
-`;
-
-exports[`#hooks elderAddSystemJs 1`] = `
-Object {
-  "beforeHydrateStack": Array [
-    Object {
-      "priority": 99,
-      "source": "elderAddSystemJs",
-      "string": "<script src=\\"/static/s.min.js\\"></script>",
-    },
-  ],
-  "headStack": Array [
-    Object {
-      "priority": 99,
-      "source": "elderAddSystemJs",
-      "string": "<link rel=\\"preload\\" href=\\"/static/s.min.js\\" as=\\"script\\">",
     },
   ],
 }
@@ -112,13 +94,6 @@ Array [
     "hook": "stacks",
     "name": "elderAddDefaultIntersectionObserver",
     "priority": 100,
-    "run": [Function],
-  },
-  Object {
-    "description": "AddsSystemJs to beforeHydrateStack also add preloading of systemjs to the headStack.",
-    "hook": "stacks",
-    "name": "elderAddSystemJs",
-    "priority": 1,
     "run": [Function],
   },
   Object {

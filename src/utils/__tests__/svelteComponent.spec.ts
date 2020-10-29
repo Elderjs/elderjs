@@ -9,6 +9,7 @@ const componentProps = {
       permalinks: jest.fn(),
     },
     settings: {
+      legacy: true, // TODO: make tests for legacy: false
       distDir: 'test/public',
       rootDir: 'test',
       srcDir: 'test/src',
@@ -85,15 +86,16 @@ describe('#svelteComponent', () => {
     expect(replaceSpecialCharacters('abcd 1234 <&""&>')).toEqual('abcd 1234 <&""&>');
   });
 
-  it('svelteComponent works', () => {
+  it('svelteComponent works assuming components folder for SSR', () => {
     jest.mock(
-      'test/___ELDER___/compiled/Home.js',
+      'test/___ELDER___/compiled/components/Home.js',
       () => ({
         render: () => ({
           head: '<head>',
           css: { code: '<css>' },
           html: '<div class="svelte-home">mock html output</div>',
         }),
+        _css: ['<css>'],
       }),
       { virtual: true },
     );
@@ -103,27 +105,67 @@ describe('#svelteComponent', () => {
     expect(home(componentProps)).toEqual(`<div class="svelte-home">mock html output</div>`);
   });
 
-  it('svelteComponent works with partial hydration of subcomponent', () => {
+  it('svelteComponent works with routes folder for SSR', () => {
     jest.mock(
-      'test/___ELDER___/compiled/Home.js',
+      'test/___ELDER___/compiled/routes/Home.js',
       () => ({
         render: () => ({
           head: '<head>',
           css: { code: '<css>' },
+          html: '<div class="svelte-home">mock html output</div>',
+        }),
+        _css: ['<css>'],
+      }),
+      { virtual: true },
+    );
+    // eslint-disable-next-line global-require
+    const svelteComponent = require('../svelteComponent').default;
+    const home = svelteComponent('Home.svelte', 'routes');
+    expect(home(componentProps)).toEqual(`<div class="svelte-home">mock html output</div>`);
+  });
+
+  it('svelteComponent works with layouts folder for SSR', () => {
+    jest.mock(
+      'test/___ELDER___/compiled/layouts/Home.js',
+      () => ({
+        render: () => ({
+          head: '<head>',
+          css: { code: '<css>' },
+          html: '<div class="svelte-home">mock html output</div>',
+        }),
+        _css: ['<css>'],
+      }),
+      { virtual: true },
+    );
+    // eslint-disable-next-line global-require
+    const svelteComponent = require('../svelteComponent').default;
+    const home = svelteComponent('Home.svelte', 'layouts');
+    expect(home(componentProps)).toEqual(`<div class="svelte-home">mock html output</div>`);
+  });
+
+  it('svelteComponent works with partial hydration of subcomponent', () => {
+    jest.mock(
+      'test/___ELDER___/compiled/components/Home.js',
+      () => ({
+        render: () => ({
+          head: '<head>',
+          css: { code: '<old>' },
           html:
             '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "lazy" }"></div></div>',
         }),
+        _css: ['<css>', '<css2>'],
       }),
       { virtual: true },
     );
     jest.mock(
-      'test/___ELDER___/compiled/Datepicker.js',
+      'test/___ELDER___/compiled/components/Datepicker.js',
       () => ({
         render: () => ({
           head: '<head>',
-          css: { code: '<css>' },
+          css: { code: '<old>' },
           html: '<div>DATEPICKER</div>',
         }),
+        _css: ['<css>'],
       }),
       { virtual: true },
     );
@@ -131,47 +173,9 @@ describe('#svelteComponent', () => {
     const svelteComponent = require('../svelteComponent').default;
     const home = svelteComponent('Home.svelte');
     expect(home(componentProps)).toEqual(
-      `<div class="svelte-datepicker"><div class="datepicker" id="datepicker-SwrzsrVDCd"><div>DATEPICKER</div></div></div>`,
+      `<div class="svelte-datepicker"><div class="datepicker" id="datepickerSwrzsrVDCd"><div>DATEPICKER</div></div></div>`,
     );
-    expect(componentProps.page.hydrateStack).toEqual([
-      {
-        priority: 50,
-        source: 'Datepicker',
-        string: `
-        function initdatepickerSwrzsrVDCd() {
-          
-    System.import('/svelte/Datepicker.a1b2c3.js').then(({ default: App }) => {
-    new App({ target: document.getElementById('datepicker-SwrzsrVDCd'), hydrate: true, props: {a:"b"} });
-    });
-        }
-        
-      window.addEventListener('load', function (event) {
-        var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {
-          var objK = Object.keys(entries);
-          var objKl = objK.length;
-          var objKi = 0;
-          for (; objKi < objKl; objKi++) {
-            var entry = entries[objK[objKi]];
-            if (entry.isIntersecting) {
-              observer.unobserve(document.getElementById('datepicker-SwrzsrVDCd'));
-              if (document.eg_datepicker) {
-                initdatepickerSwrzsrVDCd();
-              } else {
-                document.eg_datepicker = true;
-                initdatepickerSwrzsrVDCd();
-              }
-            }
-          }
-        }, {
-          rootMargin: '200px',
-          threshold: 0
-        });
-        observerSwrzsrVDCd.observe(document.getElementById('datepicker-SwrzsrVDCd'));
-      });
-    
-      `,
-      },
-    ]);
+    expect(componentProps.page.hydrateStack).toMatchSnapshot();
   });
 });
 

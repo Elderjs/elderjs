@@ -25,22 +25,6 @@ type DebugOptions = {
   shortcodes: boolean;
 };
 
-// type PathOptions = {
-/*
-  assets: string;
-  public: string;
-  svelte: SvelteOptions;
-  systemJs: string;
-  intersectionObserverPoly: string;
-  srcFolder: string;
-   buildFolder: string;
-*/
-
-// distDir: string;
-// srcDir: string;
-// rootDir: string;
-// };
-
 type Internal = {
   hashedComponents?: {};
   ssrComponents: string;
@@ -86,6 +70,7 @@ export type SettingsOptions = {
   $$internal: Internal;
   context?: string;
   worker?: boolean;
+  legacy: boolean;
 };
 
 export type QueryOptions = {
@@ -160,6 +145,12 @@ export interface ComponentPayload {
   hydrateOptions?: HydrateOptions;
 }
 
-export interface RollupConfig {
-  replacements?: [string, string];
+export interface RollupDevOptions {
+  splitComponents: boolean;
+}
+
+export interface RollupSettings {
+  svelteConfig?: any;
+  replacements?: Object;
+  dev?: RollupDevOptions;
 }

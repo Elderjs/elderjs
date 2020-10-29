@@ -20,7 +20,7 @@ function routes(settings: SettingsOptions) {
 
   const ssrFolder = settings.$$internal.ssrComponents;
 
-  const ssrComponents = glob.sync(`${ssrFolder}/*.js`);
+  const ssrComponents = glob.sync(`${ssrFolder}/*/*.js`);
 
   const routejsFiles = files.filter((f) => f.endsWith('/route.js'));
 
@@ -71,7 +71,7 @@ function routes(settings: SettingsOptions) {
           );
         }
 
-        route.templateComponent = svelteComponent(componentName);
+        route.templateComponent = svelteComponent(componentName, 'routes');
       }
     } else {
       const svelteFile = filesForThisRoute.find((f) => f.endsWith(`${capitalizedRoute}.svelte`));
@@ -85,7 +85,7 @@ function routes(settings: SettingsOptions) {
         if (settings.debug.automagic)
           console.log(`debug.automagic:: Found ${capitalizedRoute}.svelte. Sweet, we'll set it up.`);
         route.template = `${capitalizedRoute}.svelte`;
-        route.templateComponent = svelteComponent(svelteFile);
+        route.templateComponent = svelteComponent(svelteFile, 'routes');
 
         const ssrComponent = ssrComponents.find((f) => f.endsWith(`${capitalizedRoute}.js`));
         if (!ssrComponent) {
@@ -105,7 +105,7 @@ function routes(settings: SettingsOptions) {
               `debug.automagic:: Sweet found a compiled component at ${ssrFolder}/${capitalizedRoute}.js, you're good to go.`,
             );
           route.template = `${capitalizedRoute}.svelte`;
-          route.templateComponent = svelteComponent(compiledSvelteFile);
+          route.templateComponent = svelteComponent(compiledSvelteFile, 'routes');
         }
       }
     }
@@ -128,7 +128,8 @@ function routes(settings: SettingsOptions) {
 
     if (route.layout) {
       if (typeof route.layout === 'string' && route.layout.endsWith('.svelte')) {
-        route.layoutComponent = svelteComponent(route.layout.replace('.svelte', ''));
+        route.layout = route.layout.replace('.svelte', '');
+        route.layoutComponent = svelteComponent(route.layout, 'layouts');
       }
     } else {
       if (settings.debug.automagic) {
@@ -137,7 +138,7 @@ function routes(settings: SettingsOptions) {
         );
       }
       route.layout = 'Layout.svelte';
-      route.layoutComponent = svelteComponent('Layout.svelte');
+      route.layoutComponent = svelteComponent(route.layout, 'layouts');
     }
     // console.log(route);
     out[routeName] = route;

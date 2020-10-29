@@ -28,30 +28,43 @@ export const replaceSpecialCharacters = (str) =>
 
 const componentCache = {};
 
-const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: ComponentPayload): string => {
+const svelteComponent = (componentName: String, ssrFolder: String = 'components') => ({
+  page,
+  props,
+  hydrateOptions,
+}: ComponentPayload): string => {
   const cleanComponentName = getComponentName(componentName);
   const id = getUniqueId();
 
   if (!componentCache[cleanComponentName]) {
     const clientComponents = page.settings.$$internal.hashedComponents;
-    const ssrComponent = path.resolve(page.settings.$$internal.ssrComponents, `./${cleanComponentName}.js`);
+    const ssrComponent = path.resolve(
+      page.settings.$$internal.ssrComponents,
+      `./${ssrFolder}/${cleanComponentName}.js`,
+    );
     const clientSvelteFolder = getClientSvelteFolder(page);
 
     // eslint-disable-next-line global-require, import/no-dynamic-require
-    const { render } = require(ssrComponent);
+    const { render, _css, _cssMap } = require(ssrComponent);
+
     componentCache[cleanComponentName] = {
       render,
-      clientSrc: `${clientSvelteFolder}/${clientComponents[cleanComponentName]}.js`,
+      clientSrcMjs: `${clientSvelteFolder}/${clientComponents[cleanComponentName].mjs}.mjs`,
+      iife: clientComponents[cleanComponentName].iife
+        ? `${clientSvelteFolder}/${clientComponents[cleanComponentName].iife}.js`
+        : false,
+      css: _css,
+      cssMap: _cssMap,
     };
   }
 
-  const { render, clientSrc } = componentCache[cleanComponentName];
+  const { render, clientSrcMjs, iife, css, cssMap } = componentCache[cleanComponentName];
 
   try {
-    const { css, html: htmlOutput, head } = render(props);
+    const { html: htmlOutput, head } = render(props);
 
-    if (css && css.code && css.code.length > 0 && page.cssStack) {
-      page.cssStack.push({ source: componentName, priority: 50, string: css.code });
+    if (css && css.length > 0 && page.svelteCss) {
+      page.svelteCss.push({ css, cssMap });
     }
 
     if (head && page.headStack) {
@@ -59,8 +72,10 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
     }
 
     let finalHtmlOuput = htmlOutput;
+
+    // sometimes svelte adds a class to our inlining.
     const matches = finalHtmlOuput.matchAll(
-      /<div class="ejs-component" data-ejs-component="([A-Za-z]+)" data-ejs-props="({[^]*?})" data-ejs-options="({[^]*?})"><\/div>/gim,
+      /<div class="ejs-component[^]*?" data-ejs-component="([A-Za-z]+)" data-ejs-props="({[^]*?})" data-ejs-options="({[^]*?})"><\/div>/gim,
     );
 
     for (const match of matches) {
@@ -109,52 +124,84 @@ const svelteComponent = (componentName) => ({ page, props, hydrateOptions }: Com
 
     // hydrate a component
 
-    // should we use the IntersectionObserver and / or adjust the distance?
+    const uniqueComponentName = `${cleanComponentName.toLowerCase()}${id}`;
+
+    // should we preload?
     if (hydrateOptions.preload) {
       page.headStack.push({
         source: componentName,
         priority: 50,
-        string: `<link rel="preload" href="${clientSrc}" as="script">`,
+        string: `<link rel="preload" href="${clientSrcMjs}" as="script">`,
+        // string: `<link rel="modulepreload" href="${clientSrcMjs}">`, <-- can be an option for Chrome if browsers don't like this.
       });
     }
 
-    const clientJs = `
-    System.import('${clientSrc}').then(({ default: App }) => {
-    new App({ target: document.getElementById('${cleanComponentName.toLowerCase()}-${id}'), hydrate: true, props: ${devalue(
-      props,
-    )} });
-    });`;
+    const hasProps = Object.keys(props).length > 0;
 
-    if (hydrateOptions.loading === 'eager') {
-      // this is eager loaded. Still requires System.js to be defined.
+    if (hasProps) {
       page.hydrateStack.push({
         source: componentName,
-        priority: 50,
-        string: clientJs,
+        string: `<script>var ${cleanComponentName.toLowerCase()}Props${id} = ${devalue(props)};</script>`,
+        priority: 100,
       });
-    } else {
-      // we're lazy loading
+    }
+
+    if (iife) {
+      // iife -- working in IE. Users must import some polyfills.
+      // -----------------
       page.hydrateStack.push({
         source: componentName,
-        priority: 50,
+        string: `<script nomodule defer src="${iife}" onload="init${uniqueComponentName}()"></script>`,
+        priority: 99,
+      });
+
+      page.hydrateStack.push({
+        source: componentName,
+        priority: 98,
         string: `
-        function init${cleanComponentName.toLowerCase()}${id}() {
-          ${clientJs}
-        }
-        ${IntersectionObserver({
-          el: `document.getElementById('${cleanComponentName.toLowerCase()}-${id}')`,
-          name: `${cleanComponentName.toLowerCase()}`,
-          loaded: `init${cleanComponentName.toLowerCase()}${id}();`,
-          notLoaded: `init${cleanComponentName.toLowerCase()}${id}();`,
-          rootMargin: hydrateOptions.rootMargin || '200px',
-          threshold: hydrateOptions.threshold || 0,
-          id,
-        })}
-      `,
+      <script nomodule>
+      function init${uniqueComponentName}(){
+        new ___elderjs_${componentName}({
+          target: document.getElementById('${uniqueComponentName}'),
+          props:  ${hasProps ? `${cleanComponentName.toLowerCase()}Props${id}` : '{}'},
+          hydrate: true,
+        });
+      }
+      </script>`,
       });
     }
 
-    return `<div class="${cleanComponentName.toLowerCase()}" id="${cleanComponentName.toLowerCase()}-${id}">${finalHtmlOuput}</div>`;
+    page.hydrateStack.push({
+      source: componentName,
+      priority: 30,
+      string: `     
+      <script type="module">
+      function init${uniqueComponentName}(){
+        import("${clientSrcMjs}").then((component)=>{
+          new component.default({ 
+            target: document.getElementById('${uniqueComponentName}'),
+            props: ${hasProps ? `${cleanComponentName.toLowerCase()}Props${id}` : '{}'},
+            hydrate: true
+            });
+        });
+      }
+      ${
+        hydrateOptions.loading === 'eager'
+          ? `init${uniqueComponentName}();`
+          : `${IntersectionObserver({
+              el: `document.getElementById('${uniqueComponentName}')`,
+              name: `${cleanComponentName.toLowerCase()}`,
+              loaded: `init${uniqueComponentName}();`,
+              notLoaded: `init${uniqueComponentName}();`,
+              rootMargin: hydrateOptions.rootMargin || '200px',
+              threshold: hydrateOptions.threshold || 0,
+              id,
+            })}`
+      }
+      </script>`,
+    });
+
+    return `<div class="${cleanComponentName.toLowerCase()}" id="${uniqueComponentName}">${finalHtmlOuput}</div>`;
   } catch (e) {
     console.log(e);
     page.errors.push(e);
