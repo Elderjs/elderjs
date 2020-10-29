@@ -81,8 +81,10 @@ beforeEach(() => {
 });
 
 describe('#rollupPluginHandleCss', () => {
-  const { name } = rollupPluginHandleCss({ rootDir: 'test' });
-  test('name', () => expect(name).toBe('elderjs-handle-css'));
+  describe('#name', () => {
+    const { name } = rollupPluginHandleCss({ rootDir: 'test' });
+    test('name', () => expect(name).toBe('elderjs-handle-css'));
+  });
 
   describe('#splitCssSourceMap', () => {
     test('v1', () => {
