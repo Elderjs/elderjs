@@ -2,7 +2,7 @@ const defaultConfig = {
   debug: { automagic: false, build: false, hooks: false, performance: false, shortcodes: false, stacks: false },
   distDir: 'public',
   srcDir: 'src',
-  rootDir: 'test',
+  rootDir: process.cwd(),
   build: {
     numberOfWorkers: -1,
     shuffleRequests: false,
@@ -33,20 +33,14 @@ jest.mock('cosmiconfig', () => {
   };
 });
 
-jest.mock('path', () => {
-  return {
-    resolve: (...strings) => strings.join('/').replace('./', '').replace('test/test', 'test'),
-  };
-});
-
-process.cwd = () => 'test';
-
 describe('#getConfig', () => {
+  const { resolve } = require('path');
   const output = {
     $$internal: {
-      clientComponents: 'test/public/svelte/',
-      ssrComponents: 'test/___ELDER___/compiled/',
+      clientComponents: resolve(process.cwd(), './public/svelte'),
+      ssrComponents: resolve(process.cwd(), './___ELDER___/compiled'),
     },
+    build: false,
     debug: {
       automagic: false,
       build: false,
@@ -55,9 +49,10 @@ describe('#getConfig', () => {
       shortcodes: false,
       stacks: false,
     },
-    distDir: 'test/public',
-    rootDir: 'test',
-    srcDir: 'test/src',
+    distDir: resolve(process.cwd(), './public'),
+    rootDir: process.cwd(),
+    srcDir: resolve(process.cwd(), './src'),
+    server: false,
     shortcodes: {
       closePattern: '}}',
       openPattern: '{{',
@@ -67,10 +62,8 @@ describe('#getConfig', () => {
     },
     origin: '',
     plugins: {},
-    build: false,
     context: 'unknown',
     worker: false,
-    server: false,
   };
 
   beforeEach(() => {
@@ -99,39 +92,48 @@ describe('#getConfig', () => {
     const getConfig = require('../getConfig').default;
 
     const common = {
-      distDir: 't/public',
-      rootDir: 't',
-      srcDir: 't/src',
+      distDir: resolve(process.cwd(), './t/public'),
+      rootDir: resolve(process.cwd(), './t'),
+      srcDir: resolve(process.cwd(), './t/src'),
       $$internal: {
-        clientComponents: 't/public/svelte/',
-        ssrComponents: 't/___ELDER___/compiled/',
+        clientComponents: resolve(process.cwd(), './t/public/svelte'),
+        ssrComponents: resolve(process.cwd(), './t/___ELDER___/compiled'),
       },
     };
 
-    expect(getConfig({ context: 'serverless', rootDir: 't' })).toEqual({
-      ...output,
-      ...common,
-      context: 'serverless',
-    });
+    expect(getConfig({ context: 'serverless', rootDir: 't' })).toStrictEqual(
+      expect.objectContaining({
+        ...common,
+        context: 'serverless',
+      }),
+    );
 
-    expect(getConfig({ context: 'server', rootDir: 't' })).toEqual({
-      ...output,
-      ...common,
-      context: 'server',
-      server: {
-        prefix: '',
-      },
-    });
+    expect(getConfig({ context: 'server', rootDir: 't' })).toStrictEqual(
+      expect.objectContaining({
+        ...common,
+        context: 'server',
+        server: {
+          prefix: '',
+        },
+      }),
+    );
 
-    expect(getConfig({ context: 'build', rootDir: 't' })).toEqual({
-      ...output,
-      ...common,
-      context: 'build',
-      build: {
-        numberOfWorkers: -1,
-        shuffleRequests: false,
-      },
-    });
+    expect(getConfig({ context: 'build', rootDir: 't' })).toStrictEqual(
+      expect.objectContaining({
+        ...common,
+        context: 'build',
+        build: {
+          numberOfWorkers: -1,
+          shuffleRequests: false,
+        },
+      }),
+    );
+    expect(getConfig({ context: 'serverless', rootDir: 't' })).toStrictEqual(
+      expect.objectContaining({
+        context: 'serverless',
+        ...common,
+      }),
+    );
   });
 
   it('works', () => {

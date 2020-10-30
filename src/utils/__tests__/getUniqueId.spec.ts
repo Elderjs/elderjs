@@ -4,5 +4,5 @@ jest.mock('nanoid/non-secure', () => ({ customAlphabet: (_, len) => () => 'x'.re
 
 test('#getUniqueId', () => {
   expect(getUniqueId()).toBe('xxxxxxxxxx');
-  expect(getUniqueId().length).toBe(10);
+  expect(getUniqueId()).toHaveLength(10);
 });

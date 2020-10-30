@@ -1,9 +1,5 @@
 process.cwd = () => 'test';
 
-jest.mock('path', () => ({
-  join: (...strings) => strings.join('/').replace('./', '').replace('//', '/'),
-}));
-
 const settings = {
   debug: {
     automagic: true,
@@ -32,7 +28,7 @@ describe('#externalHelpers', () => {
     // eslint-disable-next-line global-require
     const externalHelpers = require('../externalHelpers').default;
     // @ts-ignore
-    expect(await externalHelpers({ settings, query, helpers: [] })).toEqual(undefined);
+    expect(await externalHelpers({ settings, query, helpers: [] })).toBeUndefined();
     const modifiedSettings = {
       ...settings,
       debug: { automagic: false },
@@ -44,7 +40,7 @@ describe('#externalHelpers', () => {
         query,
         helpers: [],
       }),
-    ).toEqual(undefined);
+    ).toBeUndefined();
   });
   it('returns undefined if file is not there', async () => {
     jest.mock('fs', () => ({
@@ -55,7 +51,7 @@ describe('#externalHelpers', () => {
     // eslint-disable-next-line global-require
     const externalHelpers = require('../externalHelpers').default;
     // @ts-ignore
-    expect(await externalHelpers({ settings, query, helpers: [] })).toBe(undefined);
+    expect(await externalHelpers({ settings, query, helpers: [] })).toBeUndefined();
   });
   it('works - userHelpers is not a function', async () => {
     jest.mock(

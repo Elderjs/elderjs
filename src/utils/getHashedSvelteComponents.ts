@@ -32,6 +32,8 @@ const getHashedSvelteComponents = ({ srcDir, $$internal: { ssrComponents, client
     const iifes = globBasenames(`${clientComponents}/*.js`);
     const mjss = globBasenames(`${clientComponents}/*.mjs`);
 
+    console.log(hydrateableComponents, ssr, iifes, mjss);
+
     // match the SSR version (no hash) to a hashed version.
     // allowing the correct file name to be looked up by the SSR key.
 
