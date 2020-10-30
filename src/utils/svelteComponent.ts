@@ -203,7 +203,7 @@ const svelteComponent = (componentName: String, ssrFolder: String = 'components'
 
     return `<div class="${cleanComponentName.toLowerCase()}" id="${uniqueComponentName}">${finalHtmlOuput}</div>`;
   } catch (e) {
-    console.log(e);
+    // console.log(e);
     page.errors.push(e);
   }
   return '';
