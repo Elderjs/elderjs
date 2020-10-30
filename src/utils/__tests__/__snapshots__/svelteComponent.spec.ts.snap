@@ -4,24 +4,24 @@ exports[`#svelteComponent svelteComponent works with partial hydration of subcom
 Array [
   Object {
     "priority": 100,
-    "source": "Datepicker",
+    "source": "datepickerSwrzsrVDCd",
     "string": "<script>var datepickerPropsSwrzsrVDCd = {a:\\"b\\"};</script>",
   },
   Object {
     "priority": 30,
-    "source": "Datepicker",
+    "source": "datepickerSwrzsrVDCd",
     "string": "     
-      <script type=\\"module\\">
-      function initdatepickerSwrzsrVDCd(){
-        import(\\"/svelte/undefined.mjs\\").then((component)=>{
-          new component.default({ 
-            target: document.getElementById('datepickerSwrzsrVDCd'),
-            props: datepickerPropsSwrzsrVDCd,
-            hydrate: true
-            });
-        });
-      }
-      
+        <script type=\\"module\\">
+        function initdatepickerSwrzsrVDCd(){
+          import(\\"/svelte/undefined.mjs\\").then((component)=>{
+            new component.default({ 
+              target: document.getElementById('datepickerSwrzsrVDCd'),
+              props: datepickerPropsSwrzsrVDCd,
+              hydrate: true
+              });
+          });
+        }
+        
       window.addEventListener('load', function (event) {
         var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {
           var objK = Object.keys(entries);
@@ -46,7 +46,7 @@ Array [
         observerSwrzsrVDCd.observe(document.getElementById('datepickerSwrzsrVDCd'));
       });
     
-      </script>",
+        </script>",
   },
 ]
 `;

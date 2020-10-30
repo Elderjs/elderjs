@@ -24,7 +24,7 @@ const partialHydration = {
 
     const output = matches.reduce((out, match) => {
       const [wholeMatch, name, props] = match;
-      const replacement = createReplacementString({ input: match.input, name, props });
+      const replacement = createReplacementString({ input: wholeMatch, name, props });
       return out.replace(wholeMatch, replacement);
     }, content);
 
