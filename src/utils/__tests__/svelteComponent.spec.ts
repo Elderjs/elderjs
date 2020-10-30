@@ -70,18 +70,6 @@ describe('#svelteComponent', () => {
     ).toEqual('/svelte');
   });
 
-  it('replaceSpecialCharacters works', () => {
-    // eslint-disable-next-line global-require
-    const { replaceSpecialCharacters } = require('../svelteComponent');
-
-    expect(replaceSpecialCharacters('{&quot;nh_count&quot;:15966,&quot;classes&quot;:&quot;mt-3&quot;}')).toEqual(
-      '{"nh_count":15966,"classes":"mt-3"}',
-    );
-
-    expect(replaceSpecialCharacters('&quot;&lt;&gt;&#39;&quot;\\n\\\\n\\"&amp;')).toEqual('"<>\'"\\n\\n"&');
-    expect(replaceSpecialCharacters('abcd 1234 <&""&>')).toEqual('abcd 1234 <&""&>');
-  });
-
   it('svelteComponent works assuming components folder for SSR', () => {
     jest.mock(
       resolve(process.cwd(), './test/___ELDER___/compiled/components/Home.js'),
@@ -169,17 +157,13 @@ describe('#svelteComponent', () => {
     const svelteComponent = require('../svelteComponent').default;
     const home = svelteComponent('Home.svelte');
     expect(home(componentProps)).toEqual(
-      `<div class="svelte-datepicker"><div class="datepicker" id="datepickerSwrzsrVDCd"><div>DATEPICKER</div></div></div>`,
+      `<div class="svelte-datepicker"><div class="datepicker-component" id="datepickerSwrzsrVDCd"><div>DATEPICKER</div></div></div>`,
     );
     expect(componentProps.page.hydrateStack).toMatchSnapshot();
   });
 });
 
 /** TODO:
- * hydrate-options={{ loading: 'lazy' }} This is the default config, uses intersection observer.
- * hydrate-options={{ loading: 'eager' }} This would cause the component to be hydrate in a blocking manner as soon as the js is rendered.
- * hydrate-options={{ loading: 'none' }} This allows arbitray svelte components to be rendered server side but not hydrated.
- * hydrate-options={{ preload: true }} This adds a preload to the head stack as outlined above... could be preloaded without forcing blocking.
- * hydrate-options={{ preload: true, loading: 'eager' }} This would preload and be blocking.
- * hydrate-options={{ rootMargin: '500px', threshold: 0 }} This would adjust the root margin of the intersection observer. Only usable with loading: 'lazy'
+ * Recursive?
+ 
  */
