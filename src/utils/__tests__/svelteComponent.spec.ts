@@ -1,5 +1,3 @@
-const { resolve } = require('path');
-
 const componentProps = {
   page: {
     hydrateStack: [],
@@ -29,6 +27,7 @@ const componentProps = {
 };
 
 describe('#svelteComponent', () => {
+  const { resolve } = require('path');
   beforeAll(() => {
     jest.mock('../getUniqueId', () => () => 'SwrzsrVDCd');
   });

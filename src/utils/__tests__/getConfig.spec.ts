@@ -1,5 +1,3 @@
-const { resolve } = require('path');
-
 const defaultConfig = {
   debug: { automagic: false, build: false, hooks: false, performance: false, shortcodes: false, stacks: false },
   distDir: 'public',
@@ -36,6 +34,7 @@ jest.mock('cosmiconfig', () => {
 });
 
 describe('#getConfig', () => {
+  const { resolve } = require('path');
   const output = {
     $$internal: {
       clientComponents: resolve(process.cwd(), './public/svelte'),
