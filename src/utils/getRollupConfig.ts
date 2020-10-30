@@ -239,7 +239,7 @@ export default function getRollupConfig(options) {
       createSSRConfig({
         input: [
           `${relSrcDir}/layouts/*.svelte`,
-          `${relSrcDir}/routes/*/*.svelte`,
+          `${relSrcDir}/routes/**/*.svelte`,
           `${relSrcDir}/components/**/*.svelte`,
           ...pluginGlobs,
         ],
@@ -280,7 +280,7 @@ export default function getRollupConfig(options) {
       createSSRConfig({
         input: [
           `${relSrcDir}/layouts/*.svelte`,
-          `${relSrcDir}/routes/*/*.svelte`,
+          `${relSrcDir}/routes/**/*.svelte`,
           `${relSrcDir}/components/**/*.svelte`,
           ...pluginGlobs,
         ],

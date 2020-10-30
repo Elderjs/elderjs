@@ -84,7 +84,7 @@ Array [
     "cache": true,
     "input": Array [
       "rc/layouts/*.svelte",
-      "rc/routes/*/*.svelte",
+      "rc/routes/**/*.svelte",
       "rc/components/**/*.svelte",
       "/src/plugins/elderjs-plugin-reload/*.svelte",
     ],
@@ -228,7 +228,7 @@ Array [
     "cache": true,
     "input": Array [
       "rc/layouts/*.svelte",
-      "rc/routes/*/*.svelte",
+      "rc/routes/**/*.svelte",
       "rc/components/**/*.svelte",
       "/src/plugins/elderjs-plugin-reload/*.svelte",
     ],
@@ -985,7 +985,7 @@ Array [
     "cache": true,
     "input": Array [
       "rc/layouts/*.svelte",
-      "rc/routes/*/*.svelte",
+      "rc/routes/**/*.svelte",
       "rc/components/**/*.svelte",
       "/src/plugins/elderjs-plugin-reload/*.svelte",
     ],
