@@ -1,5 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`#hooks #elderAddExternalHelpers 1`] = `
+Object {
+  "helpers": Object {
+    "old": [MockFunction],
+    "permalink": [MockFunction],
+  },
+}
+`;
+
 exports[`#hooks elderAddDefaultIntersectionObserver 1`] = `
 Object {
   "beforeHydrateStack": Array [

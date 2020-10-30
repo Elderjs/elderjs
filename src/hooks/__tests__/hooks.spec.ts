@@ -34,7 +34,7 @@ describe('#hooks', () => {
   it('matchesSnapshot', () => {
     expect(hooks).toMatchSnapshot();
   });
-  it('elderAddExternalHelpers', async () => {
+  it('#elderAddExternalHelpers', async () => {
     const hook = hooks.find((h) => h.name === 'elderAddExternalHelpers');
     expect(await hook.run({ helpers: { old: jest.fn() }, query: {}, settings: {} })).toMatchSnapshot();
   });
