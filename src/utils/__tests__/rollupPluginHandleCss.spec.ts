@@ -144,9 +144,7 @@ describe('#rollupPluginHandleCss', () => {
       expect(output).toContain(
         `module.exports._cssIncluded = ["routes/Home.css","components/HookDetail.css","components/Clock.css"]`,
       );
-      expect(output).toContain(
-        `module.exports._cssMap = "/*# sourceMappingURL=data:application/json;charset=utf-8;base64,`,
-      );
+      expect(output).toContain(`module.exports._cssMap = "\\u002F*# sourceMappingURL=data:application\\u002Fjson;`);
     });
   });
 });

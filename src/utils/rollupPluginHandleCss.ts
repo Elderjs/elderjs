@@ -2,6 +2,7 @@ import path from 'path';
 import CleanCSS from 'clean-css';
 import atob from 'atob';
 import btoa from 'btoa';
+import devalue from 'devalue';
 
 import ssrOutputPath from './ssrOutputPath';
 
@@ -69,8 +70,8 @@ export default function elderjsHandleCss({ rootDir }) {
 
         const cssOutput = cleanCss.minify(cssChunks);
 
-        code += `\nmodule.exports._css = "${cssOutput.styles}";`;
-        code += `\nmodule.exports._cssMap = "${encodeSourceMap(cssOutput.sourceMap)}";`;
+        code += `\nmodule.exports._css = ${devalue(cssOutput.styles)};`;
+        code += `\nmodule.exports._cssMap = ${devalue(encodeSourceMap(cssOutput.sourceMap))};`;
         code += `\nmodule.exports._cssIncluded = ${JSON.stringify(matches)}`;
         return code;
       }
