@@ -124,6 +124,5 @@ export default function hydrateComponent({
         </script>`,
   });
 
-  const hydratedHtml = `<div class="${componentName.toLowerCase()}-component" id="${uniqueComponentName}">${innerHtml}</div>`;
-  return hydratedHtml;
+  return `<div class="${componentName.toLowerCase()}-component" id="${uniqueComponentName}">${innerHtml}</div>`;
 }

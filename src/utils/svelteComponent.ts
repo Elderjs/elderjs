@@ -60,7 +60,7 @@ const svelteComponent = (componentName: String, ssrFolder: String = 'components'
       page.headStack.push({ source: cleanComponentName, priority: 50, string: head });
     }
 
-    const html = hydrateComponent({
+    return hydrateComponent({
       page,
       iife,
       clientSrcMjs,
@@ -69,8 +69,6 @@ const svelteComponent = (componentName: String, ssrFolder: String = 'components'
       componentName: cleanComponentName,
       props,
     });
-
-    return html;
   } catch (e) {
     // console.log(e);
     page.errors.push(e);
