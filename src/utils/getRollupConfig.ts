@@ -20,8 +20,6 @@ import ssrOutputPath from './ssrOutputPath';
 const production = process.env.NODE_ENV === 'production' || !process.env.ROLLUP_WATCH;
 const elderJsDir = path.resolve(process.cwd(), './node_modules/@elderjs/elderjs/');
 
-console.log(elderJsDir);
-
 const babelIE11 = babel({
   extensions: ['.js', '.mjs', '.html', '.svelte'],
   runtimeHelpers: true,
