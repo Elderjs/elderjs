@@ -1,15 +1,3 @@
-// import getHashedSvelteComponents from '../getHashedSvelteComponents';
-
-jest.mock('path', () => {
-  return {
-    resolve: (...strings) => strings.join('/'),
-    extname: (pattern) => pattern.split('.').pop(),
-    basename: (file) => file.split('/').pop().split('.')[0].replace('ssr', ''),
-  };
-});
-
-process.cwd = () => 'test';
-
 const config = {
   srcDir: 'test',
   $$internal: {
@@ -50,7 +38,7 @@ describe('#getHashedSvelteComponents', () => {
         .fn()
         .mockImplementationOnce(() => [])
         .mockImplementationOnce(() => [])
-        .mockImplementationOnce((pattern) => [pattern.replace('/*/*', 'file1'), pattern.replace('/*/*', 'file2')])
+        .mockImplementationOnce((pattern) => [pattern.replace('ssr/*/*', 'file1'), pattern.replace('ssr/*/*', 'file2')])
         .mockImplementationOnce((pattern) => [pattern.replace('*', 'file1'), pattern.replace('*', 'file2')])
         .mockImplementationOnce((pattern) => [pattern.replace('*', 'file1'), pattern.replace('*', 'file2')]),
     }));
@@ -83,8 +71,8 @@ describe('#getHashedSvelteComponents', () => {
       sync: jest
         .fn()
         .mockImplementationOnce((pattern) => [pattern.replace('*', 'File1'), pattern.replace('*', 'File2')])
-        .mockImplementationOnce((pattern) => [pattern.replace('*', 'File1'), pattern.replace('*', 'File2')])
         .mockImplementationOnce((pattern) => [pattern.replace('/*/*', 'File1'), pattern.replace('/*/*', 'File2')])
+        .mockImplementationOnce((pattern) => [pattern.replace('ssr/*/*', 'File1'), pattern.replace('ssr/*/*', 'File2')])
         .mockImplementationOnce((pattern) => [pattern.replace('*', 'iifeFile1'), pattern.replace('*', 'iifeFile2')])
         .mockImplementationOnce((pattern) => [pattern.replace('*', 'entryFile1'), pattern.replace('*', 'entryFile2')]),
     }));

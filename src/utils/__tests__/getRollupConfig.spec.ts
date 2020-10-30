@@ -5,6 +5,11 @@ import { createBrowserConfig, createSSRConfig } from '../getRollupConfig';
 
 // TODO: test replace
 
+const fixRelativePath = (arr) => {
+  arr[0].output[0].file = arr[0].output[0].file.replace(process.cwd(), '');
+  return arr;
+};
+
 describe('#getRollupConfig', () => {
   beforeEach(() => {
     jest.resetModules();
@@ -140,10 +145,7 @@ describe('#getRollupConfig', () => {
     jest.mock('../validations.ts', () => ({
       getDefaultRollup: () => ({}),
     }));
-    jest.mock('path', () => ({
-      resolve: (...strings) => strings.join('/').replace('./', '').replace('//', '/').replace('/./', '/'),
-      posix: () => ({ dirname: () => '' }),
-    }));
+
     jest.mock('del');
     // getElderConfig() mock
     jest.mock('../getConfig', () => () => ({
@@ -196,10 +198,6 @@ describe('#getRollupConfig', () => {
       legacy: false,
     }));
 
-    jest.mock('path', () => ({
-      resolve: (...strings) => strings.join('/').replace('./', '').replace('//', '/').replace('/./', '/'),
-      posix: () => ({ dirname: () => '' }),
-    }));
     jest.mock('del');
     jest.mock('fs-extra', () => ({
       existsSync: jest.fn().mockImplementation(() => true),
@@ -216,7 +214,7 @@ describe('#getRollupConfig', () => {
     };
 
     // would be nice to mock getPluginPaths if it's extracted to separate file
-    const configs = require('../getRollupConfig').default({ svelteConfig });
+    const configs = fixRelativePath(require('../getRollupConfig').default({ svelteConfig }));
     expect(configs).toHaveLength(3);
     expect(configs).toMatchSnapshot();
   });
@@ -252,15 +250,6 @@ describe('#getRollupConfig', () => {
       legacy: true,
     }));
 
-    jest.mock('path', () => ({
-      resolve: (...strings) => strings.join('/').replace('./', '').replace('//', '/').replace('/./', '/'),
-      posix: () => ({ dirname: () => '' }),
-      parse: (str) => {
-        const split = str.split('/');
-        return split[split.length - 1].split('.')[0];
-      },
-    }));
-    jest.mock('del');
     jest.mock('fs-extra', () => ({
       existsSync: jest.fn().mockImplementation(() => true),
     }));
@@ -286,7 +275,7 @@ describe('#getRollupConfig', () => {
     };
 
     // would be nice to mock getPluginPaths if it's extracted to separate file
-    const configs = require('../getRollupConfig').default({ svelteConfig });
+    const configs = fixRelativePath(require('../getRollupConfig').default({ svelteConfig }));
     expect(configs).toHaveLength(10);
     expect(configs).toMatchSnapshot();
   });
@@ -323,14 +312,6 @@ describe('#getRollupConfig', () => {
       legacy: true,
     }));
 
-    jest.mock('path', () => ({
-      resolve: (...strings) => strings.join('/').replace('./', '').replace('//', '/').replace('/./', '/'),
-      posix: () => ({ dirname: () => '' }),
-      parse: (str) => {
-        const split = str.split('/');
-        return split[split.length - 1].split('.')[0];
-      },
-    }));
     jest.mock('del');
     jest.mock('fs-extra', () => ({
       existsSync: jest.fn().mockImplementation(() => true),
@@ -357,8 +338,16 @@ describe('#getRollupConfig', () => {
       ],
     };
 
-    const configs = require('../getRollupConfig').default({ svelteConfig });
+    const configs = fixRelativePath(require('../getRollupConfig').default({ svelteConfig }));
     expect(configs).toHaveLength(8);
     expect(configs).toMatchSnapshot();
+
+    expect(fixRelativePath(require('../getRollupConfig').default({ svelteConfig }))).toStrictEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          input: './node_modules/intersection-observer/intersection-observer.js',
+        }),
+      ]),
+    );
   });
 });

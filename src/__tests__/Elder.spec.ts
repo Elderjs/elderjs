@@ -1,13 +1,3 @@
-process.cwd = () => 'test';
-
-jest.mock('path', () => {
-  return {
-    resolve: (...strings) => strings.join('/').replace('./', '').replace('//', '/').replace('/./', '/'),
-    join: (...strings) => strings.join('/').replace('./', '').replace('//', '/').replace('/./', '/'),
-    posix: () => ({ dirname: () => '' }),
-  };
-});
-
 jest.mock('../routes/routes', () => () => ({
   'route-a': {
     hooks: [
@@ -101,7 +91,7 @@ describe('#Elder', () => {
       { virtual: true },
     );
     jest.mock(
-      'test/src/plugins/elder-plugin-upload-s3/index.js',
+      `${process.cwd()}/test/src/plugins/elder-plugin-upload-s3/index.js`,
       () => ({
         hooks: [],
         routes: { 'test-a': { hooks: [], template: 'fakepath/Test.svelte', all: [] }, 'test-b': { data: () => {} } },
@@ -132,9 +122,9 @@ describe('#Elder', () => {
     jest.mock('fs-extra', () => ({
       existsSync: () => true,
     }));
-    jest.mock('test/___ELDER___/compiled/fakepath/Test.js', () => () => ({}), { virtual: true });
+    jest.mock(`${process.cwd()}/test/___ELDER___/compiled/fakepath/Test.js`, () => () => ({}), { virtual: true });
     jest.mock(
-      'test/src/hooks.js',
+      `${process.cwd()}/test/src/hooks.js`,
       () => ({
         default: [
           {
@@ -148,7 +138,7 @@ describe('#Elder', () => {
       { virtual: true },
     );
     jest.mock(
-      'test/src/plugins/elder-plugin-upload-s3/index.js',
+      `${process.cwd()}/test/src/plugins/elder-plugin-upload-s3/index.js`,
       () => ({
         hooks: [
           {

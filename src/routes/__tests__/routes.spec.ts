@@ -1,11 +1,5 @@
 process.cwd = () => 'test';
 
-jest.mock('path', () => ({
-  resolve: (...strings) => strings.join('/').replace('./', '').replace('//', '/').slice(0, -1),
-  join: (...strings) => strings.join('/').replace('./', '').replace('//', '/').slice(0, -1),
-  posix: () => ({ dirname: () => '' }),
-}));
-
 jest.mock('../../utils/svelteComponent', () => (component) => `<div class="svelteComponent">${component}</div>`);
 
 describe('#routes', () => {

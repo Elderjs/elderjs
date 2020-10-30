@@ -4,7 +4,7 @@ module.exports = {
     es2020: true,
     'jest/globals': true,
   },
-  extends: ['airbnb-base', 'plugin:jest/recommended', 'prettier/@typescript-eslint', 'plugin:prettier/recommended'],
+  extends: ['airbnb-base', 'plugin:jest/recommended', 'prettier/@typescript-eslint', 'plugin:prettier/recommended', 'plugin:jest/style'],
   settings: {
     'import/resolver': {
       node: {

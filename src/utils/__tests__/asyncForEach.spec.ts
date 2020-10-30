@@ -8,7 +8,7 @@ test('#asyncForEach', async () => {
     counter(i);
   };
   await asyncForEach(['a', 'b', 'c'], cb);
-  expect(counter.mock.calls.length).toBe(3);
+  expect(counter.mock.calls).toHaveLength(3);
   // The first argument of the first call to the function was 0
   expect(counter.mock.calls[0][0]).toBe(0);
   // The first argument of the second call to the function was 1
