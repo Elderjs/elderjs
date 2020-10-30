@@ -85,7 +85,7 @@ describe('#svelteComponent', () => {
 
   it('svelteComponent works assuming components folder for SSR', () => {
     jest.mock(
-      resolve(process.cwd(), './test/___ELDER___/compiled/Home.js'),
+      resolve(process.cwd(), './test/___ELDER___/compiled/components/Home.js'),
       () => ({
         render: () => ({
           head: '<head>',
@@ -104,7 +104,7 @@ describe('#svelteComponent', () => {
 
   it('svelteComponent works with routes folder for SSR', () => {
     jest.mock(
-      resolve(process.cwd(), './test/___ELDER___/compiled/Home.js'),
+      resolve(process.cwd(), './test/___ELDER___/compiled/routes/Home.js'),
       () => ({
         render: () => ({
           head: '<head>',
@@ -123,7 +123,7 @@ describe('#svelteComponent', () => {
 
   it('svelteComponent works with layouts folder for SSR', () => {
     jest.mock(
-      'test/___ELDER___/compiled/layouts/Home.js',
+      resolve(process.cwd(), './test/___ELDER___/compiled/layouts/Home.js'),
       () => ({
         render: () => ({
           head: '<head>',
@@ -142,7 +142,7 @@ describe('#svelteComponent', () => {
 
   it('svelteComponent works with partial hydration of subcomponent', () => {
     jest.mock(
-      'test/___ELDER___/compiled/components/Home.js',
+      resolve(process.cwd(), './test/___ELDER___/compiled/components/Home.js'),
       () => ({
         render: () => ({
           head: '<head>',
@@ -155,7 +155,7 @@ describe('#svelteComponent', () => {
       { virtual: true },
     );
     jest.mock(
-      resolve(process.cwd(), './test/___ELDER___/compiled/Datepicker.js'),
+      resolve(process.cwd(), './test/___ELDER___/compiled/components/Datepicker.js'),
       () => ({
         render: () => ({
           head: '<head>',
