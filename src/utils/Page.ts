@@ -7,6 +7,7 @@ import { QueryOptions, Stack, RequestOptions, SettingsOptions } from './types';
 import { RoutesOptions } from '../routes/types';
 import createReadOnlyProxy from './createReadOnlyProxy';
 import outputStyles from './outputStyles';
+import mountComponentsInHtml from '../partialHydration/mountComponentsInHtml';
 
 const buildPage = async (page) => {
   try {
@@ -51,8 +52,6 @@ const buildPage = async (page) => {
     });
     page.perf.end('html.template');
 
-    await page.runHook('shortcodes', page);
-
     page.perf.start('html.layout');
     page.layoutHtml = page.route.layoutComponent({
       page,
@@ -65,6 +64,11 @@ const buildPage = async (page) => {
       },
     });
     page.perf.end('html.layout');
+
+    await page.runHook('shortcodes', page);
+
+    // shortcodes can add svelte components, so we have to process the resulting html accordingly.
+    page.layoutHtml = mountComponentsInHtml({ page, html: page.layoutHtml, hydrateOptions: false });
 
     await page.runHook('stacks', page);
 

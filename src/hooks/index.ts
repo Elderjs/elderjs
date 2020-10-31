@@ -124,7 +124,7 @@ const hooks: Array<HookOptions> = [
       cssStack,
       headStack,
       customJsStack,
-      templateHtml,
+      layoutHtml,
       shortcodes,
       allRequests,
     }) => {
@@ -141,10 +141,10 @@ const hooks: Array<HookOptions> = [
         allRequests,
       });
 
-      const html = await ShortcodeParser.parse(templateHtml);
+      const html = await ShortcodeParser.parse(layoutHtml);
 
       return {
-        templateHtml: html,
+        layoutHtml: html,
         headStack,
         cssStack,
         customJsStack,

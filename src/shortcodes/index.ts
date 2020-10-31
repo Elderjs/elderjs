@@ -11,7 +11,7 @@ const shortcodes: ShortcodeDefs = [
         parsedProps = JSON.parse(props.props);
       } catch {
         console.error(
-          `Can't parse ${props.name} svelteComponent prop=${props.props} to JSON. It needs to be serializable.`,
+          `Can't parse ${props.name} svelteComponent props=${props.props} to JSON. It needs to be serializable.`,
         );
       }
 

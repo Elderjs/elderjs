@@ -94,7 +94,7 @@ describe('#hooks', () => {
         headStack,
         cssStack,
         customJsStack,
-        templateHtml: '<html>hi</html>',
+        layoutHtml: '<html>hi</html>',
         helpers: {},
         query: {},
         settings: {},
@@ -103,7 +103,7 @@ describe('#hooks', () => {
       cssStack: ['body{display:none;}'],
       customJsStack: ['console.log("test");'],
       headStack: ['<title>Hello</title>'],
-      templateHtml: '..<html>hi</html>..',
+      layoutHtml: '..<html>hi</html>..',
     });
   });
   it('elderAddMetaCharsetToHead', async () => {
