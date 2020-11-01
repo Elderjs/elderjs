@@ -27,7 +27,7 @@ export default function elderjsHandleCss({ rootDir }) {
   const isCss = (id) => path.parse(id).ext === '.css';
 
   const relDir = (str) => {
-    return ssrOutputPath(str.replace(`${rootDir}/`, ''));
+    return ssrOutputPath(str.replace(`${rootDir}${path.sep}`, ''));
   };
 
   return {
