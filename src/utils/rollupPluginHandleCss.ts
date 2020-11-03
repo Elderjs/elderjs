@@ -48,6 +48,35 @@ export default function elderjsHandleCss({ rootDir }) {
 
         chunk.imports.forEach((i) => requiredCss.add(i.replace('.js', '.css')));
 
+        // check the cssMap to see if each of the requiredCss exists, if not, then look at importBindings
+
+        [...requiredCss.keys()].forEach((key) => {
+          if (!cssMap.has(key)) {
+            const arrayOfNamedImports = Object.keys(chunk.importedBindings)
+              .reduce((out: string[], cv: string): string[] => {
+                if (Array.isArray(chunk.importedBindings[cv])) {
+                  return [...out, ...chunk.importedBindings[cv]];
+                }
+                return out;
+              }, [])
+              .filter((v) => v !== 'default');
+            const cssFileNames = [...cssMap.keys()];
+            const importNameMatch: string | false = arrayOfNamedImports.reduce((out, namedImport) => {
+              if (!out) {
+                out = cssFileNames.find(
+                  (cssFile) => typeof cssFile === 'string' && cssFile.endsWith(`${namedImport}.css`),
+                );
+              }
+              return out;
+            }, false);
+
+            if (importNameMatch) {
+              requiredCss.delete(key);
+              requiredCss.add(importNameMatch);
+            }
+          }
+        });
+
         const { cssChunks, matches } = [...requiredCss].reduce(
           (out, key) => {
             if (cssMap.has(key)) {
