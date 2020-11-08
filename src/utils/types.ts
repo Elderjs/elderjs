@@ -71,6 +71,9 @@ export type SettingsOptions = {
   context?: string;
   worker?: boolean;
   legacy: boolean;
+  externalCss: boolean;
+  browserConfigPlugins?: any[];
+  ssrConfigPlugins?: any[];
 };
 
 export type QueryOptions = {

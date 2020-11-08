@@ -19,7 +19,6 @@ import ssrOutputPath from './ssrOutputPath';
 
 const production = process.env.NODE_ENV === 'production' || !process.env.ROLLUP_WATCH;
 const elderJsDir = path.resolve(process.cwd(), './node_modules/@elderjs/elderjs/');
-
 const babelIE11 = babel({
   extensions: ['.js', '.mjs', '.html', '.svelte'],
   runtimeHelpers: true,
@@ -48,6 +47,7 @@ export function createBrowserConfig({
   multiInputConfig,
   svelteConfig,
   replacements = {},
+  plugins = [],
   ie11 = false as boolean,
 }) {
   const toReplace = {
@@ -112,7 +112,16 @@ export function createBrowserConfig({
   return config;
 }
 
-export function createSSRConfig({ input, output, svelteConfig, replacements = {}, multiInputConfig, rootDir }) {
+export function createSSRConfig({
+  input,
+  output,
+  svelteConfig,
+  replacements = {},
+  multiInputConfig,
+  rootDir,
+  plugins = [],
+  externalCss = false,
+}) {
   const toReplace = {
     'process.env.componentType': "'server'",
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
@@ -137,16 +146,13 @@ export function createSSRConfig({ input, output, svelteConfig, replacements = {}
         extensions: '.svelte',
         preprocess: [...svelteConfig.preprocess, partialHydration],
       }),
-
       nodeResolve({
         browser: false,
         dedupe: ['svelte'],
       }),
       commonjs({ sourceMap: true }),
-      // css({
-      //   ignore: true,
-      // }),
-      handleCss({ rootDir }),
+      ...plugins,
+      !externalCss && handleCss({ rootDir }),
       production && terser(),
     ],
   };
@@ -162,7 +168,17 @@ export default function getRollupConfig(options) {
   const defaultOptions = getDefaultRollup();
   const { svelteConfig, replacements, dev } = defaultsDeep(options, defaultOptions);
   const elderConfig = getElderConfig();
-  const { $$internal, distDir, srcDir, rootDir, legacy } = elderConfig;
+  const {
+    $$internal,
+    distDir,
+    srcDir,
+    rootDir,
+    legacy,
+    externalCss,
+    ssrConfigPlugins,
+    browserConfigPlugins,
+  } = elderConfig;
+
   const { ssrComponents, clientComponents } = $$internal;
   const relSrcDir = srcDir.replace(rootDir, '').substr(1);
 
@@ -228,6 +244,7 @@ export default function getRollupConfig(options) {
           svelteConfig,
           replacements,
           multiInputConfig: false,
+          plugins: browserConfigPlugins,
         }),
       );
     });
@@ -252,6 +269,8 @@ export default function getRollupConfig(options) {
         svelteConfig,
         replacements,
         rootDir,
+        externalCss,
+        plugins: ssrConfigPlugins,
       }),
     );
   } else {
@@ -271,6 +290,7 @@ export default function getRollupConfig(options) {
         }),
         svelteConfig,
         replacements,
+        plugins: browserConfigPlugins,
       }),
     );
 
@@ -293,6 +313,8 @@ export default function getRollupConfig(options) {
         svelteConfig,
         replacements,
         rootDir,
+        externalCss,
+        plugins: ssrConfigPlugins,
       }),
     );
 
@@ -317,6 +339,7 @@ export default function getRollupConfig(options) {
             replacements,
             multiInputConfig: false,
             ie11: true,
+            plugins: browserConfigPlugins,
           }),
         );
       });
