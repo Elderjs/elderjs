@@ -211,6 +211,21 @@ const rollupSchema = yup.object({
     .default({})
     .notRequired()
     .label('Replaces the key with the value when rolling up templates'),
+  externalCss: yup
+    .boolean()
+    .default(false)
+    .notRequired()
+    .label('With externalCSS set to true, the default CSS handling of ElderJS will be turned off'),
+  browserConfigPlugins: yup
+    .array()
+    .default([])
+    .notRequired()
+    .label('A list of rollup plugins to add to the browser config'),
+  ssrConfigPlugins: yup
+    .array()
+    .default([])
+    .notRequired()
+    .label('A list of rollup plugins to add to the ssr config'),
 });
 
 function getDefaultRollup(): RollupSettings {

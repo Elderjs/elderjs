@@ -77,6 +77,7 @@ export function createBrowserConfig({
         preferBuiltins: true,
         rootDir: ie11 ? elderJsDir : process.cwd(),
       }),
+      ...plugins,
       commonjs({ sourceMap: !production }),
     ],
   };
@@ -166,18 +167,12 @@ export function createSSRConfig({
 
 export default function getRollupConfig(options) {
   const defaultOptions = getDefaultRollup();
-  const { svelteConfig, replacements, dev } = defaultsDeep(options, defaultOptions);
+  const { svelteConfig, replacements, dev, externalCss, ssrConfigPlugins, browserConfigPlugins } = defaultsDeep(
+    options,
+    defaultOptions,
+  );
   const elderConfig = getElderConfig();
-  const {
-    $$internal,
-    distDir,
-    srcDir,
-    rootDir,
-    legacy,
-    externalCss,
-    ssrConfigPlugins,
-    browserConfigPlugins,
-  } = elderConfig;
+  const { $$internal, distDir, srcDir, rootDir, legacy } = elderConfig;
 
   const { ssrComponents, clientComponents } = $$internal;
   const relSrcDir = srcDir.replace(rootDir, '').substr(1);
