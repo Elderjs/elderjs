@@ -19,6 +19,7 @@ import ssrOutputPath from './ssrOutputPath';
 
 const production = process.env.NODE_ENV === 'production' || !process.env.ROLLUP_WATCH;
 const elderJsDir = path.resolve(process.cwd(), './node_modules/@elderjs/elderjs/');
+
 const babelIE11 = babel({
   extensions: ['.js', '.mjs', '.html', '.svelte'],
   runtimeHelpers: true,
@@ -173,7 +174,6 @@ export default function getRollupConfig(options) {
   );
   const elderConfig = getElderConfig();
   const { $$internal, distDir, srcDir, rootDir, legacy } = elderConfig;
-
   const { ssrComponents, clientComponents } = $$internal;
   const relSrcDir = srcDir.replace(rootDir, '').substr(1);
 

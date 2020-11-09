@@ -221,11 +221,7 @@ const rollupSchema = yup.object({
     .default([])
     .notRequired()
     .label('A list of rollup plugins to add to the browser config'),
-  ssrConfigPlugins: yup
-    .array()
-    .default([])
-    .notRequired()
-    .label('A list of rollup plugins to add to the ssr config'),
+  ssrConfigPlugins: yup.array().default([]).notRequired().label('A list of rollup plugins to add to the ssr config'),
 });
 
 function getDefaultRollup(): RollupSettings {
