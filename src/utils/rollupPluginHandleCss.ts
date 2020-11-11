@@ -3,6 +3,7 @@ import CleanCSS from 'clean-css';
 import atob from 'atob';
 import btoa from 'btoa';
 import devalue from 'devalue';
+import fs from 'fs-extra';
 
 import ssrOutputPath from './ssrOutputPath';
 
@@ -33,12 +34,14 @@ export default function elderjsHandleCss({ rootDir }) {
   return {
     name: 'elderjs-handle-css',
     transform(code, id) {
+      this.addWatchFile(id);
       if (isCss(id)) {
         cssMap.set(relDir(id), [code, id]);
         return '';
       }
       return null;
     },
+
     renderChunk(code, chunk) {
       if (chunk.isEntry) {
         // deduplicate during split rollup. map to correct bundle on production
@@ -80,12 +83,12 @@ export default function elderjsHandleCss({ rootDir }) {
         const { cssChunks, matches } = [...requiredCss].reduce(
           (out, key) => {
             if (cssMap.has(key)) {
-              const [codeChunk, id] = cssMap.get(key);
+              const [codeChunk, file] = cssMap.get(key);
               const [thisCss, thisMap] = splitCssSourceMap(codeChunk);
 
               // eslint-disable-next-line no-param-reassign
               if (thisCss.length > 0) {
-                out.cssChunks[id] = {
+                out.cssChunks[file] = {
                   styles: thisCss,
                   sourceMap: atob(thisMap),
                 };
