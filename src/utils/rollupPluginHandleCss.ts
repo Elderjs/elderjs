@@ -34,7 +34,7 @@ export default function elderjsHandleCss({ rootDir }) {
   return {
     name: 'elderjs-handle-css',
     transform(code, id) {
-      this.addWatchFile(id);
+      if (this) this.addWatchFile(id);
       if (isCss(id)) {
         cssMap.set(relDir(id), [code, id]);
         return '';
