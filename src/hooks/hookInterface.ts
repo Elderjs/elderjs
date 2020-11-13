@@ -34,14 +34,11 @@ export const hookInterface: Array<HookInterface> = [
     props: ['helpers', 'data', 'settings', 'allRequests', 'routes', 'query', 'errors'],
     mutable: ['errors', 'allRequests'],
     context: `allRequests which represents all of the request objects have been collected from route and plugins. This makes the 'allRequests' array mutable.`,
-    use: `<p>The main use here is to allow users to adjust the requests that Elder.js is aware of.</p>
-    <ul>
+    use: `<p>The main use here is to allow users to adjust the requests that Elder.js is aware of.</p><ul>
     <li>This could be used for incremental builds. By filtering and overwriting the allRequests array building just a single route or even a single request is doable.</li>
     <li>This hook is used by elderjs-plugin-random to register temporary requests that it later intercepts to redirect to a random page of a route.</li>
     <li>This hook is used by elderjs-plugin-markdown to register processed markdown files and their slugs Elder.js</li>
-    </ul>
-    
-    <p><strong>NOTE:</strong> If you are modifying 'allRequests' you <strong>must</strong> set 'request.route' key for each request.</p>`,
+    </ul><p><strong>NOTE:</strong> If you are modifying 'allRequests' you <strong>must</strong> set 'request.route' key for each request.</p>`,
     location: 'Elder.ts',
     experimental: false,
     advanced: false,
