@@ -85,6 +85,8 @@ const buildPage = async (page) => {
     // prepare for compileHtml
     const beforeHydrate = page.processStack('beforeHydrateStack');
     const hydrate = page.processStack('hydrateStack');
+    page.htmlAttributesString = page.processStack('htmlAttributesStack');
+    page.bodyAttributesString = page.processStack('bodyAttributesStack');
 
     const customJs = page.processStack('customJsStack');
     const footer = page.processStack('footerStack');
@@ -156,6 +158,10 @@ class Page {
 
   cssString: string;
 
+  bodyAttributesString: string;
+
+  htmlAttributesString: string;
+
   svelteCss: Array<SvelteCss>;
 
   htmlString: string;
@@ -163,6 +169,10 @@ class Page {
   moduleStack: Stack;
 
   moduleJsStack: Stack;
+
+  htmlAttributesStack: Stack;
+
+  bodyAttributesStack: Stack;
 
   headStack: Stack;
 
@@ -195,6 +205,10 @@ class Page {
     this.routes = routes;
     this.cssString = '';
     this.htmlString = '';
+    this.htmlAttributesString = '';
+    this.bodyAttributesString = '';
+    this.htmlAttributesStack = [];
+    this.bodyAttributesStack = [];
     this.headStack = [];
     this.cssStack = [];
     this.beforeHydrateStack = [];

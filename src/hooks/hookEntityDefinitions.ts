@@ -12,14 +12,19 @@ const hookEntityDefinitions = {
   hooks: 'An array of all of the hooks that have been validated by Elder.js.',
   query: 'An object that is initially empty but is reserved for plugins and sites to add database or api access to.',
   route: 'An object representing the specific route (similar to a route.js file) for a specific request.',
+  htmlAttributesStack:
+    'A "stack" of attributes to be merged together that are written to the <html> tag.By default, it containt "{lang: "en"}" or an other lang set in your elder.config.js',
   headStack:
     'A "stack" of strings to be merged together (along with cssStack) that are written to the <head> tag. If you are looking to customize the head you\'re probably better looking at the "headString."',
+  bodyAttributesStack: 'A "stack" of attributes to be merged together that are written to the <body> tag.',
   cssStack:
     'A "stack" of strings to be merged together to create the the cssString prop. This is mainly uses to collect the css strings emitted by SSR\'d Svelte files.',
   styleTag: 'The full <style></style> tag that is going to be written to the head of the page.',
   cssString:
     'The the css string that is wrapped in the styleTag. Added purely for convenience in case users wanted to minify the css.',
   headString: 'The complete <head></head> string just before it is written to the head.',
+  htmlAttributesString: 'The complete html attributes as a string just before it is written.',
+  bodyAttributesString: 'Body attributes as a string just before it is written.',
   request:
     'An object that represents the parameters required to generate a specific page on a specific route. This object originating from the all() query of a route.js file.',
   beforeHydrateStack:

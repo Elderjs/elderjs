@@ -244,13 +244,67 @@ const hooks: Array<HookOptions> = [
     },
   },
   {
+    hook: 'stacks',
+    name: 'elderAddHtmlLangAttributes',
+    description: 'Add lang attributes to html according to elder.config.js',
+    priority: 100,
+    run: async ({ htmlAttributesStack, settings }) => {
+      return {
+        htmlAttributesStack: [
+          ...htmlAttributesStack,
+          {
+            source: 'elderAddHtmlLangAttributes',
+            priority: 50,
+            string: `lang="${settings.lang}"`,
+          },
+        ],
+      };
+    },
+  },
+  {
+    hook: 'stacks',
+    name: 'elderAddBodyClassAttributes',
+    description: 'Add class attributes to html based on request.route',
+    priority: 100,
+    run: async ({ bodyAttributesStack, request }) => {
+      return {
+        bodyAttributesStack: [
+          ...bodyAttributesStack,
+          {
+            source: 'elderAddBodyClassAttributes',
+            priority: 50,
+            string: `class="${request.route}"`,
+          },
+        ],
+      };
+    },
+  },
+  {
+    hook: 'stacks',
+    name: 'elderAddBodyClassAttributes',
+    description: 'Add class attributes to html based on request.route',
+    priority: 100,
+    run: async ({ bodyAttributesStack, request }) => {
+      return {
+        bodyAttributesStack: [
+          ...bodyAttributesStack,
+          {
+            source: 'elderAddBodyClassAttributes',
+            priority: 50,
+            string: `class="${request.route}"`,
+          },
+        ],
+      };
+    },
+  },
+  {
     hook: 'compileHtml',
     name: 'elderCompileHtml',
     description: 'Creates an HTML string out of the Svelte layout and stacks.',
     priority: 50,
-    run: async ({ request, headString, footerString, layoutHtml }) => {
+    run: async ({ htmlAttributesString, headString, bodyAttributesString, footerString, layoutHtml }) => {
       return {
-        htmlString: `<!DOCTYPE html><html lang="en"><head>${headString}</head><body class="${request.route}">${layoutHtml}${footerString}</body></html>`,
+        htmlString: `<!DOCTYPE html><html ${htmlAttributesString}><head>${headString}</head><body ${bodyAttributesString}>${layoutHtml}${footerString}</body></html>`,
       };
     },
   },

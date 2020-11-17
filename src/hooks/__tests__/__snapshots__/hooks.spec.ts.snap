@@ -1,5 +1,29 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`#hooks  elderAddBodyClassAttributes 1`] = `
+Object {
+  "bodyAttributesStack": Array [
+    Object {
+      "priority": 50,
+      "source": "elderAddBodyClassAttributes",
+      "string": "class=\\"test\\"",
+    },
+  ],
+}
+`;
+
+exports[`#hooks  elderAddHtmlLangAttributes 1`] = `
+Object {
+  "htmlAttributesStack": Array [
+    Object {
+      "priority": 50,
+      "source": "elderAddHtmlLangAttributes",
+      "string": "lang=\\"en\\"",
+    },
+  ],
+}
+`;
+
 exports[`#hooks elderAddDefaultIntersectionObserver 1`] = `
 Object {
   "beforeHydrateStack": Array [
@@ -100,6 +124,20 @@ Array [
     "description": "Sets up the default polyfill for the intersection observer",
     "hook": "stacks",
     "name": "elderAddDefaultIntersectionObserver",
+    "priority": 100,
+    "run": [Function],
+  },
+  Object {
+    "description": "Add lang attributes to html according to elder.config.js",
+    "hook": "stacks",
+    "name": "elderAddHtmlLangAttributes",
+    "priority": 100,
+    "run": [Function],
+  },
+  Object {
+    "description": "Add class attributes to html based on request.route",
+    "hook": "stacks",
+    "name": "elderAddBodyClassAttributes",
     "priority": 100,
     "run": [Function],
   },
