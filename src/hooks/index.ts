@@ -213,13 +213,31 @@ const hooks: Array<HookOptions> = [
     },
   },
   {
+    hook: 'stacks',
+    name: 'elderAddHtmlLangAttributes',
+    description: 'Add lang attributes to html according to elder.config.js',
+    priority: 100,
+    run: async ({ htmlAttributesStack, settings }) => {
+      return {
+        htmlAttributesStack: [
+          ...htmlAttributesStack,
+          {
+            source: 'elderAddHtmlLangAttributes',
+            priority: 100,
+            string: `lang= ${settings.lang}`,
+          },
+        ],
+      };
+    },
+  },
+  {
     hook: 'compileHtml',
     name: 'elderCompileHtml',
     description: 'Creates an HTML string out of the Svelte layout and stacks.',
     priority: 50,
-    run: async ({ request, headString, footerString, layoutHtml }) => {
+    run: async ({ request, htmlAttributesString, headString, bodyAttributesString, footerString, layoutHtml }) => {
       return {
-        htmlString: `<!DOCTYPE html><html lang="en"><head>${headString}</head><body class="${request.route}">${layoutHtml}${footerString}</body></html>`,
+        htmlString: `<!DOCTYPE html><html ${htmlAttributesString}><head>${headString}</head><body ${bodyAttributesString} class="${request.route}">${layoutHtml}${footerString}</body></html>`,
       };
     },
   },
