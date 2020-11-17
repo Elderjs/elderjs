@@ -25,6 +25,7 @@ const shortcodeSchema = yup.object({
 
 const configSchema = yup.object({
   origin: yup.string().notRequired().default('').label(`The domain your site is hosted on. https://yourdomain.com.`),
+  lang: yup.string().notRequired().default('en').label(`Your site language, will be set in html.`),
   rootDir: yup.string().notRequired().default('process.cwd()').label('Here your package.json lives.'),
   distDir: yup
     .string()
