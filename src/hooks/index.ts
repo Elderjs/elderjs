@@ -231,13 +231,31 @@ const hooks: Array<HookOptions> = [
     },
   },
   {
+    hook: 'stacks',
+    name: 'elderAddBodyClassAttributes',
+    description: 'Add class attributes to html based on request.route',
+    priority: 100,
+    run: async ({ htmlAttributesStack, request }) => {
+      return {
+        htmlAttributesStack: [
+          ...htmlAttributesStack,
+          {
+            source: 'elderAddBodyClassAttributes',
+            priority: 100,
+            string: `class= ${request.route}`,
+          },
+        ],
+      };
+    },
+  },
+  {
     hook: 'compileHtml',
     name: 'elderCompileHtml',
     description: 'Creates an HTML string out of the Svelte layout and stacks.',
     priority: 50,
-    run: async ({ request, htmlAttributesString, headString, bodyAttributesString, footerString, layoutHtml }) => {
+    run: async ({ htmlAttributesString, headString, bodyAttributesString, footerString, layoutHtml }) => {
       return {
-        htmlString: `<!DOCTYPE html><html ${htmlAttributesString}><head>${headString}</head><body ${bodyAttributesString} class="${request.route}">${layoutHtml}${footerString}</body></html>`,
+        htmlString: `<!DOCTYPE html><html ${htmlAttributesString}><head>${headString}</head><body ${bodyAttributesString}>${layoutHtml}${footerString}</body></html>`,
       };
     },
   },
