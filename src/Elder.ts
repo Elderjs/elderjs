@@ -305,6 +305,7 @@ class Elder {
           request.permalink = await this.routes[request.route].permalink({
             request,
             settings: createReadOnlyProxy(this.settings, 'settings', `${request.route} permalink function`),
+            helpers: createReadOnlyProxy(this.helpers, 'helpers', `${request.route} permalink function`),
           });
 
           if (this.settings && this.settings.server && this.settings.server.prefix) {
