@@ -36,6 +36,7 @@ export type InitializationOptions = {
   srcDir?: string;
   rootDir?: string;
   origin?: string;
+  lang?: string;
   server?: ServerOptions;
   build?: BuildOptions;
   debug?: DebugOptions;
@@ -56,6 +57,7 @@ export type SettingsOptions = {
   srcDir: string;
   rootDir: string;
   origin: string;
+  lang: string;
   server: ServerOptions | false;
   build: BuildOptions | false;
   debug: DebugOptions;
