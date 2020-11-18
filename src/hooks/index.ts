@@ -223,8 +223,8 @@ const hooks: Array<HookOptions> = [
           ...htmlAttributesStack,
           {
             source: 'elderAddHtmlLangAttributes',
-            priority: 100,
-            string: `lang= ${settings.lang}`,
+            priority: 50,
+            string: `lang="${settings.lang}"`,
           },
         ],
       };
@@ -241,8 +241,8 @@ const hooks: Array<HookOptions> = [
           ...bodyAttributesStack,
           {
             source: 'elderAddBodyClassAttributes',
-            priority: 100,
-            string: `class= ${request.route}`,
+            priority: 50,
+            string: `class="${request.route}"`,
           },
         ],
       };
