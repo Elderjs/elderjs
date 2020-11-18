@@ -85,8 +85,8 @@ const buildPage = async (page) => {
     // prepare for compileHtml
     const beforeHydrate = page.processStack('beforeHydrateStack');
     const hydrate = page.processStack('hydrateStack');
-    page.htmlAttributes = page.processStack('htmlAttributesStack');
-    page.bodyAttributes = page.processStack('bodyAttributesStack');
+    page.htmlAttributesString = page.processStack('htmlAttributesStack');
+    page.bodyAttributesString = page.processStack('bodyAttributesStack');
 
     const customJs = page.processStack('customJsStack');
     const footer = page.processStack('footerStack');
