@@ -235,10 +235,10 @@ const hooks: Array<HookOptions> = [
     name: 'elderAddBodyClassAttributes',
     description: 'Add class attributes to html based on request.route',
     priority: 100,
-    run: async ({ htmlAttributesStack, request }) => {
+    run: async ({ bodyAttributesStack, request }) => {
       return {
-        htmlAttributesStack: [
-          ...htmlAttributesStack,
+        bodyAttributesStack: [
+          ...bodyAttributesStack,
           {
             source: 'elderAddBodyClassAttributes',
             priority: 100,
