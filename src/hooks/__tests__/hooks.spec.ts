@@ -118,13 +118,23 @@ describe('#hooks', () => {
     const hook = hooks.find((h) => h.name === 'elderAddDefaultIntersectionObserver');
     expect(await hook.run({ beforeHydrateStack: [] })).toMatchSnapshot();
   });
-
+  it(' elderAddHtmlLangAttributes', async () => {
+    const hook = hooks.find((h) => h.name === 'elderAddHtmlLangAttributes');
+    expect(await hook.run({ htmlAttributesStack: [], settings: { lang: 'en'} })).toMatchSnapshot();
+  });
+  it(' elderAddBodyClassAttributes', async () => {
+    const hook = hooks.find((h) => h.name === 'elderAddBodyClassAttributes');
+    expect(await hook.run({ bodyAttributesStack: [], request: { route: 'test'} })).toMatchSnapshot();
+  });
   it('elderCompileHtml', async () => {
     const hook = hooks.find((h) => h.name === 'elderCompileHtml');
     expect(
       await hook.run({
         request: { route: 'test' },
         headString: 'head',
+        htmlAttributesString: 'lang="en"',
+        bodyAttributesString: 'class="test"',
+        AttributesString: 'class="test"',
         footerString: 'footer',
         layoutHtml: 'layout',
       }),

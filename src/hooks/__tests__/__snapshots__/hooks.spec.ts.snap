@@ -1,5 +1,29 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`#hooks  elderAddBodyClassAttributes 1`] = `
+Object {
+  "bodyAttributesStack": Array [
+    Object {
+      "priority": 50,
+      "source": "elderAddBodyClassAttributes",
+      "string": "class=\\"test\\"",
+    },
+  ],
+}
+`;
+
+exports[`#hooks  elderAddHtmlLangAttributes 1`] = `
+Object {
+  "htmlAttributesStack": Array [
+    Object {
+      "priority": 50,
+      "source": "elderAddHtmlLangAttributes",
+      "string": "lang=\\"en\\"",
+    },
+  ],
+}
+`;
+
 exports[`#hooks elderAddDefaultIntersectionObserver 1`] = `
 Object {
   "beforeHydrateStack": Array [
