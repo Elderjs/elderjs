@@ -3,7 +3,6 @@ import CleanCSS from 'clean-css';
 import atob from 'atob';
 import btoa from 'btoa';
 import devalue from 'devalue';
-import fs from 'fs-extra';
 
 import ssrOutputPath from './ssrOutputPath';
 
