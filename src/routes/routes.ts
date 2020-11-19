@@ -2,25 +2,23 @@
 /* eslint-disable import/no-dynamic-require */
 import glob from 'glob';
 import kebabcase from 'lodash.kebabcase';
+import { sep } from 'path';
 import type { RouteOptions } from './types';
 
 import { svelteComponent, capitalizeFirstLetter } from '../utils';
 import { SettingsOptions } from '../utils/types';
 import wrapPermalinkFn from '../utils/wrapPermalinkFn';
 
-function routes(settings: SettingsOptions) {
-  if (settings.debug.automagic)
-    console.log(
-      `debug.automagic::
---------- routes.ts -----------
-    `,
-    );
+function joinPathParts(parts: string[], ext: string) {
+  return `/${parts.join(sep)}.${ext}`;
+}
 
+function routes(settings: SettingsOptions) {
   const files = glob.sync(`${settings.srcDir}/routes/*/+(*.js|*.svelte)`);
 
-  const ssrFolder = settings.$$internal.ssrComponents;
+  const { ssrComponents: ssrFolder, prefix } = settings.$$internal;
 
-  const ssrComponents = glob.sync(`${ssrFolder}/*/*.js`);
+  const ssrComponents = glob.sync(`${ssrFolder}/**/*.js`);
 
   const routejsFiles = files.filter((f) => f.endsWith('/route.js'));
 
@@ -37,7 +35,7 @@ function routes(settings: SettingsOptions) {
     if (!route.permalink) {
       if (settings.debug.automagic) {
         console.log(
-          `debug.automagic:: No permalink function found for route "${routeName}". Setting default which will return / for home or /{request.slug}/.`,
+          `${prefix} No permalink function found for route "${routeName}". Setting default which will return / for home or /{request.slug}/.`,
         );
       }
       route.permalink = ({ request }) => (request.slug === '/' ? request.slug : `/${request.slug}/`);
@@ -54,7 +52,7 @@ function routes(settings: SettingsOptions) {
 
       if (settings.debug.automagic) {
         console.log(
-          `debug.automagic:: No all function or array found for route "${routeName}". Setting default which will return ${JSON.stringify(
+          `${prefix} No all function or array found for route "${routeName}". Setting default which will return ${JSON.stringify(
             route.all,
           )}`,
         );
@@ -64,7 +62,9 @@ function routes(settings: SettingsOptions) {
     if (route.template) {
       if (typeof route.template === 'string') {
         const componentName = route.template.replace('.svelte', '');
-        const ssrComponent = ssrComponents.find((f) => f.endsWith(`${componentName}.js`));
+        const ssrComponent = ssrComponents.find((f) =>
+          f.endsWith(joinPathParts(['routes', routeName, componentName], 'js')),
+        );
         if (!ssrComponent) {
           console.error(
             `We see you want to load ${route.template}, but we don't see a compiled template in ${settings.$$internal.ssrComponents}. You'll probably see more errors in a second. Make sure you've run rollup.`,
@@ -74,38 +74,26 @@ function routes(settings: SettingsOptions) {
         route.templateComponent = svelteComponent(componentName, 'routes');
       }
     } else {
-      const svelteFile = filesForThisRoute.find((f) => f.endsWith(`${capitalizedRoute}.svelte`));
+      const svelteFile = filesForThisRoute.find((f) =>
+        f.endsWith(joinPathParts(['routes', routeName, capitalizedRoute], 'svelte')),
+      );
       if (settings.debug.automagic) {
-        console.log(
-          `debug.automagic:: No template defined for /routes/${routeName}/ looking for ${capitalizedRoute}.svelte`,
-        );
+        console.log(`${prefix} No template defined for /routes/${routeName}/ looking for ${capitalizedRoute}.svelte`);
       }
 
       if (svelteFile) {
         if (settings.debug.automagic)
-          console.log(`debug.automagic:: Found ${capitalizedRoute}.svelte. Sweet, we'll set it up.`);
+          console.log(`${prefix} Found ${capitalizedRoute}.svelte. Sweet, we'll set it up.`);
         route.template = `${capitalizedRoute}.svelte`;
         route.templateComponent = svelteComponent(svelteFile, 'routes');
 
-        const ssrComponent = ssrComponents.find((f) => f.endsWith(`${capitalizedRoute}.js`));
+        const ssrComponent = ssrComponents.find((f) =>
+          f.endsWith(joinPathParts(['routes', routeName, capitalizedRoute], 'svelte')),
+        );
         if (!ssrComponent) {
           console.error(
             `We see you want to load ${route.template}, but we don't see a compiled template in ${settings.$$internal.ssrComponents}. You'll probably see more errors in a second. Make sure you've run rollup.`,
           );
-        }
-      } else {
-        if (settings.debug.automagic)
-          console.log(
-            `debug.automagic:: Couldn't find  /routes/${routeName}/${capitalizedRoute}.svelte. Looking for a compiled svelte template in case you're using typescript or have your templates defined outside of your routes.`,
-          );
-        const compiledSvelteFile = ssrComponents.find((f) => f.endsWith(`${capitalizedRoute}.js`));
-        if (compiledSvelteFile) {
-          if (settings.debug.automagic)
-            console.log(
-              `debug.automagic:: Sweet found a compiled component at ${ssrFolder}/${capitalizedRoute}.js, you're good to go.`,
-            );
-          route.template = `${capitalizedRoute}.svelte`;
-          route.templateComponent = svelteComponent(compiledSvelteFile, 'routes');
         }
       }
     }
@@ -134,7 +122,7 @@ function routes(settings: SettingsOptions) {
     } else {
       if (settings.debug.automagic) {
         console.log(
-          `debug.automagic:: The route at /routes/${routeName}/route.js doesn't have a layout specified so going to look for a Layout.svelte file.`,
+          `${prefix} The route at /routes/${routeName}/route.js doesn't have a layout specified so going to look for a Layout.svelte file.`,
         );
       }
       route.layout = 'Layout.svelte';
@@ -145,13 +133,6 @@ function routes(settings: SettingsOptions) {
 
     return out;
   }, {});
-  if (settings.debug.automagic) {
-    console.log(
-      `debug.automagic::
---------- end routes.ts -----------
-  `,
-    );
-  }
 
   return output;
 }

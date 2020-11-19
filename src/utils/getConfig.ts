@@ -1,8 +1,10 @@
 import { cosmiconfigSync } from 'cosmiconfig';
 import defaultsDeep from 'lodash.defaultsdeep';
 import path from 'path';
+import fs from 'fs-extra';
 import { SettingsOptions, InitializationOptions } from './types';
 import { getDefaultConfig } from './validations';
+import prepareFindSvelteComponent from '../partialHydration/prepareFindSvelteComponent';
 
 function getConfig(initializationOptions: InitializationOptions = {}): SettingsOptions {
   const explorerSync = cosmiconfigSync('elder');
@@ -25,11 +27,21 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
   config.worker = !!initializationOptions.worker;
 
   const ssrComponents = path.resolve(config.rootDir, './___ELDER___/compiled/');
-  const clientComponents = path.resolve(config.distDir, './svelte/');
+  const clientComponents = path.resolve(config.distDir, './_elderjs/svelte/');
+  const elderFolder = path.resolve(config.distDir, './_elderjs/');
+  fs.ensureDirSync(path.resolve(elderFolder));
 
   config.$$internal = {
     ssrComponents,
     clientComponents,
+    elderFolder,
+    prefix: `[Elder.js]:`,
+    findComponent: prepareFindSvelteComponent({
+      ssrFolder: ssrComponents,
+      rootDir,
+      clientFolder: clientComponents,
+      distDir: config.distDir,
+    }),
   };
 
   if (config.origin === '') {

@@ -220,7 +220,7 @@ export default function getRollupConfig(options) {
           output: [
             {
               dir: clientComponents,
-              entryFileNames: 'entry[name]-[hash].mjs',
+              entryFileNames: '[name].[hash].js',
               sourcemap: !production,
               format: 'esm',
             },
@@ -262,9 +262,9 @@ export default function getRollupConfig(options) {
         output: [
           {
             dir: clientComponents,
-            entryFileNames: 'entry[name]-[hash].mjs',
             sourcemap: !production,
             format: 'esm',
+            entryFileNames: '[name].[hash].js',
           },
         ],
         multiInputConfig: multiInput({
@@ -310,8 +310,8 @@ export default function getRollupConfig(options) {
             output: [
               {
                 name: `___elderjs_${parsed.name}`,
-                dir: clientComponents,
-                entryFileNames: 'iife[name]-[hash].js',
+                entryFileNames: '[name].[hash].js',
+                dir: `${clientComponents}${path.sep}iife${path.sep}`,
                 sourcemap: !production,
                 format: 'iife',
               },

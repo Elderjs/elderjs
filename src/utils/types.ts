@@ -16,6 +16,25 @@ type BuildOptions = {
 //   clientComponents: string;
 // };
 
+export interface SvelteComponentFiles {
+  ssr: string | undefined;
+  client: string | undefined;
+  iife: string | undefined;
+}
+
+export interface FindSvelteComponent {
+  (name: any, folder: any): SvelteComponentFiles;
+}
+
+type Internal = {
+  hashedComponents?: {};
+  ssrComponents: string;
+  clientComponents: string;
+  elderFolder: string;
+  prefix: string;
+  findComponent: FindSvelteComponent;
+};
+
 type DebugOptions = {
   stacks: boolean;
   hooks: boolean;
@@ -23,12 +42,6 @@ type DebugOptions = {
   build: boolean;
   automagic: boolean;
   shortcodes: boolean;
-};
-
-type Internal = {
-  hashedComponents?: {};
-  ssrComponents: string;
-  clientComponents: string;
 };
 
 export type InitializationOptions = {

@@ -45,31 +45,6 @@ describe('#svelteComponent', () => {
     expect(getComponentName('foo/bar///Home.svelte')).toEqual('Home');
   });
 
-  it('getClientSvelteFolder works', () => {
-    // eslint-disable-next-line global-require
-    const { getClientSvelteFolder } = require('../svelteComponent');
-    expect(
-      getClientSvelteFolder({
-        settings: {
-          distDir: '/test/public',
-          $$internal: {
-            clientComponents: '/test/public/svelte',
-          },
-        },
-      }),
-    ).toEqual('/svelte');
-    expect(
-      getClientSvelteFolder({
-        settings: {
-          distDir: '\\test\\public',
-          $$internal: {
-            clientComponents: '\\test\\public\\svelte',
-          },
-        },
-      }),
-    ).toEqual('/svelte');
-  });
-
   it('svelteComponent works assuming components folder for SSR', () => {
     jest.mock(
       resolve(process.cwd(), './test/___ELDER___/compiled/components/Home.js'),
