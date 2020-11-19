@@ -23,6 +23,7 @@ ObjectSchema {
     "srcDir",
     "distDir",
     "rootDir",
+    "lang",
     "origin",
   ],
   "_options": Object {
@@ -458,6 +459,33 @@ ObjectSchema {
         [Function],
       ],
       "type": "object",
+    },
+    "lang": StringSchema {
+      "_blacklist": RefSet {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": Array [],
+      "_default": "en",
+      "_deps": Array [],
+      "_exclusive": Object {},
+      "_label": "Your site language, will be set in html.",
+      "_mutate": undefined,
+      "_options": Object {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "string",
+      "_typeError": [Function],
+      "_whitelist": RefSet {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": Array [],
+      "transforms": Array [
+        [Function],
+      ],
+      "type": "string",
     },
     "legacy": BooleanSchema {
       "_blacklist": RefSet {

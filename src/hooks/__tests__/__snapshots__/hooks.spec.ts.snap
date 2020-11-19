@@ -97,6 +97,20 @@ Array [
     "run": [Function],
   },
   Object {
+    "description": "Add lang attributes to html according to elder.config.js",
+    "hook": "stacks",
+    "name": "elderAddHtmlLangAttributes",
+    "priority": 100,
+    "run": [Function],
+  },
+  Object {
+    "description": "Add class attributes to html based on request.route",
+    "hook": "stacks",
+    "name": "elderAddBodyClassAttributes",
+    "priority": 100,
+    "run": [Function],
+  },
+  Object {
     "description": "Creates an HTML string out of the Svelte layout and stacks.",
     "hook": "compileHtml",
     "name": "elderCompileHtml",

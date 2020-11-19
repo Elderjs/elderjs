@@ -42,6 +42,7 @@ describe('#validations', () => {
       disable: [],
     },
     origin: '',
+    lang: 'en',
     plugins: {},
     server: {
       prefix: '',
