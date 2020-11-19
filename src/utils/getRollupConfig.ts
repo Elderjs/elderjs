@@ -247,7 +247,8 @@ export default function getRollupConfig(options) {
           exports: 'auto',
         },
         multiInputConfig: multiInput({
-          transformOutputPath: (output) => ssrOutputPath(output),
+          relative: 'src/',
+          // transformOutputPath: (output) => ssrOutputPath(output),
         }),
         svelteConfig,
         replacements,
@@ -267,7 +268,8 @@ export default function getRollupConfig(options) {
           },
         ],
         multiInputConfig: multiInput({
-          transformOutputPath: (output) => `${path.basename(output)}`,
+          relative: 'src/',
+          // transformOutputPath: (output) => `${path.basename(output)}`,
         }),
         svelteConfig,
         replacements,
@@ -288,7 +290,8 @@ export default function getRollupConfig(options) {
           exports: 'auto',
         },
         multiInputConfig: multiInput({
-          transformOutputPath: (output) => ssrOutputPath(output),
+          relative: 'src/',
+          // transformOutputPath: (output) => ssrOutputPath(output),
         }),
         svelteConfig,
         replacements,
