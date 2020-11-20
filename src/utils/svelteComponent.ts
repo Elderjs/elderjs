@@ -21,10 +21,11 @@ const svelteComponent = (componentName: String, folder: String = 'components') =
 
   // eslint-disable-next-line import/no-dynamic-require
   const ssrReq = require(ssr);
-  const ssrComponent = ssrReq.default || ssrReq;
+
+  const { render, _css: css, _cssMap: cssMap } = ssrReq.default || ssrReq;
 
   try {
-    const { html: htmlOutput, head, css, cssMap } = ssrComponent.render(props);
+    const { html: htmlOutput, head } = render(props);
 
     if (css && css.length > 0 && page.svelteCss) {
       page.svelteCss.push({ css, cssMap });

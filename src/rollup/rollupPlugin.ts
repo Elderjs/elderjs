@@ -1,11 +1,18 @@
 import path from 'path';
 import CleanCSS from 'clean-css';
-import { Plugin, ResolvedId } from 'rollup';
+import { Plugin } from 'rollup';
 
 import { compile, preprocess } from 'svelte/compiler';
 import sparkMd5 from 'spark-md5';
 import fs from 'fs-extra';
+import devalue from 'devalue';
+import btoa from 'btoa';
 import partialHydration from '../partialHydration/partialHydration';
+
+const mapIntro = `/*# sourceMappingURL=data:application/json;charset=utf-8;base64,`;
+export const encodeSourceMap = (map) => {
+  return `${mapIntro}${btoa(map.toString())} */`;
+};
 
 const PREFIX = '[rollup-plugin-elder]';
 
@@ -32,20 +39,19 @@ const cache: RollupCacheElder = {
 
 const extensions = ['.svelte'];
 
-// const cleanCss = new CleanCSS({ sourceMap: true, sourceMapInlineSources: true, level: 0 });
+const cleanCss = new CleanCSS({ sourceMap: true, sourceMapInlineSources: true, level: 1 });
 
-const mapIntro = `/*# sourceMappingURL=data:application/json;charset=utf-8;base64,`;
-
-export const splitCssSourceMap = (code) => {
-  // eslint-disable-next-line prefer-const
-  let [css, map]: [String, String] = code.split(mapIntro);
-  map = map.substring(0, map.length - 2); // trim "*/"
-  return [css.trim(), map];
-};
-
-// export const encodeSourceMap = (map) => {
-//   return `${mapIntro}${btoa(map.toString())} */`;
-// };
+function getDependencies(file) {
+  let dependencies = new Set([file]);
+  if (cache.dependencies[file]) {
+    [...cache.dependencies[file].values()]
+      .filter((d) => d !== file)
+      .forEach((dependency) => {
+        dependencies = new Set([...dependencies, ...getDependencies(dependency)]);
+      });
+  }
+  return [...dependencies.values()];
+}
 
 export interface IElderjsRollupConfig {
   elderDir: string;
@@ -114,8 +120,9 @@ export default function elderjsRollup({ distDir, elderDir, svelteConfig, type = 
         const parsedImporter = path.parse(importer);
         if (parsedImporter.ext === '.svelte' && importee.includes('.svelte')) {
           const fullImportee = path.resolve(parsedImporter.dir, importee);
-          if (!cache.dependencies[fullImportee]) cache.dependencies[fullImportee] = new Set();
-          cache.dependencies[fullImportee].add(importer);
+
+          if (!cache.dependencies[importer]) cache.dependencies[importer] = new Set();
+          cache.dependencies[importer].add(fullImportee);
         }
       }
 
@@ -270,13 +277,27 @@ export default function elderjsRollup({ distDir, elderDir, svelteConfig, type = 
         //   { cssChunks: {}, matches: [] },
         // );
 
-        // const cssOutput = cleanCss.minify(cssChunks);
+        if (type === 'ssr') {
+          const cssChunks = getDependencies(chunk.facadeModuleId).reduce((out, cv) => {
+            if (cache.css.has(cv)) {
+              const { map: sourceMap, code: styles } = cache.css.get(cv);
+              out[cv] = {
+                sourceMap,
+                styles,
+              };
+            }
 
-        // code += `\nmodule.exports._css = ${devalue(cssOutput.styles)};`;
-        // code += `\nmodule.exports._cssMap = ${devalue(encodeSourceMap(cssOutput.sourceMap))};`;
+            return out;
+          }, {});
+
+          const cssOutput = cleanCss.minify(cssChunks);
+          code += `\nmodule.exports._css = ${devalue(cssOutput.styles)};`;
+          code += `\nmodule.exports._cssMap = ${devalue(encodeSourceMap(cssOutput.sourceMap))};`;
+        }
+
         // code += `\nmodule.exports._cssIncluded = ${JSON.stringify(matches)}`;
 
-        console.log(chunk);
+        // console.log(chunk);
         return code;
       }
       return null;
