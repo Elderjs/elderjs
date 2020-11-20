@@ -10,6 +10,12 @@ const fixRelativePath = (arr) => {
   return arr;
 };
 
+const common = {
+  distElder: path.resolve(process.cwd(), './public/_elder/'),
+  distDir: path.resolve(process.cwd(), './public/'),
+  rootDir: path.resolve(process.cwd(), './'),
+};
+
 describe('#getRollupConfig', () => {
   beforeEach(() => {
     jest.resetModules();
@@ -21,7 +27,7 @@ describe('#getRollupConfig', () => {
         input: [`./components/*/*.svelte`],
         output: {
           dir: './public/dist/svelte/',
-          entryFileNames: 'entry[name]-[hash].js',
+          entryFileNames: '[name].[hash].js',
           sourcemap,
           format: 'system',
         },
@@ -31,13 +37,14 @@ describe('#getRollupConfig', () => {
           transformOutputPath: (output) => `${path.basename(output)}`,
         }),
         svelteConfig: {},
+        ...common,
       });
       expect(config).toEqual({
         cache: true,
         input: ['./components/*/*.svelte'],
         output: {
           dir: './public/dist/svelte/',
-          entryFileNames: 'entry[name]-[hash].js',
+          entryFileNames: '[name].[hash].js',
           format: 'system',
           sourcemap,
         },
@@ -59,13 +66,15 @@ describe('#getRollupConfig', () => {
         },
         svelteConfig: {},
         multiInputConfig: false,
+        ...common,
       }).plugins.map((p) => p.name),
-    ).toEqual(['replace', 'json', 'svelte', 'node-resolve', 'commonjs', 'babel', 'terser']);
+    ).toEqual(['replace', 'json', 'rollup-plugin-elder', 'node-resolve', 'commonjs', 'babel', 'terser']);
   });
 
   it('createBrowserConfig multiInputConfig = false, ie11 = true', () => {
     expect(
       createBrowserConfig({
+        ...common,
         input: [`./components/*/*.svelte`],
         output: {
           dir: './public/dist/svelte/',
@@ -77,11 +86,12 @@ describe('#getRollupConfig', () => {
         ie11: true,
         multiInputConfig: false,
       }).plugins.map((p) => p.name),
-    ).toEqual(['replace', 'json', 'svelte', 'node-resolve', 'commonjs', 'babel', 'terser']);
+    ).toEqual(['replace', 'json', 'rollup-plugin-elder', 'node-resolve', 'commonjs', 'babel', 'terser']);
   });
 
   it('createSSRConfig works', () => {
     const { plugins, ...config } = createSSRConfig({
+      ...common,
       input: [`./components/*/*.svelte`],
       output: {
         dir: './___ELDER___/compiled/',
@@ -114,12 +124,13 @@ describe('#getRollupConfig', () => {
       treeshake: true,
     });
 
-    expect(plugins).toHaveLength(8);
+    expect(plugins).toHaveLength(7);
   });
 
   it('createSSRConfig multiInputConfig = false', () => {
     expect(
       createSSRConfig({
+        ...common,
         input: [`./components/*/*.svelte`],
         output: {
           dir: './___ELDER___/compiled/',
@@ -138,17 +149,17 @@ describe('#getRollupConfig', () => {
         rootDir: 'test',
         multiInputConfig: false,
       }).plugins.map((p) => p.name),
-    ).toEqual(['replace', 'json', 'svelte', 'node-resolve', 'commonjs', 'elderjs-handle-css', 'terser']);
+    ).toEqual(['replace', 'json', 'rollup-plugin-elder', 'node-resolve', 'commonjs', 'terser']);
   });
 
   it('getRollupConfig - throws error if intersection-observer doesnt exist', () => {
-    jest.mock('../validations.ts', () => ({
+    jest.mock('../../utils/validations.ts', () => ({
       getDefaultRollup: () => ({}),
     }));
 
     jest.mock('del');
     // getElderConfig() mock
-    jest.mock('../getConfig', () => () => ({
+    jest.mock('../../utils/getConfig', () => () => ({
       $$internal: {
         clientComponents: 'test/public/svelte',
         ssrComponents: 'test/___ELDER___/compiled',
@@ -168,14 +179,14 @@ describe('#getRollupConfig', () => {
   });
 
   it('getRollupConfig as a whole works - default options', () => {
-    jest.mock('../validations.ts', () => ({
+    jest.mock('../../utils/validations.ts', () => ({
       getDefaultRollup: () => ({
         replacements: {},
         dev: { splitComponents: false },
         svelteConfig: {},
       }),
     }));
-    jest.mock('../getPluginLocations', () => () => ({
+    jest.mock('../../utils/getPluginLocations', () => () => ({
       paths: ['/src/plugins/elderjs-plugin-reload/'],
       files: [
         '/src/plugins/elderjs-plugin-reload/SimplePlugin.svelte',
@@ -183,7 +194,7 @@ describe('#getRollupConfig', () => {
       ],
     }));
     // getElderConfig() mock
-    jest.mock('../getConfig', () => () => ({
+    jest.mock('../../utils/getConfig', () => () => ({
       $$internal: {
         clientComponents: 'test/public/svelte',
         ssrComponents: 'test/___ELDER___/compiled',
@@ -220,14 +231,14 @@ describe('#getRollupConfig', () => {
   });
 
   it('getRollupConfig as a whole works - legacy: true', () => {
-    jest.mock('../validations.ts', () => ({
+    jest.mock('../../utils/validations.ts', () => ({
       getDefaultRollup: () => ({
         replacements: {},
         dev: { splitComponents: false },
         svelteConfig: {},
       }),
     }));
-    jest.mock('../getPluginLocations', () => () => ({
+    jest.mock('../../utils/getPluginLocations', () => () => ({
       paths: ['/src/plugins/elderjs-plugin-reload/'],
       files: [
         '/src/plugins/elderjs-plugin-reload/SimplePlugin.svelte',
@@ -235,7 +246,7 @@ describe('#getRollupConfig', () => {
       ],
     }));
     // getElderConfig() mock
-    jest.mock('../getConfig', () => () => ({
+    jest.mock('../../utils/getConfig', () => () => ({
       $$internal: {
         clientComponents: 'test/public/svelte',
         ssrComponents: 'test/___ELDER___/compiled',
@@ -278,76 +289,5 @@ describe('#getRollupConfig', () => {
     const configs = fixRelativePath(require('../getRollupConfig').default({ svelteConfig }));
     expect(configs).toHaveLength(10);
     expect(configs).toMatchSnapshot();
-  });
-
-  it('getRollupConfig as a whole works - splitComponents: true, legacy: true', () => {
-    process.env.ROLLUP_WATCH = 'true'; // for production to be false
-    jest.mock('../validations.ts', () => ({
-      getDefaultRollup: () => ({
-        replacements: {},
-        dev: { splitComponents: true },
-        svelteConfig: {},
-      }),
-    }));
-    jest.mock('../getPluginLocations', () => () => ({
-      paths: ['/src/plugins/elderjs-plugin-reload/'],
-      files: [
-        '/src/plugins/elderjs-plugin-reload/SimplePlugin.svelte',
-        '/src/plugins/elderjs-plugin-reload/Test.svelte',
-      ],
-    }));
-    // getElderConfig() mock
-    jest.mock('../getConfig', () => () => ({
-      $$internal: {
-        clientComponents: 'test/public/svelte',
-        ssrComponents: 'test/___ELDER___/compiled',
-      },
-      distDir: './dist',
-      srcDir: './src',
-      rootDir: './',
-      plugins: {
-        pluginA: {},
-        pluginB: {},
-      },
-      legacy: true,
-    }));
-
-    jest.mock('del');
-    jest.mock('fs-extra', () => ({
-      existsSync: jest.fn().mockImplementation(() => true),
-    }));
-    jest.mock('glob', () => ({
-      sync: jest
-        .fn()
-        // mock folder file contents - exact order matters
-        .mockImplementationOnce(() => ['pluginAComponent1.svelte', 'pluginAComponent2.svelte']) // getPluginPaths
-        .mockImplementationOnce(() => ['pluginBComponent1.svelte', 'pluginBComponent2.svelte']) // getPluginPaths
-        .mockImplementationOnce(() => ['NestedSrcComponent.svelte']) // srcComponentsNested
-        .mockImplementationOnce(() => ['SrcComponent.svelte', 'SrcComponent2.svelte']) // srcComponents
-        .mockImplementationOnce(() => ['LegacyPluginAComponent1.svelte', 'LegacyPluginAComponent2.svelte']) // legacy pluginA components
-        .mockImplementationOnce(() => ['LegacyPluginBComponent1.svelte']), // legacy pluginB components
-    }));
-
-    const svelteConfig = {
-      preprocess: [
-        {
-          style: ({ content }) => {
-            return content.toUpperCase();
-          },
-        },
-      ],
-    };
-
-    const configs = fixRelativePath(require('../getRollupConfig').default({ svelteConfig }));
-    expect(configs).toHaveLength(8);
-    expect(configs).toMatchSnapshot();
-
-    expect(fixRelativePath(require('../getRollupConfig').default({ svelteConfig }))).toStrictEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          input: './node_modules/intersection-observer/intersection-observer.js',
-        }),
-      ]),
-    );
   });
 });

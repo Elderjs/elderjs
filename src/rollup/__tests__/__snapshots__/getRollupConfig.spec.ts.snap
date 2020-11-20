@@ -21,12 +21,71 @@ Array [
   Object {
     "cache": true,
     "input": Array [
+      "rc/layouts/*.svelte",
+      "rc/routes/**/*.svelte",
+      "rc/components/**/*.svelte",
+      "/src/plugins/elderjs-plugin-reload/*.svelte",
+    ],
+    "output": Object {
+      "dir": "test/___ELDER___/compiled",
+      "exports": "auto",
+      "format": "cjs",
+      "sourcemap": false,
+    },
+    "plugins": Array [
+      Object {
+        "options": [Function],
+        "pluginName": "rollup-plugin-multi-input",
+      },
+      Object {
+        "name": "replace",
+        "renderChunk": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "name": "json",
+        "transform": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "generateBundle": [Function],
+        "load": [Function],
+        "name": "rollup-plugin-elder",
+        "renderChunk": [Function],
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "generateBundle": [Function],
+        "getPackageInfoForId": [Function],
+        "load": [Function],
+        "name": "node-resolve",
+        "resolveId": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "load": [Function],
+        "name": "commonjs",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "name": "terser",
+        "renderChunk": [Function],
+      },
+    ],
+    "treeshake": true,
+  },
+  Object {
+    "cache": true,
+    "input": Array [
       "rc/components/**/*.svelte",
     ],
     "output": Array [
       Object {
         "dir": "test/public/svelte",
-        "entryFileNames": "entry[name]-[hash].mjs",
+        "entryFileNames": "[name].[hash].js",
         "format": "esm",
         "sourcemap": false,
       },
@@ -46,9 +105,11 @@ Array [
         "transform": [Function],
       },
       Object {
+        "buildStart": [Function],
         "generateBundle": [Function],
         "load": [Function],
-        "name": "svelte",
+        "name": "rollup-plugin-elder",
+        "renderChunk": [Function],
         "resolveId": [Function],
         "transform": [Function],
       },
@@ -71,67 +132,6 @@ Array [
         "load": [Function],
         "name": "babel",
         "resolveId": [Function],
-        "transform": [Function],
-      },
-      Object {
-        "name": "terser",
-        "renderChunk": [Function],
-      },
-    ],
-    "treeshake": true,
-  },
-  Object {
-    "cache": true,
-    "input": Array [
-      "rc/layouts/*.svelte",
-      "rc/routes/**/*.svelte",
-      "rc/components/**/*.svelte",
-      "/src/plugins/elderjs-plugin-reload/*.svelte",
-    ],
-    "output": Object {
-      "dir": "test/___ELDER___/compiled",
-      "exports": "auto",
-      "format": "cjs",
-    },
-    "plugins": Array [
-      Object {
-        "options": [Function],
-        "pluginName": "rollup-plugin-multi-input",
-      },
-      Object {
-        "name": "replace",
-        "renderChunk": [Function],
-        "transform": [Function],
-      },
-      Object {
-        "name": "json",
-        "transform": [Function],
-      },
-      Object {
-        "generateBundle": [Function],
-        "load": [Function],
-        "name": "svelte",
-        "resolveId": [Function],
-        "transform": [Function],
-      },
-      Object {
-        "buildStart": [Function],
-        "generateBundle": [Function],
-        "getPackageInfoForId": [Function],
-        "load": [Function],
-        "name": "node-resolve",
-        "resolveId": [Function],
-      },
-      Object {
-        "buildStart": [Function],
-        "load": [Function],
-        "name": "commonjs",
-        "resolveId": [Function],
-        "transform": [Function],
-      },
-      Object {
-        "name": "elderjs-handle-css",
-        "renderChunk": [Function],
         "transform": [Function],
       },
       Object {
@@ -165,12 +165,71 @@ Array [
   Object {
     "cache": true,
     "input": Array [
+      "rc/layouts/*.svelte",
+      "rc/routes/**/*.svelte",
+      "rc/components/**/*.svelte",
+      "/src/plugins/elderjs-plugin-reload/*.svelte",
+    ],
+    "output": Object {
+      "dir": "test/___ELDER___/compiled",
+      "exports": "auto",
+      "format": "cjs",
+      "sourcemap": false,
+    },
+    "plugins": Array [
+      Object {
+        "options": [Function],
+        "pluginName": "rollup-plugin-multi-input",
+      },
+      Object {
+        "name": "replace",
+        "renderChunk": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "name": "json",
+        "transform": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "generateBundle": [Function],
+        "load": [Function],
+        "name": "rollup-plugin-elder",
+        "renderChunk": [Function],
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "generateBundle": [Function],
+        "getPackageInfoForId": [Function],
+        "load": [Function],
+        "name": "node-resolve",
+        "resolveId": [Function],
+      },
+      Object {
+        "buildStart": [Function],
+        "load": [Function],
+        "name": "commonjs",
+        "resolveId": [Function],
+        "transform": [Function],
+      },
+      Object {
+        "name": "terser",
+        "renderChunk": [Function],
+      },
+    ],
+    "treeshake": true,
+  },
+  Object {
+    "cache": true,
+    "input": Array [
       "rc/components/**/*.svelte",
     ],
     "output": Array [
       Object {
         "dir": "test/public/svelte",
-        "entryFileNames": "entry[name]-[hash].mjs",
+        "entryFileNames": "[name].[hash].js",
         "format": "esm",
         "sourcemap": false,
       },
@@ -190,9 +249,11 @@ Array [
         "transform": [Function],
       },
       Object {
+        "buildStart": [Function],
         "generateBundle": [Function],
         "load": [Function],
-        "name": "svelte",
+        "name": "rollup-plugin-elder",
+        "renderChunk": [Function],
         "resolveId": [Function],
         "transform": [Function],
       },
@@ -226,72 +287,11 @@ Array [
   },
   Object {
     "cache": true,
-    "input": Array [
-      "rc/layouts/*.svelte",
-      "rc/routes/**/*.svelte",
-      "rc/components/**/*.svelte",
-      "/src/plugins/elderjs-plugin-reload/*.svelte",
-    ],
-    "output": Object {
-      "dir": "test/___ELDER___/compiled",
-      "exports": "auto",
-      "format": "cjs",
-    },
-    "plugins": Array [
-      Object {
-        "options": [Function],
-        "pluginName": "rollup-plugin-multi-input",
-      },
-      Object {
-        "name": "replace",
-        "renderChunk": [Function],
-        "transform": [Function],
-      },
-      Object {
-        "name": "json",
-        "transform": [Function],
-      },
-      Object {
-        "generateBundle": [Function],
-        "load": [Function],
-        "name": "svelte",
-        "resolveId": [Function],
-        "transform": [Function],
-      },
-      Object {
-        "buildStart": [Function],
-        "generateBundle": [Function],
-        "getPackageInfoForId": [Function],
-        "load": [Function],
-        "name": "node-resolve",
-        "resolveId": [Function],
-      },
-      Object {
-        "buildStart": [Function],
-        "load": [Function],
-        "name": "commonjs",
-        "resolveId": [Function],
-        "transform": [Function],
-      },
-      Object {
-        "name": "elderjs-handle-css",
-        "renderChunk": [Function],
-        "transform": [Function],
-      },
-      Object {
-        "name": "terser",
-        "renderChunk": [Function],
-      },
-    ],
-    "treeshake": true,
-  },
-  Object {
-    "cache": true,
     "input": "pluginAComponent1.svelte",
     "output": Array [
       Object {
-        "dir": "test/public/svelte",
-        "entryFileNames": "iife[name]-[hash].js",
+        "dir": "test/public/svelte/iife/",
+        "entryFileNames": "[name].[hash].js",
         "format": "iife",
         "name": "___elderjs_pluginAComponent1",
         "sourcemap": false,
@@ -308,9 +308,11 @@ Array [
         "transform": [Function],
       },
       Object {
+        "buildStart": [Function],
         "generateBundle": [Function],
         "load": [Function],
-        "name": "svelte",
+        "name": "rollup-plugin-elder",
+        "renderChunk": [Function],
         "resolveId": [Function],
         "transform": [Function],
       },
@@ -347,8 +349,8 @@ Array [
     "input": "pluginAComponent2.svelte",
     "output": Array [
       Object {
-        "dir": "test/public/svelte",
-        "entryFileNames": "iife[name]-[hash].js",
+        "dir": "test/public/svelte/iife/",
+        "entryFileNames": "[name].[hash].js",
         "format": "iife",
         "name": "___elderjs_pluginAComponent2",
         "sourcemap": false,
@@ -365,9 +367,11 @@ Array [
         "transform": [Function],
       },
       Object {
+        "buildStart": [Function],
         "generateBundle": [Function],
         "load": [Function],
-        "name": "svelte",
+        "name": "rollup-plugin-elder",
+        "renderChunk": [Function],
         "resolveId": [Function],
         "transform": [Function],
       },
@@ -404,8 +408,8 @@ Array [
     "input": "AnythingCanBeHere",
     "output": Array [
       Object {
-        "dir": "test/public/svelte",
-        "entryFileNames": "iife[name]-[hash].js",
+        "dir": "test/public/svelte/iife/",
+        "entryFileNames": "[name].[hash].js",
         "format": "iife",
         "name": "___elderjs_AnythingCanBeHere",
         "sourcemap": false,
@@ -422,9 +426,11 @@ Array [
         "transform": [Function],
       },
       Object {
+        "buildStart": [Function],
         "generateBundle": [Function],
         "load": [Function],
-        "name": "svelte",
+        "name": "rollup-plugin-elder",
+        "renderChunk": [Function],
         "resolveId": [Function],
         "transform": [Function],
       },
@@ -461,8 +467,8 @@ Array [
     "input": "pluginBComponent1.svelte",
     "output": Array [
       Object {
-        "dir": "test/public/svelte",
-        "entryFileNames": "iife[name]-[hash].js",
+        "dir": "test/public/svelte/iife/",
+        "entryFileNames": "[name].[hash].js",
         "format": "iife",
         "name": "___elderjs_pluginBComponent1",
         "sourcemap": false,
@@ -479,9 +485,11 @@ Array [
         "transform": [Function],
       },
       Object {
+        "buildStart": [Function],
         "generateBundle": [Function],
         "load": [Function],
-        "name": "svelte",
+        "name": "rollup-plugin-elder",
+        "renderChunk": [Function],
         "resolveId": [Function],
         "transform": [Function],
       },
@@ -518,8 +526,8 @@ Array [
     "input": "pluginBComponent2.svelte",
     "output": Array [
       Object {
-        "dir": "test/public/svelte",
-        "entryFileNames": "iife[name]-[hash].js",
+        "dir": "test/public/svelte/iife/",
+        "entryFileNames": "[name].[hash].js",
         "format": "iife",
         "name": "___elderjs_pluginBComponent2",
         "sourcemap": false,
@@ -536,9 +544,11 @@ Array [
         "transform": [Function],
       },
       Object {
+        "buildStart": [Function],
         "generateBundle": [Function],
         "load": [Function],
-        "name": "svelte",
+        "name": "rollup-plugin-elder",
+        "renderChunk": [Function],
         "resolveId": [Function],
         "transform": [Function],
       },
@@ -575,8 +585,8 @@ Array [
     "input": "/src/plugins/elderjs-plugin-reload/SimplePlugin.svelte",
     "output": Array [
       Object {
-        "dir": "test/public/svelte",
-        "entryFileNames": "iife[name]-[hash].js",
+        "dir": "test/public/svelte/iife/",
+        "entryFileNames": "[name].[hash].js",
         "format": "iife",
         "name": "___elderjs_SimplePlugin",
         "sourcemap": false,
@@ -593,9 +603,11 @@ Array [
         "transform": [Function],
       },
       Object {
+        "buildStart": [Function],
         "generateBundle": [Function],
         "load": [Function],
-        "name": "svelte",
+        "name": "rollup-plugin-elder",
+        "renderChunk": [Function],
         "resolveId": [Function],
         "transform": [Function],
       },
@@ -632,8 +644,8 @@ Array [
     "input": "/src/plugins/elderjs-plugin-reload/Test.svelte",
     "output": Array [
       Object {
-        "dir": "test/public/svelte",
-        "entryFileNames": "iife[name]-[hash].js",
+        "dir": "test/public/svelte/iife/",
+        "entryFileNames": "[name].[hash].js",
         "format": "iife",
         "name": "___elderjs_Test",
         "sourcemap": false,
@@ -650,9 +662,11 @@ Array [
         "transform": [Function],
       },
       Object {
+        "buildStart": [Function],
         "generateBundle": [Function],
         "load": [Function],
-        "name": "svelte",
+        "name": "rollup-plugin-elder",
+        "renderChunk": [Function],
         "resolveId": [Function],
         "transform": [Function],
       },
@@ -683,361 +697,6 @@ Array [
       },
     ],
     "treeshake": true,
-  },
-]
-`;
-
-exports[`#getRollupConfig getRollupConfig as a whole works - splitComponents: true, legacy: true 1`] = `
-Array [
-  Object {
-    "input": "./node_modules/intersection-observer/intersection-observer.js",
-    "output": Array [
-      Object {
-        "file": "/dist/static/intersection-observer.js",
-        "format": "iife",
-        "name": "./static/intersection-observer.js",
-        "plugins": Array [
-          Object {
-            "name": "terser",
-            "renderChunk": [Function],
-          },
-        ],
-      },
-    ],
-  },
-  Object {
-    "cache": true,
-    "input": "pluginAComponent1.svelte",
-    "output": Array [
-      Object {
-        "dir": "test/public/svelte",
-        "entryFileNames": "entry[name]-[hash].mjs",
-        "format": "esm",
-        "sourcemap": true,
-      },
-    ],
-    "plugins": Array [
-      Object {
-        "name": "replace",
-        "renderChunk": [Function],
-        "transform": [Function],
-      },
-      Object {
-        "name": "json",
-        "transform": [Function],
-      },
-      Object {
-        "generateBundle": [Function],
-        "load": [Function],
-        "name": "svelte",
-        "resolveId": [Function],
-        "transform": [Function],
-      },
-      Object {
-        "buildStart": [Function],
-        "generateBundle": [Function],
-        "getPackageInfoForId": [Function],
-        "load": [Function],
-        "name": "node-resolve",
-        "resolveId": [Function],
-      },
-      Object {
-        "buildStart": [Function],
-        "load": [Function],
-        "name": "commonjs",
-        "resolveId": [Function],
-        "transform": [Function],
-      },
-    ],
-    "treeshake": false,
-  },
-  Object {
-    "cache": true,
-    "input": "pluginAComponent2.svelte",
-    "output": Array [
-      Object {
-        "dir": "test/public/svelte",
-        "entryFileNames": "entry[name]-[hash].mjs",
-        "format": "esm",
-        "sourcemap": true,
-      },
-    ],
-    "plugins": Array [
-      Object {
-        "name": "replace",
-        "renderChunk": [Function],
-        "transform": [Function],
-      },
-      Object {
-        "name": "json",
-        "transform": [Function],
-      },
-      Object {
-        "generateBundle": [Function],
-        "load": [Function],
-        "name": "svelte",
-        "resolveId": [Function],
-        "transform": [Function],
-      },
-      Object {
-        "buildStart": [Function],
-        "generateBundle": [Function],
-        "getPackageInfoForId": [Function],
-        "load": [Function],
-        "name": "node-resolve",
-        "resolveId": [Function],
-      },
-      Object {
-        "buildStart": [Function],
-        "load": [Function],
-        "name": "commonjs",
-        "resolveId": [Function],
-        "transform": [Function],
-      },
-    ],
-    "treeshake": false,
-  },
-  Object {
-    "cache": true,
-    "input": "pluginBComponent1.svelte",
-    "output": Array [
-      Object {
-        "dir": "test/public/svelte",
-        "entryFileNames": "entry[name]-[hash].mjs",
-        "format": "esm",
-        "sourcemap": true,
-      },
-    ],
-    "plugins": Array [
-      Object {
-        "name": "replace",
-        "renderChunk": [Function],
-        "transform": [Function],
-      },
-      Object {
-        "name": "json",
-        "transform": [Function],
-      },
-      Object {
-        "generateBundle": [Function],
-        "load": [Function],
-        "name": "svelte",
-        "resolveId": [Function],
-        "transform": [Function],
-      },
-      Object {
-        "buildStart": [Function],
-        "generateBundle": [Function],
-        "getPackageInfoForId": [Function],
-        "load": [Function],
-        "name": "node-resolve",
-        "resolveId": [Function],
-      },
-      Object {
-        "buildStart": [Function],
-        "load": [Function],
-        "name": "commonjs",
-        "resolveId": [Function],
-        "transform": [Function],
-      },
-    ],
-    "treeshake": false,
-  },
-  Object {
-    "cache": true,
-    "input": "pluginBComponent2.svelte",
-    "output": Array [
-      Object {
-        "dir": "test/public/svelte",
-        "entryFileNames": "entry[name]-[hash].mjs",
-        "format": "esm",
-        "sourcemap": true,
-      },
-    ],
-    "plugins": Array [
-      Object {
-        "name": "replace",
-        "renderChunk": [Function],
-        "transform": [Function],
-      },
-      Object {
-        "name": "json",
-        "transform": [Function],
-      },
-      Object {
-        "generateBundle": [Function],
-        "load": [Function],
-        "name": "svelte",
-        "resolveId": [Function],
-        "transform": [Function],
-      },
-      Object {
-        "buildStart": [Function],
-        "generateBundle": [Function],
-        "getPackageInfoForId": [Function],
-        "load": [Function],
-        "name": "node-resolve",
-        "resolveId": [Function],
-      },
-      Object {
-        "buildStart": [Function],
-        "load": [Function],
-        "name": "commonjs",
-        "resolveId": [Function],
-        "transform": [Function],
-      },
-    ],
-    "treeshake": false,
-  },
-  Object {
-    "cache": true,
-    "input": "/src/plugins/elderjs-plugin-reload/SimplePlugin.svelte",
-    "output": Array [
-      Object {
-        "dir": "test/public/svelte",
-        "entryFileNames": "entry[name]-[hash].mjs",
-        "format": "esm",
-        "sourcemap": true,
-      },
-    ],
-    "plugins": Array [
-      Object {
-        "name": "replace",
-        "renderChunk": [Function],
-        "transform": [Function],
-      },
-      Object {
-        "name": "json",
-        "transform": [Function],
-      },
-      Object {
-        "generateBundle": [Function],
-        "load": [Function],
-        "name": "svelte",
-        "resolveId": [Function],
-        "transform": [Function],
-      },
-      Object {
-        "buildStart": [Function],
-        "generateBundle": [Function],
-        "getPackageInfoForId": [Function],
-        "load": [Function],
-        "name": "node-resolve",
-        "resolveId": [Function],
-      },
-      Object {
-        "buildStart": [Function],
-        "load": [Function],
-        "name": "commonjs",
-        "resolveId": [Function],
-        "transform": [Function],
-      },
-    ],
-    "treeshake": false,
-  },
-  Object {
-    "cache": true,
-    "input": "/src/plugins/elderjs-plugin-reload/Test.svelte",
-    "output": Array [
-      Object {
-        "dir": "test/public/svelte",
-        "entryFileNames": "entry[name]-[hash].mjs",
-        "format": "esm",
-        "sourcemap": true,
-      },
-    ],
-    "plugins": Array [
-      Object {
-        "name": "replace",
-        "renderChunk": [Function],
-        "transform": [Function],
-      },
-      Object {
-        "name": "json",
-        "transform": [Function],
-      },
-      Object {
-        "generateBundle": [Function],
-        "load": [Function],
-        "name": "svelte",
-        "resolveId": [Function],
-        "transform": [Function],
-      },
-      Object {
-        "buildStart": [Function],
-        "generateBundle": [Function],
-        "getPackageInfoForId": [Function],
-        "load": [Function],
-        "name": "node-resolve",
-        "resolveId": [Function],
-      },
-      Object {
-        "buildStart": [Function],
-        "load": [Function],
-        "name": "commonjs",
-        "resolveId": [Function],
-        "transform": [Function],
-      },
-    ],
-    "treeshake": false,
-  },
-  Object {
-    "cache": true,
-    "input": Array [
-      "rc/layouts/*.svelte",
-      "rc/routes/**/*.svelte",
-      "rc/components/**/*.svelte",
-      "/src/plugins/elderjs-plugin-reload/*.svelte",
-    ],
-    "output": Object {
-      "dir": "test/___ELDER___/compiled",
-      "exports": "auto",
-      "format": "cjs",
-    },
-    "plugins": Array [
-      Object {
-        "options": [Function],
-        "pluginName": "rollup-plugin-multi-input",
-      },
-      Object {
-        "name": "replace",
-        "renderChunk": [Function],
-        "transform": [Function],
-      },
-      Object {
-        "name": "json",
-        "transform": [Function],
-      },
-      Object {
-        "generateBundle": [Function],
-        "load": [Function],
-        "name": "svelte",
-        "resolveId": [Function],
-        "transform": [Function],
-      },
-      Object {
-        "buildStart": [Function],
-        "generateBundle": [Function],
-        "getPackageInfoForId": [Function],
-        "load": [Function],
-        "name": "node-resolve",
-        "resolveId": [Function],
-      },
-      Object {
-        "buildStart": [Function],
-        "load": [Function],
-        "name": "commonjs",
-        "resolveId": [Function],
-        "transform": [Function],
-      },
-      Object {
-        "name": "elderjs-handle-css",
-        "renderChunk": [Function],
-        "transform": [Function],
-      },
-      false,
-    ],
-    "treeshake": false,
   },
 ]
 `;

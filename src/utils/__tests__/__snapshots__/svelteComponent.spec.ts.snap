@@ -8,12 +8,31 @@ Array [
     "string": "<script>var datepickerPropsSwrzsrVDCd = {a:\\"b\\"};</script>",
   },
   Object {
+    "priority": 99,
+    "source": "datepickerSwrzsrVDCd",
+    "string": "<script nomodule defer src=\\"/Users/nick/repos/elderjs/elderjs/test/components/Datepicker\\" onload=\\"initdatepickerSwrzsrVDCd()\\"></script>",
+  },
+  Object {
+    "priority": 98,
+    "source": "datepickerSwrzsrVDCd",
+    "string": "
+        <script nomodule>
+        function initdatepickerSwrzsrVDCd(){
+          new ___elderjs_Datepicker({
+            target: document.getElementById('datepickerSwrzsrVDCd'),
+            props:  datepickerPropsSwrzsrVDCd,
+            hydrate: true,
+          });
+        }
+        </script>",
+  },
+  Object {
     "priority": 30,
     "source": "datepickerSwrzsrVDCd",
     "string": "     
         <script type=\\"module\\">
         function initdatepickerSwrzsrVDCd(){
-          import(\\"/svelte/undefined.mjs\\").then((component)=>{
+          import(\\"/Users/nick/repos/elderjs/elderjs/test/components/Datepicker\\").then((component)=>{
             new component.default({ 
               target: document.getElementById('datepickerSwrzsrVDCd'),
               props: datepickerPropsSwrzsrVDCd,

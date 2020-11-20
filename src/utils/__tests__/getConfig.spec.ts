@@ -189,7 +189,7 @@ describe('#getConfig', () => {
     it('it throws an error on multiple css for publicCssFileName', () => {
       jest.mock('fs-extra', () => {
         return {
-          ...fsExtra,
+          ensureDirSync: () => {},
           readdirSync: () => ['svelte-3449427d.css', 'svelte-3449427213123.css', 'svelte.css-0050caf1.map'],
         };
       });

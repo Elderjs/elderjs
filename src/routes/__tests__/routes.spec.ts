@@ -26,22 +26,22 @@ describe('#routes', () => {
       sync: jest
         .fn()
         .mockImplementationOnce(() => [
-          'test/src/routes/Content/route.js',
-          'test/src/routes/Content/Default.svelte',
-          'test/src/routes/Home/Home.svelte',
-          'test/src/routes/Home/route.js',
-          'test/src/routes/Content/data.js',
-          'test/src/routes/Content/Layout.svelte',
+          'test/src/routes/content/route.js',
+          'test/src/routes/content/Default.svelte',
+          'test/src/routes/home/Home.svelte',
+          'test/src/routes/home/route.js',
+          'test/src/routes/content/data.js',
+          'test/src/routes/content/Layout.svelte',
         ])
         .mockImplementationOnce(() => [
-          'test/___ELDER___/compiled/Home.js',
-          'test/___ELDER___/compiled/AutoComplete.js',
-          'test/___ELDER___/compiled/Default.js',
-          'test/___ELDER___/compiled/Content.js',
+          'test/___ELDER___/compiled/routes/home/Home.js',
+          'test/___ELDER___/compiled/components/AutoComplete.js',
+          'test/___ELDER___/compiled/routes/content/Default.js',
+          'test/___ELDER___/compiled/routes/content/Content.js',
         ]),
     }));
     jest.mock(
-      'test/src/routes/Content/route.js',
+      'test/src/routes/content/route.js',
       () => ({
         all: [{ slug: 'content' }],
         template: 'Default',
@@ -49,24 +49,24 @@ describe('#routes', () => {
       }),
       { virtual: true },
     );
-    jest.mock('test/src/routes/Content/data.js', () => ({ default: { foo: 'bar' } }), { virtual: true });
+    jest.mock('test/src/routes/content/data.js', () => ({ default: { foo: 'bar' } }), { virtual: true });
     jest.mock(
-      'test/src/routes/Home/route.js',
+      'test/src/routes/home/route.js',
       () => ({
         all: () => [{ slug: 'home' }],
       }),
       { virtual: true },
     );
 
-    jest.mock('test/src/routes/Content/data.js', () => ({ default: { foo: 'bar' } }), { virtual: true });
+    jest.mock('test/src/routes/content/data.js', () => ({ default: { foo: 'bar' } }), { virtual: true });
 
     // eslint-disable-next-line global-require
     const routes = require('../routes').default;
     // @ts-ignore
     const routesObject = routes(settings);
 
-    expect(routesObject.Content.permalink({ request: { slug: 'content' } })).toEqual(`/content/`);
-    expect(routesObject.Content.permalink({ request: { slug: '/' } })).toEqual(`/`);
+    expect(routesObject.content.permalink({ request: { slug: 'content' } })).toEqual(`/content/`);
+    expect(routesObject.content.permalink({ request: { slug: '/' } })).toEqual(`/`);
     expect(routesObject).toMatchSnapshot();
   });
 
@@ -78,25 +78,25 @@ describe('#routes', () => {
       sync: jest
         .fn()
         .mockImplementationOnce(() => [
-          'test/src/routes/Content/route.js',
-          'test/src/routes/Content/Default.svelte',
-          'test/src/routes/Home/Home.svelte',
-          'test/src/routes/Home/route.js',
+          'test/src/routes/content/route.js',
+          'test/src/routes/content/Default.svelte',
+          'test/src/routes/home/Home.svelte',
+          'test/src/routes/home/route.js',
           'test/src/routes/SomethingCamel/SomethingCamel.svelte',
           'test/src/routes/SomethingCamel/route.js',
-          'test/src/routes/Content/data.js',
-          'test/src/routes/Content/Layout.svelte',
+          'test/src/routes/content/data.js',
+          'test/src/routes/content/Layout.svelte',
         ])
         .mockImplementationOnce(() => [
-          'test/___ELDER___/compiled/Home.js',
-          'test/___ELDER___/compiled/AutoComplete.js',
-          'test/___ELDER___/compiled/Default.js',
-          'test/___ELDER___/compiled/Content.js',
+          'test/___ELDER___/compiled/routes/home/Home.js',
+          'test/___ELDER___/compiled/components/AutoComplete.js',
+          'test/___ELDER___/compiled/routes/content/Default.js',
+          'test/___ELDER___/compiled/routes/content/Content.js',
           'test/___ELDER___/compiled/SomethingCamel.js',
         ]),
     }));
     jest.mock(
-      'test/src/routes/Content/route.js',
+      'test/src/routes/content/route.js',
       () => ({
         permalink: () => 'content-permalink',
         template: 'Default',
@@ -104,15 +104,15 @@ describe('#routes', () => {
       }),
       { virtual: true },
     );
-    jest.mock('test/src/routes/Content/data.js', () => ({ default: { foo: 'bar' } }), { virtual: true });
+    jest.mock('test/src/routes/content/data.js', () => ({ default: { foo: 'bar' } }), { virtual: true });
     jest.mock(
-      'test/src/routes/Home/route.js',
+      'test/src/routes/home/route.js',
       () => ({
         permalink: () => 'home-permalink',
       }),
       { virtual: true },
     );
-    jest.mock('test/src/routes/Home/data.js', () => ({ default: { foo: 'bar' } }), { virtual: true });
+    jest.mock('test/src/routes/home/data.js', () => ({ default: { foo: 'bar' } }), { virtual: true });
 
     jest.mock(
       'test/src/routes/SomethingCamel/route.js',
@@ -128,34 +128,34 @@ describe('#routes', () => {
     // @ts-ignore
     const routesObject = routes(settings);
 
-    expect(routesObject.Content.all).toEqual([{ slug: 'content' }]);
+    expect(routesObject.content.all).toEqual([{ slug: 'content' }]);
     expect(routesObject.SomethingCamel.all).toEqual([{ slug: 'something-camel' }]);
-    expect(routesObject.Home.all).toEqual([{ slug: '/' }]);
+    expect(routesObject.home.all).toEqual([{ slug: '/' }]);
     expect(routesObject).toMatchSnapshot();
   });
 
-  it('works', () => {
+  it('works where things are set', () => {
     jest.mock('glob', () => ({
       sync: jest
         .fn()
         .mockImplementationOnce(() => [
-          'test/src/routes/Content/route.js',
-          'test/src/routes/Content/Default.svelte',
-          'test/src/routes/Home/Home.svelte',
-          'test/src/routes/Home/route.js',
-          'test/src/routes/Content/data.js',
-          'test/src/routes/Content/Layout.svelte',
+          'test/src/routes/content/route.js',
+          'test/src/routes/content/Default.svelte',
+          'test/src/routes/home/Home.svelte',
+          'test/src/routes/home/route.js',
+          'test/src/routes/content/data.js',
+          'test/src/routes/content/Layout.svelte',
         ])
         .mockImplementationOnce(() => [
-          'test/___ELDER___/compiled/Home.js',
-          'test/___ELDER___/compiled/AutoComplete.js',
-          'test/___ELDER___/compiled/Default.js',
-          'test/___ELDER___/compiled/Content.js',
+          'test/___ELDER___/compiled/routes/home/Home.js',
+          'test/___ELDER___/compiled/components/AutoComplete.js',
+          'test/___ELDER___/compiled/routes/content/Default.js',
+          'test/___ELDER___/compiled/routes/content/Content.js',
         ]),
     }));
 
     jest.mock(
-      'test/src/routes/Content/route.js',
+      'test/src/routes/content/route.js',
       () => ({
         permalink: () => 'content-permalink',
         all: () => null,
@@ -166,7 +166,7 @@ describe('#routes', () => {
     );
 
     jest.mock(
-      'test/src/routes/Home/route.js',
+      'test/src/routes/home/route.js',
       () => ({
         permalink: () => 'home-permalink',
         all: () => null,
@@ -174,7 +174,7 @@ describe('#routes', () => {
       { virtual: true },
     );
 
-    jest.mock('test/src/routes/Content/data.js', () => ({ foo: 'bar' }), { virtual: true });
+    jest.mock('test/src/routes/content/data.js', () => ({ foo: 'bar' }), { virtual: true });
     // eslint-disable-next-line global-require
     const routes = require('../routes').default;
     // @ts-ignore
@@ -186,22 +186,22 @@ describe('#routes', () => {
       sync: jest
         .fn()
         .mockImplementationOnce(() => [
-          'test/src/routes/Content/route.js',
-          'test/src/routes/Content/Default.svelte',
-          'test/src/routes/Home/Home.svelte',
-          'test/src/routes/Home/route.js',
-          'test/src/routes/Content/data.js',
-          'test/src/routes/Content/Layout.svelte',
+          'test/src/routes/content/route.js',
+          'test/src/routes/content/Default.svelte',
+          'test/src/routes/home/Home.svelte',
+          'test/src/routes/home/route.js',
+          'test/src/routes/content/data.js',
+          'test/src/routes/content/Layout.svelte',
         ])
         .mockImplementationOnce(() => [
-          'test/___ELDER___/compiled/Home.js',
-          'test/___ELDER___/compiled/AutoComplete.js',
-          'test/___ELDER___/compiled/Default.js',
-          'test/___ELDER___/compiled/Content.js',
+          'test/___ELDER___/compiled/routes/Home/Home.js',
+          'test/___ELDER___/compiled/components/AutoComplete.js',
+          'test/___ELDER___/compiled/routes/content/Default.js',
+          'test/___ELDER___/compiled/routes/Content/Content.js',
         ]),
     }));
     jest.mock(
-      'test/src/routes/Content/route.js',
+      'test/src/routes/content/route.js',
       () => ({
         default: {
           permalink: () => 'content-permalink',
@@ -213,7 +213,7 @@ describe('#routes', () => {
     );
 
     jest.mock(
-      'test/src/routes/Home/route.js',
+      'test/src/routes/home/route.js',
       () => ({
         default: {
           permalink: () => 'home-permalink',
@@ -223,7 +223,7 @@ describe('#routes', () => {
       { virtual: true },
     );
 
-    jest.mock('test/src/routes/Content/data.js', () => ({ default: { foo: 'bar' } }), { virtual: true });
+    jest.mock('test/src/routes/content/data.js', () => ({ default: { foo: 'bar' } }), { virtual: true });
 
     // eslint-disable-next-line global-require
     const routes = require('../routes').default;

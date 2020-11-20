@@ -2,7 +2,7 @@ import glob from 'glob';
 import path from 'path';
 import { SvelteComponentFiles } from '../utils/types';
 
-const windowsPathFix = (filePath: string | undefined): string | undefined => {
+export const windowsPathFix = (filePath: string | undefined): string | undefined => {
   if (typeof filePath === 'string') {
     return filePath.replace(/\\/gm, '/');
   }
@@ -19,7 +19,7 @@ export const removeHash = (pathWithHash) => {
   return pathWithHash;
 };
 
-const prepareFindSvelteComponent = ({ ssrFolder, rootDir, clientFolder, distDir }) => {
+const prepareFindSvelteComponent = ({ ssrFolder, rootDir, clientComponents: clientFolder, distDir }) => {
   const ssrComponents = glob.sync(`${ssrFolder}/**/*.js`);
   const clientComponents = glob.sync(`${clientFolder}/**/*.js`).map((c) => `/${path.relative(distDir, c)}`);
 
@@ -55,7 +55,9 @@ const prepareFindSvelteComponent = ({ ssrFolder, rootDir, clientFolder, distDir 
     );
 
     const iife = windowsPathFix(
-      clientComponents.filter((c) => c.includes('iife')).find((c) => removeHash(c).endsWith(`${name}.js`)),
+      clientComponents
+        .filter((c) => c.includes('iife'))
+        .find((c) => removeHash(c).endsWith(`${name.replace('.svelte', '')}.js`)),
     );
 
     const out = { ssr, client, iife };

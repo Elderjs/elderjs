@@ -74,6 +74,7 @@ function routes(settings: SettingsOptions) {
         route.templateComponent = svelteComponent(componentName, 'routes');
       }
     } else {
+      // not defined, look for a svelte file...
       const svelteFile = filesForThisRoute.find((f) =>
         f.endsWith(joinPathParts(['routes', routeName, capitalizedRoute], 'svelte')),
       );
@@ -82,8 +83,6 @@ function routes(settings: SettingsOptions) {
       }
 
       if (svelteFile) {
-        if (settings.debug.automagic)
-          console.log(`${prefix} Found ${capitalizedRoute}.svelte. Sweet, we'll set it up.`);
         route.template = `${capitalizedRoute}.svelte`;
         route.templateComponent = svelteComponent(svelteFile, 'routes');
 
@@ -95,6 +94,10 @@ function routes(settings: SettingsOptions) {
             `We see you want to load ${route.template}, but we don't see a compiled template in ${settings.$$internal.ssrComponents}. You'll probably see more errors in a second. Make sure you've run rollup.`,
           );
         }
+      } else {
+        // no svelte file
+        route.template = `${capitalizedRoute}.svelte`;
+        route.templateComponent = svelteComponent(capitalizedRoute, 'routes');
       }
     }
 
