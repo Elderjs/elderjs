@@ -28,13 +28,13 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
 
   const ssrComponents = path.resolve(config.rootDir, './___ELDER___/compiled/');
   const clientComponents = path.resolve(config.distDir, './_elderjs/svelte/');
-  const elderFolder = path.resolve(config.distDir, './_elderjs/');
-  fs.ensureDirSync(path.resolve(elderFolder));
+  const elderDir = path.resolve(config.distDir, './_elderjs/');
+  fs.ensureDirSync(path.resolve(elderDir));
 
   config.$$internal = {
     ssrComponents,
     clientComponents,
-    elderFolder,
+    elderDir,
     prefix: `[Elder.js]:`,
     findComponent: prepareFindSvelteComponent({
       ssrFolder: ssrComponents,

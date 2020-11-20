@@ -52,6 +52,8 @@
     "rollup-plugin-multi-input": "^1.1.1",
     "rollup-plugin-svelte": "^6.0.1",
     "rollup-plugin-terser": "^6.1.0",
+    "rollup-pluginutils": "^2.8.2",
+    "spark-md5": "^3.0.1",
     "svelte": "^3.25.1",
     "yup": "^0.29.3"
   },

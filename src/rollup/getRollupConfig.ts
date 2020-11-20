@@ -12,10 +12,10 @@ import fs from 'fs-extra';
 import del from 'del';
 import defaultsDeep from 'lodash.defaultsdeep';
 import { getElderConfig, partialHydration } from '../index';
-import { getDefaultRollup } from './validations';
-import handleCss from './rollupPluginHandleCss';
-import getPluginLocations from './getPluginLocations';
-import ssrOutputPath from './ssrOutputPath';
+import { getDefaultRollup } from '../utils/validations';
+import handleCss from '../utils/rollupPluginHandleCss';
+import getPluginLocations from '../utils/getPluginLocations';
+import elderSvelte from './rollupPlugin';
 
 const production = process.env.NODE_ENV === 'production' || !process.env.ROLLUP_WATCH;
 const elderJsDir = path.resolve(process.cwd(), './node_modules/@elderjs/elderjs/');
@@ -49,6 +49,8 @@ export function createBrowserConfig({
   svelteConfig,
   replacements = {},
   ie11 = false as boolean,
+  elderDir,
+  distDir,
 }) {
   const toReplace = {
     'process.env.componentType': "'browser'",
@@ -64,13 +66,7 @@ export function createBrowserConfig({
     plugins: [
       replace(toReplace),
       json(),
-      svelte({
-        ...svelteConfig,
-        dev: !production,
-        immutable: true,
-        hydratable: true,
-        css: false,
-      }),
+      elderSvelte({ svelteConfig, type: 'ssr', elderDir, distDir }),
       nodeResolve({
         browser: true,
         dedupe: ['svelte', 'core-js'],
@@ -112,7 +108,16 @@ export function createBrowserConfig({
   return config;
 }
 
-export function createSSRConfig({ input, output, svelteConfig, replacements = {}, multiInputConfig, rootDir }) {
+export function createSSRConfig({
+  input,
+  output,
+  svelteConfig,
+  replacements = {},
+  multiInputConfig,
+  rootDir,
+  elderDir,
+  distDir,
+}) {
   const toReplace = {
     'process.env.componentType': "'server'",
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
@@ -127,26 +132,12 @@ export function createSSRConfig({ input, output, svelteConfig, replacements = {}
     plugins: [
       replace(toReplace),
       json(),
-      svelte({
-        ...svelteConfig,
-        dev: !production,
-        hydratable: true,
-        generate: 'ssr',
-        css: true,
-        emitCss: true,
-        extensions: '.svelte',
-        preprocess: [...svelteConfig.preprocess, partialHydration],
-      }),
-
+      elderSvelte({ svelteConfig, type: 'ssr', elderDir, distDir }),
       nodeResolve({
         browser: false,
         dedupe: ['svelte'],
       }),
       commonjs({ sourceMap: true }),
-      // css({
-      //   ignore: true,
-      // }),
-      handleCss({ rootDir }),
       production && terser(),
     ],
   };
@@ -163,7 +154,7 @@ export default function getRollupConfig(options) {
   const { svelteConfig, replacements, dev } = defaultsDeep(options, defaultOptions);
   const elderConfig = getElderConfig();
   const { $$internal, distDir, srcDir, rootDir, legacy } = elderConfig;
-  const { ssrComponents, clientComponents } = $$internal;
+  const { ssrComponents, clientComponents, elderDir } = $$internal;
   const relSrcDir = srcDir.replace(rootDir, '').substr(1);
 
   console.log(`Elder.js using rollup in ${production ? 'production' : 'development'} mode.`);
@@ -228,6 +219,8 @@ export default function getRollupConfig(options) {
           svelteConfig,
           replacements,
           multiInputConfig: false,
+          elderDir,
+          distDir,
         }),
       );
     });
@@ -253,6 +246,8 @@ export default function getRollupConfig(options) {
         svelteConfig,
         replacements,
         rootDir,
+        elderDir,
+        distDir,
       }),
     );
   } else {
@@ -273,6 +268,8 @@ export default function getRollupConfig(options) {
         }),
         svelteConfig,
         replacements,
+        elderDir,
+        distDir,
       }),
     );
 
@@ -296,6 +293,8 @@ export default function getRollupConfig(options) {
         svelteConfig,
         replacements,
         rootDir,
+        elderDir,
+        distDir,
       }),
     );
 
@@ -320,6 +319,8 @@ export default function getRollupConfig(options) {
             replacements,
             multiInputConfig: false,
             ie11: true,
+            elderDir,
+            distDir,
           }),
         );
       });

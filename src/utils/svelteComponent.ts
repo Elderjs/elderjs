@@ -17,8 +17,6 @@ const svelteComponent = (componentName: String, folder: String = 'components') =
 }: ComponentPayload): string => {
   const { ssr, client, iife } = page.settings.$$internal.findComponent(componentName, folder);
 
-  console.log(componentName, ssr, client, iife);
-
   const cleanComponentName = getComponentName(componentName);
 
   // eslint-disable-next-line import/no-dynamic-require

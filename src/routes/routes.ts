@@ -10,7 +10,7 @@ import { SettingsOptions } from '../utils/types';
 import wrapPermalinkFn from '../utils/wrapPermalinkFn';
 
 function joinPathParts(parts: string[], ext: string) {
-  return `/${parts.join(sep)}.${ext}`;
+  return `${sep}${parts.join(sep)}.${ext}`;
 }
 
 function routes(settings: SettingsOptions) {
@@ -88,7 +88,7 @@ function routes(settings: SettingsOptions) {
         route.templateComponent = svelteComponent(svelteFile, 'routes');
 
         const ssrComponent = ssrComponents.find((f) =>
-          f.endsWith(joinPathParts(['routes', routeName, capitalizedRoute], 'svelte')),
+          f.endsWith(joinPathParts(['routes', routeName, capitalizedRoute], 'js')),
         );
         if (!ssrComponent) {
           console.error(

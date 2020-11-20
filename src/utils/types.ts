@@ -30,7 +30,7 @@ type Internal = {
   hashedComponents?: {};
   ssrComponents: string;
   clientComponents: string;
-  elderFolder: string;
+  elderDir: string;
   prefix: string;
   findComponent: FindSvelteComponent;
 };
