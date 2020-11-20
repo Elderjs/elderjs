@@ -28,7 +28,6 @@ const hooks: Array<HookOptions> = [
           },
         };
       }
-      return null;
     },
   },
   {
@@ -101,13 +100,9 @@ const hooks: Array<HookOptions> = [
             res.setHeader('Content-Type', 'text/html');
             res.end(html);
           }
-        } else {
-          next();
         }
-      } else {
-        next();
       }
-      return {};
+      next();
     },
   },
   {
@@ -200,11 +195,7 @@ const hooks: Array<HookOptions> = [
             ...headStack,
             {
               source: 'elderAddCssFileToHead',
-              string: `<link rel="preload" href="/_elderjs/assets/${settings.$$internal.publicCssFileName}" as="style" />
-            <link rel="stylesheet" href="/_elderjs/assets/${settings.$$internal.publicCssFileName}" media="print" onload="this.media='all'" />
-            <noscript>
-              <link rel="stylesheet" href="/_elderjs/assets/${settings.$$internal.publicCssFileName}" media="all" />
-            </noscript>`,
+              string: `<link rel="preload" href="/_elderjs/assets/${settings.$$internal.publicCssFileName}" as="style" /><link rel="stylesheet" href="/_elderjs/assets/${settings.$$internal.publicCssFileName}" media="print" onload="this.media='all'" /><noscript><link rel="stylesheet" href="/_elderjs/assets/${settings.$$internal.publicCssFileName}" media="all" /></noscript>`,
               priority: 30,
             },
           ],

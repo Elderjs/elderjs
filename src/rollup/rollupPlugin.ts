@@ -17,11 +17,58 @@ export const encodeSourceMap = (map) => {
   return `${mapIntro}${btoa(map.toString())} */`;
 };
 
-function cssFilePriority(pathStr) {
+export function getDependencies(file, memoryCache) {
+  let dependencies = new Set([file]);
+  if (memoryCache.dependencies[file]) {
+    [...memoryCache.dependencies[file].values()]
+      .filter((d) => d !== file)
+      .forEach((dependency) => {
+        dependencies = new Set([...dependencies, ...getDependencies(dependency, memoryCache)]);
+      });
+  }
+  return [...dependencies.values()];
+}
+
+export function cssFilePriority(pathStr) {
   if (pathStr.includes('src/components')) return 3;
   if (pathStr.includes('src/routes')) return 2;
   if (pathStr.includes('src/layouts')) return 1;
   return 0;
+}
+
+export function sortCss(css) {
+  return css
+    .sort((a, b) => a[1].priority - b[1].priority)
+    .reduce((out, cv) => {
+      out[cv[0]] = { styles: cv[1].code, sourceMap: cv[1].map };
+      return out;
+    }, {});
+}
+
+export function getCompleteCss(dependencies, cache) {
+  return dependencies.reduce((out, cv) => {
+    if (cache.has(`css${cv}`)) {
+      const { map: sourceMap, code: styles } = cache.get(`css${cv}`);
+      if (styles && styles.length > 0) {
+        out[cv] = {
+          sourceMap,
+          styles,
+        };
+      }
+    }
+    return out;
+  }, {});
+}
+
+export function logDependency(importee, importer, memoryCache) {
+  if (importer) {
+    const parsedImporter = path.parse(importer);
+    if ((parsedImporter.ext === '.svelte' && importee.includes('.svelte')) || importee.includes('.css')) {
+      const fullImportee = path.resolve(parsedImporter.dir, importee);
+      if (!memoryCache.dependencies[importer]) memoryCache.dependencies[importer] = new Set();
+      memoryCache.dependencies[importer].add(fullImportee);
+    }
+  }
 }
 
 export type RollupCacheElder = {
@@ -35,18 +82,6 @@ const cache: RollupCacheElder = {
 };
 
 const extensions = ['.svelte'];
-
-function getDependencies(file) {
-  let dependencies = new Set([file]);
-  if (cache.dependencies[file]) {
-    [...cache.dependencies[file].values()]
-      .filter((d) => d !== file)
-      .forEach((dependency) => {
-        dependencies = new Set([...dependencies, ...getDependencies(dependency)]);
-      });
-  }
-  return [...dependencies.values()];
-}
 
 const production = process.env.NODE_ENV === 'production' || !process.env.ROLLUP_WATCH;
 
@@ -97,15 +132,6 @@ export default function elderjsRollup({
       ? [...svelteConfig.preprocess, partialHydration]
       : [partialHydration];
 
-  function sortCss(css) {
-    return css
-      .sort((a, b) => a[1].priority - b[1].priority)
-      .reduce((out, cv) => {
-        out[cv[0]] = { styles: cv[1].code, sourceMap: cv[1].map };
-        return out;
-      }, {});
-  }
-
   async function prepareCss(css) {
     return cleanCss.minify(sortCss(css));
   }
@@ -134,14 +160,8 @@ export default function elderjsRollup({
 
     resolveId(importee, importer) {
       // build list of dependencies so we know what CSS to inject into the export.
-      if (importer) {
-        const parsedImporter = path.parse(importer);
-        if ((parsedImporter.ext === '.svelte' && importee.includes('.svelte')) || importee.includes('.css')) {
-          const fullImportee = path.resolve(parsedImporter.dir, importee);
-          if (!cache.dependencies[importer]) cache.dependencies[importer] = new Set();
-          cache.dependencies[importer].add(fullImportee);
-        }
-      }
+
+      logDependency(importee, importer, cache);
 
       // const importee = PATH.resolve(resolveDir, path);
       // if (!cache.dependencies[importee])
@@ -198,7 +218,7 @@ export default function elderjsRollup({
       // eslint-disable-next-line no-bitwise
       if (!~extensions.indexOf(extension)) return null;
 
-      const dependencies = getDependencies(id);
+      const dependencies = getDependencies(id, cache);
 
       if (this.addWatchFile) {
         this.addWatchFile(id);
@@ -243,24 +263,9 @@ export default function elderjsRollup({
     renderChunk(code, chunk, options) {
       if (chunk.isEntry) {
         if (type === 'ssr') {
-          const deps = getDependencies(chunk.facadeModuleId);
-          const cssChunks = deps.reduce((out, cv) => {
-            if (this.cache.has(`css${cv}`)) {
-              const { map: sourceMap, code: styles } = this.cache.get(`css${cv}`);
-              if (styles && styles.length > 0) {
-                out[cv] = {
-                  sourceMap,
-                  styles,
-                };
-              }
-            } else {
-              console.log(`cache miss for css${cv}`);
-            }
+          const deps = getDependencies(chunk.facadeModuleId, cache);
 
-            return out;
-          }, {});
-
-          const cssOutput = cleanCss.minify(cssChunks);
+          const cssOutput = cleanCss.minify(getCompleteCss(deps, this.cache));
           code += `\nmodule.exports._css = ${devalue(cssOutput.styles)};`;
           code += `\nmodule.exports._cssMap = ${devalue(encodeSourceMap(cssOutput.sourceMap))};`;
           code += `\nmodule.exports._cssIncluded = ${JSON.stringify(deps.map((d) => path.relative(rootDir, d)))}`;
@@ -272,6 +277,7 @@ export default function elderjsRollup({
     },
     // eslint-disable-next-line consistent-return
     async generateBundle() {
+      // IMPORTANT!!!
       // all css is only available on the ssr version...
       // but we need to move the css to the client folder.
       if (type === 'ssr') {
@@ -287,12 +293,12 @@ export default function elderjsRollup({
           this.setAssetSource(styleCssMapHash, sourceMap.toString());
           const sourceMapFile = this.getFileName(styleCssMapHash);
           const sourceMapFileRel = `/${path.relative(distDir, path.resolve(distElder, sourceMapFile))}`;
-
           this.setAssetSource(styleCssHash, `${styles}\n /*# sourceMappingURL=${sourceMapFileRel} */`);
         } else {
           this.setAssetSource(styleCssHash, styles);
         }
       } else if (type === 'client' && !legacy) {
+        // copy over assets from the ssr folder to the client folder
         const ssrAssets = path.resolve(rootDir, `.${sep}___ELDER___${sep}compiled${sep}assets`);
         const clientAssets = path.resolve(distElder, `.${sep}assets${sep}`);
         fs.ensureDirSync(clientAssets);
