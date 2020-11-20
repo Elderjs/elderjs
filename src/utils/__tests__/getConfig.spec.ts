@@ -1,3 +1,5 @@
+const fsExtra = require('fs-extra');
+
 const defaultConfig = {
   debug: { automagic: false, build: false, hooks: false, performance: false, shortcodes: false, stacks: false },
   distDir: 'public',
@@ -35,10 +37,14 @@ jest.mock('cosmiconfig', () => {
 
 describe('#getConfig', () => {
   const { resolve } = require('path');
+
   const output = {
     $$internal: {
-      clientComponents: resolve(process.cwd(), './public/svelte'),
       ssrComponents: resolve(process.cwd(), './___ELDER___/compiled'),
+      clientComponents: resolve(process.cwd(), `./public/_elderjs/svelte`),
+      distElder: resolve(process.cwd(), `./public/_elderjs`),
+      // findComponent: () => {},
+      prefix: '[Elder.js]:',
     },
     build: false,
     debug: {
@@ -70,24 +76,22 @@ describe('#getConfig', () => {
     jest.resetModules();
   });
 
-  it('throws but is catched, fallbacks to default', () => {
-    jest.mock('fs', () => ({
-      readFileSync: () => {
-        throw new Error();
-      },
-    }));
+  it('it sets the expected default', () => {
     // eslint-disable-next-line global-require
     const getConfig = require('../getConfig').default;
 
-    expect(getConfig()).toEqual(output);
+    expect(getConfig()).toStrictEqual(
+      expect.objectContaining({
+        ...output,
+        $$internal: {
+          ...output.$$internal,
+          findComponent: expect.anything(),
+        },
+      }),
+    );
   });
 
-  it('it accepts custom initalization options', () => {
-    jest.mock('fs', () => ({
-      readFileSync: () => {
-        throw new Error();
-      },
-    }));
+  describe('it accepts custom initalization options', () => {
     // eslint-disable-next-line global-require
     const getConfig = require('../getConfig').default;
 
@@ -95,60 +99,107 @@ describe('#getConfig', () => {
       distDir: resolve(process.cwd(), './t/public'),
       rootDir: resolve(process.cwd(), './t'),
       srcDir: resolve(process.cwd(), './t/src'),
-      $$internal: {
-        clientComponents: resolve(process.cwd(), './t/public/svelte'),
-        ssrComponents: resolve(process.cwd(), './t/___ELDER___/compiled'),
-      },
+    };
+    const common$$Internal = {
+      ssrComponents: resolve(process.cwd(), './t/___ELDER___/compiled'),
+      clientComponents: resolve(process.cwd(), `./t/public/_elderjs/svelte`),
+      distElder: resolve(process.cwd(), `./t/public/_elderjs`),
+      // findComponent: () => {},
+      prefix: '[Elder.js]:',
     };
 
-    expect(getConfig({ context: 'serverless', rootDir: 't' })).toStrictEqual(
-      expect.objectContaining({
-        ...common,
-        context: 'serverless',
-      }),
-    );
+    it('gives back a custom context such as serverless', () => {
+      const r = getConfig({ context: 'serverless', rootDir: 't' });
+      expect(r).toStrictEqual(
+        expect.objectContaining({
+          ...common,
+          context: 'serverless',
+        }),
+      );
+      expect(r.$$internal).toMatchObject(common$$Internal);
+    });
 
-    expect(getConfig({ context: 'server', rootDir: 't' })).toStrictEqual(
-      expect.objectContaining({
-        ...common,
-        context: 'server',
-        server: {
-          prefix: '',
-        },
-      }),
-    );
-
-    expect(getConfig({ context: 'build', rootDir: 't' })).toStrictEqual(
-      expect.objectContaining({
-        ...common,
-        context: 'build',
-        build: {
-          numberOfWorkers: -1,
-          shuffleRequests: false,
-        },
-      }),
-    );
-    expect(getConfig({ context: 'serverless', rootDir: 't' })).toStrictEqual(
-      expect.objectContaining({
-        context: 'serverless',
-        ...common,
-      }),
-    );
-  });
-
-  it('works', () => {
-    jest.mock('fs', () => ({
-      readFileSync: () =>
-        JSON.stringify({
-          compilerOptions: {
-            outDir: 'build',
+    it('it sets a server without a prefix', () => {
+      const r = getConfig({ context: 'server', rootDir: 't' });
+      expect(r).toStrictEqual(
+        expect.objectContaining({
+          ...common,
+          context: 'server',
+          server: {
+            prefix: '',
           },
         }),
-    }));
+      );
+      expect(r.$$internal).toMatchObject(common$$Internal);
+    });
 
-    // eslint-disable-next-line global-require
-    const getConfig = require('../getConfig').default;
+    it('it sets a server with a prefix', () => {
+      const r = getConfig({ context: 'server', server: { prefix: 'testing' }, rootDir: 't' });
+      expect(r).toStrictEqual(
+        expect.objectContaining({
+          ...common,
+          context: 'server',
+          server: {
+            prefix: 'testing',
+          },
+        }),
+      );
+      expect(r.$$internal).toMatchObject(common$$Internal);
+    });
+    it('it sets build with default', () => {
+      const r = getConfig({ context: 'build', rootDir: 't' });
+      expect(r).toStrictEqual(
+        expect.objectContaining({
+          ...common,
+          context: 'build',
+          build: {
+            numberOfWorkers: -1,
+            shuffleRequests: false,
+          },
+        }),
+      );
+      expect(r.$$internal).toMatchObject(common$$Internal);
+    });
+  });
 
-    expect(getConfig()).toEqual(output);
+  describe('Css Options', () => {
+    it('it sets the publicCssFileName', () => {
+      jest.mock('fs-extra', () => {
+        return {
+          ...fsExtra,
+          readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+        };
+      });
+
+      // eslint-disable-next-line global-require
+      const getConfig = require('../getConfig').default;
+
+      expect(getConfig({ css: 'file' })).toStrictEqual(
+        expect.objectContaining({
+          ...output,
+          $$internal: {
+            ...output.$$internal,
+            findComponent: expect.anything(),
+            publicCssFileName: 'svelte-3449427d.css',
+          },
+        }),
+      );
+    });
+
+    it('it throws an error on multiple css for publicCssFileName', () => {
+      jest.mock('fs-extra', () => {
+        return {
+          ...fsExtra,
+          readdirSync: () => ['svelte-3449427d.css', 'svelte-3449427213123.css', 'svelte.css-0050caf1.map'],
+        };
+      });
+
+      // eslint-disable-next-line global-require
+      const getConfig = require('../getConfig').default;
+
+      expect(() => {
+        getConfig({ css: 'file' });
+      }).toThrow(/Race condition has caused multiple css/gim);
+    });
   });
 });

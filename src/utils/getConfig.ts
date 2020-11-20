@@ -7,16 +7,16 @@ import { getDefaultConfig } from './validations';
 import prepareFindSvelteComponent from '../partialHydration/prepareFindSvelteComponent';
 
 function getConfig(initializationOptions: InitializationOptions = {}): SettingsOptions {
+  let loadedConfig: InitializationOptions = {};
   const explorerSync = cosmiconfigSync('elder');
   const explorerSearch = explorerSync.search();
-  let loadedConfig: InitializationOptions = {};
   if (explorerSearch && explorerSearch.config) {
     loadedConfig = explorerSearch.config;
   }
-
   const config: SettingsOptions = defaultsDeep(initializationOptions, loadedConfig, getDefaultConfig());
 
   const rootDir = config.rootDir === 'process.cwd()' ? process.cwd() : path.resolve(config.rootDir);
+  console.log(rootDir);
   config.rootDir = rootDir;
   config.srcDir = path.resolve(rootDir, `./${config.srcDir}`);
   config.distDir = path.resolve(rootDir, `./${config.distDir}`);
@@ -45,9 +45,17 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
   };
 
   if (config.css === 'file') {
-    config.$$internal.publicCssFileName = fs
-      .readdirSync(path.resolve(distElder, `.${path.sep}assets`))
-      .find((f) => f.endsWith('.css'));
+    const assetPath = path.resolve(distElder, `.${path.sep}assets`);
+    const cssFiles = fs.readdirSync(assetPath).filter((f) => f.endsWith('.css'));
+    console.log(cssFiles);
+    if (cssFiles.length > 1) {
+      throw new Error(`${config.$$internal.prefix} Race condition has caused multiple css files in ${assetPath} `);
+    }
+
+    // eslint-disable-next-line prefer-destructuring
+    config.$$internal.publicCssFileName = cssFiles[0];
+
+    console.log(fs.readdirSync(path.resolve(distElder, `.${path.sep}assets`)));
   }
 
   if (config.origin === '') {

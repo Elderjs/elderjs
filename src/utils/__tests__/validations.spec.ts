@@ -22,6 +22,7 @@ describe('#validations', () => {
   };
 
   const defaultConfig = {
+    css: 'inline',
     legacy: false,
     build: {
       numberOfWorkers: -1,

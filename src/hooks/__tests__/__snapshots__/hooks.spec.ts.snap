@@ -90,6 +90,13 @@ Array [
     "run": [Function],
   },
   Object {
+    "description": "Adds the css found in the svelte files to the head if 'css' in your 'elder.config.js' file is set to 'file'.",
+    "hook": "stacks",
+    "name": "elderAddCssFileToHead",
+    "priority": 100,
+    "run": [Function],
+  },
+  Object {
     "description": "Sets up the default polyfill for the intersection observer",
     "hook": "stacks",
     "name": "elderAddDefaultIntersectionObserver",

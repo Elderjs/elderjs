@@ -13,6 +13,7 @@ ObjectSchema {
   "_exclusive": Object {},
   "_mutate": undefined,
   "_nodes": Array [
+    "css",
     "legacy",
     "plugins",
     "shortcodes",
@@ -122,6 +123,39 @@ ObjectSchema {
         [Function],
       ],
       "type": "object",
+    },
+    "css": StringSchema {
+      "_blacklist": RefSet {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": Array [],
+      "_default": "inline",
+      "_deps": Array [],
+      "_exclusive": Object {
+        "inline-none-file": false,
+        "required": true,
+      },
+      "_label": "How should css found in svelte files be handled? 'inline' emits styles into the head. 'file' adds a file include into the head. 'none' doesn't do anything with the styles.",
+      "_mutate": undefined,
+      "_options": Object {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "string",
+      "_typeError": [Function],
+      "_whitelist": RefSet {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": Array [
+        [Function],
+        [Function],
+      ],
+      "transforms": Array [
+        [Function],
+      ],
+      "type": "string",
     },
     "debug": ObjectSchema {
       "_blacklist": RefSet {
