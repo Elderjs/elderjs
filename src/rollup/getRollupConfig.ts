@@ -162,7 +162,7 @@ export default function getRollupConfig(options) {
   const configs = [];
 
   // clear out components so there are no conflicts due to hashing.
-  del.sync([`${ssrComponents}*`, `${clientComponents}*`]);
+  del.sync([`${ssrComponents}*`, `${distElder}*`]);
   // Add ElderJs Peer deps to public if they exist.
   [['./node_modules/intersection-observer/intersection-observer.js', './static/intersection-observer.js']].forEach(
     (dep) => {

@@ -13,6 +13,7 @@ import partialHydration from '../partialHydration/partialHydration';
 
 const mapIntro = `/*# sourceMappingURL=data:application/json;charset=utf-8;base64,`;
 export const encodeSourceMap = (map) => {
+  if (!map || !map.toString) return '';
   return `${mapIntro}${btoa(map.toString())} */`;
 };
 
@@ -199,6 +200,10 @@ export default function elderjsRollup({
 
       const dependencies = getDependencies(id);
 
+      if (this.addWatchFile) {
+        this.addWatchFile(id);
+      }
+
       // look in the cache
 
       const digest = sparkMd5.hash(code + JSON.stringify(compilerOptions));
@@ -219,13 +224,13 @@ export default function elderjsRollup({
       compiled.js.dependencies = [...dependencies, ...processed.dependencies];
 
       if (this.addWatchFile) {
-        compiled.js.dependencies.forEach(this.addWatchFile);
+        compiled.js.dependencies.map(this.addWatchFile);
       }
 
-      if (type === 'ssr' && compiled.css.code) {
+      if (type === 'ssr') {
         this.cache.set(`css${id}`, {
-          code: compiled.css.code,
-          map: compiled.css.map,
+          code: compiled.css.code || '',
+          map: compiled.css.map || '',
           priority: cssFilePriority(id),
         });
       }
@@ -242,10 +247,14 @@ export default function elderjsRollup({
           const cssChunks = deps.reduce((out, cv) => {
             if (this.cache.has(`css${cv}`)) {
               const { map: sourceMap, code: styles } = this.cache.get(`css${cv}`);
-              out[cv] = {
-                sourceMap,
-                styles,
-              };
+              if (styles && styles.length > 0) {
+                out[cv] = {
+                  sourceMap,
+                  styles,
+                };
+              }
+            } else {
+              console.log(`cache miss for css${cv}`);
             }
 
             return out;
@@ -254,7 +263,7 @@ export default function elderjsRollup({
           const cssOutput = cleanCss.minify(cssChunks);
           code += `\nmodule.exports._css = ${devalue(cssOutput.styles)};`;
           code += `\nmodule.exports._cssMap = ${devalue(encodeSourceMap(cssOutput.sourceMap))};`;
-          code += `\nmodule.exports._cssIncluded = ${JSON.stringify(deps)}`;
+          code += `\nmodule.exports._cssIncluded = ${JSON.stringify(deps.map((d) => path.relative(rootDir, d)))}`;
 
           return { code, map: null };
         }

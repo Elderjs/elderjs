@@ -199,7 +199,7 @@ const hooks: Array<HookOptions> = [
           headStack: [
             ...headStack,
             {
-              source: 'elderAddMetaCharsetToHead',
+              source: 'elderAddCssFileToHead',
               string: `<link rel="preload" href="/_elderjs/assets/${settings.$$internal.publicCssFileName}" as="style" />
             <link rel="stylesheet" href="/_elderjs/assets/${settings.$$internal.publicCssFileName}" media="print" onload="this.media='all'" />
             <noscript>
