@@ -28,13 +28,13 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
 
   const ssrComponents = path.resolve(config.rootDir, './___ELDER___/compiled/');
   const clientComponents = path.resolve(config.distDir, './_elderjs/svelte/');
-  const elderDir = path.resolve(config.distDir, './_elderjs/');
-  fs.ensureDirSync(path.resolve(elderDir));
+  const distElder = path.resolve(config.distDir, './_elderjs/');
+  fs.ensureDirSync(path.resolve(distElder));
 
   config.$$internal = {
     ssrComponents,
     clientComponents,
-    elderDir,
+    distElder,
     prefix: `[Elder.js]:`,
     findComponent: prepareFindSvelteComponent({
       ssrFolder: ssrComponents,
@@ -43,6 +43,12 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
       distDir: config.distDir,
     }),
   };
+
+  if (config.css === 'file') {
+    config.$$internal.publicCssFileName = fs
+      .readdirSync(path.resolve(distElder, `.${path.sep}assets`))
+      .find((f) => f.endsWith('.css'));
+  }
 
   if (config.origin === '') {
     console.error(

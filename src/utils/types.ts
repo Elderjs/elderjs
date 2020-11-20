@@ -30,9 +30,10 @@ type Internal = {
   hashedComponents?: {};
   ssrComponents: string;
   clientComponents: string;
-  elderDir: string;
+  distElder: string;
   prefix: string;
   findComponent: FindSvelteComponent;
+  publicCssFileName?: string;
 };
 
 type DebugOptions = {
@@ -84,6 +85,7 @@ export type SettingsOptions = {
   context?: string;
   worker?: boolean;
   legacy: boolean;
+  css: 'none' | 'file' | 'inline';
 };
 
 export type QueryOptions = {

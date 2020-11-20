@@ -21,10 +21,7 @@ export const removeHash = (pathWithHash) => {
 
 const prepareFindSvelteComponent = ({ ssrFolder, rootDir, clientFolder, distDir }) => {
   const ssrComponents = glob.sync(`${ssrFolder}/**/*.js`);
-  const clientComponents = glob
-    .sync(`${clientFolder}/**/*.js`)
-    .map((c) => `/${path.relative(distDir, c)}`)
-    .map((c) => removeHash(c));
+  const clientComponents = glob.sync(`${clientFolder}/**/*.js`).map((c) => `/${path.relative(distDir, c)}`);
 
   const cache = new Map();
 
@@ -37,9 +34,9 @@ const prepareFindSvelteComponent = ({ ssrFolder, rootDir, clientFolder, distDir 
       const rel = path.relative(path.resolve(rootDir, './src'), name).replace('.svelte', '.js');
       const parsed = path.parse(rel);
       const ssr = ssrComponents.find((c) => c.endsWith(rel));
-      const client = windowsPathFix(clientComponents.find((c) => c.endsWith(rel)));
+      const client = windowsPathFix(clientComponents.find((c) => removeHash(c).endsWith(rel)));
       const iife = windowsPathFix(
-        clientComponents.filter((c) => c.includes('iife')).find((c) => c.endsWith(parsed.base)),
+        clientComponents.filter((c) => c.includes('iife')).find((c) => removeHash(c).endsWith(parsed.base)),
       );
 
       const out = { ssr, client, iife };
@@ -54,11 +51,11 @@ const prepareFindSvelteComponent = ({ ssrFolder, rootDir, clientFolder, distDir 
     const client = windowsPathFix(
       clientComponents
         .filter((c) => c.includes(folder))
-        .find((c) => path.parse(c).name === name.replace('.svelte', '')),
+        .find((c) => path.parse(removeHash(c)).name === name.replace('.svelte', '')),
     );
 
     const iife = windowsPathFix(
-      clientComponents.filter((c) => c.includes('iife')).find((c) => c.endsWith(`${name}.js`)),
+      clientComponents.filter((c) => c.includes('iife')).find((c) => removeHash(c).endsWith(`${name}.js`)),
     );
 
     const out = { ssr, client, iife };

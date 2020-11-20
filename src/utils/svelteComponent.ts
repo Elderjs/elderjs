@@ -27,8 +27,10 @@ const svelteComponent = (componentName: String, folder: String = 'components') =
   try {
     const { html: htmlOutput, head } = render(props);
 
-    if (css && css.length > 0 && page.svelteCss) {
-      page.svelteCss.push({ css, cssMap });
+    if (page.settings.css === 'inline') {
+      if (css && css.length > 0 && page.svelteCss) {
+        page.svelteCss.push({ css, cssMap });
+      }
     }
 
     if (head && page.headStack) {

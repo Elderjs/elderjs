@@ -1,4 +1,4 @@
-import path from 'path';
+import path, { sep } from 'path';
 import CleanCSS from 'clean-css';
 import { Plugin } from 'rollup';
 
@@ -7,14 +7,14 @@ import sparkMd5 from 'spark-md5';
 import fs from 'fs-extra';
 import devalue from 'devalue';
 import btoa from 'btoa';
+// eslint-disable-next-line import/no-unresolved
+import { CompileOptions } from 'svelte/types/compiler/interfaces';
 import partialHydration from '../partialHydration/partialHydration';
 
 const mapIntro = `/*# sourceMappingURL=data:application/json;charset=utf-8;base64,`;
 export const encodeSourceMap = (map) => {
   return `${mapIntro}${btoa(map.toString())} */`;
 };
-
-const PREFIX = '[rollup-plugin-elder]';
 
 function cssFilePriority(pathStr) {
   if (pathStr.includes('src/components')) return 3;
@@ -24,22 +24,16 @@ function cssFilePriority(pathStr) {
 }
 
 export type RollupCacheElder = {
-  svelte: Map<string, { contents: string; time: number }>;
-  css: Map<string, { code: string; map: string; time: number; priority: number }>;
   dependencies: {
     [name: string]: Set<string>;
   };
 };
 
 const cache: RollupCacheElder = {
-  css: new Map(),
-  svelte: new Map(),
   dependencies: {},
 };
 
 const extensions = ['.svelte'];
-
-const cleanCss = new CleanCSS({ sourceMap: true, sourceMapInlineSources: true, level: 1 });
 
 function getDependencies(file) {
   let dependencies = new Set([file]);
@@ -53,74 +47,96 @@ function getDependencies(file) {
   return [...dependencies.values()];
 }
 
-export interface IElderjsRollupConfig {
-  elderDir: string;
-  type: 'ssr' | 'client';
-  svelteConfig: any;
-}
-
 const production = process.env.NODE_ENV === 'production' || !process.env.ROLLUP_WATCH;
 
-const clientCompilerOptions = {
-  hydratable: true,
-  css: false,
-  dev: !production,
-};
+export interface IElderjsRollupConfig {
+  distElder: string;
+  type: 'ssr' | 'client';
+  svelteConfig: any;
+  legacy?: boolean;
+  rootDir: string;
+  distDir: string;
+}
 
-const ssrCompilerOptions = {
-  hydratable: true,
-  generate: 'ssr',
-  css: true,
-  dev: !production,
-};
+export default function elderjsRollup({
+  distDir,
+  distElder,
+  svelteConfig,
+  type = 'ssr',
+  legacy = false,
+  rootDir,
+}: IElderjsRollupConfig): Partial<Plugin> {
+  const cleanCss = new CleanCSS({
+    sourceMap: !production,
+    sourceMapInlineSources: !production,
+    level: 1,
+    rebaseTo: distElder,
+  });
 
-export default function elderjsRollup({ distDir, elderDir, svelteConfig, type = 'ssr' }): Partial<Plugin> {
-  const compilerOptions = type === 'ssr' ? ssrCompilerOptions : clientCompilerOptions;
+  const compilerOptions: CompileOptions = {
+    hydratable: true,
+    generate: 'ssr',
+    css: false,
+    dev: !production,
+    legacy: false,
+    format: 'esm',
+  };
+
+  if (type === 'client') {
+    compilerOptions.generate = 'dom';
+    compilerOptions.format = 'esm';
+  }
+
+  if (legacy) {
+    compilerOptions.legacy = true;
+  }
 
   const preprocessors =
     svelteConfig && Array.isArray(svelteConfig.preprocess)
       ? [...svelteConfig.preprocess, partialHydration]
       : [partialHydration];
 
-  const cssPath = path.resolve(elderDir, './svelte.css');
-  const cssMapPath = `${cssPath}.map`;
-  const cssMapPathRel = `/${path.relative(distDir, cssMapPath)}`.replace(/\\/gm, '/'); // windows fix.
-
-  function sortCss() {
-    const r = [...cache.css.entries()]
+  function sortCss(css) {
+    return css
       .sort((a, b) => a[1].priority - b[1].priority)
       .reduce((out, cv) => {
         out[cv[0]] = { styles: cv[1].code, sourceMap: cv[1].map };
         return out;
       }, {});
-    return r;
   }
 
-  async function writeCss() {
-    try {
-      const { styles, sourceMap } = new CleanCSS({
-        level: 1,
-        sourceMap: !production,
-        rebaseTo: elderDir,
-        sourceMapInlineSources: !production,
-      }).minify(sortCss());
-      await fs.outputFile(cssPath, `${styles}${!production ? `\n /*# sourceMappingURL=${cssMapPathRel} /*` : ''}`);
-      if (!production) await fs.outputFile(cssMapPath, sourceMap.toString());
-      console.log(`[Elder.js]: svelte.css updated `);
-    } catch (e) {
-      console.error(`[Elder.js]: esbuild css error`, e);
-    }
+  async function prepareCss(css) {
+    return cleanCss.minify(sortCss(css));
   }
+
+  let styleCssHash;
+  let styleCssMapHash;
 
   return {
     name: 'rollup-plugin-elder',
 
+    buildStart() {
+      if (type === 'ssr') {
+        styleCssHash = this.emitFile({
+          type: 'asset',
+          name: 'svelte.css',
+        });
+
+        if (!production) {
+          styleCssMapHash = this.emitFile({
+            type: 'asset',
+            name: 'svelte.css.map',
+          });
+        }
+      }
+    },
+
     resolveId(importee, importer) {
+      // build list of dependencies so we know what CSS to inject into the export.
       if (importer) {
         const parsedImporter = path.parse(importer);
-        if (parsedImporter.ext === '.svelte' && importee.includes('.svelte')) {
+        if ((parsedImporter.ext === '.svelte' && importee.includes('.svelte')) || importee.includes('.css')) {
           const fullImportee = path.resolve(parsedImporter.dir, importee);
-
           if (!cache.dependencies[importer]) cache.dependencies[importer] = new Set();
           cache.dependencies[importer].add(fullImportee);
         }
@@ -162,125 +178,70 @@ export default function elderjsRollup({ distDir, elderDir, svelteConfig, type = 
       }
       return null;
     },
-    async transform(code, id) {
+    load(id) {
       const extension = path.extname(id);
-
-      if (extension === '.css') {
-        cache.css.set(id, {
+      // capture imported css
+      if (type === 'ssr' && extension === '.css') {
+        const code = fs.readFileSync(id, 'utf-8');
+        this.cache.set(`css${id}`, {
           code,
           map: '',
-          time: Date.now(),
           priority: 5,
         });
-
         return '';
       }
+    },
+    async transform(code, id) {
+      const extension = path.extname(id);
 
       // eslint-disable-next-line no-bitwise
       if (!~extensions.indexOf(extension)) return null;
 
+      const dependencies = getDependencies(id);
+
       // look in the cache
+
       const digest = sparkMd5.hash(code + JSON.stringify(compilerOptions));
-      if (cache.svelte.has(digest)) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { time, ...response } = cache.svelte.get(digest);
-        return response;
+      if (this.cache.has(digest)) {
+        return this.cache.get(digest);
       }
 
-      const dependencies = [];
-      const filename = path.relative(process.cwd(), id);
+      const filename = path.relative(rootDir, id);
 
       const processed = await preprocess(code, preprocessors, { filename });
+
       const compiled = compile(processed.code, { ...compilerOptions, filename });
       (compiled.warnings || []).forEach((warning) => {
         if (warning.code === 'css-unused-selector') return;
         this.warn(warning);
       });
 
+      compiled.js.dependencies = [...dependencies, ...processed.dependencies];
+
       if (this.addWatchFile) {
-        dependencies.forEach(this.addWatchFile);
-      } else {
-        compiled.js.dependencies = dependencies;
+        compiled.js.dependencies.forEach(this.addWatchFile);
       }
 
-      compiled.js.code += `\n//# sourceMappingURL=${compiled.js.map.toUrl()}`;
-
       if (type === 'ssr' && compiled.css.code) {
-        cache.css.set(id, {
+        this.cache.set(`css${id}`, {
           code: compiled.css.code,
           map: compiled.css.map,
-          time: Date.now(),
           priority: cssFilePriority(id),
         });
       }
 
-      cache.svelte.set(digest, { ...compiled.js, time: Date.now() });
+      this.cache.set(digest, compiled.js);
 
       return compiled.js;
     },
 
-    renderChunk(code, chunk) {
+    renderChunk(code, chunk, options) {
       if (chunk.isEntry) {
-        // deduplicate during split rollup. map to correct bundle on production
-        // const requiredCss = new Set(
-        //   Object.keys(chunk.modules).map((c) => relDir(c).replace('.svelte', '.css').replace('.js', '.css')),
-        // );
-
-        // chunk.imports.forEach((i) => requiredCss.add(i.replace('.js', '.css')));
-
-        // // check the cssMap to see if each of the requiredCss exists, if not, then look at importBindings
-
-        // [...requiredCss.keys()].forEach((key) => {
-        //   if (!cssMap.has(key)) {
-        //     const arrayOfNamedImports = Object.keys(chunk.importedBindings)
-        //       .reduce((out: string[], cv: string): string[] => {
-        //         if (Array.isArray(chunk.importedBindings[cv])) {
-        //           return [...out, ...chunk.importedBindings[cv]];
-        //         }
-        //         return out;
-        //       }, [])
-        //       .filter((v) => v !== 'default');
-        //     const cssFileNames = [...cssMap.keys()];
-        //     const importNameMatch: string | false = arrayOfNamedImports.reduce((out, namedImport) => {
-        //       if (!out) {
-        //         out = cssFileNames.find(
-        //           (cssFile) => typeof cssFile === 'string' && cssFile.endsWith(`${namedImport}.css`),
-        //         );
-        //       }
-        //       return out;
-        //     }, false);
-
-        //     if (importNameMatch) {
-        //       requiredCss.delete(key);
-        //       requiredCss.add(importNameMatch);
-        //     }
-        //   }
-        // });
-
-        // const { cssChunks, matches } = [...requiredCss].reduce(
-        //   (out, key) => {
-        //     if (cssMap.has(key)) {
-        //       const [codeChunk, file] = cssMap.get(key);
-        //       const [thisCss, thisMap] = splitCssSourceMap(codeChunk);
-
-        //       // eslint-disable-next-line no-param-reassign
-        //       if (thisCss.length > 0) {
-        //         out.cssChunks[file] = {
-        //           styles: thisCss,
-        //           sourceMap: atob(thisMap),
-        //         };
-        //         out.matches.push(key);
-        //       }
-        //     }
-        //     return out;
-        //   },
-        //   { cssChunks: {}, matches: [] },
-        // );
-
         if (type === 'ssr') {
-          const cssChunks = getDependencies(chunk.facadeModuleId).reduce((out, cv) => {
-            if (cache.css.has(cv)) {
-              const { map: sourceMap, code: styles } = cache.css.get(cv);
+          const deps = getDependencies(chunk.facadeModuleId);
+          const cssChunks = deps.reduce((out, cv) => {
+            if (this.cache.has(`css${cv}`)) {
+              const { map: sourceMap, code: styles } = this.cache.get(`css${cv}`);
               out[cv] = {
                 sourceMap,
                 styles,
@@ -293,18 +254,46 @@ export default function elderjsRollup({ distDir, elderDir, svelteConfig, type = 
           const cssOutput = cleanCss.minify(cssChunks);
           code += `\nmodule.exports._css = ${devalue(cssOutput.styles)};`;
           code += `\nmodule.exports._cssMap = ${devalue(encodeSourceMap(cssOutput.sourceMap))};`;
+          code += `\nmodule.exports._cssIncluded = ${JSON.stringify(deps)}`;
+
+          return { code, map: null };
         }
-
-        // code += `\nmodule.exports._cssIncluded = ${JSON.stringify(matches)}`;
-
-        // console.log(chunk);
-        return code;
       }
       return null;
     },
-    buildEnd() {
-      // write css
-      return writeCss();
+    // eslint-disable-next-line consistent-return
+    async generateBundle() {
+      // all css is only available on the ssr version...
+      // but we need to move the css to the client folder.
+      if (type === 'ssr') {
+        const css = [];
+
+        for (const id of this.getModuleIds()) {
+          if (this.cache.has(`css${id}`)) css.push([id, this.cache.get(`css${id}`)]);
+        }
+
+        const { styles, sourceMap } = await prepareCss(css);
+
+        if (styleCssMapHash) {
+          this.setAssetSource(styleCssMapHash, sourceMap.toString());
+          const sourceMapFile = this.getFileName(styleCssMapHash);
+          const sourceMapFileRel = `/${path.relative(distDir, path.resolve(distElder, sourceMapFile))}`;
+
+          this.setAssetSource(styleCssHash, `${styles}\n /*# sourceMappingURL=${sourceMapFileRel} */`);
+        } else {
+          this.setAssetSource(styleCssHash, styles);
+        }
+      } else if (type === 'client' && !legacy) {
+        const ssrAssets = path.resolve(rootDir, `.${sep}___ELDER___${sep}compiled${sep}assets`);
+        const clientAssets = path.resolve(distElder, `.${sep}assets${sep}`);
+        fs.ensureDirSync(clientAssets);
+        const open = fs.readdirSync(ssrAssets);
+        if (open.length > 0) {
+          open.forEach((name) => {
+            fs.copyFileSync(path.join(ssrAssets, name), path.join(clientAssets, name));
+          });
+        }
+      }
     },
   };
 }

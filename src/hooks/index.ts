@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 import path from 'path';
 import fs from 'fs-extra';
 import { parseBuildPerf } from '../utils';
@@ -185,6 +186,30 @@ const hooks: Array<HookOptions> = [
           },
         ],
       };
+    },
+  },
+  {
+    hook: 'stacks',
+    name: 'elderAddCssFileToHead',
+    description: `Adds the css found in the svelte files to the head if 'css' in your 'elder.config.js' file is set to 'file'.`,
+    priority: 100,
+    run: async ({ headStack, settings }) => {
+      if (settings.css === 'file') {
+        return {
+          headStack: [
+            ...headStack,
+            {
+              source: 'elderAddMetaCharsetToHead',
+              string: `<link rel="preload" href="/_elderjs/assets/${settings.$$internal.publicCssFileName}" as="style" />
+            <link rel="stylesheet" href="/_elderjs/assets/${settings.$$internal.publicCssFileName}" media="print" onload="this.media='all'" />
+            <noscript>
+              <link rel="stylesheet" href="/_elderjs/assets/${settings.$$internal.publicCssFileName}" media="all" />
+            </noscript>`,
+              priority: 30,
+            },
+          ],
+        };
+      }
     },
   },
   {
