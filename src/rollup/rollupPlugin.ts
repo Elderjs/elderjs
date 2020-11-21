@@ -69,7 +69,6 @@ export const getCssFromCache = (arr, rollupCache) => {
 // eslint-disable-next-line consistent-return
 export function load(id) {
   const extension = path.extname(id);
-  console.log(this);
   // capture imported css
   if (extension === '.css') {
     let code;
