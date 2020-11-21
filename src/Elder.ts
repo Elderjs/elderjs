@@ -17,7 +17,6 @@ import {
   validateShortcode,
   permalinks,
   asyncForEach,
-  getHashedSvelteComponents,
   getConfig,
   prepareInlineShortcode,
 } from './utils';
@@ -332,8 +331,6 @@ class Elder {
           }
         }
 
-        // do this last to try and prevent a common race condition.
-        this.settings.$$internal.hashedComponents = getHashedSvelteComponents(this.settings);
         this.markBootstrapComplete(this);
       });
     });

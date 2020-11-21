@@ -1,6 +1,5 @@
 import asyncForEach from './asyncForEach';
 import capitalizeFirstLetter from './capitalizeFirstLetter';
-import getHashedSvelteComponents from './getHashedSvelteComponents';
 import getUniqueId from './getUniqueId';
 import IntersectionObserver from './IntersectionObserver';
 import Page from './Page';
@@ -23,7 +22,6 @@ export {
   asyncForEach,
   capitalizeFirstLetter,
   svelteComponent,
-  getHashedSvelteComponents,
   getUniqueId,
   validateShortcode,
   IntersectionObserver,
