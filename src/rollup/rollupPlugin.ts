@@ -17,48 +17,12 @@ export const encodeSourceMap = (map) => {
   return `${mapIntro}${btoa(map.toString())} */`;
 };
 
-export function getDependencies(file, memoryCache) {
-  let dependencies = new Set([file]);
-  if (memoryCache.dependencies[file]) {
-    [...memoryCache.dependencies[file].values()]
-      .filter((d) => d !== file)
-      .forEach((dependency) => {
-        dependencies = new Set([...dependencies, ...getDependencies(dependency, memoryCache)]);
-      });
-  }
-  return [...dependencies.values()];
-}
-
-export function cssFilePriority(pathStr) {
-  if (pathStr.includes('src/components')) return 3;
+export const cssFilePriority = (pathStr) => {
+  if (pathStr.includes('src/components')) return 1;
   if (pathStr.includes('src/routes')) return 2;
-  if (pathStr.includes('src/layouts')) return 1;
+  if (pathStr.includes('src/layouts')) return 3;
   return 0;
-}
-
-export function sortCss(css) {
-  return css
-    .sort((a, b) => a[1].priority - b[1].priority)
-    .reduce((out, cv) => {
-      out[cv[0]] = { styles: cv[1].code, sourceMap: cv[1].map };
-      return out;
-    }, {});
-}
-
-export function getCompleteCss(dependencies, cache) {
-  return dependencies.reduce((out, cv) => {
-    if (cache.has(`css${cv}`)) {
-      const { map: sourceMap, code: styles } = cache.get(`css${cv}`);
-      if (styles && styles.length > 0) {
-        out[cv] = {
-          sourceMap,
-          styles,
-        };
-      }
-    }
-    return out;
-  }, {});
-}
+};
 
 export function logDependency(importee, importer, memoryCache) {
   if (importer) {
@@ -68,6 +32,59 @@ export function logDependency(importee, importer, memoryCache) {
       if (!memoryCache.dependencies[importer]) memoryCache.dependencies[importer] = new Set();
       memoryCache.dependencies[importer].add(fullImportee);
     }
+  }
+}
+
+export const getDependencies = (file, memoryCache) => {
+  let dependencies = new Set([file]);
+  if (memoryCache.dependencies[file]) {
+    [...memoryCache.dependencies[file].values()]
+      .filter((d) => d !== file)
+      .forEach((dependency) => {
+        dependencies = new Set([...dependencies, ...getDependencies(dependency, memoryCache)]);
+      });
+  }
+  return [...dependencies.values()];
+};
+
+export const sortCss = (css) => {
+  return css
+    .sort((a, b) => a[1].priority - b[1].priority)
+    .reduce((out, cv) => {
+      const o = {};
+      o[cv[0]] = { styles: cv[1].code, sourceMap: cv[1].map };
+      out.push(o);
+      return out;
+    }, []);
+};
+
+export const getCssFromCache = (arr, rollupCache) => {
+  const css = [];
+  for (const id of arr) {
+    if (rollupCache.has(`css${id}`)) css.push([id, rollupCache.get(`css${id}`)]);
+  }
+  return css;
+};
+
+// eslint-disable-next-line consistent-return
+export function load(id) {
+  const extension = path.extname(id);
+  console.log(this);
+  // capture imported css
+  if (extension === '.css') {
+    let code;
+    if (fs.existsSync(id)) {
+      code = fs.readFileSync(id, 'utf-8');
+    } else {
+      code = '';
+    }
+
+    this.cache.set(`css${id}`, {
+      code,
+      map: '',
+      priority: 5,
+    });
+    return '';
   }
 }
 
@@ -132,8 +149,12 @@ export default function elderjsRollup({
       ? [...svelteConfig.preprocess, partialHydration]
       : [partialHydration];
 
-  async function prepareCss(css) {
-    return cleanCss.minify(sortCss(css));
+  async function prepareCss(css = []) {
+    const sorted = sortCss(css);
+    return {
+      ...cleanCss.minify(sorted),
+      included: sorted.map((m) => Object.keys(m)[0]),
+    };
   }
 
   let styleCssHash;
@@ -160,13 +181,7 @@ export default function elderjsRollup({
 
     resolveId(importee, importer) {
       // build list of dependencies so we know what CSS to inject into the export.
-
       logDependency(importee, importer, cache);
-
-      // const importee = PATH.resolve(resolveDir, path);
-      // if (!cache.dependencies[importee])
-      //   cache.dependencies[importee] = new Set();
-      // cache.dependencies[importee].add(importer);
 
       // below largely adapted from the rollup svelte plugin
       // ----------------------------------------------
@@ -199,19 +214,7 @@ export default function elderjsRollup({
       }
       return null;
     },
-    load(id) {
-      const extension = path.extname(id);
-      // capture imported css
-      if (type === 'ssr' && extension === '.css') {
-        const code = fs.readFileSync(id, 'utf-8');
-        this.cache.set(`css${id}`, {
-          code,
-          map: '',
-          priority: 5,
-        });
-        return '';
-      }
-    },
+    load,
     async transform(code, id) {
       const extension = path.extname(id);
 
@@ -260,15 +263,16 @@ export default function elderjsRollup({
       return compiled.js;
     },
 
-    renderChunk(code, chunk, options) {
+    async renderChunk(code, chunk, options) {
       if (chunk.isEntry) {
         if (type === 'ssr') {
-          const deps = getDependencies(chunk.facadeModuleId, cache);
-
-          const cssOutput = cleanCss.minify(getCompleteCss(deps, this.cache));
+          const cssEntries = getCssFromCache(getDependencies(chunk.facadeModuleId, cache), this.cache);
+          const cssOutput = await prepareCss(cssEntries);
           code += `\nmodule.exports._css = ${devalue(cssOutput.styles)};`;
           code += `\nmodule.exports._cssMap = ${devalue(encodeSourceMap(cssOutput.sourceMap))};`;
-          code += `\nmodule.exports._cssIncluded = ${JSON.stringify(deps.map((d) => path.relative(rootDir, d)))}`;
+          code += `\nmodule.exports._cssIncluded = ${JSON.stringify(
+            cssOutput.included.map((d) => path.relative(rootDir, d)),
+          )}`;
 
           return { code, map: null };
         }
@@ -281,13 +285,9 @@ export default function elderjsRollup({
       // all css is only available on the ssr version...
       // but we need to move the css to the client folder.
       if (type === 'ssr') {
-        const css = [];
+        const cssEntries = getCssFromCache([...this.getModuleIds()], this.cache);
 
-        for (const id of this.getModuleIds()) {
-          if (this.cache.has(`css${id}`)) css.push([id, this.cache.get(`css${id}`)]);
-        }
-
-        const { styles, sourceMap } = await prepareCss(css);
+        const { styles, sourceMap } = await prepareCss(cssEntries);
 
         if (styleCssMapHash) {
           this.setAssetSource(styleCssMapHash, sourceMap.toString());
