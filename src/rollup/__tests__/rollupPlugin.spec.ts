@@ -1,7 +1,7 @@
 import path from 'path';
 
 import fsExtra from 'fs-extra';
-import {
+import elderjsRollup, {
   encodeSourceMap,
   getDependencies,
   cssFilePriority,
@@ -185,14 +185,14 @@ describe('#rollupPlugin', () => {
     ];
 
     const cssCache = new Map();
-    const cache = {
+    const rollupCache = {
       dependencies: {},
     };
 
     function createCss(str) {
       cssCache.set(`css${str}`, {
-        code: str,
-        map: str,
+        code: `.content{content:"${str}"}`,
+        map: undefined,
         priority: cssFilePriority(str),
       });
     }
@@ -200,7 +200,7 @@ describe('#rollupPlugin', () => {
     files.forEach((file, i, arr) => {
       createCss(file);
       if (i < arr.length - 2) {
-        logDependency(file, arr[i + 1], cache);
+        logDependency(file, arr[i + 1], rollupCache);
       }
     });
     it('validates the testing env is correct', () => {
@@ -208,37 +208,45 @@ describe('#rollupPlugin', () => {
         [
           'css/test/src/components/AutoComplete.svelte',
           {
-            code: '/test/src/components/AutoComplete.svelte',
-            map: '/test/src/components/AutoComplete.svelte',
+            code: `.content{content:"/test/src/components/AutoComplete.svelte"}`,
+            map: undefined,
             priority: 1,
           },
         ],
         [
           'css/test/src/components/AutoCompleteHome.svelte',
           {
-            code: '/test/src/components/AutoCompleteHome.svelte',
-            map: '/test/src/components/AutoCompleteHome.svelte',
+            code: `.content{content:"/test/src/components/AutoCompleteHome.svelte"}`,
+            map: undefined,
             priority: 1,
           },
         ],
         [
           'css/test/src/components/Deeper.svelte',
-          { code: '/test/src/components/Deeper.svelte', map: '/test/src/components/Deeper.svelte', priority: 1 },
+          {
+            code: `.content{content:"/test/src/components/Deeper.svelte"}`,
+            map: undefined,
+            priority: 1,
+          },
         ],
         [
           'css/test/src/components/Circular.svelte',
-          { code: '/test/src/components/Circular.svelte', map: '/test/src/components/Circular.svelte', priority: 1 },
+          {
+            code: `.content{content:"/test/src/components/Circular.svelte"}`,
+            map: undefined,
+            priority: 1,
+          },
         ],
         [
           'css/test/src/routes/Dep.svelte',
-          { code: '/test/src/routes/Dep.svelte', map: '/test/src/routes/Dep.svelte', priority: 2 },
+          { code: '.content{content:"/test/src/routes/Dep.svelte"}', map: undefined, priority: 2 },
         ],
         [
           'css/test/src/layouts/Single.svelte',
-          { code: '/test/src/layouts/Single.svelte', map: '/test/src/layouts/Single.svelte', priority: 3 },
+          { code: '.content{content:"/test/src/layouts/Single.svelte"}', map: undefined, priority: 3 },
         ],
       ]);
-      expect(cache.dependencies).toEqual({
+      expect(rollupCache.dependencies).toEqual({
         '/test/src/components/AutoCompleteHome.svelte': new Set(['/test/src/components/AutoComplete.svelte']),
         '/test/src/components/Circular.svelte': new Set(['/test/src/components/Deeper.svelte']),
         '/test/src/components/Deeper.svelte': new Set(['/test/src/components/AutoCompleteHome.svelte']),
@@ -252,8 +260,8 @@ describe('#rollupPlugin', () => {
           [
             '/test/src/components/AutoCompleteHome.svelte',
             {
-              code: '/test/src/components/AutoCompleteHome.svelte',
-              map: '/test/src/components/AutoCompleteHome.svelte',
+              code: '.content{content:"/test/src/components/AutoCompleteHome.svelte"}',
+              map: undefined,
               priority: 1,
             },
           ],
@@ -264,38 +272,213 @@ describe('#rollupPlugin', () => {
           [
             '/test/src/components/AutoComplete.svelte',
             {
-              code: '/test/src/components/AutoComplete.svelte',
-              map: '/test/src/components/AutoComplete.svelte',
+              code: `.content{content:"/test/src/components/AutoComplete.svelte"}`,
+              map: undefined,
               priority: 1,
             },
           ],
           [
             '/test/src/components/AutoCompleteHome.svelte',
             {
-              code: '/test/src/components/AutoCompleteHome.svelte',
-              map: '/test/src/components/AutoCompleteHome.svelte',
+              code: `.content{content:"/test/src/components/AutoCompleteHome.svelte"}`,
+              map: undefined,
               priority: 1,
             },
           ],
           [
             '/test/src/components/Deeper.svelte',
-            { code: '/test/src/components/Deeper.svelte', map: '/test/src/components/Deeper.svelte', priority: 1 },
+            {
+              code: `.content{content:"/test/src/components/Deeper.svelte"}`,
+              map: undefined,
+              priority: 1,
+            },
           ],
         ]);
       });
     });
-    it('#load', () => {
-      const o = {
-        cache: {
-          set: jest.fn((id) => {
-            console.log('set', id);
-          }),
-        },
+    describe('#elderjsRollup', () => {
+      it('#load', () => {
+        const rfs = fsExtra.readFileSync;
+        // @ts-ignore
+        fsExtra.readFileSync = jest.fn(rfs);
+        // @ts-ignore
+        fsExtra.readFileSync.mockImplementation(() => 'mock');
+
+        const o = {
+          cache: {
+            values: [],
+            set: jest.fn((id) => {
+              o.cache.values.push(id);
+            }),
+          },
+        };
+
+        const loadBound = load.bind(o);
+        expect(loadBound(path.resolve(process.cwd(), './test.css'))).toBe('');
+        expect(o.cache.set).toHaveBeenCalledTimes(1);
+        expect(o.cache.values).toEqual(['css/Users/nick/repos/elderjs/elderjs/test.css']);
+        fsExtra.readFileSync = rfs;
+      });
+
+      const shared = {
+        rootDir: path.resolve(process.cwd()),
+        distDir: path.resolve(process.cwd(), './public/'),
+        distElder: path.resolve(process.cwd(), './public/_elder'),
+
+        legacy: false,
+        svelteConfig: {},
       };
 
-      const loadBound = load.bind(o);
-      loadBound(path.resolve(process.cwd(), './test.css'));
-      expect(o.cache.set).toHaveBeenCalledTimes(1);
+      const ssrPlugin = elderjsRollup({
+        ...shared,
+        type: 'ssr',
+      });
+
+      const clientPlugin = elderjsRollup({
+        ...shared,
+        type: 'client',
+      });
+
+      // non crappy mocks: https://gist.githubusercontent.com/rickhanlonii/c695cbc51ae6ffd81c46f46509171650/raw/a0b7f851be704b739be76b2543deff577b449fee/mock_jest_spyOn_sugar.js
+
+      describe('#buildStart', () => {
+        it('tests ssr functionality', () => {
+          const t = {
+            values: [],
+            emitFile: jest.fn((pay) => {
+              t.values.push(pay);
+              return pay.name;
+            }),
+          };
+
+          const buildStartBound = ssrPlugin.buildStart.bind(t);
+
+          buildStartBound();
+
+          expect(t.values).toEqual([{ name: 'svelte.css', type: 'asset' }]);
+        });
+        it('tests client functionality', () => {
+          const t = {
+            values: [],
+            emitFile: jest.fn((pay) => {
+              t.values.push(pay);
+            }),
+          };
+          const buildStartBound = clientPlugin.buildStart.bind(t);
+          buildStartBound();
+          expect(t.values).toEqual([]);
+        });
+      });
+
+      describe('#renderChunk', () => {
+        it('tests ssr functionality', async () => {
+          const t = {
+            values: [],
+            cache: cssCache,
+          };
+
+          const bound = ssrPlugin.renderChunk.bind(t);
+          const r = await bound('', { isEntry: true, facadeModuleId: files[0] });
+          expect(
+            r.code.indexOf(
+              `.content{content:\\\"\\u002Ftest\\u002Fsrc\\u002Fcomponents\\u002FAutoComplete.svelte\\\"}`,
+            ),
+          ).toBe(24);
+          expect(
+            r.code.indexOf(`module.exports._cssIncluded = ["../../../../../test/src/components/AutoComplete.svelte"]`),
+          ).toBe(138);
+        });
+        it('tests client functionality', async () => {
+          // @ts-ignore
+          const r = await clientPlugin.renderChunk('', { isEntry: true }, {});
+          expect(r).toBeUndefined();
+        });
+      });
+
+      describe('#generateBundle', () => {
+        it('tests ssr functionality', async () => {
+          const t = {
+            names: [],
+            css: [],
+            cache: cssCache,
+            getModuleIds: jest.fn(() => files),
+            setAssetSource: jest.fn((name, css) => {
+              t.names.push(name);
+              t.css.push(css);
+            }),
+          };
+          const bound = ssrPlugin.generateBundle.bind(t);
+          const r = await bound('', { isEntry: true, facadeModuleId: files[0] });
+
+          expect(t.setAssetSource).toBeCalledTimes(1);
+          expect(t.getModuleIds).toBeCalledTimes(1);
+          expect(t.names).toEqual(['svelte.css']);
+          expect(t.css).toEqual([
+            '.content{content:"/test/src/components/AutoComplete.svelte"}.content{content:"/test/src/components/AutoCompleteHome.svelte"}.content{content:"/test/src/components/Deeper.svelte"}.content{content:"/test/src/components/Circular.svelte"}.content{content:"/test/src/routes/Dep.svelte"}.content{content:"/test/src/layouts/Single.svelte"}',
+          ]);
+          expect(r).toBeUndefined();
+        });
+        it('tests client functionality', async () => {
+          const cfs = fsExtra.copyFileSync;
+          const rds = fsExtra.readdirSync;
+          const eds = fsExtra.ensureDirSync;
+
+          // @ts-ignore
+          fsExtra.copyFileSync = jest.fn(cfs);
+          // @ts-ignore
+          fsExtra.copyFileSync.mockImplementation(() => 'copied');
+          // @ts-ignore
+          fsExtra.readdirSync = jest.fn(rds);
+          // @ts-ignore
+          fsExtra.readdirSync.mockImplementation(() => ['style.css', 'style.css.map']);
+          // @ts-ignore
+          fsExtra.ensureDirSync = jest.fn(eds);
+          // @ts-ignore
+          fsExtra.ensureDirSync.mockImplementation(console.log);
+          // @ts-ignore
+          await clientPlugin.generateBundle({}, {}, false);
+
+          expect(fsExtra.ensureDirSync).toHaveBeenCalledTimes(1);
+          expect(fsExtra.copyFileSync).toHaveBeenCalledTimes(2);
+          expect(fsExtra.readdirSync).toHaveBeenCalledTimes(1);
+
+          fsExtra.copyFileSync = cfs;
+          fsExtra.readdirSync = rds;
+          fsExtra.ensureDirSync = eds;
+        });
+      });
+
+      // describe.todo('#resolveId');
+      describe('#transform', () => {
+        it('It compiles a svelte component and sets the css while adding to watch files', async () => {
+          const t = {
+            names: [],
+            sets: [],
+            cache: {
+              has: jest.fn(() => false),
+              set: jest.fn((name, pay) => {
+                t.names.push(name);
+                t.sets.push(JSON.stringify(pay));
+              }),
+            },
+            addWatchFile: jest.fn(() => ''),
+          };
+          const bound = ssrPlugin.transform.bind(t);
+
+          const component = `<script> let foo = 1; </script><style>.container{background: yellow}</style> <div class="container">something</div>`;
+          await bound(component, '/test/src/components/tester.svelte');
+
+          expect(t.cache.has).toHaveBeenCalledTimes(1);
+          expect(t.cache.set).toHaveBeenCalledTimes(2);
+          expect(t.sets).toEqual([
+            '{"code":".container.svelte-1sgdt0u{background:yellow}","map":{"version":3,"file":"tester.svelte","sources":["tester.svelte"],"sourcesContent":["<script> let foo = 1; </script><style>.container{background: yellow}</style> <div class=\\"container\\">something</div>"],"names":[],"mappings":"AAAsC,yBAAU,CAAC,UAAU,CAAE,MAAM,CAAC"},"priority":1}',
+            // eslint-disable-next-line no-template-curly-in-string
+            '{"code":"/* ../../../../../test/src/components/tester.svelte generated by Svelte v3.25.1 */\\nimport { create_ssr_component } from \\"svelte/internal\\";\\n\\nconst css = {\\n\\tcode: \\".container.svelte-1sgdt0u{background:yellow}\\",\\n\\tmap: \\"{\\\\\\"version\\\\\\":3,\\\\\\"file\\\\\\":\\\\\\"tester.svelte\\\\\\",\\\\\\"sources\\\\\\":[\\\\\\"tester.svelte\\\\\\"],\\\\\\"sourcesContent\\\\\\":[\\\\\\"<script> let foo = 1; </script><style>.container{background: yellow}</style> <div class=\\\\\\\\\\\\\\"container\\\\\\\\\\\\\\">something</div>\\\\\\"],\\\\\\"names\\\\\\":[],\\\\\\"mappings\\\\\\":\\\\\\"AAAsC,yBAAU,CAAC,UAAU,CAAE,MAAM,CAAC\\\\\\"}\\"\\n};\\n\\nlet foo = 1;\\n\\nconst Tester = create_ssr_component(($$result, $$props, $$bindings, slots) => {\\n\\t$$result.css.add(css);\\n\\treturn `<div class=\\"${\\"container svelte-1sgdt0u\\"}\\">something</div>`;\\n});\\n\\nexport default Tester;","map":{"version":3,"names":[],"sources":["../../../../../test/src/components/tester.svelte"],"sourcesContent":["<script> let foo = 1; </script><style>.container{background: yellow}</style> <div class=\\"container\\">something</div>"],"mappings":";;;;;;;;IAAa,GAAG,GAAG,CAAC;;;;;;;"},"dependencies":["/test/src/components/tester.svelte"]}',
+          ]);
+          expect(t.names).toEqual(['css/test/src/components/tester.svelte', 'f035082291f505923e6b2b9739157357']);
+          expect(t.addWatchFile).toHaveBeenCalledTimes(2);
+        });
+      });
     });
   });
 });

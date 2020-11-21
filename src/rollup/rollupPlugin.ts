@@ -71,13 +71,7 @@ export function load(id) {
   const extension = path.extname(id);
   // capture imported css
   if (extension === '.css') {
-    let code;
-    if (fs.existsSync(id)) {
-      code = fs.readFileSync(id, 'utf-8');
-    } else {
-      code = '';
-    }
-
+    const code = fs.readFileSync(id, 'utf-8');
     this.cache.set(`css${id}`, {
       code,
       map: '',
@@ -152,7 +146,7 @@ export default function elderjsRollup({
     const sorted = sortCss(css);
     return {
       ...cleanCss.minify(sorted),
-      included: sorted.map((m) => Object.keys(m)[0]),
+      included: sorted ? sorted.map((m) => Object.keys(m)[0]) : [],
     };
   }
 
@@ -276,7 +270,6 @@ export default function elderjsRollup({
           return { code, map: null };
         }
       }
-      return null;
     },
     // eslint-disable-next-line consistent-return
     async generateBundle() {
