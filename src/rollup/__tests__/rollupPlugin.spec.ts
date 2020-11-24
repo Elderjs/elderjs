@@ -550,17 +550,11 @@ describe('#rollupPlugin', () => {
           const eds = fsExtra.ensureDirSync;
 
           // @ts-ignore
-          fsExtra.copyFileSync = jest.fn(cfs);
+          fsExtra.copyFileSync = jest.fn(cfs).mockImplementation(() => 'copied');
           // @ts-ignore
-          fsExtra.copyFileSync.mockImplementation(() => 'copied');
+          fsExtra.readdirSync = jest.fn(rds).mockImplementation(() => ['style.css', 'style.css.map']);
           // @ts-ignore
-          fsExtra.readdirSync = jest.fn(rds);
-          // @ts-ignore
-          fsExtra.readdirSync.mockImplementation(() => ['style.css', 'style.css.map']);
-          // @ts-ignore
-          fsExtra.ensureDirSync = jest.fn(eds);
-          // @ts-ignore
-          fsExtra.ensureDirSync.mockImplementation();
+          fsExtra.ensureDirSync = jest.fn(eds).mockImplementation();
           // @ts-ignore
           await clientPlugin.generateBundle({}, {}, true);
 

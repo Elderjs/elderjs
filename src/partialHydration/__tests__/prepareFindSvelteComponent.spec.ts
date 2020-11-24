@@ -278,7 +278,7 @@ describe('#prepareFindSvelteComponent', () => {
       expect(
         hashedClientComponents
           .filter((c) => c.includes('components'))
-          .map((c) => removeHash(c))
+          .map(removeHash)
           .filter((v, i) => i < 5),
       ).toEqual([
         '/_elderjs/svelte/components/AutoComplete/AutoComplete.js',
@@ -296,7 +296,7 @@ describe('#prepareFindSvelteComponent', () => {
           '/_elderjs/svelte/components/Breadcrumbs.123456.js',
           '/_elderjs/svelte/components/Citation.123456.js',
           '/_elderjs/svelte/components/CityResults.123456.js',
-        ].map((c) => removeHash(c)),
+        ].map(removeHash),
       ).toEqual([
         '/_elderjs/svelte/components/AutoComplete.js',
         '/_elderjs/svelte/components/Breadcrumbs.js',
@@ -309,7 +309,7 @@ describe('#prepareFindSvelteComponent', () => {
       expect(
         hashedClientComponents
           .filter((c) => c.includes('iife'))
-          .map((c) => removeHash(c))
+          .map(removeHash)
           .filter((v, i) => i < 5),
       ).toEqual([
         '/_elderjs/svelte/iife/AutoComplete.js',
