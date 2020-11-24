@@ -210,7 +210,6 @@ export default function getRollupConfig(options) {
       },
       multiInputConfig: multiInput({
         relative: 'src/',
-        // transformOutputPath: (output) => ssrOutputPath(output),
       }),
       svelteConfig,
       replacements,
