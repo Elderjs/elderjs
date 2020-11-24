@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import path from 'path';
 
 import fsExtra from 'fs-extra';
@@ -165,27 +166,35 @@ describe('#rollupPlugin', () => {
         path.resolve(`./src/rollup/__tests__/__fixtures__/external/src/components/Component.svelte`),
       ]);
 
-      expect(cache.dependencies).toEqual({
-        '/Users/nick/repos/elderjs/elderjs/src/rollup/__tests__/__fixtures__/external/src/layouts/External.svelte': new Set(
-          [
-            'test-external-svelte-library',
-            '/Users/nick/repos/elderjs/elderjs/src/rollup/__tests__/__fixtures__/external/src/components/Component.svelte',
-          ],
-        ),
-        'test-external-svelte-library': new Set([
-          '/Users/nick/repos/elderjs/elderjs/src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/index.js',
+      const abs = {
+        'elderjs/elderjs/src/rollup/__tests__/__fixtures__/external/src/layouts/External.svelte': new Set([
+          'test-external-svelte-library',
+          'elderjs/elderjs/src/rollup/__tests__/__fixtures__/external/src/components/Component.svelte',
         ]),
-        '/Users/nick/repos/elderjs/elderjs/src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/index.js': new Set(
+        'test-external-svelte-library': new Set([
+          'elderjs/elderjs/src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/index.js',
+        ]),
+        'elderjs/elderjs/src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/index.js': new Set(
           [
-            '/Users/nick/repos/elderjs/elderjs/src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/test-external-svelte-library/src/components/Button.svelte',
+            'elderjs/elderjs/src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/test-external-svelte-library/src/components/Button.svelte',
           ],
         ),
-        '/Users/nick/repos/elderjs/elderjs/src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/components/Button.svelte': new Set(
+        'elderjs/elderjs/src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/components/Button.svelte': new Set(
           [
-            '/Users/nick/repos/elderjs/elderjs/src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/components/Icon.svelte',
+            'elderjs/elderjs/src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/components/Icon.svelte',
           ],
         ),
-      });
+      };
+
+      const rel = Object.entries(abs).reduce((out, cv) => {
+        // eslint-disable-next-line prefer-destructuring
+        out[cv[0].replace('elderjs/elderjs', process.cwd())] = new Set(
+          [...cv[1].values()].map((v) => v.replace('elderjs/elderjs', process.cwd())),
+        );
+        return out;
+      }, {});
+
+      expect(cache.dependencies).toEqual(rel);
     });
   });
 
