@@ -216,7 +216,7 @@ const hooks: Array<HookOptions> = [
             string: `<script type="text/javascript">
       if (!('IntersectionObserver' in window)) {
           var script = document.createElement("script");
-          script.src = "/static/intersection-observer.js";
+          script.src = "/_elderjs/static/intersection-observer.js";
           document.getElementsByTagName('head')[0].appendChild(script);
       };
       </script>

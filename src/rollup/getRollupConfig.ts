@@ -163,24 +163,24 @@ export default function getRollupConfig(options) {
   // clear out components so there are no conflicts due to hashing.
   del.sync([`${ssrComponents}*`, `${distElder}*`]);
   // Add ElderJs Peer deps to public if they exist.
-  [['./node_modules/intersection-observer/intersection-observer.js', './static/intersection-observer.js']].forEach(
-    (dep) => {
-      if (!fs.existsSync(path.resolve(rootDir, dep[0]))) {
-        throw new Error(`Elder.js peer dependency not found at ${dep[0]}`);
-      }
-      configs.push({
-        input: dep[0],
-        output: [
-          {
-            file: path.resolve(distDir, dep[1]),
-            format: 'iife',
-            name: dep[1],
-            plugins: [terser()],
-          },
-        ],
-      });
-    },
-  );
+  [
+    ['./node_modules/intersection-observer/intersection-observer.js', './_elderjs/static/intersection-observer.js'],
+  ].forEach((dep) => {
+    if (!fs.existsSync(path.resolve(rootDir, dep[0]))) {
+      throw new Error(`Elder.js peer dependency not found at ${dep[0]}`);
+    }
+    configs.push({
+      input: dep[0],
+      output: [
+        {
+          file: path.resolve(distDir, dep[1]),
+          format: 'iife',
+          name: dep[1],
+          plugins: [terser()],
+        },
+      ],
+    });
+  });
 
   const { paths: pluginPaths, files: pluginFiles } = getPluginLocations(elderConfig);
   const pluginGlobs = pluginPaths.map((plugin) => `${plugin}*.svelte`);

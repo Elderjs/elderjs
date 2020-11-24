@@ -6,9 +6,9 @@ Array [
     "input": "./node_modules/intersection-observer/intersection-observer.js",
     "output": Array [
       Object {
-        "file": "/dist/static/intersection-observer.js",
+        "file": "/dist/_elderjs/static/intersection-observer.js",
         "format": "iife",
-        "name": "./static/intersection-observer.js",
+        "name": "./_elderjs/static/intersection-observer.js",
         "plugins": Array [
           Object {
             "name": "terser",
@@ -150,9 +150,9 @@ Array [
     "input": "./node_modules/intersection-observer/intersection-observer.js",
     "output": Array [
       Object {
-        "file": "/dist/static/intersection-observer.js",
+        "file": "/dist/_elderjs/static/intersection-observer.js",
         "format": "iife",
-        "name": "./static/intersection-observer.js",
+        "name": "./_elderjs/static/intersection-observer.js",
         "plugins": Array [
           Object {
             "name": "terser",
