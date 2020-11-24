@@ -112,7 +112,7 @@ describe('#svelteComponent', () => {
       `<div class="svelte-datepicker"><div class="datepicker-component" id="datepickerSwrzsrVDCd"><div>DATEPICKER</div></div></div>`,
     );
 
-    expect(removeSpacesFromStack(componentProps.page.hydrateStack)).toEqual([
+    expect(removeSpacesFromStack(componentProps.page.hydrateStack)).toContain([
       {
         priority: 100,
         source: 'datepickerSwrzsrVDCd',
