@@ -601,10 +601,6 @@ Elder {
   "settings": Object {
     "$$internal": Object {
       "clientComponents": "test/public/svelte",
-      "hashedComponents": Object {
-        "File1": "entryFile1",
-        "File2": "entryFile2",
-      },
       "ssrComponents": "test/___ELDER___/compiled",
     },
     "build": false,
@@ -1301,10 +1297,6 @@ Elder {
   "settings": Object {
     "$$internal": Object {
       "clientComponents": "test/public/svelte",
-      "hashedComponents": Object {
-        "File1": "entryFile1",
-        "File2": "entryFile2",
-      },
       "ssrComponents": "test/___ELDER___/compiled",
     },
     "build": false,

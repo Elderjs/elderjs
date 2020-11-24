@@ -41,6 +41,10 @@ describe('#rollupPlugin', () => {
     it('properly maps layouts', () => {
       expect(cssFilePriority('foo/bar/src/layouts')).toBe(3);
     });
+
+    it('properly node_modules layouts', () => {
+      expect(cssFilePriority('/blah/foo/node_modules/bloo/boo')).toBe(6);
+    });
     it('properly maps something unknown', () => {
       expect(cssFilePriority('foo/barasdfasdfasdfasdfasda')).toBe(0);
     });
@@ -67,6 +71,120 @@ describe('#rollupPlugin', () => {
         dependencies: {
           '/test/src/components/AutoCompleteHome.svelte': new Set(['/test/src/components/AutoComplete.svelte']),
         },
+      });
+    });
+    it('Properly attributes external npm packages', () => {
+      const cache = {
+        dependencies: {},
+      };
+
+      logDependency(
+        path.resolve(`./src/rollup/__tests__/__fixtures__/external/src/layouts/External.svelte`),
+        undefined,
+        cache,
+      );
+
+      logDependency(
+        `svelte/internal`,
+        path.resolve(`./src/rollup/__tests__/__fixtures__/external/src/layouts/External.svelte`),
+        cache,
+      );
+
+      logDependency(
+        `test-external-svelte-library`,
+        path.resolve(`./src/rollup/__tests__/__fixtures__/external/src/layouts/External.svelte`),
+        cache,
+      );
+
+      logDependency(
+        path.resolve(
+          `./src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/index.js`,
+        ),
+        `test-external-svelte-library`,
+        cache,
+      );
+
+      logDependency(
+        `../components/Component.svelte`,
+        path.resolve(`./src/rollup/__tests__/__fixtures__/external/src/layouts/External.svelte`),
+        cache,
+      );
+
+      logDependency(
+        `test-external-svelte-library/src/components/Button.svelte`,
+        path.resolve(
+          `./src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/index.js`,
+        ),
+        cache,
+      );
+
+      logDependency(
+        `svelte/internal`,
+        path.resolve(`./src/rollup/__tests__/__fixtures__/external/src/components/Component.svelte`),
+        cache,
+      );
+
+      logDependency(
+        `svelte/internal`,
+        path.resolve(
+          `./src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/components/Button.svelte`,
+        ),
+        cache,
+      );
+
+      logDependency(
+        `../components/Icon.svelte`,
+        path.resolve(
+          `./src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/components/Button.svelte`,
+        ),
+        cache,
+      );
+
+      logDependency(
+        `svelte/internal`,
+        path.resolve(
+          `./src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/components/Icon.svelte`,
+        ),
+        cache,
+      );
+
+      expect(
+        getDependencies(
+          path.resolve(`./src/rollup/__tests__/__fixtures__/external/src/layouts/External.svelte`),
+          cache,
+        ),
+      ).toEqual([
+        path.resolve(`./src/rollup/__tests__/__fixtures__/external/src/layouts/External.svelte`),
+        'test-external-svelte-library',
+        path.resolve(
+          './src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/index.js',
+        ),
+        path.resolve(
+          './src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/test-external-svelte-library/src/components/Button.svelte',
+        ),
+        path.resolve(`./src/rollup/__tests__/__fixtures__/external/src/components/Component.svelte`),
+      ]);
+
+      expect(cache.dependencies).toEqual({
+        '/Users/nick/repos/elderjs/elderjs/src/rollup/__tests__/__fixtures__/external/src/layouts/External.svelte': new Set(
+          [
+            'test-external-svelte-library',
+            '/Users/nick/repos/elderjs/elderjs/src/rollup/__tests__/__fixtures__/external/src/components/Component.svelte',
+          ],
+        ),
+        'test-external-svelte-library': new Set([
+          '/Users/nick/repos/elderjs/elderjs/src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/index.js',
+        ]),
+        '/Users/nick/repos/elderjs/elderjs/src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/index.js': new Set(
+          [
+            '/Users/nick/repos/elderjs/elderjs/src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/test-external-svelte-library/src/components/Button.svelte',
+          ],
+        ),
+        '/Users/nick/repos/elderjs/elderjs/src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/components/Button.svelte': new Set(
+          [
+            '/Users/nick/repos/elderjs/elderjs/src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/components/Icon.svelte',
+          ],
+        ),
       });
     });
   });
@@ -121,30 +239,14 @@ describe('#rollupPlugin', () => {
   });
 
   describe('#sortCss', () => {
-    it('sorts by priority', () => {
+    it('sorts by priority from highest to lowest... (highest prio is first in the doc)', () => {
       const css = [
         [
-          'one',
+          'five',
           {
-            priority: 1,
-            code: '1',
-            map: 'map1',
-          },
-        ],
-        [
-          'two',
-          {
-            priority: 2,
-            code: '2',
-            map: 'map2',
-          },
-        ],
-        [
-          'three',
-          {
-            priority: 3,
-            code: '3',
-            map: 'map3',
+            priority: 5,
+            code: '5',
+            map: 'map5',
           },
         ],
         [
@@ -156,20 +258,36 @@ describe('#rollupPlugin', () => {
           },
         ],
         [
-          'five',
+          'three',
           {
-            priority: 5,
-            code: '5',
-            map: 'map5',
+            priority: 3,
+            code: '3',
+            map: 'map3',
+          },
+        ],
+        [
+          'two',
+          {
+            priority: 2,
+            code: '2',
+            map: 'map2',
+          },
+        ],
+        [
+          'one',
+          {
+            priority: 1,
+            code: '1',
+            map: 'map1',
           },
         ],
       ];
       expect(sortCss(css)).toStrictEqual([
-        { one: { sourceMap: 'map1', styles: '1' } },
-        { two: { sourceMap: 'map2', styles: '2' } },
-        { three: { sourceMap: 'map3', styles: '3' } },
-        { four: { sourceMap: 'map4', styles: '4' } },
         { five: { sourceMap: 'map5', styles: '5' } },
+        { four: { sourceMap: 'map4', styles: '4' } },
+        { three: { sourceMap: 'map3', styles: '3' } },
+        { two: { sourceMap: 'map2', styles: '2' } },
+        { one: { sourceMap: 'map1', styles: '1' } },
       ]);
     });
   });
@@ -316,7 +434,7 @@ describe('#rollupPlugin', () => {
         const loadBound = load.bind(o);
         expect(loadBound(path.resolve(process.cwd(), './test.css'))).toBe('');
         expect(o.cache.set).toHaveBeenCalledTimes(1);
-        expect(o.cache.values).toEqual(['css/Users/nick/repos/elderjs/elderjs/test.css']);
+        expect(o.cache.values).toEqual([`css${path.resolve('./test.css')}`]);
         fsExtra.readFileSync = rfs;
       });
 
@@ -388,6 +506,7 @@ describe('#rollupPlugin', () => {
             r.code.indexOf(`module.exports._cssIncluded = ["../../../../../test/src/components/AutoComplete.svelte"]`),
           ).toBe(138);
         });
+
         it('tests client functionality', async () => {
           // @ts-ignore
           const r = await clientPlugin.renderChunk('', { isEntry: true }, {});
@@ -414,7 +533,7 @@ describe('#rollupPlugin', () => {
           expect(t.getModuleIds).toBeCalledTimes(1);
           expect(t.names).toEqual(['svelte.css']);
           expect(t.css).toEqual([
-            '.content{content:"/test/src/components/AutoComplete.svelte"}.content{content:"/test/src/components/AutoCompleteHome.svelte"}.content{content:"/test/src/components/Deeper.svelte"}.content{content:"/test/src/components/Circular.svelte"}.content{content:"/test/src/routes/Dep.svelte"}.content{content:"/test/src/layouts/Single.svelte"}',
+            '.content{content:"/test/src/layouts/Single.svelte"}.content{content:"/test/src/routes/Dep.svelte"}.content{content:"/test/src/components/AutoComplete.svelte"}.content{content:"/test/src/components/AutoCompleteHome.svelte"}.content{content:"/test/src/components/Deeper.svelte"}.content{content:"/test/src/components/Circular.svelte"}',
           ]);
           expect(r).toBeUndefined();
         });
@@ -434,9 +553,9 @@ describe('#rollupPlugin', () => {
           // @ts-ignore
           fsExtra.ensureDirSync = jest.fn(eds);
           // @ts-ignore
-          fsExtra.ensureDirSync.mockImplementation(console.log);
+          fsExtra.ensureDirSync.mockImplementation();
           // @ts-ignore
-          await clientPlugin.generateBundle({}, {}, false);
+          await clientPlugin.generateBundle({}, {}, true);
 
           expect(fsExtra.ensureDirSync).toHaveBeenCalledTimes(1);
           expect(fsExtra.copyFileSync).toHaveBeenCalledTimes(2);
@@ -448,7 +567,63 @@ describe('#rollupPlugin', () => {
         });
       });
 
-      // describe.todo('#resolveId');
+      describe('#resolveId', () => {
+        it(`It doesn't resolve anything not in node_modules`, async () => {
+          expect(
+            // @ts-ignore
+            ssrPlugin.resolveId('../components/Header/Header.svelte', '/test/src/layouts/Layout.svelte'),
+          ).toBeNull();
+        });
+
+        it(`Resolves a node_module that uses svelte in their package.json`, async () => {
+          jest.mock(
+            path.resolve('./node_modules/uses-export/package.json'),
+            () => ({
+              svelte: 'src/Component.svelte',
+            }),
+            { virtual: true },
+          );
+          // @ts-ignore
+          expect(ssrPlugin.resolveId('uses-export', path.resolve('./test/src/layouts/Layout.svelte'))).toEqual(
+            path.resolve('./node_modules/uses-export/src/Component.svelte'),
+          );
+        });
+
+        it(`Resolves a node_module that uses svelte and exports their package.json`, async () => {
+          jest.mock(
+            path.resolve('./node_modules/package-exports/package.json'),
+            () => ({
+              main: './main.js',
+              svelte: 'src/Exported.svelte',
+              exports: {
+                '.': './main.js',
+                './package.json': './package.json',
+              },
+            }),
+            { virtual: true },
+          );
+          // @ts-ignore
+          expect(ssrPlugin.resolveId('package-exports', path.resolve('./test/src/layouts/Layout.svelte'))).toEqual(
+            path.resolve('./node_modules/package-exports/src/Exported.svelte'),
+          );
+        });
+
+        it(`Does not resolve a module that doesn't use svelte in package.json`, async () => {
+          jest.mock(
+            path.resolve('./node_modules/no-svelte/package.json'),
+            () => ({
+              main: './main.js',
+              exports: {
+                '.': './main.js',
+                './package.json': './package.json',
+              },
+            }),
+            { virtual: true },
+          );
+          // @ts-ignore
+          expect(ssrPlugin.resolveId('no-svelte', path.resolve('./test/src/layouts/Layout.svelte'))).toBeNull();
+        });
+      });
       describe('#transform', () => {
         it('It compiles a svelte component and sets the css while adding to watch files', async () => {
           const t = {

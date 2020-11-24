@@ -18,19 +18,29 @@ export const encodeSourceMap = (map) => {
 };
 
 export const cssFilePriority = (pathStr) => {
-  if (pathStr.includes('src/components')) return 1;
-  if (pathStr.includes('src/routes')) return 2;
+  if (pathStr.includes('node_modules')) return 6;
   if (pathStr.includes('src/layouts')) return 3;
+  if (pathStr.includes('src/routes')) return 2;
+  if (pathStr.includes('src/components')) return 1;
+
   return 0;
 };
 
 export function logDependency(importee, importer, memoryCache) {
+  if (importee === 'svelte/internal') return;
   if (importer) {
     const parsedImporter = path.parse(importer);
-    if ((parsedImporter.ext === '.svelte' && importee.includes('.svelte')) || importee.includes('.css')) {
+    if (!memoryCache.dependencies[importer]) memoryCache.dependencies[importer] = new Set();
+    if (importee.includes('node_modules')) {
+      memoryCache.dependencies[importer].add(importee);
+    } else if (importer.includes('node_modules')) {
       const fullImportee = path.resolve(parsedImporter.dir, importee);
-      if (!memoryCache.dependencies[importer]) memoryCache.dependencies[importer] = new Set();
       memoryCache.dependencies[importer].add(fullImportee);
+    } else if ((parsedImporter.ext === '.svelte' && importee.includes('.svelte')) || importee.includes('.css')) {
+      const fullImportee = path.resolve(parsedImporter.dir, importee);
+      memoryCache.dependencies[importer].add(fullImportee);
+    } else {
+      memoryCache.dependencies[importer].add(importee);
     }
   }
 }
@@ -49,7 +59,7 @@ export const getDependencies = (file, memoryCache) => {
 
 export const sortCss = (css) => {
   return css
-    .sort((a, b) => a[1].priority - b[1].priority)
+    .sort((a, b) => b[1].priority - a[1].priority)
     .reduce((out, cv) => {
       const o = {};
       o[cv[0]] = { styles: cv[1].code, sourceMap: cv[1].map };
@@ -174,6 +184,7 @@ export default function elderjsRollup({
 
     resolveId(importee, importer) {
       // build list of dependencies so we know what CSS to inject into the export.
+
       logDependency(importee, importer, cache);
 
       // below largely adapted from the rollup svelte plugin
@@ -197,13 +208,19 @@ export default function elderjsRollup({
         // eslint-disable-next-line import/no-dynamic-require
         pkg = require(resolved);
       } catch (err) {
-        if (err.code === 'MODULE_NOT_FOUND') return null;
+        if (err.code === 'MODULE_NOT_FOUND') {
+          if (err.message && name !== 'svelte') console.log(err);
+          return null;
+        }
         throw err;
       }
 
       // use pkg.svelte
       if (parts.length === 0 && pkg.svelte) {
-        return path.resolve(dir, pkg.svelte);
+        const svelteResolve = path.resolve(dir, pkg.svelte);
+        // console.log('-----------------', svelteResolve, name);
+        logDependency(svelteResolve, name, cache);
+        return svelteResolve;
       }
       return null;
     },
@@ -231,7 +248,7 @@ export default function elderjsRollup({
 
       const processed = await preprocess(code, preprocessors, { filename });
 
-      const compiled = compile(processed.code, { ...compilerOptions, filename });
+      const compiled = await compile(processed.code, { ...compilerOptions, filename });
       (compiled.warnings || []).forEach((warning) => {
         if (warning.code === 'css-unused-selector') return;
         this.warn(warning);
@@ -242,7 +259,6 @@ export default function elderjsRollup({
       if (this.addWatchFile) {
         compiled.js.dependencies.map(this.addWatchFile);
       }
-
       if (type === 'ssr') {
         this.cache.set(`css${id}`, {
           code: compiled.css.code || '',
@@ -256,7 +272,8 @@ export default function elderjsRollup({
       return compiled.js;
     },
 
-    async renderChunk(code, chunk, options) {
+    // eslint-disable-next-line consistent-return
+    async renderChunk(code, chunk) {
       if (chunk.isEntry) {
         if (type === 'ssr') {
           const cssEntries = getCssFromCache(getDependencies(chunk.facadeModuleId, cache), this.cache);
@@ -272,7 +289,7 @@ export default function elderjsRollup({
       }
     },
     // eslint-disable-next-line consistent-return
-    async generateBundle() {
+    async generateBundle(options, bundle, isWrite) {
       // IMPORTANT!!!
       // all css is only available on the ssr version...
       // but we need to move the css to the client folder.
@@ -289,7 +306,7 @@ export default function elderjsRollup({
         } else {
           this.setAssetSource(styleCssHash, styles);
         }
-      } else if (type === 'client' && !legacy) {
+      } else if (type === 'client' && !legacy && isWrite) {
         // copy over assets from the ssr folder to the client folder
         const ssrAssets = path.resolve(rootDir, `.${sep}___ELDER___${sep}compiled${sep}assets`);
         const clientAssets = path.resolve(distElder, `.${sep}assets${sep}`);

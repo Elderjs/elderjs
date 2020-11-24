@@ -43,10 +43,6 @@ jest.mock('../utils/getConfig', () => () => ({
 }));
 
 jest.mock('../workerBuild');
-jest.mock('../utils/getHashedSvelteComponents', () => () => ({
-  File1: 'entryFile1',
-  File2: 'entryFile2',
-}));
 
 jest.mock('../utils/prepareRunHook', () => (page) =>
   async function processHook(hook) {

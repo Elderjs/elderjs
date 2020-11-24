@@ -77,6 +77,12 @@ describe('#getConfig', () => {
   });
 
   it('it sets the expected default', () => {
+    jest.mock('fs-extra', () => {
+      return {
+        ensureDirSync: () => {},
+        readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+      };
+    });
     // eslint-disable-next-line global-require
     const getConfig = require('../getConfig').default;
 
@@ -92,6 +98,12 @@ describe('#getConfig', () => {
   });
 
   describe('it accepts custom initalization options', () => {
+    jest.mock('fs-extra', () => {
+      return {
+        ensureDirSync: () => {},
+        readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+      };
+    });
     // eslint-disable-next-line global-require
     const getConfig = require('../getConfig').default;
 
@@ -109,6 +121,12 @@ describe('#getConfig', () => {
     };
 
     it('gives back a custom context such as serverless', () => {
+      jest.mock('fs-extra', () => {
+        return {
+          ensureDirSync: () => {},
+          readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+        };
+      });
       const r = getConfig({ context: 'serverless', rootDir: 't' });
       expect(r).toStrictEqual(
         expect.objectContaining({
@@ -120,6 +138,12 @@ describe('#getConfig', () => {
     });
 
     it('it sets a server without a prefix', () => {
+      jest.mock('fs-extra', () => {
+        return {
+          ensureDirSync: () => {},
+          readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+        };
+      });
       const r = getConfig({ context: 'server', rootDir: 't' });
       expect(r).toStrictEqual(
         expect.objectContaining({
@@ -134,6 +158,12 @@ describe('#getConfig', () => {
     });
 
     it('it sets a server with a prefix', () => {
+      jest.mock('fs-extra', () => {
+        return {
+          ensureDirSync: () => {},
+          readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+        };
+      });
       const r = getConfig({ context: 'server', server: { prefix: 'testing' }, rootDir: 't' });
       expect(r).toStrictEqual(
         expect.objectContaining({
@@ -147,6 +177,12 @@ describe('#getConfig', () => {
       expect(r.$$internal).toMatchObject(common$$Internal);
     });
     it('it sets build with default', () => {
+      jest.mock('fs-extra', () => {
+        return {
+          ensureDirSync: () => {},
+          readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+        };
+      });
       const r = getConfig({ context: 'build', rootDir: 't' });
       expect(r).toStrictEqual(
         expect.objectContaining({
@@ -166,7 +202,7 @@ describe('#getConfig', () => {
     it('it sets the publicCssFileName', () => {
       jest.mock('fs-extra', () => {
         return {
-          ...fsExtra,
+          ensureDirSync: () => {},
           readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
         };
       });
@@ -187,15 +223,15 @@ describe('#getConfig', () => {
     });
 
     it('it throws an error on multiple css for publicCssFileName', () => {
+      // eslint-disable-next-line global-require
+      const getConfig = require('../getConfig').default;
+
       jest.mock('fs-extra', () => {
         return {
           ensureDirSync: () => {},
           readdirSync: () => ['svelte-3449427d.css', 'svelte-3449427213123.css', 'svelte.css-0050caf1.map'],
         };
       });
-
-      // eslint-disable-next-line global-require
-      const getConfig = require('../getConfig').default;
 
       expect(() => {
         getConfig({ css: 'file' });
