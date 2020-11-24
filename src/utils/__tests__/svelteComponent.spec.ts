@@ -114,14 +114,14 @@ describe('#svelteComponent', () => {
 
     const hydrateStack = removeSpacesFromStack(componentProps.page.hydrateStack);
 
-    expect(hydrateStack[0].string).toEqual('<script>var datepickerPropsSwrzsrVDCd = {a:"b"};</script>');
-    expect(hydrateStack[1].string).toEqual(
+    expect(hydrateStack[0].string).toContain('<script>var datepickerPropsSwrzsrVDCd = {a:"b"};</script>');
+    expect(hydrateStack[1].string).toContain(
       '<script nomodule defer src="/Users/nick/repos/elderjs/elderjs/test/components/Datepicker" onload="initdatepickerSwrzsrVDCd()"></script>',
     );
-    expect(hydrateStack[2].string).toEqual(
+    expect(hydrateStack[2].string).toContain(
       `<script nomodule>function initdatepickerSwrzsrVDCd(){new ___elderjs_Datepicker({target: document.getElementById('datepickerSwrzsrVDCd'),props:datepickerPropsSwrzsrVDCd,hydrate: true,});}</script>`,
     );
-    expect(hydrateStack[3].string).toEqual(
+    expect(hydrateStack[3].string).toContain(
       `<script type="module">function initdatepickerSwrzsrVDCd(){import("/Users/nick/repos/elderjs/elderjs/test/components/Datepicker").then((component)=>{new component.default({target: document.getElementById('datepickerSwrzsrVDCd'),props: datepickerPropsSwrzsrVDCd,hydrate: true});});}window.addEventListener('load', function (event) {var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {var objK = Object.keys(entries);var objKl = objK.length;var objKi = 0;for (; objKi < objKl; objKi++) {var entry = entries[objK[objKi]];if (entry.isIntersecting) {observer.unobserve(document.getElementById('datepickerSwrzsrVDCd'));if (document.eg_datepicker) {initdatepickerSwrzsrVDCd();} else {document.eg_datepicker = true;initdatepickerSwrzsrVDCd();}}}}, {rootMargin: '200px',threshold: 0});observerSwrzsrVDCd.observe(document.getElementById('datepickerSwrzsrVDCd'));});</script>`,
     );
   });
