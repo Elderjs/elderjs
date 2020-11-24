@@ -271,6 +271,7 @@ class Elder {
           }
 
           allRequestsForRoute.forEach((r) => {
+            // eslint-disable-next-line no-param-reassign
             r.route = routeName;
             if (!{}.hasOwnProperty.call(r, 'slug')) {
               throw new Error(`Request for ${routeName} is missing a slug property.`);

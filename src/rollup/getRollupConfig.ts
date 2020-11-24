@@ -1,4 +1,3 @@
-import svelte from 'rollup-plugin-svelte';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import { terser } from 'rollup-plugin-terser';
@@ -151,7 +150,7 @@ export function createSSRConfig({
 
 export default function getRollupConfig(options) {
   const defaultOptions = getDefaultRollup();
-  const { svelteConfig, replacements, dev } = defaultsDeep(options, defaultOptions);
+  const { svelteConfig, replacements } = defaultsDeep(options, defaultOptions);
   const elderConfig = getElderConfig();
   const { $$internal, distDir, srcDir, rootDir, legacy } = elderConfig;
   const { ssrComponents, clientComponents, distElder } = $$internal;

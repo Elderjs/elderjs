@@ -1,3 +1,5 @@
+/* eslint-disable global-require */
+/* eslint-disable no-param-reassign */
 import path, { sep } from 'path';
 import CleanCSS from 'clean-css';
 import { Plugin } from 'rollup';

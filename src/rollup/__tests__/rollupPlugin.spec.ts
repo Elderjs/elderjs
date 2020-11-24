@@ -498,9 +498,7 @@ describe('#rollupPlugin', () => {
           const bound = ssrPlugin.renderChunk.bind(t);
           const r = await bound('', { isEntry: true, facadeModuleId: files[0] });
           expect(
-            r.code.indexOf(
-              `.content{content:\\\"\\u002Ftest\\u002Fsrc\\u002Fcomponents\\u002FAutoComplete.svelte\\\"}`,
-            ),
+            r.code.indexOf(`.content{content:\\"\\u002Ftest\\u002Fsrc\\u002Fcomponents\\u002FAutoComplete.svelte\\"}`),
           ).toBe(24);
           expect(
             r.code.indexOf(`module.exports._cssIncluded = ["../../../../../test/src/components/AutoComplete.svelte"]`),
@@ -529,8 +527,8 @@ describe('#rollupPlugin', () => {
           const bound = ssrPlugin.generateBundle.bind(t);
           const r = await bound('', { isEntry: true, facadeModuleId: files[0] });
 
-          expect(t.setAssetSource).toBeCalledTimes(1);
-          expect(t.getModuleIds).toBeCalledTimes(1);
+          expect(t.setAssetSource).toHaveBeenCalledTimes(1);
+          expect(t.getModuleIds).toHaveBeenCalledTimes(1);
           expect(t.names).toEqual(['svelte.css']);
           expect(t.css).toEqual([
             '.content{content:"/test/src/layouts/Single.svelte"}.content{content:"/test/src/routes/Dep.svelte"}.content{content:"/test/src/components/AutoComplete.svelte"}.content{content:"/test/src/components/AutoCompleteHome.svelte"}.content{content:"/test/src/components/Deeper.svelte"}.content{content:"/test/src/components/Circular.svelte"}',

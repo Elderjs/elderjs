@@ -6,6 +6,7 @@ import { createBrowserConfig, createSSRConfig } from '../getRollupConfig';
 // TODO: test replace
 
 const fixRelativePath = (arr) => {
+  // eslint-disable-next-line no-param-reassign
   arr[0].output[0].file = arr[0].output[0].file.replace(process.cwd(), '');
   return arr;
 };

@@ -18,6 +18,7 @@ const perf = (page) => {
     });
   });
 
+  // eslint-disable-next-line no-param-reassign
   page.perf = {
     timings: [],
     /**

@@ -1,3 +1,4 @@
+/* eslint-disable global-require */
 import { ComponentPayload } from './types';
 import mountComponentsInHtml from '../partialHydration/mountComponentsInHtml';
 import hydrateComponent from '../partialHydration/hydrateComponent';

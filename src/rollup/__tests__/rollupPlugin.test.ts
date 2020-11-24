@@ -51,7 +51,7 @@ describe('#rollupPlugin', () => {
 
     const { output: out } = await bundle.generate({ output });
 
-    expect(out.length).toBe(5);
+    expect(out).toHaveLength(5);
 
     // properly prioritizes css dependencies with components, routes, layouts in order
     const one = out.find((c) => c.facadeModuleId.endsWith('One.svelte'));
@@ -63,7 +63,7 @@ describe('#rollupPlugin', () => {
     expect(two.code).toContain('.layout.svelte-odxn64{background:purple}.route.svelte-s1ywvd{background:#f0f8ff}');
 
     const three = out.find((c) => c.facadeModuleId.endsWith('Three.svelte'));
-    expect(two.code).toContain('.layout.svelte-odxn64{background:purple}');
+    expect(three.code).toContain('.route.svelte-s1ywvd{background:#f0f8ff}');
 
     const css = out.find((c) => c.name === 'svelte.css');
     expect(css.source).toContain(

@@ -8,6 +8,7 @@
 const permalinks = ({ routes, settings }) =>
   Object.keys(routes).reduce((out, cv) => {
     const prefix = settings.server && settings.server.prefix ? settings.server.prefix : '';
+    // eslint-disable-next-line no-param-reassign
     out[cv] = (data) => `${prefix}${routes[cv].permalink({ request: data, settings })}`;
     return out;
   }, {});

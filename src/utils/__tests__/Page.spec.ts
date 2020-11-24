@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import Page from '../Page';
 
 jest.mock('../getUniqueId', () => () => 'xxxxxxxxxx');

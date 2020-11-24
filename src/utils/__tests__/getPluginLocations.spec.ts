@@ -1,6 +1,7 @@
-const path = require('path');
+/* eslint-disable global-require */
 
 describe('#getPluginLocations', () => {
+  const path = require('path');
   it('getPluginPaths works', () => {
     jest.mock('glob', () => ({
       sync: jest

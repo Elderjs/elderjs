@@ -1,5 +1,4 @@
-const fsExtra = require('fs-extra');
-
+/* eslint-disable global-require */
 const defaultConfig = {
   debug: { automagic: false, build: false, hooks: false, performance: false, shortcodes: false, stacks: false },
   distDir: 'public',

@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
 import glob from 'glob';
