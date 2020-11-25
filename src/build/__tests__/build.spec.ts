@@ -50,6 +50,7 @@ jest.mock('../../Elder', () => ({
 }));
 
 jest.mock('os', () => ({
+  release: () => '',
   cpus: () => [
     {
       model: 'Intel(R) Core(TM) i5-7200U CPU @ 2.50GHz',

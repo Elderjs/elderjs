@@ -84,4 +84,28 @@ describe('#normalizeSnapshot', () => {
       str: '/test/',
     });
   });
+
+  it('Handles fns', () => {
+    const lamdba = () => 'foo';
+    function fn() {
+      return true;
+    }
+    expect(
+      normalizeSnapshot({
+        n: null,
+        u: undefined,
+        d: new Date('2020-11-25T14:09:06.448Z'),
+        na: NaN,
+        lamdba,
+        fn,
+      }),
+    ).toMatchObject({
+      na: NaN,
+      n: null,
+      u: undefined,
+      d: new Date('2020-11-25T14:09:06.448Z'),
+      lamdba,
+      fn,
+    });
+  });
 });

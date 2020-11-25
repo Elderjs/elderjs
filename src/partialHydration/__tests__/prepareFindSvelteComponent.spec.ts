@@ -1,5 +1,6 @@
-import path from 'path';
+import path, { sep } from 'path';
 import prepareFindSvelteComponent, { removeHash } from '../prepareFindSvelteComponent';
+import normalizeSnapshot from '../../utils/normalizeSnapshot';
 
 const hashedClientComponents = [
   '/_elderjs/svelte/asyncToGenerator-7ac7dd51.js',
@@ -333,8 +334,11 @@ describe('#prepareFindSvelteComponent', () => {
 
     describe('absolute path', () => {
       it('it finds item in components folder with hash', () => {
-        const out = findComponent(`${common.rootDir}/src/components/AutoComplete/AutoComplete.svelte`, 'component');
-        expect(out).toEqual({
+        const out = findComponent(
+          path.resolve(common.rootDir, `./src/components/AutoComplete/AutoComplete.svelte`),
+          'component',
+        );
+        expect(normalizeSnapshot(out)).toEqual({
           client: '/_elderjs/svelte/components/AutoComplete/AutoComplete.c3c8f64b.js',
           iife: '/_elderjs/svelte/iife/AutoComplete.f85777e1.js',
           ssr: `${common.rootDir}/___ELDER___/compiled/components/AutoComplete/AutoComplete.js`,
@@ -342,8 +346,11 @@ describe('#prepareFindSvelteComponent', () => {
       });
 
       it('it finds item in a sub folder of a route with hash', () => {
-        const out = findComponent(`${common.rootDir}/src/routes/content/article/Article.svelte`, 'routes');
-        expect(out).toEqual({
+        const out = findComponent(
+          path.resolve(common.rootDir, `./src/routes/content/article/Article.svelte`),
+          'routes',
+        );
+        expect(normalizeSnapshot(out)).toEqual({
           client: undefined,
           iife: undefined,
           ssr: `${common.rootDir}/___ELDER___/compiled/routes/content/article/Article.js`,
@@ -351,8 +358,8 @@ describe('#prepareFindSvelteComponent', () => {
       });
 
       it('it finds a layout', () => {
-        const out = findComponent(`${common.rootDir}/src/layouts/Layout.svelte`, 'layouts');
-        expect(out).toEqual({
+        const out = findComponent(path.resolve(common.rootDir, `./src/layouts/Layout.svelte`), 'layouts');
+        expect(normalizeSnapshot(out)).toEqual({
           client: undefined,
           iife: undefined,
           ssr: `${common.rootDir}/___ELDER___/compiled/layouts/Layout.js`,
@@ -363,7 +370,7 @@ describe('#prepareFindSvelteComponent', () => {
     describe('name and folder search', () => {
       it('it finds item in components folder by name', () => {
         const out = findComponent(`AutoComplete`, 'component');
-        expect(out).toEqual({
+        expect(normalizeSnapshot(out)).toEqual({
           client: '/_elderjs/svelte/components/AutoComplete/AutoComplete.c3c8f64b.js',
           iife: '/_elderjs/svelte/iife/AutoComplete.f85777e1.js',
           ssr: `${common.rootDir}/___ELDER___/compiled/components/AutoComplete/AutoComplete.js`,
@@ -372,7 +379,7 @@ describe('#prepareFindSvelteComponent', () => {
 
       it('it finds item in components folder by name including ".svelte"', () => {
         const out = findComponent(`AutoComplete.svelte`, 'component');
-        expect(out).toEqual({
+        expect(normalizeSnapshot(out)).toEqual({
           client: '/_elderjs/svelte/components/AutoComplete/AutoComplete.c3c8f64b.js',
           iife: '/_elderjs/svelte/iife/AutoComplete.f85777e1.js',
           ssr: `${common.rootDir}/___ELDER___/compiled/components/AutoComplete/AutoComplete.js`,
@@ -381,7 +388,7 @@ describe('#prepareFindSvelteComponent', () => {
 
       it('it finds a route by name', () => {
         const out = findComponent(`Article.svelte`, 'routes');
-        expect(out).toEqual({
+        expect(normalizeSnapshot(out)).toEqual({
           client: undefined,
           iife: undefined,
           ssr: `${common.rootDir}/___ELDER___/compiled/routes/content/article/Article.js`,
@@ -390,7 +397,7 @@ describe('#prepareFindSvelteComponent', () => {
 
       it('it finds a layout by name', () => {
         const out = findComponent(`Layout.svelte`, 'layouts');
-        expect(out).toEqual({
+        expect(normalizeSnapshot(out)).toEqual({
           client: undefined,
           iife: undefined,
           ssr: `${common.rootDir}/___ELDER___/compiled/layouts/Layout.js`,
