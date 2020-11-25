@@ -6,6 +6,8 @@ import kebabcase from 'lodash.kebabcase';
 import { sep } from 'path';
 import type { RouteOptions } from './types';
 
+// const sep = '\\';
+
 import { svelteComponent, capitalizeFirstLetter } from '../utils';
 import { SettingsOptions } from '../utils/types';
 import wrapPermalinkFn from '../utils/wrapPermalinkFn';

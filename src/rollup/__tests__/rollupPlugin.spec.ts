@@ -58,23 +58,27 @@ describe('#rollupPlugin', () => {
       const cache = {
         dependencies: {},
       };
-      logDependency('/test/src/style.css', '/test/src/routes/home/home.svelte', cache);
-      expect(normalizeSnapshot(cache)).toEqual({
-        dependencies: {
-          '/test/src/routes/home/home.svelte': new Set(['/test/src/style.css']),
-        },
-      });
+
+      const importee = path.resolve('./test/src/style.css');
+      const importer = path.resolve('./test/src/routes/home/home.svelte');
+      const expected = {};
+      expected[importer] = new Set([importee]);
+
+      logDependency(importee, importer, cache);
+      expect(normalizeSnapshot(cache.dependencies)).toEqual(expected);
     });
     it('It adds the importee as the dependency of the importer', () => {
       const cache = {
         dependencies: {},
       };
-      logDependency('/test/src/components/AutoComplete.svelte', '/test/src/components/AutoCompleteHome.svelte', cache);
-      expect(normalizeSnapshot(cache)).toEqual({
-        dependencies: {
-          '/test/src/components/AutoCompleteHome.svelte': new Set(['/test/src/components/AutoComplete.svelte']),
-        },
-      });
+
+      const importee = path.resolve('./test/src/components/AutoComplete.svelte');
+      const importer = path.resolve('./test/src/components/AutoCompleteHome.svelte');
+      const expected = {};
+      expected[importer] = new Set([importee]);
+
+      logDependency(importee, importer, cache);
+      expect(normalizeSnapshot(cache.dependencies)).toEqual(expected);
     });
     it('Properly attributes external npm packages', () => {
       const cache = {
@@ -201,53 +205,97 @@ describe('#rollupPlugin', () => {
       const cache1 = {
         dependencies: {},
       };
-      logDependency('/test/src/components/AutoComplete.svelte', '/test/src/components/AutoCompleteHome.svelte', cache1);
-      logDependency('/test/src/components/AutoCompleteHome.svelte', '/test/src/components/Deeper.svelte', cache1);
-      logDependency('/test/src/components/Deeper.svelte', '/test/src/components/Deepest.svelte', cache1);
-      const deps = getDependencies('/test/src/components/Deepest.svelte', cache1);
+      logDependency(
+        path.resolve(`./test/src/components/AutoComplete.svelte`),
+        path.resolve(`./test/src/components/AutoCompleteHome.svelte`),
+        cache1,
+      );
+      logDependency(
+        path.resolve(`./test/src/components/AutoCompleteHome.svelte`),
+        path.resolve(`./test/src/components/Deeper.svelte`),
+        cache1,
+      );
+      logDependency(
+        path.resolve(`./test/src/components/Deeper.svelte`),
+        path.resolve(`./test/src/components/Deepest.svelte`),
+        cache1,
+      );
+      const deps = getDependencies(path.resolve(`./test/src/components/Deepest.svelte`), cache1);
       expect(normalizeSnapshot(deps)).toEqual([
-        '/test/src/components/Deepest.svelte',
-        '/test/src/components/Deeper.svelte',
-        '/test/src/components/AutoCompleteHome.svelte',
-        '/test/src/components/AutoComplete.svelte',
+        path.resolve(`./test/src/components/Deepest.svelte`),
+        path.resolve(`./test/src/components/Deeper.svelte`),
+        path.resolve(`./test/src/components/AutoCompleteHome.svelte`),
+        path.resolve(`./test/src/components/AutoComplete.svelte`),
       ]);
     });
     it("doesn't crash on circular deps", () => {
       const cache2 = {
         dependencies: {},
       };
-      logDependency('/test/src/components/Deeper.svelte', '/test/src/components/Circular.svelte', cache2);
-      logDependency('/test/src/components/Circular.svelte', '/test/src/components/Circular.svelte', cache2);
-      const deps = getDependencies('/test/src/components/Circular.svelte', cache2);
+      logDependency(
+        path.resolve(`./test/src/components/Deeper.svelte`),
+        path.resolve(`./test/src/components/Circular.svelte`),
+        cache2,
+      );
+      logDependency(
+        path.resolve(`./test/src/components/Circular.svelte`),
+        path.resolve(`./test/src/components/Circular.svelte`),
+        cache2,
+      );
+      const deps = getDependencies(path.resolve(`./test/src/components/Circular.svelte`), cache2);
       expect(normalizeSnapshot(deps)).toEqual([
-        '/test/src/components/Circular.svelte',
-        '/test/src/components/Deeper.svelte',
+        path.resolve(`./test/src/components/Circular.svelte`),
+        path.resolve(`./test/src/components/Deeper.svelte`),
       ]);
     });
 
-    it('Finds proper deps and not additional ones', () => {
+    it(`Finds proper deps and not additional ones`, () => {
       const cache3 = {
         dependencies: {},
       };
-      logDependency('/test/src/components/AutoComplete.svelte', '/test/src/components/AutoCompleteHome.svelte', cache3);
-      logDependency('/test/src/components/AutoCompleteHome.svelte', '/test/src/components/Deeper.svelte', cache3);
-      logDependency('/test/src/components/Deeper.svelte', '/test/src/components/Circular.svelte', cache3);
-      logDependency('/test/src/components/Dep.svelte', '/test/src/components/Single.svelte', cache3);
-      const deps = getDependencies('/test/src/components/Single.svelte', cache3);
+      logDependency(
+        path.resolve(`./test/src/components/AutoComplete.svelte`),
+        path.resolve(`./test/src/components/AutoCompleteHome.svelte`),
+        cache3,
+      );
+      logDependency(
+        path.resolve(`./test/src/components/AutoCompleteHome.svelte`),
+        path.resolve(`./test/src/components/Deeper.svelte`),
+        cache3,
+      );
+      logDependency(
+        path.resolve(`./test/src/components/Deeper.svelte`),
+        path.resolve(`./test/src/components/Circular.svelte`),
+        cache3,
+      );
+      logDependency(
+        path.resolve(`./test/src/components/Dep.svelte`),
+        path.resolve(`./test/src/components/Single.svelte`),
+        cache3,
+      );
+      const deps = getDependencies(path.resolve(`./test/src/components/Single.svelte`), cache3);
       expect(normalizeSnapshot(deps)).toEqual([
-        '/test/src/components/Single.svelte',
-        '/test/src/components/Dep.svelte',
+        path.resolve(`./test/src/components/Single.svelte`),
+        path.resolve(`./test/src/components/Dep.svelte`),
       ]);
     });
 
-    it('Finds no deps when there are none', () => {
+    it(`Finds no deps when there are none`, () => {
       const cache4 = {
         dependencies: {},
       };
-      logDependency('/test/src/components/AutoComplete.svelte', '/test/src/components/AutoCompleteHome.svelte', cache4);
-      logDependency('/test/src/components/AutoCompleteHome.svelte', '/test/src/components/Deeper.svelte', cache4);
-      const deps = getDependencies('/test/src/components/wtf.svelte', cache4);
-      expect(normalizeSnapshot(deps)).toEqual(['/test/src/components/wtf.svelte']);
+      logDependency(
+        path.resolve(`./test/src/components/AutoComplete.svelte`),
+        path.resolve(`./test/src/components/AutoCompleteHome.svelte`),
+        cache4,
+      );
+      logDependency(
+        path.resolve(`./test/src/components/AutoCompleteHome.svelte`),
+        path.resolve(`./test/src/components/Deeper.svelte`),
+        cache4,
+      );
+      const deps = getDependencies(path.resolve(`./test/src/components/wtf.svelte`), cache4);
+      expect(normalizeSnapshot(deps)).toEqual([path.resolve(`./test/src/components/wtf.svelte`)]);
     });
   });
 
@@ -307,12 +355,12 @@ describe('#rollupPlugin', () => {
 
   describe('shared', () => {
     const files = [
-      '/test/src/components/AutoComplete.svelte',
-      '/test/src/components/AutoCompleteHome.svelte',
-      '/test/src/components/Deeper.svelte',
-      '/test/src/components/Circular.svelte',
-      '/test/src/routes/Dep.svelte',
-      '/test/src/layouts/Single.svelte',
+      `/test/src/components/AutoComplete.svelte`,
+      `/test/src/components/AutoCompleteHome.svelte`,
+      `/test/src/components/Deeper.svelte`,
+      `/test/src/components/Circular.svelte`,
+      `/test/src/routes/Dep.svelte`,
+      `/test/src/layouts/Single.svelte`,
     ];
 
     const cssCache = new Map();
