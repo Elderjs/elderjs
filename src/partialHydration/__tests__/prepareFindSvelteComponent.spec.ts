@@ -343,7 +343,7 @@ describe('#prepareFindSvelteComponent', () => {
           client: '/_elderjs/svelte/components/AutoComplete/AutoComplete.c3c8f64b.js',
           iife: '/_elderjs/svelte/iife/AutoComplete.f85777e1.js',
           ssr: windowsPathFix(
-            path.resolve(common.rootDir, `/___ELDER___/compiled/components/AutoComplete/AutoComplete.js`),
+            path.resolve(common.rootDir, `./___ELDER___/compiled/components/AutoComplete/AutoComplete.js`),
           ),
         });
       });
@@ -356,7 +356,7 @@ describe('#prepareFindSvelteComponent', () => {
         expect(normalizeSnapshot(out)).toEqual({
           client: undefined,
           iife: undefined,
-          ssr: windowsPathFix(path.resolve(common.rootDir, `/___ELDER___/compiled/routes/content/article/Article.js`)),
+          ssr: windowsPathFix(path.resolve(common.rootDir, `./___ELDER___/compiled/routes/content/article/Article.js`)),
         });
       });
 
@@ -365,7 +365,7 @@ describe('#prepareFindSvelteComponent', () => {
         expect(normalizeSnapshot(out)).toEqual({
           client: undefined,
           iife: undefined,
-          ssr: windowsPathFix(path.resolve(common.rootDir, `/___ELDER___/compiled/layouts/Layout.js`)),
+          ssr: windowsPathFix(path.resolve(common.rootDir, `./___ELDER___/compiled/layouts/Layout.js`)),
         });
       });
     });
@@ -377,7 +377,7 @@ describe('#prepareFindSvelteComponent', () => {
           client: '/_elderjs/svelte/components/AutoComplete/AutoComplete.c3c8f64b.js',
           iife: '/_elderjs/svelte/iife/AutoComplete.f85777e1.js',
           ssr: windowsPathFix(
-            path.resolve(common.rootDir, `/___ELDER___/compiled/components/AutoComplete/AutoComplete.js`),
+            path.resolve(common.rootDir, `./___ELDER___/compiled/components/AutoComplete/AutoComplete.js`),
           ),
         });
       });
@@ -388,7 +388,7 @@ describe('#prepareFindSvelteComponent', () => {
           client: '/_elderjs/svelte/components/AutoComplete/AutoComplete.c3c8f64b.js',
           iife: '/_elderjs/svelte/iife/AutoComplete.f85777e1.js',
           ssr: windowsPathFix(
-            path.resolve(common.rootDir, `/___ELDER___/compiled/components/AutoComplete/AutoComplete.js`),
+            path.resolve(common.rootDir, `./___ELDER___/compiled/components/AutoComplete/AutoComplete.js`),
           ),
         });
       });
@@ -398,7 +398,7 @@ describe('#prepareFindSvelteComponent', () => {
         expect(normalizeSnapshot(out)).toEqual({
           client: undefined,
           iife: undefined,
-          ssr: windowsPathFix(path.resolve(common.rootDir, `/___ELDER___/compiled/routes/content/article/Article.js`)),
+          ssr: windowsPathFix(path.resolve(common.rootDir, `./___ELDER___/compiled/routes/content/article/Article.js`)),
         });
       });
 
@@ -407,7 +407,7 @@ describe('#prepareFindSvelteComponent', () => {
         expect(normalizeSnapshot(out)).toEqual({
           client: undefined,
           iife: undefined,
-          ssr: windowsPathFix(path.resolve(common.rootDir, `/___ELDER___/compiled/layouts/Layout.js`)),
+          ssr: windowsPathFix(path.resolve(common.rootDir, `./___ELDER___/compiled/layouts/Layout.js`)),
         });
       });
     });

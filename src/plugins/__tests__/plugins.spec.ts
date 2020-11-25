@@ -1,3 +1,5 @@
+const path = require('path');
+
 describe('#plugins', () => {
   beforeEach(() => jest.resetModules());
   it('no plugins in settings', async () => {
@@ -47,17 +49,13 @@ describe('#plugins', () => {
     jest.mock('fs-extra', () => ({
       existsSync: () => true,
     }));
-    jest.mock(`${process.cwd()}/test/src/plugins/elder-plugin-upload-s3/index.js`, () => '', {
+    jest.mock(path.resolve(`./test/src/plugins/elder-plugin-upload-s3/index.js`), () => '', {
       virtual: true,
     });
-    jest.mock(
-      `${process.cwd()}/test/node_modules/elder-plugin-upload-s3/package.json`,
-      () => ({ main: './index.js' }),
-      {
-        virtual: true,
-      },
-    );
-    jest.mock(`${process.cwd()}/test/node_modules/elder-plugin-upload-s3/index.js`, () => '', {
+    jest.mock(path.resolve(`./test/node_modules/elder-plugin-upload-s3/package.json`), () => ({ main: './index.js' }), {
+      virtual: true,
+    });
+    jest.mock(path.resolve(`./test/node_modules/elder-plugin-upload-s3/index.js`), () => '', {
       virtual: true,
     });
     // eslint-disable-next-line global-require
@@ -92,7 +90,7 @@ describe('#plugins', () => {
     }));
     const initMock = jest.fn().mockImplementation((p) => Promise.resolve(p));
     jest.mock(
-      `${process.cwd()}/test/src/plugins/elder-plugin-upload-s3/index.js`,
+      path.resolve(`./test/src/plugins/elder-plugin-upload-s3/index.js`),
       () => ({
         hooks: [
           {
@@ -140,7 +138,7 @@ describe('#plugins', () => {
   });
 
   it('plugin has routes, hooks and shortcodes', async () => {
-    jest.mock('../../utils/validations', () => ({
+    jest.mock(path.resolve(`./src/utils/validations`), () => ({
       validatePlugin: (i) => i,
       validateHook: () => true,
       validateShortcode: (i) => i,
@@ -150,7 +148,7 @@ describe('#plugins', () => {
     }));
     const initMock = jest.fn().mockImplementation((p) => Promise.resolve(p));
     jest.mock(
-      `${process.cwd()}/test/src/plugins/elder-plugin-upload-s3/index.js`,
+      path.resolve(`./test/src/plugins/elder-plugin-upload-s3/index.js`),
       () => ({
         hooks: [
           {

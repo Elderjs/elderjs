@@ -1,5 +1,5 @@
 /* eslint-disable global-require */
-import { sep } from 'path';
+import path, { sep } from 'path';
 import normalizeSnapshot from '../utils/normalizeSnapshot';
 
 describe('#Elder', () => {
@@ -29,7 +29,7 @@ describe('#Elder', () => {
     rootDir: 'test',
     srcDir: `test${sep}src`,
     server: {
-      prefix: `${sep}dev`,
+      prefix: `/dev`,
     },
     build: {
       shuffleRequests: false,
@@ -90,7 +90,7 @@ describe('#Elder', () => {
       { virtual: true },
     );
     jest.mock(
-      `${process.cwd()}/test/src/plugins/elder-plugin-upload-s3/index.js`,
+      path.resolve(process.cwd(), `./test/src/plugins/elder-plugin-upload-s3/index.js`),
       () => ({
         hooks: [],
         routes: { 'test-a': { hooks: [], template: 'fakepath/Test.svelte', all: [] }, 'test-b': { data: () => {} } },
