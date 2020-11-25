@@ -228,11 +228,38 @@ describe('#hooks', () => {
           {
             priority: 30,
             source: 'elderAddCssFileToHead',
-            string: `<link rel="preload" href="/_elderjs/assets/svelte.123.js" as="style" /><link rel="stylesheet" href="/_elderjs/assets/svelte.123.js" media="print" onload="this.media='all'" /><noscript><link rel="stylesheet" href="/_elderjs/assets/svelte.123.js" media="all" /></noscript>`,
+            string: `<link rel="stylesheet" href="/_elderjs/assets/svelte.123.js" media="all" />`,
           },
         ],
       });
     });
+
+    describe('#elderAddCssFileToHead', () => {
+      it('it respects settings.css = lazy', async () => {
+        const hook = hooks.find((h) => h.name === 'elderAddCssFileToHead');
+        expect(
+          await hook.run({
+            errors: ['error1', 'error2'],
+            headStack: [],
+            settings: {
+              css: 'lazy',
+              $$internal: {
+                publicCssFileName: 'svelte.123.js',
+              },
+            },
+          }),
+        ).toEqual({
+          headStack: [
+            {
+              priority: 30,
+              source: 'elderAddCssFileToHead',
+              string: `<link rel="preload" href="/_elderjs/assets/svelte.123.js" as="style" /><link rel="stylesheet" href="/_elderjs/assets/svelte.123.js" media="print" onload="this.media='all'" /><noscript><link rel="stylesheet" href="/_elderjs/assets/svelte.123.js" media="all" /></noscript>`,
+            },
+          ],
+        });
+      });
+    });
+
     it('it respects settings.css = inline', async () => {
       const hook = hooks.find((h) => h.name === 'elderAddCssFileToHead');
       expect(

@@ -85,7 +85,7 @@ export type SettingsOptions = {
   context?: string;
   worker?: boolean;
   legacy: boolean;
-  css: 'none' | 'file' | 'inline';
+  css: 'none' | 'file' | 'inline' | 'lazy';
 };
 
 export type QueryOptions = {

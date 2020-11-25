@@ -104,9 +104,11 @@ const configSchema = yup.object({
   css: yup
     .string()
     .required()
-    .default('inline')
-    .test('inline-none-file', 'Css in your elder.config.js must be "inline", "file", or "none".', (value) =>
-      ['file', 'inline', 'none'].includes(value),
+    .default('file')
+    .test(
+      'inline-lazy-none-file',
+      'Css in your elder.config.js must be "inline", "file", "lazy", or "none".',
+      (value) => ['file', 'inline', 'lazy', 'none'].includes(value),
     )
     .label(
       `How should css found in svelte files be handled? 'inline' emits styles into the head. 'file' adds a file include into the head. 'none' doesn't do anything with the styles.`,

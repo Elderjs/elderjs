@@ -23,7 +23,7 @@ describe('#validations', () => {
   };
 
   const defaultConfig = {
-    css: 'inline',
+    css: 'file',
     legacy: false,
     build: {
       numberOfWorkers: -1,

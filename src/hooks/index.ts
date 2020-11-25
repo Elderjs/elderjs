@@ -100,9 +100,12 @@ const hooks: Array<HookOptions> = [
             res.setHeader('Content-Type', 'text/html');
             res.end(html);
           }
+        } else {
+          next();
         }
+      } else {
+        next();
       }
-      next();
     },
   },
   {
@@ -190,6 +193,18 @@ const hooks: Array<HookOptions> = [
     priority: 100,
     run: async ({ headStack, settings }) => {
       if (settings.css === 'file') {
+        return {
+          headStack: [
+            ...headStack,
+            {
+              source: 'elderAddCssFileToHead',
+              string: `<link rel="stylesheet" href="/_elderjs/assets/${settings.$$internal.publicCssFileName}" media="all" />`,
+              priority: 30,
+            },
+          ],
+        };
+      }
+      if (settings.css === 'lazy') {
         return {
           headStack: [
             ...headStack,

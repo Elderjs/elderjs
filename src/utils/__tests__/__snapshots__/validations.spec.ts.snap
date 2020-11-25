@@ -130,10 +130,10 @@ Object {
         "refs": Map {},
       },
       "_conditions": Array [],
-      "_default": "inline",
+      "_default": "file",
       "_deps": Array [],
       "_exclusive": Object {
-        "inline-none-file": false,
+        "inline-lazy-none-file": false,
         "required": true,
       },
       "_label": "How should css found in svelte files be handled? 'inline' emits styles into the head. 'file' adds a file include into the head. 'none' doesn't do anything with the styles.",
