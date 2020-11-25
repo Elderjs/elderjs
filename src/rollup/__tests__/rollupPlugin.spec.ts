@@ -361,12 +361,12 @@ describe('#rollupPlugin', () => {
 
   describe('shared', () => {
     const files = [
-      `/test/src/components/AutoComplete.svelte`,
-      `/test/src/components/AutoCompleteHome.svelte`,
-      `/test/src/components/Deeper.svelte`,
-      `/test/src/components/Circular.svelte`,
-      `/test/src/routes/Dep.svelte`,
-      `/test/src/layouts/Single.svelte`,
+      path.resolve(`./test/src/components/AutoComplete.svelte`),
+      path.resolve(`./test/src/components/AutoCompleteHome.svelte`),
+      path.resolve(`./test/src/components/Deeper.svelte`),
+      path.resolve(`./test/src/components/Circular.svelte`),
+      path.resolve(`./test/src/routes/Dep.svelte`),
+      path.resolve(`./test/src/layouts/Single.svelte`),
     ];
 
     const cssCache = new Map();
@@ -392,44 +392,48 @@ describe('#rollupPlugin', () => {
     it('validates the testing env is correct', () => {
       expect([...cssCache.entries()]).toStrictEqual([
         [
-          'css/test/src/components/AutoComplete.svelte',
+          `css${path.resolve('./test/src/components/AutoComplete.svelte')}`,
           {
-            code: `.content{content:"/test/src/components/AutoComplete.svelte"}`,
+            code: `.content{content:"${path.resolve('./test/src/components/AutoComplete.svelte')}"}`,
             map: undefined,
             priority: 1,
           },
         ],
         [
-          'css/test/src/components/AutoCompleteHome.svelte',
+          `css${path.resolve('./test/src/components/AutoCompleteHome.svelte')}`,
           {
-            code: `.content{content:"/test/src/components/AutoCompleteHome.svelte"}`,
+            code: `.content{content:"${path.resolve('./test/src/components/AutoCompleteHome.svelte')}"}`,
             map: undefined,
             priority: 1,
           },
         ],
         [
-          'css/test/src/components/Deeper.svelte',
+          `css${path.resolve('./test/src/components/Deeper.svelte')}`,
           {
-            code: `.content{content:"/test/src/components/Deeper.svelte"}`,
+            code: `.content{content:"${path.resolve('./test/src/components/Deeper.svelte')}"}`,
             map: undefined,
             priority: 1,
           },
         ],
         [
-          'css/test/src/components/Circular.svelte',
+          `css${path.resolve('./test/src/components/Circular.svelte')}`,
           {
-            code: `.content{content:"/test/src/components/Circular.svelte"}`,
+            code: `.content{content:"${path.resolve('./test/src/components/Circular.svelte')}"}`,
             map: undefined,
             priority: 1,
           },
         ],
         [
-          'css/test/src/routes/Dep.svelte',
-          { code: '.content{content:"/test/src/routes/Dep.svelte"}', map: undefined, priority: 2 },
+          `css${path.resolve('./test/src/routes/Dep.svelte')}`,
+          { code: `.content{content:"${path.resolve('./test/src/routes/Dep.svelte')}"}`, map: undefined, priority: 2 },
         ],
         [
-          'css/test/src/layouts/Single.svelte',
-          { code: '.content{content:"/test/src/layouts/Single.svelte"}', map: undefined, priority: 3 },
+          `css${path.resolve('./test/src/layouts/Single.svelte')}`,
+          {
+            code: `.content{content:"${path.resolve('./test/src/layouts/Single.svelte')}"}`,
+            map: undefined,
+            priority: 3,
+          },
         ],
       ]);
 
@@ -453,11 +457,13 @@ describe('#rollupPlugin', () => {
 
     describe('#getCssFromCache', () => {
       it('takes an array of 1 and gets items from the cache', () => {
-        expect(normalizeSnapshot(getCssFromCache(['/test/src/components/AutoCompleteHome.svelte'], cssCache))).toEqual([
+        expect(
+          normalizeSnapshot(getCssFromCache([path.resolve('./test/src/components/AutoCompleteHome.svelte')], cssCache)),
+        ).toEqual([
           [
-            '/test/src/components/AutoCompleteHome.svelte',
+            path.resolve('./test/src/components/AutoCompleteHome.svelte'),
             {
-              code: '.content{content:"/test/src/components/AutoCompleteHome.svelte"}',
+              code: `.content{content:"${path.resolve('./test/src/components/AutoCompleteHome.svelte')}"}`,
               map: undefined,
               priority: 1,
             },
@@ -467,25 +473,25 @@ describe('#rollupPlugin', () => {
       it('takes an array of several and gets items from the cache', () => {
         expect(normalizeSnapshot(getCssFromCache(files.slice(0, 3), cssCache))).toEqual([
           [
-            '/test/src/components/AutoComplete.svelte',
+            path.resolve('./test/src/components/AutoComplete.svelte'),
             {
-              code: `.content{content:"/test/src/components/AutoComplete.svelte"}`,
+              code: `.content{content:"${path.resolve('./test/src/components/AutoComplete.svelte')}"}`,
               map: undefined,
               priority: 1,
             },
           ],
           [
-            '/test/src/components/AutoCompleteHome.svelte',
+            path.resolve('./test/src/components/AutoCompleteHome.svelte'),
             {
-              code: `.content{content:"/test/src/components/AutoCompleteHome.svelte"}`,
+              code: `.content{content:"${path.resolve('./test/src/components/AutoCompleteHome.svelte')}"}`,
               map: undefined,
               priority: 1,
             },
           ],
           [
-            '/test/src/components/Deeper.svelte',
+            path.resolve('./test/src/components/Deeper.svelte'),
             {
-              code: `.content{content:"/test/src/components/Deeper.svelte"}`,
+              code: `.content{content:"${path.resolve('./test/src/components/Deeper.svelte')}"}`,
               map: undefined,
               priority: 1,
             },
@@ -574,9 +580,10 @@ describe('#rollupPlugin', () => {
 
           const bound = ssrPlugin.renderChunk.bind(t);
           const r = await bound('', { isEntry: true, facadeModuleId: files[0] });
-          expect(
-            r.code.indexOf(`.content{content:\\"\\u002Ftest\\u002Fsrc\\u002Fcomponents\\u002FAutoComplete.svelte\\"}`),
-          ).toBe(24);
+          expect(r.code).toContain(`.content{content`);
+          expect(r.code).toContain(
+            `\\u002Felderjs\\u002Felderjs\\u002Ftest\\u002Fsrc\\u002Fcomponents\\u002FAutoComplete.svelte`,
+          );
           expect(r.code).toContain('AutoComplete.svelte"]');
         });
 
@@ -606,7 +613,15 @@ describe('#rollupPlugin', () => {
           expect(t.getModuleIds).toHaveBeenCalledTimes(1);
           expect(t.names).toEqual(['svelte.css']);
           expect(t.css).toEqual([
-            '.content{content:"/test/src/layouts/Single.svelte"}.content{content:"/test/src/routes/Dep.svelte"}.content{content:"/test/src/components/AutoComplete.svelte"}.content{content:"/test/src/components/AutoCompleteHome.svelte"}.content{content:"/test/src/components/Deeper.svelte"}.content{content:"/test/src/components/Circular.svelte"}',
+            `.content{content:"${path.resolve('./test/src/layouts/Single.svelte')}"}.content{content:"${path.resolve(
+              './test/src/routes/Dep.svelte',
+            )}"}.content{content:"${path.resolve(
+              './test/src/components/AutoComplete.svelte',
+            )}"}.content{content:"${path.resolve(
+              './test/src/components/AutoCompleteHome.svelte',
+            )}"}.content{content:"${path.resolve(
+              './test/src/components/Deeper.svelte',
+            )}"}.content{content:"${path.resolve('./test/src/components/Circular.svelte')}"}`,
           ]);
           expect(r).toBeUndefined();
         });
