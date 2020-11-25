@@ -54,6 +54,8 @@ Array [
         "renderChunk": [Function],
         "resolveId": [Function],
         "transform": [Function],
+        "watchChange": [Function],
+        "writeBundle": [Function],
       },
       Object {
         "buildStart": [Function],
@@ -112,6 +114,8 @@ Array [
         "renderChunk": [Function],
         "resolveId": [Function],
         "transform": [Function],
+        "watchChange": [Function],
+        "writeBundle": [Function],
       },
       Object {
         "buildStart": [Function],
@@ -198,6 +202,8 @@ Array [
         "renderChunk": [Function],
         "resolveId": [Function],
         "transform": [Function],
+        "watchChange": [Function],
+        "writeBundle": [Function],
       },
       Object {
         "buildStart": [Function],
@@ -256,6 +262,8 @@ Array [
         "renderChunk": [Function],
         "resolveId": [Function],
         "transform": [Function],
+        "watchChange": [Function],
+        "writeBundle": [Function],
       },
       Object {
         "buildStart": [Function],
@@ -315,6 +323,8 @@ Array [
         "renderChunk": [Function],
         "resolveId": [Function],
         "transform": [Function],
+        "watchChange": [Function],
+        "writeBundle": [Function],
       },
       Object {
         "buildStart": [Function],
@@ -374,6 +384,8 @@ Array [
         "renderChunk": [Function],
         "resolveId": [Function],
         "transform": [Function],
+        "watchChange": [Function],
+        "writeBundle": [Function],
       },
       Object {
         "buildStart": [Function],
@@ -433,6 +445,8 @@ Array [
         "renderChunk": [Function],
         "resolveId": [Function],
         "transform": [Function],
+        "watchChange": [Function],
+        "writeBundle": [Function],
       },
       Object {
         "buildStart": [Function],
@@ -492,6 +506,8 @@ Array [
         "renderChunk": [Function],
         "resolveId": [Function],
         "transform": [Function],
+        "watchChange": [Function],
+        "writeBundle": [Function],
       },
       Object {
         "buildStart": [Function],
@@ -551,6 +567,8 @@ Array [
         "renderChunk": [Function],
         "resolveId": [Function],
         "transform": [Function],
+        "watchChange": [Function],
+        "writeBundle": [Function],
       },
       Object {
         "buildStart": [Function],
@@ -610,6 +628,8 @@ Array [
         "renderChunk": [Function],
         "resolveId": [Function],
         "transform": [Function],
+        "watchChange": [Function],
+        "writeBundle": [Function],
       },
       Object {
         "buildStart": [Function],
@@ -669,6 +689,8 @@ Array [
         "renderChunk": [Function],
         "resolveId": [Function],
         "transform": [Function],
+        "watchChange": [Function],
+        "writeBundle": [Function],
       },
       Object {
         "buildStart": [Function],

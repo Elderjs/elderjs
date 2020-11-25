@@ -198,7 +198,7 @@ describe('#getConfig', () => {
   });
 
   describe('Css Options', () => {
-    it('it sets the publicCssFileName', () => {
+    it('it sets the publicCssFile', () => {
       jest.mock('fs-extra', () => {
         return {
           ensureDirSync: () => {},
@@ -215,13 +215,13 @@ describe('#getConfig', () => {
           $$internal: {
             ...output.$$internal,
             findComponent: expect.anything(),
-            publicCssFileName: 'svelte-3449427d.css',
+            publicCssFile: expect.stringContaining('svelte-3449427d.css'),
           },
         }),
       );
     });
 
-    it('it throws an error on multiple css for publicCssFileName', () => {
+    it('it throws an error on multiple css for publicCssFile', () => {
       // eslint-disable-next-line global-require
       const getConfig = require('../getConfig').default;
 

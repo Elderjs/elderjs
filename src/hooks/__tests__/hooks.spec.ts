@@ -219,7 +219,7 @@ describe('#hooks', () => {
           settings: {
             css: 'file',
             $$internal: {
-              publicCssFileName: 'svelte.123.js',
+              publicCssFile: '/_elderjs/assets/svelte.123.js',
             },
           },
         }),
@@ -244,7 +244,7 @@ describe('#hooks', () => {
             settings: {
               css: 'lazy',
               $$internal: {
-                publicCssFileName: 'svelte.123.js',
+                publicCssFile: '/_elderjs/assets/svelte.123.js',
               },
             },
           }),

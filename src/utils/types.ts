@@ -33,7 +33,7 @@ type Internal = {
   distElder: string;
   prefix: string;
   findComponent: FindSvelteComponent;
-  publicCssFileName?: string;
+  publicCssFile?: string;
 };
 
 type DebugOptions = {

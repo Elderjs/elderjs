@@ -43,7 +43,7 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
     }),
   };
 
-  if (config.css === 'file') {
+  if (config.css === 'file' || config.css === 'lazy') {
     const assetPath = path.resolve(distElder, `.${path.sep}assets`);
     fs.ensureDirSync(path.resolve(assetPath));
     const cssFiles = fs.readdirSync(assetPath).filter((f) => f.endsWith('.css'));
@@ -52,8 +52,11 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
         `${config.$$internal.prefix} Race condition has caused multiple css files in ${assetPath}. If you keep seeing this delete the _elder and ___ELDER___  folders.`,
       );
     }
-    // eslint-disable-next-line prefer-destructuring
-    config.$$internal.publicCssFileName = cssFiles[0];
+    if (cssFiles[0]) {
+      config.$$internal.publicCssFile = `/_elderjs/assets/${cssFiles[0]}`;
+    } else {
+      console.error(`CSS file not found in ${assetPath}`);
+    }
   }
 
   if (config.origin === '') {

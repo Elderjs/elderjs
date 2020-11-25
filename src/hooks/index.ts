@@ -192,25 +192,25 @@ const hooks: Array<HookOptions> = [
     description: `Adds the css found in the svelte files to the head if 'css' in your 'elder.config.js' file is set to 'file'.`,
     priority: 100,
     run: async ({ headStack, settings }) => {
-      if (settings.css === 'file') {
+      if (settings.css === 'file' && settings.$$internal.publicCssFile) {
         return {
           headStack: [
             ...headStack,
             {
               source: 'elderAddCssFileToHead',
-              string: `<link rel="stylesheet" href="/_elderjs/assets/${settings.$$internal.publicCssFileName}" media="all" />`,
+              string: `<link rel="stylesheet" href="${settings.$$internal.publicCssFile}" media="all" />`,
               priority: 30,
             },
           ],
         };
       }
-      if (settings.css === 'lazy') {
+      if (settings.css === 'lazy' && settings.$$internal.publicCssFile) {
         return {
           headStack: [
             ...headStack,
             {
               source: 'elderAddCssFileToHead',
-              string: `<link rel="preload" href="/_elderjs/assets/${settings.$$internal.publicCssFileName}" as="style" /><link rel="stylesheet" href="/_elderjs/assets/${settings.$$internal.publicCssFileName}" media="print" onload="this.media='all'" /><noscript><link rel="stylesheet" href="/_elderjs/assets/${settings.$$internal.publicCssFileName}" media="all" /></noscript>`,
+              string: `<link rel="preload" href="${settings.$$internal.publicCssFile}" as="style" /><link rel="stylesheet" href="${settings.$$internal.publicCssFile}" media="print" onload="this.media='all'" /><noscript><link rel="stylesheet" href="${settings.$$internal.publicCssFile}" media="all" /></noscript>`,
               priority: 30,
             },
           ],
