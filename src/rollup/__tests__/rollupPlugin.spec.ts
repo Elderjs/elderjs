@@ -624,17 +624,19 @@ describe('#rollupPlugin', () => {
           expect(t.setAssetSource).toHaveBeenCalledTimes(1);
           expect(t.getModuleIds).toHaveBeenCalledTimes(1);
           expect(t.names).toEqual(['svelte.css']);
-          expect(t.css).toEqual([
-            `.content{content:"${path.resolve('./test/src/layouts/Single.svelte')}"}.content{content:"${path.resolve(
-              './test/src/routes/Dep.svelte',
-            )}"}.content{content:"${path.resolve(
-              './test/src/components/AutoComplete.svelte',
-            )}"}.content{content:"${path.resolve(
-              './test/src/components/AutoCompleteHome.svelte',
-            )}"}.content{content:"${path.resolve(
-              './test/src/components/Deeper.svelte',
-            )}"}.content{content:"${path.resolve('./test/src/components/Circular.svelte')}"}`,
-          ]);
+          expect(t.css).toEqual(
+            normalizeSnapshot([
+              `.content{content:"${path.resolve('./test/src/layouts/Single.svelte')}"}.content{content:"${path.resolve(
+                './test/src/routes/Dep.svelte',
+              )}"}.content{content:"${path.resolve(
+                './test/src/components/AutoComplete.svelte',
+              )}"}.content{content:"${path.resolve(
+                './test/src/components/AutoCompleteHome.svelte',
+              )}"}.content{content:"${path.resolve(
+                './test/src/components/Deeper.svelte',
+              )}"}.content{content:"${path.resolve('./test/src/components/Circular.svelte')}"}`,
+            ]),
+          );
           expect(r).toBeUndefined();
         });
         it('tests client functionality', async () => {
