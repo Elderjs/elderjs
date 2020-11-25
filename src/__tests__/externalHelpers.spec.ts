@@ -1,3 +1,4 @@
+import { sep } from 'path';
 import normalizeSnapshot from '../utils/normalizeSnapshot';
 
 process.cwd = () => 'test';
@@ -6,7 +7,7 @@ const settings = {
   debug: {
     automagic: true,
   },
-  srcDir: './src/',
+  srcDir: `.${sep}src${sep}`,
 };
 const query = {};
 
@@ -57,7 +58,8 @@ describe('#externalHelpers', () => {
   });
   it('works - userHelpers is not a function', async () => {
     jest.mock(
-      'src/helpers/index.js',
+      `src${sep}helpers${sep}index.js`,
+
       () => ({
         userHelper: () => 'something',
       }),
@@ -78,7 +80,7 @@ describe('#externalHelpers', () => {
   });
   it('works - userHelpers is a function', async () => {
     jest.mock(
-      'src/helpers/index.js',
+      `src${sep}helpers${sep}index.js`,
       () => () =>
         Promise.resolve({
           userHelper: () => 'something',
