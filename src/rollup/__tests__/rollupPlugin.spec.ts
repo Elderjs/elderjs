@@ -360,14 +360,14 @@ describe('#rollupPlugin', () => {
   });
 
   describe('shared', () => {
-    const files = [
+    const files = normalizeSnapshot([
       path.resolve(`./test/src/components/AutoComplete.svelte`),
       path.resolve(`./test/src/components/AutoCompleteHome.svelte`),
       path.resolve(`./test/src/components/Deeper.svelte`),
       path.resolve(`./test/src/components/Circular.svelte`),
       path.resolve(`./test/src/routes/Dep.svelte`),
       path.resolve(`./test/src/layouts/Single.svelte`),
-    ];
+    ]);
 
     const cssCache = new Map();
     const rollupCache = {
@@ -463,9 +463,10 @@ describe('#rollupPlugin', () => {
 
     describe('#getCssFromCache', () => {
       it('takes an array of 1 and gets items from the cache', () => {
-        console.log('--------------- here', path.resolve('./test/src/components/AutoCompleteHome.svelte'), cssCache);
         expect(
-          normalizeSnapshot(getCssFromCache([path.resolve('./test/src/components/AutoCompleteHome.svelte')], cssCache)),
+          normalizeSnapshot(
+            getCssFromCache([windowsPathFix(path.resolve('./test/src/components/AutoCompleteHome.svelte'))], cssCache),
+          ),
         ).toEqual(
           normalizeSnapshot([
             [
@@ -480,7 +481,7 @@ describe('#rollupPlugin', () => {
         );
       });
       it('takes an array of several and gets items from the cache', () => {
-        expect(normalizeSnapshot(getCssFromCache(files.slice(0, 3), cssCache))).toEqual(
+        expect(normalizeSnapshot(getCssFromCache(files.slice(0, 3).map(windowsPathFix), cssCache))).toEqual(
           normalizeSnapshot([
             [
               path.resolve('./test/src/components/AutoComplete.svelte'),
