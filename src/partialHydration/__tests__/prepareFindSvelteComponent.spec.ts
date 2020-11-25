@@ -1,4 +1,4 @@
-import path, { sep } from 'path';
+import path from 'path';
 import prepareFindSvelteComponent, { removeHash } from '../prepareFindSvelteComponent';
 import normalizeSnapshot from '../../utils/normalizeSnapshot';
 
