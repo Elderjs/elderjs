@@ -1,4 +1,4 @@
-const path = require('path');
+import path from 'path';
 
 describe('#plugins', () => {
   beforeEach(() => jest.resetModules());

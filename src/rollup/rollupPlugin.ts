@@ -12,6 +12,7 @@ import btoa from 'btoa';
 // eslint-disable-next-line import/no-unresolved
 import { CompileOptions } from 'svelte/types/compiler/interfaces';
 import partialHydration from '../partialHydration/partialHydration';
+import windowsPathFix from '../utils/windowsPathFix';
 
 const mapIntro = `/*# sourceMappingURL=data:application/json;charset=utf-8;base64,`;
 export const encodeSourceMap = (map) => {
@@ -20,10 +21,11 @@ export const encodeSourceMap = (map) => {
 };
 
 export const cssFilePriority = (pathStr) => {
-  if (pathStr.includes('node_modules')) return 6;
-  if (pathStr.includes('src/layouts')) return 3;
-  if (pathStr.includes('src/routes')) return 2;
-  if (pathStr.includes('src/components')) return 1;
+  const normalizedPath = windowsPathFix(pathStr);
+  if (normalizedPath.includes('node_modules')) return 6;
+  if (normalizedPath.includes('src/layouts')) return 3;
+  if (normalizedPath.includes('src/routes')) return 2;
+  if (normalizedPath.includes('src/components')) return 1;
 
   return 0;
 };
