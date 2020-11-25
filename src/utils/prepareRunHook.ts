@@ -90,7 +90,7 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
       return hookOutput;
     }
     if (settings && settings.debug && settings.debug.hooks) {
-      console.log(`${hookName} finished without executing any hooks`);
+      console.log(`${hookName} finished without executing any functions`);
     }
 
     if (props.perf) props.perf.end(`hook.${hookName}`);
