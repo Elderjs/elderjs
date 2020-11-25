@@ -3,7 +3,6 @@
 /* eslint-disable import/no-dynamic-require */
 import glob from 'glob';
 import kebabcase from 'lodash.kebabcase';
-import { sep } from 'path';
 import type { RouteOptions } from './types';
 
 import { svelteComponent, capitalizeFirstLetter } from '../utils';

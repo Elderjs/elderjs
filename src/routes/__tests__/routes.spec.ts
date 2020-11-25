@@ -1,4 +1,3 @@
-import { sep } from 'path';
 import normalizeSnapshot from '../../utils/normalizeSnapshot';
 
 process.cwd = () => 'test';
