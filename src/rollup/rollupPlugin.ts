@@ -265,6 +265,9 @@ export default function elderjsRollup({
 
       const processed = await preprocess(code, preprocessors, { filename });
 
+      // @ts-ignore - these types aren't in the type files... but if we don't pass in a map things break.
+      if (processed.map) compilerOptions.sourcemap = processed.map;
+
       const compiled = await compile(processed.code, { ...compilerOptions, filename });
       (compiled.warnings || []).forEach((warning) => {
         if (warning.code === 'css-unused-selector') return;
