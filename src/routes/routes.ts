@@ -6,15 +6,9 @@ import kebabcase from 'lodash.kebabcase';
 import { sep } from 'path';
 import type { RouteOptions } from './types';
 
-// const sep = '\\';
-
 import { svelteComponent, capitalizeFirstLetter } from '../utils';
 import { SettingsOptions } from '../utils/types';
 import wrapPermalinkFn from '../utils/wrapPermalinkFn';
-
-function joinPathParts(parts: string[], ext: string) {
-  return `${sep}${parts.join(sep)}.${ext}`;
-}
 
 function routes(settings: SettingsOptions) {
   const files = glob.sync(`${settings.srcDir}/routes/*/+(*.js|*.svelte)`);
@@ -65,9 +59,7 @@ function routes(settings: SettingsOptions) {
     if (route.template) {
       if (typeof route.template === 'string') {
         const componentName = route.template.replace('.svelte', '');
-        const ssrComponent = ssrComponents.find((f) =>
-          f.endsWith(joinPathParts(['routes', routeName, componentName], 'js')),
-        );
+        const ssrComponent = ssrComponents.find((f) => f.endsWith(`/routes/${routeName}/${componentName}.js`));
         if (!ssrComponent) {
           console.error(
             `We see you want to load ${route.template}, but we don't see a compiled template in ${settings.$$internal.ssrComponents}. You'll probably see more errors in a second. Make sure you've run rollup.`,
@@ -78,9 +70,7 @@ function routes(settings: SettingsOptions) {
       }
     } else {
       // not defined, look for a svelte file...
-      const svelteFile = filesForThisRoute.find((f) =>
-        f.endsWith(joinPathParts(['routes', routeName, capitalizedRoute], 'svelte')),
-      );
+      const svelteFile = filesForThisRoute.find((f) => f.endsWith(`/routes/${routeName}/${capitalizedRoute}.svelte`));
       if (settings.debug.automagic) {
         console.log(`${prefix} No template defined for /routes/${routeName}/ looking for ${capitalizedRoute}.svelte`);
       }
@@ -89,9 +79,7 @@ function routes(settings: SettingsOptions) {
         route.template = `${capitalizedRoute}.svelte`;
         route.templateComponent = svelteComponent(svelteFile, 'routes');
 
-        const ssrComponent = ssrComponents.find((f) =>
-          f.endsWith(joinPathParts(['routes', routeName, capitalizedRoute], 'js')),
-        );
+        const ssrComponent = ssrComponents.find((f) => f.endsWith(`/routes/${routeName}/${capitalizedRoute}.js`));
         if (!ssrComponent) {
           console.error(
             `We see you want to load ${route.template}, but we don't see a compiled template in ${settings.$$internal.ssrComponents}. You'll probably see more errors in a second. Make sure you've run rollup.`,

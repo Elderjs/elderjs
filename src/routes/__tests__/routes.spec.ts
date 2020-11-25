@@ -29,18 +29,18 @@ describe('#routes', () => {
       sync: jest
         .fn()
         .mockImplementationOnce(() => [
-          `test${sep}src${sep}routes${sep}content${sep}route.js`,
-          `test${sep}src${sep}routes${sep}content${sep}Default.svelte`,
-          `test${sep}src${sep}routes${sep}home${sep}Home.svelte`,
-          `test${sep}src${sep}routes${sep}home${sep}route.js`,
-          `test${sep}src${sep}routes${sep}content${sep}data.js`,
-          `test${sep}src${sep}routes${sep}content${sep}Layout.svelte`,
+          `test/src/routes/content/route.js`,
+          `test/src/routes/content/Default.svelte`,
+          `test/src/routes/home/Home.svelte`,
+          `test/src/routes/home/route.js`,
+          `test/src/routes/content/data.js`,
+          `test/src/routes/content/Layout.svelte`,
         ])
         .mockImplementationOnce(() => [
-          `test${sep}___ELDER___${sep}compiled${sep}routes${sep}home${sep}Home.js`,
-          `test${sep}___ELDER___${sep}compiled${sep}components${sep}AutoComplete.js`,
-          `test${sep}___ELDER___${sep}compiled${sep}routes${sep}content${sep}Default.js`,
-          `test${sep}___ELDER___${sep}compiled${sep}routes${sep}content${sep}Content.js`,
+          `test/___ELDER___/compiled/routes/home/Home.js`,
+          `test/___ELDER___/compiled/components/AutoComplete.js`,
+          `test/___ELDER___/compiled/routes/content/Default.js`,
+          `test/___ELDER___/compiled/routes/content/Content.js`,
         ]),
     }));
     jest.mock(
@@ -81,21 +81,21 @@ describe('#routes', () => {
       sync: jest
         .fn()
         .mockImplementationOnce(() => [
-          `test${sep}src${sep}routes${sep}content${sep}route.js`,
-          `test${sep}src${sep}routes${sep}content${sep}Default.svelte`,
-          `test${sep}src${sep}routes${sep}home${sep}Home.svelte`,
-          `test${sep}src${sep}routes${sep}home${sep}route.js`,
-          `test${sep}src${sep}routes${sep}SomethingCamel${sep}SomethingCamel.svelte`,
-          `test${sep}src${sep}routes${sep}SomethingCamel${sep}route.js`,
-          `test${sep}src${sep}routes${sep}content${sep}data.js`,
-          `test${sep}src${sep}routes${sep}content${sep}Layout.svelte`,
+          `test/src/routes/content/route.js`,
+          `test/src/routes/content/Default.svelte`,
+          `test/src/routes/home/Home.svelte`,
+          `test/src/routes/home/route.js`,
+          `test/src/routes/SomethingCamel/SomethingCamel.svelte`,
+          `test/src/routes/SomethingCamel/route.js`,
+          `test/src/routes/content/data.js`,
+          `test/src/routes/content/Layout.svelte`,
         ])
         .mockImplementationOnce(() => [
-          `test${sep}___ELDER___${sep}compiled${sep}routes${sep}home${sep}Home.js`,
-          `test${sep}___ELDER___${sep}compiled${sep}components${sep}AutoComplete.js`,
-          `test${sep}___ELDER___${sep}compiled${sep}routes${sep}content${sep}Default.js`,
-          `test${sep}___ELDER___${sep}compiled${sep}routes${sep}content${sep}Content.js`,
-          `test${sep}___ELDER___${sep}compiled${sep}SomethingCamel.js`,
+          `test/___ELDER___/compiled/routes/home/Home.js`,
+          `test/___ELDER___/compiled/components/AutoComplete.js`,
+          `test/___ELDER___/compiled/routes/content/Default.js`,
+          `test/___ELDER___/compiled/routes/content/Content.js`,
+          `test/___ELDER___/compiled/SomethingCamel.js`,
         ]),
     }));
     jest.mock(
@@ -142,18 +142,18 @@ describe('#routes', () => {
       sync: jest
         .fn()
         .mockImplementationOnce(() => [
-          `test${sep}src${sep}routes${sep}content${sep}route.js`,
-          `test${sep}src${sep}routes${sep}content${sep}Default.svelte`,
-          `test${sep}src${sep}routes${sep}home${sep}Home.svelte`,
-          `test${sep}src${sep}routes${sep}home${sep}route.js`,
-          `test${sep}src${sep}routes${sep}content${sep}data.js`,
-          `test${sep}src${sep}routes${sep}content${sep}Layout.svelte`,
+          `test/src/routes/content/route.js`,
+          `test/src/routes/content/Default.svelte`,
+          `test/src/routes/home/Home.svelte`,
+          `test/src/routes/home/route.js`,
+          `test/src/routes/content/data.js`,
+          `test/src/routes/content/Layout.svelte`,
         ])
         .mockImplementationOnce(() => [
-          `test${sep}___ELDER___${sep}compiled${sep}routes${sep}home${sep}Home.js`,
-          `test${sep}___ELDER___${sep}compiled${sep}components${sep}AutoComplete.js`,
-          `test${sep}___ELDER___${sep}compiled${sep}routes${sep}content${sep}Default.js`,
-          `test${sep}___ELDER___${sep}compiled${sep}routes${sep}content${sep}Content.js`,
+          `test/___ELDER___/compiled/routes/home/Home.js`,
+          `test/___ELDER___/compiled/components/AutoComplete.js`,
+          `test/___ELDER___/compiled/routes/content/Default.js`,
+          `test/___ELDER___/compiled/routes/content/Content.js`,
         ]),
     }));
 
@@ -189,18 +189,18 @@ describe('#routes', () => {
       sync: jest
         .fn()
         .mockImplementationOnce(() => [
-          `test${sep}src${sep}routes${sep}content${sep}route.js`,
-          `test${sep}src${sep}routes${sep}content${sep}Default.svelte`,
-          `test${sep}src${sep}routes${sep}home${sep}Home.svelte`,
-          `test${sep}src${sep}routes${sep}home${sep}route.js`,
-          `test${sep}src${sep}routes${sep}content${sep}data.js`,
-          `test${sep}src${sep}routes${sep}content${sep}Layout.svelte`,
+          `test/src/routes/content/route.js`,
+          `test/src/routes/content/Default.svelte`,
+          `test/src/routes/home/Home.svelte`,
+          `test/src/routes/home/route.js`,
+          `test/src/routes/content/data.js`,
+          `test/src/routes/content/Layout.svelte`,
         ])
         .mockImplementationOnce(() => [
-          `test${sep}___ELDER___${sep}compiled${sep}routes${sep}Home${sep}Home.js`,
-          `test${sep}___ELDER___${sep}compiled${sep}components${sep}AutoComplete.js`,
-          `test${sep}___ELDER___${sep}compiled${sep}routes${sep}content${sep}Default.js`,
-          `test${sep}___ELDER___${sep}compiled${sep}routes${sep}Content${sep}Content.js`,
+          `test/___ELDER___/compiled/routes/Home/Home.js`,
+          `test/___ELDER___/compiled/components/AutoComplete.js`,
+          `test/___ELDER___/compiled/routes/content/Default.js`,
+          `test/___ELDER___/compiled/routes/Content/Content.js`,
         ]),
     }));
     jest.mock(
