@@ -12,6 +12,7 @@ import elderjsRollup, {
   load,
 } from '../rollupPlugin';
 import windowsPathFix from '../../utils/windowsPathFix';
+import normalizeSnapshot from '../../utils/normalizeSnapshot';
 
 describe('#rollupPlugin', () => {
   describe('#encodeSourceMap', () => {
@@ -58,7 +59,7 @@ describe('#rollupPlugin', () => {
         dependencies: {},
       };
       logDependency('/test/src/style.css', '/test/src/routes/home/home.svelte', cache);
-      expect(cache).toEqual({
+      expect(normalizeSnapshot(cache)).toEqual({
         dependencies: {
           '/test/src/routes/home/home.svelte': new Set(['/test/src/style.css']),
         },
@@ -69,7 +70,7 @@ describe('#rollupPlugin', () => {
         dependencies: {},
       };
       logDependency('/test/src/components/AutoComplete.svelte', '/test/src/components/AutoCompleteHome.svelte', cache);
-      expect(cache).toEqual({
+      expect(normalizeSnapshot(cache)).toEqual({
         dependencies: {
           '/test/src/components/AutoCompleteHome.svelte': new Set(['/test/src/components/AutoComplete.svelte']),
         },
@@ -168,30 +169,26 @@ describe('#rollupPlugin', () => {
       ]);
 
       const abs = {
-        'elderjs/elderjs/src/rollup/__tests__/__fixtures__/external/src/layouts/External.svelte': new Set([
+        './src/rollup/__tests__/__fixtures__/external/src/layouts/External.svelte': new Set([
           'test-external-svelte-library',
-          'elderjs/elderjs/src/rollup/__tests__/__fixtures__/external/src/components/Component.svelte',
+          './src/rollup/__tests__/__fixtures__/external/src/components/Component.svelte',
         ]),
         'test-external-svelte-library': new Set([
-          'elderjs/elderjs/src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/index.js',
+          './src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/index.js',
         ]),
-        'elderjs/elderjs/src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/index.js': new Set(
+        './src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/index.js': new Set([
+          './src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/test-external-svelte-library/src/components/Button.svelte',
+        ]),
+        './src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/components/Button.svelte': new Set(
           [
-            'elderjs/elderjs/src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/test-external-svelte-library/src/components/Button.svelte',
-          ],
-        ),
-        'elderjs/elderjs/src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/components/Button.svelte': new Set(
-          [
-            'elderjs/elderjs/src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/components/Icon.svelte',
+            './src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/components/Icon.svelte',
           ],
         ),
       };
 
+      const cleanPath = (str) => (str[0] === '.' ? path.resolve(str) : str);
       const rel = Object.entries(abs).reduce((out, cv) => {
-        // eslint-disable-next-line prefer-destructuring
-        out[cv[0].replace('elderjs/elderjs', process.cwd())] = new Set(
-          [...cv[1].values()].map((v) => v.replace('elderjs/elderjs', process.cwd())),
-        );
+        out[cleanPath(cv[0])] = new Set([...cv[1].values()].map(cleanPath));
         return out;
       }, {});
 
@@ -208,7 +205,7 @@ describe('#rollupPlugin', () => {
       logDependency('/test/src/components/AutoCompleteHome.svelte', '/test/src/components/Deeper.svelte', cache1);
       logDependency('/test/src/components/Deeper.svelte', '/test/src/components/Deepest.svelte', cache1);
       const deps = getDependencies('/test/src/components/Deepest.svelte', cache1);
-      expect(deps).toEqual([
+      expect(normalizeSnapshot(deps)).toEqual([
         '/test/src/components/Deepest.svelte',
         '/test/src/components/Deeper.svelte',
         '/test/src/components/AutoCompleteHome.svelte',
@@ -222,7 +219,10 @@ describe('#rollupPlugin', () => {
       logDependency('/test/src/components/Deeper.svelte', '/test/src/components/Circular.svelte', cache2);
       logDependency('/test/src/components/Circular.svelte', '/test/src/components/Circular.svelte', cache2);
       const deps = getDependencies('/test/src/components/Circular.svelte', cache2);
-      expect(deps).toEqual(['/test/src/components/Circular.svelte', '/test/src/components/Deeper.svelte']);
+      expect(normalizeSnapshot(deps)).toEqual([
+        '/test/src/components/Circular.svelte',
+        '/test/src/components/Deeper.svelte',
+      ]);
     });
 
     it('Finds proper deps and not additional ones', () => {
@@ -234,7 +234,10 @@ describe('#rollupPlugin', () => {
       logDependency('/test/src/components/Deeper.svelte', '/test/src/components/Circular.svelte', cache3);
       logDependency('/test/src/components/Dep.svelte', '/test/src/components/Single.svelte', cache3);
       const deps = getDependencies('/test/src/components/Single.svelte', cache3);
-      expect(deps).toEqual(['/test/src/components/Single.svelte', '/test/src/components/Dep.svelte']);
+      expect(normalizeSnapshot(deps)).toEqual([
+        '/test/src/components/Single.svelte',
+        '/test/src/components/Dep.svelte',
+      ]);
     });
 
     it('Finds no deps when there are none', () => {
@@ -244,7 +247,7 @@ describe('#rollupPlugin', () => {
       logDependency('/test/src/components/AutoComplete.svelte', '/test/src/components/AutoCompleteHome.svelte', cache4);
       logDependency('/test/src/components/AutoCompleteHome.svelte', '/test/src/components/Deeper.svelte', cache4);
       const deps = getDependencies('/test/src/components/wtf.svelte', cache4);
-      expect(deps).toEqual(['/test/src/components/wtf.svelte']);
+      expect(normalizeSnapshot(deps)).toEqual(['/test/src/components/wtf.svelte']);
     });
   });
 
@@ -375,7 +378,7 @@ describe('#rollupPlugin', () => {
           { code: '.content{content:"/test/src/layouts/Single.svelte"}', map: undefined, priority: 3 },
         ],
       ]);
-      expect(rollupCache.dependencies).toEqual({
+      expect(normalizeSnapshot(rollupCache.dependencies)).toEqual({
         '/test/src/components/AutoCompleteHome.svelte': new Set(['/test/src/components/AutoComplete.svelte']),
         '/test/src/components/Circular.svelte': new Set(['/test/src/components/Deeper.svelte']),
         '/test/src/components/Deeper.svelte': new Set(['/test/src/components/AutoCompleteHome.svelte']),
@@ -385,7 +388,7 @@ describe('#rollupPlugin', () => {
 
     describe('#getCssFromCache', () => {
       it('takes an array of 1 and gets items from the cache', () => {
-        expect(getCssFromCache(['/test/src/components/AutoCompleteHome.svelte'], cssCache)).toEqual([
+        expect(normalizeSnapshot(getCssFromCache(['/test/src/components/AutoCompleteHome.svelte'], cssCache))).toEqual([
           [
             '/test/src/components/AutoCompleteHome.svelte',
             {
@@ -397,7 +400,7 @@ describe('#rollupPlugin', () => {
         ]);
       });
       it('takes an array of several and gets items from the cache', () => {
-        expect(getCssFromCache(files.slice(0, 3), cssCache)).toEqual([
+        expect(normalizeSnapshot(getCssFromCache(files.slice(0, 3), cssCache))).toEqual([
           [
             '/test/src/components/AutoComplete.svelte',
             {
@@ -578,7 +581,7 @@ describe('#rollupPlugin', () => {
           jest.mock(
             path.resolve('./node_modules/uses-export/package.json'),
             () => ({
-              svelte: 'src/Component.svelte',
+              svelte: windowsPathFix('src/Component.svelte'),
             }),
             { virtual: true },
           );
@@ -593,7 +596,7 @@ describe('#rollupPlugin', () => {
             path.resolve('./node_modules/package-exports/package.json'),
             () => ({
               main: './main.js',
-              svelte: 'src/Exported.svelte',
+              svelte: windowsPathFix('src/Exported.svelte'),
               exports: {
                 '.': './main.js',
                 './package.json': './package.json',
@@ -611,7 +614,7 @@ describe('#rollupPlugin', () => {
           jest.mock(
             path.resolve('./node_modules/no-svelte/package.json'),
             () => ({
-              main: './main.js',
+              main: windowsPathFix('./main.js'),
               exports: {
                 '.': './main.js',
                 './package.json': './package.json',

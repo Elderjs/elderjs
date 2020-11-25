@@ -108,4 +108,24 @@ describe('#normalizeSnapshot', () => {
       fn,
     });
   });
+
+  it('Handles sets and maps', () => {
+    const map = new Map();
+    map.set('\\elderjs\\elderjs\\test.js', ['\\elderjs\\elderjs\\src.js', '/linuxpath/']);
+    map.set('\\elderjs\\obj\\test.js', { '\\elderjs\\obj\\src.js': ['\\elderjs\\elderjs\\src.js', '/linuxpath/'] });
+
+    const outMap = new Map();
+    outMap.set('/elderjs/elderjs/test.js', ['/elderjs/elderjs/src.js', '/linuxpath/']);
+    outMap.set('/elderjs/obj/test.js', { '/elderjs/obj/src.js': ['/elderjs/elderjs/src.js', '/linuxpath/'] });
+
+    expect(
+      normalizeSnapshot({
+        set: new Set(['\\elderjs\\elderjs\\test.js', '\\elderjs\\elderjs\\src.js', '/linuxpath/']),
+        map,
+      }),
+    ).toMatchObject({
+      map: outMap,
+      set: new Set(['/elderjs/elderjs/test.js', '/elderjs/elderjs/src.js', '/linuxpath/']),
+    });
+  });
 });
