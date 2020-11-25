@@ -1,3 +1,5 @@
+import normalizeSnapshot from '../utils/normalizeSnapshot';
+
 process.cwd = () => 'test';
 
 const settings = {
@@ -67,10 +69,12 @@ describe('#externalHelpers', () => {
     // eslint-disable-next-line global-require
     const externalHelpers = require('../externalHelpers').default;
     // @ts-ignore
-    expect(await externalHelpers({ settings, query, helpers: [] })).toMatchSnapshot();
+    const c1 = await externalHelpers({ settings, query, helpers: [] });
+    expect(normalizeSnapshot(c1)).toMatchSnapshot();
     // from cache
     // @ts-ignore
-    expect(await externalHelpers({ settings, query, helpers: [] })).toMatchSnapshot();
+    const c2 = await externalHelpers({ settings, query, helpers: [] });
+    expect(normalizeSnapshot(c2)).toMatchSnapshot();
   });
   it('works - userHelpers is a function', async () => {
     jest.mock(
@@ -87,9 +91,11 @@ describe('#externalHelpers', () => {
     // eslint-disable-next-line global-require
     const externalHelpers = require('../externalHelpers').default;
     // @ts-ignore
-    expect(await externalHelpers({ settings, query, helpers: [] })).toMatchSnapshot();
+    const c1 = await externalHelpers({ settings, query, helpers: [] });
+    expect(normalizeSnapshot(c1)).toMatchSnapshot();
     // from cache
     // @ts-ignore
-    expect(await externalHelpers({ settings, query, helpers: [] })).toMatchSnapshot();
+    const c2 = await externalHelpers({ settings, query, helpers: [] });
+    expect(normalizeSnapshot(c2)).toMatchSnapshot();
   });
 });

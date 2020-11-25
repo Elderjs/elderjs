@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`#Elder hookSrcFile not found 1`] = `
-Elder {
+Object {
   "allRequests": Array [],
   "bootstrapComplete": Promise {},
   "data": Object {},
@@ -642,7 +642,7 @@ Elder {
 `;
 
 exports[`#Elder srcPlugin found 1`] = `
-Elder {
+Object {
   "allRequests": Array [
     Object {
       "permalink": "/dev/",

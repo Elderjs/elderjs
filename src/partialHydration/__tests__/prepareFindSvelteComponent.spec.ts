@@ -1,5 +1,5 @@
 import path from 'path';
-import prepareFindSvelteComponent, { removeHash, windowsPathFix } from '../prepareFindSvelteComponent';
+import prepareFindSvelteComponent, { removeHash } from '../prepareFindSvelteComponent';
 
 const hashedClientComponents = [
   '/_elderjs/svelte/asyncToGenerator-7ac7dd51.js',
@@ -396,16 +396,6 @@ describe('#prepareFindSvelteComponent', () => {
           ssr: `${common.rootDir}/___ELDER___/compiled/layouts/Layout.js`,
         });
       });
-    });
-  });
-  describe('#windowsPathFix', () => {
-    it('windows path fix works', () => {
-      expect(windowsPathFix('\\___ELDER___\\compiled\\layouts\\Layout.js')).toBe(
-        '/___ELDER___/compiled/layouts/Layout.js',
-      );
-    });
-    it("windows path doesn't break linux", () => {
-      expect(windowsPathFix('/___ELDER___/compiled/layouts/Layout.js')).toBe('/___ELDER___/compiled/layouts/Layout.js');
     });
   });
 });

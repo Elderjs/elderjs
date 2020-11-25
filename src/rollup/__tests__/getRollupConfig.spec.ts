@@ -2,6 +2,7 @@
 import multiInput from 'rollup-plugin-multi-input';
 import path from 'path';
 import { createBrowserConfig, createSSRConfig } from '../getRollupConfig';
+import normalizeSnapshot from '../../utils/normalizeSnapshot';
 
 // TODO: test replace
 
@@ -228,7 +229,7 @@ describe('#getRollupConfig', () => {
     // would be nice to mock getPluginPaths if it's extracted to separate file
     const configs = fixRelativePath(require('../getRollupConfig').default({ svelteConfig }));
     expect(configs).toHaveLength(3);
-    expect(configs).toMatchSnapshot();
+    expect(normalizeSnapshot(configs)).toMatchSnapshot();
   });
 
   it('getRollupConfig as a whole works - legacy: true', () => {
@@ -289,6 +290,6 @@ describe('#getRollupConfig', () => {
     // would be nice to mock getPluginPaths if it's extracted to separate file
     const configs = fixRelativePath(require('../getRollupConfig').default({ svelteConfig }));
     expect(configs).toHaveLength(10);
-    expect(configs).toMatchSnapshot();
+    expect(normalizeSnapshot(configs)).toMatchSnapshot();
   });
 });

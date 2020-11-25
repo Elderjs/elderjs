@@ -1,64 +1,67 @@
-jest.mock('../routes/routes', () => () => ({
-  'route-a': {
-    hooks: [
-      {
-        hook: 'routeHook',
-        name: 'route hook',
-        description: 'test',
-        run: jest.fn(),
-      },
-    ],
-  },
-  'test-b': { hooks: [] },
-}));
-
-jest.mock('../utils/getConfig', () => () => ({
-  $$internal: {
-    clientComponents: 'test/public/svelte',
-    ssrComponents: 'test/___ELDER___/compiled',
-  },
-  debug: {
-    automagic: true,
-  },
-  distDir: 'test/public',
-  rootDir: 'test',
-  srcDir: 'test/src',
-  server: {
-    prefix: '/dev',
-  },
-  build: {
-    shuffleRequests: false,
-    numberOfWorkers: 4,
-  },
-  plugins: {
-    'elder-plugin-upload-s3': {
-      dataBucket: 'elderguide.com',
-      htmlBucket: 'elderguide.com',
-      deployId: '11111111',
-    },
-  },
-  hooks: {
-    disable: ['randomHook'],
-  },
-}));
-
-jest.mock('../workerBuild');
-
-jest.mock('../utils/prepareRunHook', () => (page) =>
-  async function processHook(hook) {
-    if (hook === 'bootstrap' && page.hooks && page.hooks.length) {
-      for (const pluginHook of page.hooks) {
-        if (pluginHook.$$meta.type === 'plugin') {
-          // eslint-disable-next-line
-          await pluginHook.run({});
-        }
-      }
-    }
-    return null;
-  },
-);
+/* eslint-disable global-require */
+import { sep } from 'path';
+import normalizeSnapshot from '../utils/normalizeSnapshot';
 
 describe('#Elder', () => {
+  jest.mock(`..${sep}routes${sep}routes`, () => () => ({
+    'route-a': {
+      hooks: [
+        {
+          hook: 'routeHook',
+          name: 'route hook',
+          description: 'test',
+          run: jest.fn(),
+        },
+      ],
+    },
+    'test-b': { hooks: [] },
+  }));
+
+  jest.mock(`..${sep}utils${sep}getConfig`, () => () => ({
+    $$internal: {
+      clientComponents: `test${sep}public${sep}svelte`,
+      ssrComponents: `test${sep}___ELDER___${sep}compiled`,
+    },
+    debug: {
+      automagic: true,
+    },
+    distDir: `test${sep}public`,
+    rootDir: 'test',
+    srcDir: `test${sep}src`,
+    server: {
+      prefix: `${sep}dev`,
+    },
+    build: {
+      shuffleRequests: false,
+      numberOfWorkers: 4,
+    },
+    plugins: {
+      'elder-plugin-upload-s3': {
+        dataBucket: 'elderguide.com',
+        htmlBucket: 'elderguide.com',
+        deployId: '11111111',
+      },
+    },
+    hooks: {
+      disable: ['randomHook'],
+    },
+  }));
+
+  jest.mock(`..${sep}workerBuild`);
+
+  jest.mock(`..${sep}utils${sep}prepareRunHook`, () => (page) =>
+    async function processHook(hook) {
+      if (hook === 'bootstrap' && page.hooks && page.hooks.length) {
+        for (const pluginHook of page.hooks) {
+          if (pluginHook.$$meta.type === 'plugin') {
+            // eslint-disable-next-line
+            await pluginHook.run({});
+          }
+        }
+      }
+      return null;
+    },
+  );
   beforeEach(() => jest.resetModules());
 
   it('hookSrcFile not found', async () => {
@@ -100,16 +103,16 @@ describe('#Elder', () => {
         virtual: true,
       },
     );
-    // eslint-disable-next-line global-require
-    const { Elder } = require('../index');
+    // eslint-disable-next-line import/no-dynamic-require
+    const { Elder } = require(`..${sep}index`);
     const elder = await new Elder({ context: 'server', worker: false });
     await elder.bootstrap();
     await elder.worker([]);
-    expect(elder).toMatchSnapshot();
+    expect(normalizeSnapshot(elder)).toMatchSnapshot();
   });
 
   it('srcPlugin found', async () => {
-    jest.mock('../utils/validations', () => ({
+    jest.mock(`..${sep}utils${sep}validations`, () => ({
       validatePlugin: (i) => i,
       validateHook: (i) => i,
       validateRoute: (i) => i,
@@ -118,9 +121,13 @@ describe('#Elder', () => {
     jest.mock('fs-extra', () => ({
       existsSync: () => true,
     }));
-    jest.mock(`${process.cwd()}/test/___ELDER___/compiled/fakepath/Test.js`, () => () => ({}), { virtual: true });
     jest.mock(
-      `${process.cwd()}/test/src/hooks.js`,
+      `${process.cwd()}${sep}test${sep}___ELDER___${sep}compiled${sep}fakepath${sep}Test.js`,
+      () => () => ({}),
+      { virtual: true },
+    );
+    jest.mock(
+      `${process.cwd()}${sep}test${sep}src${sep}hooks.js`,
       () => ({
         default: [
           {
@@ -134,7 +141,7 @@ describe('#Elder', () => {
       { virtual: true },
     );
     jest.mock(
-      `${process.cwd()}/test/src/plugins/elder-plugin-upload-s3/index.js`,
+      `${process.cwd()}${sep}test${sep}src${sep}plugins${sep}elder-plugin-upload-s3${sep}index.js`,
       () => ({
         hooks: [
           {
@@ -171,8 +178,8 @@ describe('#Elder', () => {
         routes: {
           'test-a': {
             hooks: [],
-            template: 'fakepath/Test.svelte',
-            all: () => Promise.resolve([{ slug: '/test' }]),
+            template: `fakepath${sep}Test.svelte`,
+            all: () => Promise.resolve([{ slug: `${sep}test` }]),
             permalink: () => Promise.resolve('/'),
           },
           'test-b': { data: () => {}, all: [] },
@@ -186,10 +193,10 @@ describe('#Elder', () => {
         virtual: true,
       },
     );
-    // eslint-disable-next-line global-require
-    const { Elder } = require('../index');
+    // eslint-disable-next-line import/no-dynamic-require
+    const { Elder } = require(`..${sep}index`);
     const elder = await new Elder({ context: 'server', worker: false });
     await elder.bootstrap();
-    expect(elder).toMatchSnapshot();
+    expect(normalizeSnapshot(elder)).toMatchSnapshot();
   });
 });

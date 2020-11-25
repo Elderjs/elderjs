@@ -1,13 +1,7 @@
 import glob from 'glob';
 import path from 'path';
 import { SvelteComponentFiles } from '../utils/types';
-
-export const windowsPathFix = (filePath: string | undefined): string | undefined => {
-  if (typeof filePath === 'string') {
-    return filePath.replace(/\\/gm, '/');
-  }
-  return undefined;
-};
+import windowsPathFix from '../utils/windowsPathFix';
 
 export const removeHash = (pathWithHash) => {
   const parsed = path.parse(pathWithHash);

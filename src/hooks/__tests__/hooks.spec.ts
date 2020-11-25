@@ -1,4 +1,5 @@
 import hooks from '../index';
+import normalizeSnapshot from '../../utils/normalizeSnapshot';
 
 jest.mock('../../externalHelpers', () => () => Promise.resolve({ permalink: jest.fn() }));
 
@@ -32,11 +33,12 @@ describe('#hooks', () => {
     expect(hooks.filter((h) => h.priority < 1 && h.priority > 100)).toEqual([]);
   });
   it('matchesSnapshot', () => {
-    expect(hooks).toMatchSnapshot();
+    expect(normalizeSnapshot(hooks)).toMatchSnapshot();
   });
   it('elderAddExternalHelpers', async () => {
     const hook = hooks.find((h) => h.name === 'elderAddExternalHelpers');
-    expect(await hook.run({ helpers: { old: jest.fn() }, query: {}, settings: {} })).toMatchSnapshot();
+    const c = await hook.run({ helpers: { old: jest.fn() }, query: {}, settings: {} });
+    expect(normalizeSnapshot(c)).toMatchSnapshot();
   });
   it('elderExpressLikeMiddleware', async () => {
     const hook = hooks.find((h) => h.name === 'elderExpressLikeMiddleware');
@@ -108,15 +110,15 @@ describe('#hooks', () => {
   });
   it('elderAddMetaCharsetToHead', async () => {
     const hook = hooks.find((h) => h.name === 'elderAddMetaCharsetToHead');
-    expect(await hook.run({ headStack: [] })).toMatchSnapshot();
+    expect(normalizeSnapshot(await hook.run({ headStack: [] }))).toMatchSnapshot();
   });
   it('elderAddMetaViewportToHead', async () => {
     const hook = hooks.find((h) => h.name === 'elderAddMetaViewportToHead');
-    expect(await hook.run({ headStack: [] })).toMatchSnapshot();
+    expect(normalizeSnapshot(await hook.run({ headStack: [] }))).toMatchSnapshot();
   });
   it('elderAddDefaultIntersectionObserver', async () => {
     const hook = hooks.find((h) => h.name === 'elderAddDefaultIntersectionObserver');
-    expect(await hook.run({ beforeHydrateStack: [] })).toMatchSnapshot();
+    expect(normalizeSnapshot(await hook.run({ beforeHydrateStack: [] }))).toMatchSnapshot();
   });
 
   it('elderCompileHtml', async () => {

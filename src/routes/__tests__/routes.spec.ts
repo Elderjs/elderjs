@@ -1,3 +1,5 @@
+import normalizeSnapshot from '../../utils/normalizeSnapshot';
+
 process.cwd = () => 'test';
 
 jest.mock('../../utils/svelteComponent', () => (component) => `<div class="svelteComponent">${component}</div>`);
@@ -67,7 +69,7 @@ describe('#routes', () => {
 
     expect(routesObject.content.permalink({ request: { slug: 'content' } })).toEqual(`/content/`);
     expect(routesObject.content.permalink({ request: { slug: '/' } })).toEqual(`/`);
-    expect(routesObject).toMatchSnapshot();
+    expect(normalizeSnapshot(routesObject)).toMatchSnapshot();
   });
 
   it('Sets a single request object for all array when when no all function', () => {
@@ -131,7 +133,7 @@ describe('#routes', () => {
     expect(routesObject.content.all).toEqual([{ slug: 'content' }]);
     expect(routesObject.SomethingCamel.all).toEqual([{ slug: 'something-camel' }]);
     expect(routesObject.home.all).toEqual([{ slug: '/' }]);
-    expect(routesObject).toMatchSnapshot();
+    expect(normalizeSnapshot(routesObject)).toMatchSnapshot();
   });
 
   it('works where things are set', () => {
@@ -178,7 +180,7 @@ describe('#routes', () => {
     // eslint-disable-next-line global-require
     const routes = require('../routes').default;
     // @ts-ignore
-    expect(routes(settings)).toMatchSnapshot();
+    expect(normalizeSnapshot(routes(settings))).toMatchSnapshot();
   });
 
   it('no template, ts imports', () => {
@@ -228,6 +230,6 @@ describe('#routes', () => {
     // eslint-disable-next-line global-require
     const routes = require('../routes').default;
     // @ts-ignore
-    expect(routes({ ...settings, typescript: true })).toMatchSnapshot();
+    expect(normalizeSnapshot(routes({ ...settings, typescript: true }))).toMatchSnapshot();
   });
 });
