@@ -45,9 +45,12 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
 
   if (config.css === 'file') {
     const assetPath = path.resolve(distElder, `.${path.sep}assets`);
+    fs.ensureDirSync(path.resolve(assetPath));
     const cssFiles = fs.readdirSync(assetPath).filter((f) => f.endsWith('.css'));
     if (cssFiles.length > 1) {
-      throw new Error(`${config.$$internal.prefix} Race condition has caused multiple css files in ${assetPath} `);
+      throw new Error(
+        `${config.$$internal.prefix} Race condition has caused multiple css files in ${assetPath}. If you keep seeing this delete the _elder and ___ELDER___  folders.`,
+      );
     }
     // eslint-disable-next-line prefer-destructuring
     config.$$internal.publicCssFileName = cssFiles[0];

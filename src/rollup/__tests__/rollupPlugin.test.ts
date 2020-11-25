@@ -1,12 +1,7 @@
 import path from 'path';
 import fsExtra from 'fs-extra';
+import getConfig from '../../utils/getConfig';
 import { createSSRConfig } from '../getRollupConfig';
-
-const common = {
-  distElder: path.resolve(process.cwd(), './public/_elder/'),
-  distDir: path.resolve(process.cwd(), './public/'),
-  rootDir: path.resolve(process.cwd(), './'),
-};
 
 const rollup = require('rollup');
 
@@ -29,9 +24,10 @@ describe('#rollupPlugin', () => {
   fsExtra.ensureDirSync.mockImplementation(console.log);
   // @ts-ignore
 
+  const elderConfig = getConfig();
+
   it('SSR: Properly rolls up 3 components including _css and css output', async () => {
     const { input, plugins, output } = createSSRConfig({
-      ...common,
       input: [
         path.resolve(`./src/rollup/__tests__/__fixtures__/simple/src/components/One.svelte`),
         path.resolve(`./src/rollup/__tests__/__fixtures__/simple/src/layouts/Two.svelte`),
@@ -44,7 +40,7 @@ describe('#rollupPlugin', () => {
       },
       multiInputConfig: false,
       svelteConfig: {},
-      rootDir: 'test',
+      elderConfig,
     });
 
     const bundle = await rollup.rollup({ input, plugins });
@@ -80,7 +76,6 @@ describe('#rollupPlugin', () => {
     process.cwd = jest.fn(process.cwd).mockImplementation(() => root);
 
     const { input, plugins, output } = createSSRConfig({
-      ...common,
       input: [
         path.resolve(`./src/rollup/__tests__/__fixtures__/external/src/layouts/External.svelte`),
         path.resolve(`./src/rollup/__tests__/__fixtures__/external/src/components/Component.svelte`),
@@ -92,7 +87,7 @@ describe('#rollupPlugin', () => {
       },
       multiInputConfig: false,
       svelteConfig: {},
-      rootDir: 'test',
+      elderConfig,
     });
 
     const bundle = await rollup.rollup({ input, plugins });

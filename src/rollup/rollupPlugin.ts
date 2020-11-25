@@ -11,8 +11,10 @@ import devalue from 'devalue';
 import btoa from 'btoa';
 // eslint-disable-next-line import/no-unresolved
 import { CompileOptions } from 'svelte/types/compiler/interfaces';
+import del from 'del';
 import partialHydration from '../partialHydration/partialHydration';
 import windowsPathFix from '../utils/windowsPathFix';
+import { SettingsOptions } from '../utils/types';
 
 const mapIntro = `/*# sourceMappingURL=data:application/json;charset=utf-8;base64,`;
 export const encodeSourceMap = (map) => {
@@ -31,7 +33,7 @@ export const cssFilePriority = (pathStr) => {
 };
 
 export function logDependency(importee, importer, memoryCache) {
-  if (importee === 'svelte/internal') return;
+  if (importee === 'svelte/internal' || importee === 'svelte') return;
   if (importer) {
     const parsedImporter = path.parse(importer);
     if (!memoryCache.dependencies[importer]) memoryCache.dependencies[importer] = new Set();
@@ -101,7 +103,7 @@ export type RollupCacheElder = {
   };
 };
 
-const cache: RollupCacheElder = {
+let cache: RollupCacheElder = {
   dependencies: {},
 };
 
@@ -110,27 +112,23 @@ const extensions = ['.svelte'];
 const production = process.env.NODE_ENV === 'production' || !process.env.ROLLUP_WATCH;
 
 export interface IElderjsRollupConfig {
-  distElder: string;
   type: 'ssr' | 'client';
   svelteConfig: any;
   legacy?: boolean;
-  rootDir: string;
-  distDir: string;
+  elderConfig: SettingsOptions;
 }
 
 export default function elderjsRollup({
-  distDir,
-  distElder,
+  elderConfig,
   svelteConfig,
   type = 'ssr',
   legacy = false,
-  rootDir,
 }: IElderjsRollupConfig): Partial<Plugin> {
   const cleanCss = new CleanCSS({
     sourceMap: !production,
     sourceMapInlineSources: !production,
     level: 1,
-    rebaseTo: distElder,
+    rebaseTo: elderConfig.$$internal.distElder,
   });
 
   const compilerOptions: CompileOptions = {
@@ -170,7 +168,16 @@ export default function elderjsRollup({
   return {
     name: 'rollup-plugin-elder',
 
+    watchChange(id) {
+      const prior = this.cache.get('dependencies');
+      prior[id] = new Set();
+
+      if (!cache) cache = { dependencies: {} };
+      cache.dependencies = prior;
+    },
+
     buildStart() {
+      // console.log('start', options);
       if (type === 'ssr') {
         styleCssHash = this.emitFile({
           type: 'asset',
@@ -183,6 +190,12 @@ export default function elderjsRollup({
             name: 'svelte.css.map',
           });
         }
+      }
+
+      if (type === 'ssr' && legacy === false) {
+        del.sync(elderConfig.$$internal.ssrComponents);
+      } else if (type === 'client' && legacy === false) {
+        del.sync(elderConfig.$$internal.distElder);
       }
     },
 
@@ -248,7 +261,7 @@ export default function elderjsRollup({
         return this.cache.get(digest);
       }
 
-      const filename = path.relative(rootDir, id);
+      const filename = path.relative(elderConfig.rootDir, id);
 
       const processed = await preprocess(code, preprocessors, { filename });
 
@@ -280,18 +293,22 @@ export default function elderjsRollup({
     async renderChunk(code, chunk) {
       if (chunk.isEntry) {
         if (type === 'ssr') {
-          const cssEntries = getCssFromCache(getDependencies(chunk.facadeModuleId, cache), this.cache);
+          const trackedDeps = getDependencies(chunk.facadeModuleId, cache);
+          // console.log(Object.keys(chunk.modules), trackedDeps);
+
+          const cssEntries = getCssFromCache(trackedDeps, this.cache);
           const cssOutput = await prepareCss(cssEntries);
           code += `\nmodule.exports._css = ${devalue(cssOutput.styles)};`;
           code += `\nmodule.exports._cssMap = ${devalue(encodeSourceMap(cssOutput.sourceMap))};`;
           code += `\nmodule.exports._cssIncluded = ${JSON.stringify(
-            cssOutput.included.map((d) => path.relative(rootDir, d)),
+            cssOutput.included.map((d) => path.relative(elderConfig.rootDir, d)),
           )}`;
 
           return { code, map: null };
         }
       }
     },
+
     // eslint-disable-next-line consistent-return
     async generateBundle(options, bundle, isWrite) {
       // IMPORTANT!!!
@@ -305,15 +322,18 @@ export default function elderjsRollup({
         if (styleCssMapHash) {
           this.setAssetSource(styleCssMapHash, sourceMap.toString());
           const sourceMapFile = this.getFileName(styleCssMapHash);
-          const sourceMapFileRel = `/${path.relative(distDir, path.resolve(distElder, sourceMapFile))}`;
+          const sourceMapFileRel = `/${path.relative(
+            elderConfig.distDir,
+            path.resolve(elderConfig.$$internal.distElder, sourceMapFile),
+          )}`;
           this.setAssetSource(styleCssHash, `${styles}\n /*# sourceMappingURL=${sourceMapFileRel} */`);
         } else {
           this.setAssetSource(styleCssHash, styles);
         }
       } else if (type === 'client' && !legacy && isWrite) {
         // copy over assets from the ssr folder to the client folder
-        const ssrAssets = path.resolve(rootDir, `.${sep}___ELDER___${sep}compiled${sep}assets`);
-        const clientAssets = path.resolve(distElder, `.${sep}assets${sep}`);
+        const ssrAssets = path.resolve(elderConfig.rootDir, `.${sep}___ELDER___${sep}compiled${sep}assets`);
+        const clientAssets = path.resolve(elderConfig.$$internal.distElder, `.${sep}assets${sep}`);
         fs.ensureDirSync(clientAssets);
         const open = fs.readdirSync(ssrAssets);
         if (open.length > 0) {
@@ -322,6 +342,10 @@ export default function elderjsRollup({
           });
         }
       }
+    },
+
+    writeBundle() {
+      this.cache.set('dependencies', cache.dependencies);
     },
   };
 }

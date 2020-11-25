@@ -8,7 +8,6 @@ import json from '@rollup/plugin-json';
 import glob from 'glob';
 import path from 'path';
 import fs from 'fs-extra';
-import del from 'del';
 import defaultsDeep from 'lodash.defaultsdeep';
 import { getElderConfig } from '../index';
 import { getDefaultRollup } from '../utils/validations';
@@ -47,9 +46,7 @@ export function createBrowserConfig({
   svelteConfig,
   replacements = {},
   ie11 = false as boolean,
-  distElder,
-  distDir,
-  rootDir,
+  elderConfig,
 }) {
   const toReplace = {
     'process.env.componentType': "'browser'",
@@ -65,7 +62,7 @@ export function createBrowserConfig({
     plugins: [
       replace(toReplace),
       json(),
-      elderSvelte({ svelteConfig, type: 'client', distElder, distDir, rootDir, legacy: ie11 }),
+      elderSvelte({ svelteConfig, type: 'client', legacy: ie11, elderConfig }),
       nodeResolve({
         browser: true,
         dedupe: ['svelte', 'core-js'],
@@ -107,16 +104,7 @@ export function createBrowserConfig({
   return config;
 }
 
-export function createSSRConfig({
-  input,
-  output,
-  svelteConfig,
-  replacements = {},
-  multiInputConfig,
-  rootDir,
-  distElder,
-  distDir,
-}) {
+export function createSSRConfig({ input, output, svelteConfig, replacements = {}, multiInputConfig, elderConfig }) {
   const toReplace = {
     'process.env.componentType': "'server'",
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
@@ -131,7 +119,7 @@ export function createSSRConfig({
     plugins: [
       replace(toReplace),
       json(),
-      elderSvelte({ svelteConfig, type: 'ssr', distElder, distDir, rootDir }),
+      elderSvelte({ svelteConfig, type: 'ssr', elderConfig }),
       nodeResolve({
         browser: false,
         dedupe: ['svelte'],
@@ -152,28 +140,24 @@ export default function getRollupConfig(options) {
   const defaultOptions = getDefaultRollup();
   const { svelteConfig, replacements } = defaultsDeep(options, defaultOptions);
   const elderConfig = getElderConfig();
-  const { $$internal, distDir, srcDir, rootDir, legacy } = elderConfig;
-  const { ssrComponents, clientComponents, distElder } = $$internal;
-  const relSrcDir = srcDir.replace(rootDir, '').substr(1);
+  const relSrcDir = elderConfig.srcDir.replace(elderConfig.rootDir, '').substr(1);
 
   console.log(`Elder.js using rollup in ${production ? 'production' : 'development'} mode.`);
 
   const configs = [];
 
-  // clear out components so there are no conflicts due to hashing.
-  del.sync([`${ssrComponents}*`, `${distElder}*`]);
   // Add ElderJs Peer deps to public if they exist.
   [
     ['./node_modules/intersection-observer/intersection-observer.js', './_elderjs/static/intersection-observer.js'],
   ].forEach((dep) => {
-    if (!fs.existsSync(path.resolve(rootDir, dep[0]))) {
+    if (!fs.existsSync(path.resolve(elderConfig.rootDir, dep[0]))) {
       throw new Error(`Elder.js peer dependency not found at ${dep[0]}`);
     }
     configs.push({
       input: dep[0],
       output: [
         {
-          file: path.resolve(distDir, dep[1]),
+          file: path.resolve(elderConfig.distDir, dep[1]),
           format: 'iife',
           name: dep[1],
           plugins: [terser()],
@@ -185,15 +169,6 @@ export default function getRollupConfig(options) {
   const { paths: pluginPaths, files: pluginFiles } = getPluginLocations(elderConfig);
   const pluginGlobs = pluginPaths.map((plugin) => `${plugin}*.svelte`);
 
-  const components = fs.existsSync(path.resolve(srcDir, `./components/`))
-    ? [
-        ...new Set([
-          ...glob.sync(path.resolve(srcDir, './components/*/*.svelte')),
-          ...glob.sync(path.resolve(srcDir, './components/*.svelte')),
-        ]),
-      ]
-    : [];
-
   configs.push(
     createSSRConfig({
       input: [
@@ -203,7 +178,7 @@ export default function getRollupConfig(options) {
         ...pluginGlobs,
       ],
       output: {
-        dir: ssrComponents,
+        dir: elderConfig.$$internal.ssrComponents,
         format: 'cjs',
         exports: 'auto',
         sourcemap: !production ? 'inline' : false,
@@ -213,9 +188,7 @@ export default function getRollupConfig(options) {
       }),
       svelteConfig,
       replacements,
-      rootDir,
-      distElder,
-      distDir,
+      elderConfig,
     }),
   );
 
@@ -224,7 +197,7 @@ export default function getRollupConfig(options) {
       input: [`${relSrcDir}/components/**/*.svelte`],
       output: [
         {
-          dir: clientComponents,
+          dir: elderConfig.$$internal.clientComponents,
           sourcemap: !production ? 'inline' : false,
           format: 'esm',
           entryFileNames: '[name].[hash].js',
@@ -236,16 +209,22 @@ export default function getRollupConfig(options) {
       }),
       svelteConfig,
       replacements,
-      distElder,
-      distDir,
-      rootDir,
+      elderConfig,
     }),
   );
 
   // legacy is only done on production or not split modes.
-  if (legacy && production) {
+  if (elderConfig.legacy && production) {
+    const components = fs.existsSync(path.resolve(elderConfig.srcDir, `./components/`))
+      ? [
+          ...new Set([
+            ...glob.sync(path.resolve(elderConfig.srcDir, './components/*/*.svelte')),
+            ...glob.sync(path.resolve(elderConfig.srcDir, './components/*.svelte')),
+          ]),
+        ]
+      : [];
     [...components, ...pluginFiles].forEach((cv) => {
-      const file = cv.replace(`${rootDir}/`, '');
+      const file = cv.replace(`${elderConfig.rootDir}/`, '');
       const parsed = path.parse(cv);
       configs.push(
         createBrowserConfig({
@@ -254,7 +233,7 @@ export default function getRollupConfig(options) {
             {
               name: `___elderjs_${parsed.name}`,
               entryFileNames: '[name].[hash].js',
-              dir: `${clientComponents}${path.sep}iife${path.sep}`,
+              dir: `${elderConfig.$$internal.clientComponents}${path.sep}iife${path.sep}`,
               sourcemap: !production,
               format: 'iife',
             },
@@ -263,9 +242,7 @@ export default function getRollupConfig(options) {
           replacements,
           multiInputConfig: false,
           ie11: true,
-          distElder,
-          distDir,
-          rootDir,
+          elderConfig,
         }),
       );
     });

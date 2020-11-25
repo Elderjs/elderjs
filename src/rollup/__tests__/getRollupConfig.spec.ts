@@ -3,6 +3,7 @@ import multiInput from 'rollup-plugin-multi-input';
 import path from 'path';
 import { createBrowserConfig, createSSRConfig } from '../getRollupConfig';
 import normalizeSnapshot from '../../utils/normalizeSnapshot';
+import getConfig from '../../utils/getConfig';
 
 // TODO: test replace
 
@@ -12,16 +13,19 @@ const fixRelativePath = (arr) => {
   return arr;
 };
 
-const common = {
-  distElder: path.resolve(process.cwd(), './public/_elder/'),
-  distDir: path.resolve(process.cwd(), './public/'),
-  rootDir: path.resolve(process.cwd(), './'),
-};
+jest.mock('fs-extra', () => {
+  return {
+    ensureDirSync: () => {},
+    readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+  };
+});
 
 describe('#getRollupConfig', () => {
   beforeEach(() => {
     jest.resetModules();
   });
+
+  const elderConfig = getConfig();
 
   it('createBrowserConfig works', () => {
     [true, false].forEach((sourcemap) => {
@@ -39,7 +43,7 @@ describe('#getRollupConfig', () => {
           transformOutputPath: (output) => `${path.basename(output)}`,
         }),
         svelteConfig: {},
-        ...common,
+        elderConfig,
       });
       expect(config).toEqual({
         cache: true,
@@ -68,7 +72,7 @@ describe('#getRollupConfig', () => {
         },
         svelteConfig: {},
         multiInputConfig: false,
-        ...common,
+        elderConfig,
       }).plugins.map((p) => p.name),
     ).toEqual(['replace', 'json', 'rollup-plugin-elder', 'node-resolve', 'commonjs', 'babel', 'terser']);
   });
@@ -76,7 +80,7 @@ describe('#getRollupConfig', () => {
   it('createBrowserConfig multiInputConfig = false, ie11 = true', () => {
     expect(
       createBrowserConfig({
-        ...common,
+        elderConfig,
         input: [`./components/*/*.svelte`],
         output: {
           dir: './public/dist/svelte/',
@@ -93,7 +97,7 @@ describe('#getRollupConfig', () => {
 
   it('createSSRConfig works', () => {
     const { plugins, ...config } = createSSRConfig({
-      ...common,
+      elderConfig,
       input: [`./components/*/*.svelte`],
       output: {
         dir: './___ELDER___/compiled/',
@@ -113,7 +117,6 @@ describe('#getRollupConfig', () => {
           },
         ],
       },
-      rootDir: 'test',
     });
     expect(config).toEqual({
       cache: true,
@@ -132,7 +135,7 @@ describe('#getRollupConfig', () => {
   it('createSSRConfig multiInputConfig = false', () => {
     expect(
       createSSRConfig({
-        ...common,
+        elderConfig,
         input: [`./components/*/*.svelte`],
         output: {
           dir: './___ELDER___/compiled/',
@@ -148,7 +151,6 @@ describe('#getRollupConfig', () => {
             },
           ],
         },
-        rootDir: 'test',
         multiInputConfig: false,
       }).plugins.map((p) => p.name),
     ).toEqual(['replace', 'json', 'rollup-plugin-elder', 'node-resolve', 'commonjs', 'terser']);
