@@ -463,6 +463,7 @@ describe('#rollupPlugin', () => {
 
     describe('#getCssFromCache', () => {
       it('takes an array of 1 and gets items from the cache', () => {
+        console.log('--------------- here', path.resolve('./test/src/components/AutoCompleteHome.svelte'), cssCache);
         expect(
           normalizeSnapshot(getCssFromCache([path.resolve('./test/src/components/AutoCompleteHome.svelte')], cssCache)),
         ).toEqual(
