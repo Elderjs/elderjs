@@ -28,7 +28,7 @@ describe('#mountComponentsInHtml', () => {
 
   it('mounts a single component in HTML correctly', () => {
     hydrated = [];
-
+    // eslint-disable-next-line global-require
     const mountComponentsInHtml = require('../mountComponentsInHtml');
 
     mountComponentsInHtml.default({
@@ -41,7 +41,7 @@ describe('#mountComponentsInHtml', () => {
 
   it('mounts multiple components within the same html correctly', () => {
     hydrated = [];
-
+    // eslint-disable-next-line global-require
     const mountComponentsInHtml = require('../mountComponentsInHtml');
 
     mountComponentsInHtml.default({
@@ -57,7 +57,7 @@ describe('#mountComponentsInHtml', () => {
 
   it('mounts 3 components within the same html correctly', () => {
     hydrated = [];
-
+    // eslint-disable-next-line global-require
     const mountComponentsInHtml = require('../mountComponentsInHtml');
 
     mountComponentsInHtml.default({
@@ -74,7 +74,7 @@ describe('#mountComponentsInHtml', () => {
 
   it('Extracts from Alock, Block, Clock', () => {
     hydrated = [];
-
+    // eslint-disable-next-line global-require
     const mountComponentsInHtml = require('../mountComponentsInHtml');
 
     mountComponentsInHtml.default({

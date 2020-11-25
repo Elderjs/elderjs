@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`#Elder hookSrcFile not found 1`] = `
-Elder {
+Object {
   "allRequests": Array [],
   "bootstrapComplete": Promise {},
   "data": Object {},
@@ -474,6 +474,17 @@ Elder {
         "addedBy": "elder.js",
         "type": "internal",
       },
+      "description": "Adds the css found in the svelte files to the head if 'css' in your 'elder.config.js' file is set to 'file'.",
+      "hook": "stacks",
+      "name": "elderAddCssFileToHead",
+      "priority": 100,
+      "run": [Function],
+    },
+    Object {
+      "$$meta": Object {
+        "addedBy": "elder.js",
+        "type": "internal",
+      },
       "description": "Sets up the default polyfill for the intersection observer",
       "hook": "stacks",
       "name": "elderAddDefaultIntersectionObserver",
@@ -590,10 +601,6 @@ Elder {
   "settings": Object {
     "$$internal": Object {
       "clientComponents": "test/public/svelte",
-      "hashedComponents": Object {
-        "File1": "entryFile1",
-        "File2": "entryFile2",
-      },
       "ssrComponents": "test/___ELDER___/compiled",
     },
     "build": false,
@@ -635,7 +642,7 @@ Elder {
 `;
 
 exports[`#Elder srcPlugin found 1`] = `
-Elder {
+Object {
   "allRequests": Array [
     Object {
       "permalink": "/dev/",
@@ -1115,6 +1122,17 @@ Elder {
         "addedBy": "elder.js",
         "type": "internal",
       },
+      "description": "Adds the css found in the svelte files to the head if 'css' in your 'elder.config.js' file is set to 'file'.",
+      "hook": "stacks",
+      "name": "elderAddCssFileToHead",
+      "priority": 100,
+      "run": [Function],
+    },
+    Object {
+      "$$meta": Object {
+        "addedBy": "elder.js",
+        "type": "internal",
+      },
       "description": "Sets up the default polyfill for the intersection observer",
       "hook": "stacks",
       "name": "elderAddDefaultIntersectionObserver",
@@ -1279,10 +1297,6 @@ Elder {
   "settings": Object {
     "$$internal": Object {
       "clientComponents": "test/public/svelte",
-      "hashedComponents": Object {
-        "File1": "entryFile1",
-        "File2": "entryFile2",
-      },
       "ssrComponents": "test/___ELDER___/compiled",
     },
     "build": false,

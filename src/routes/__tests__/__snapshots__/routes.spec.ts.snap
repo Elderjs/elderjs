@@ -2,7 +2,7 @@
 
 exports[`#routes Sets a default permalink function when undefined. 1`] = `
 Object {
-  "Content": Object {
+  "content": Object {
     "all": Array [
       Object {
         "slug": "content",
@@ -17,48 +17,20 @@ Object {
     "template": "Default",
     "templateComponent": "<div class=\\"svelteComponent\\">Default</div>",
   },
-  "Home": Object {
+  "home": Object {
     "all": [Function],
     "data": [Function],
     "layout": "Layout.svelte",
     "layoutComponent": "<div class=\\"svelteComponent\\">Layout.svelte</div>",
     "permalink": [Function],
     "template": "Home.svelte",
-    "templateComponent": "<div class=\\"svelteComponent\\">test/src/routes/Home/Home.svelte</div>",
+    "templateComponent": "<div class=\\"svelteComponent\\">test/src/routes/home/Home.svelte</div>",
   },
 }
 `;
 
 exports[`#routes Sets a single request object for all array when when no all function 1`] = `
 Object {
-  "Content": Object {
-    "all": Array [
-      Object {
-        "slug": "content",
-      },
-    ],
-    "data": Object {
-      "foo": "bar",
-    },
-    "layout": "Layout",
-    "layoutComponent": "<div class=\\"svelteComponent\\">Layout</div>",
-    "permalink": [Function],
-    "template": "Default",
-    "templateComponent": "<div class=\\"svelteComponent\\">Default</div>",
-  },
-  "Home": Object {
-    "all": Array [
-      Object {
-        "slug": "/",
-      },
-    ],
-    "data": [Function],
-    "layout": "Layout.svelte",
-    "layoutComponent": "<div class=\\"svelteComponent\\">Layout.svelte</div>",
-    "permalink": [Function],
-    "template": "Home.svelte",
-    "templateComponent": "<div class=\\"svelteComponent\\">test/src/routes/Home/Home.svelte</div>",
-  },
   "SomethingCamel": Object {
     "all": Array [
       Object {
@@ -72,12 +44,40 @@ Object {
     "template": "SomethingCamel.svelte",
     "templateComponent": "<div class=\\"svelteComponent\\">test/src/routes/SomethingCamel/SomethingCamel.svelte</div>",
   },
+  "content": Object {
+    "all": Array [
+      Object {
+        "slug": "content",
+      },
+    ],
+    "data": Object {
+      "foo": "bar",
+    },
+    "layout": "Layout",
+    "layoutComponent": "<div class=\\"svelteComponent\\">Layout</div>",
+    "permalink": [Function],
+    "template": "Default",
+    "templateComponent": "<div class=\\"svelteComponent\\">Default</div>",
+  },
+  "home": Object {
+    "all": Array [
+      Object {
+        "slug": "/",
+      },
+    ],
+    "data": [Function],
+    "layout": "Layout.svelte",
+    "layoutComponent": "<div class=\\"svelteComponent\\">Layout.svelte</div>",
+    "permalink": [Function],
+    "template": "Home.svelte",
+    "templateComponent": "<div class=\\"svelteComponent\\">test/src/routes/home/Home.svelte</div>",
+  },
 }
 `;
 
 exports[`#routes no template, ts imports 1`] = `
 Object {
-  "Content": Object {
+  "content": Object {
     "all": [Function],
     "data": Object {
       "foo": "bar",
@@ -86,23 +86,23 @@ Object {
     "layoutComponent": "<div class=\\"svelteComponent\\">Layout</div>",
     "permalink": [Function],
     "template": "Content.svelte",
-    "templateComponent": "<div class=\\"svelteComponent\\">test/___ELDER___/compiled/Content.js</div>",
+    "templateComponent": "<div class=\\"svelteComponent\\">Content</div>",
   },
-  "Home": Object {
+  "home": Object {
     "all": [Function],
     "data": [Function],
     "layout": "Layout.svelte",
     "layoutComponent": "<div class=\\"svelteComponent\\">Layout.svelte</div>",
     "permalink": [Function],
     "template": "Home.svelte",
-    "templateComponent": "<div class=\\"svelteComponent\\">test/src/routes/Home/Home.svelte</div>",
+    "templateComponent": "<div class=\\"svelteComponent\\">test/src/routes/home/Home.svelte</div>",
   },
 }
 `;
 
-exports[`#routes works 1`] = `
+exports[`#routes works where things are set 1`] = `
 Object {
-  "Content": Object {
+  "content": Object {
     "all": [Function],
     "data": Object {
       "foo": "bar",
@@ -113,14 +113,14 @@ Object {
     "template": "Default",
     "templateComponent": "<div class=\\"svelteComponent\\">Default</div>",
   },
-  "Home": Object {
+  "home": Object {
     "all": [Function],
     "data": [Function],
     "layout": "Layout.svelte",
     "layoutComponent": "<div class=\\"svelteComponent\\">Layout.svelte</div>",
     "permalink": [Function],
     "template": "Home.svelte",
-    "templateComponent": "<div class=\\"svelteComponent\\">test/src/routes/Home/Home.svelte</div>",
+    "templateComponent": "<div class=\\"svelteComponent\\">test/src/routes/home/Home.svelte</div>",
   },
 }
 `;

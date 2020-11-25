@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import createReadOnlyProxy from './createReadOnlyProxy';
 
 // TODO: How do we get types to the user when they are writing plugins, etc?
@@ -89,7 +90,7 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
       return hookOutput;
     }
     if (settings && settings.debug && settings.debug.hooks) {
-      console.log(`${hookName} finished without executing any hooks`);
+      console.log(`${hookName} finished without executing any functions`);
     }
 
     if (props.perf) props.perf.end(`hook.${hookName}`);

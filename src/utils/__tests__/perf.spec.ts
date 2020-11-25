@@ -1,3 +1,5 @@
+import normalizeSnapshot from '../normalizeSnapshot';
+
 class PerformanceObserverMock {
   cb: (any) => void;
 
@@ -41,7 +43,7 @@ describe('#perf', () => {
     mockPage.perf.end('test');
     mockPage.perf.stop();
 
-    expect(mockPage).toMatchSnapshot();
+    expect(normalizeSnapshot(mockPage)).toMatchSnapshot();
     expect(calls).toEqual([
       'clearMarks Page-xxxxxxxx',
       'mark test-start-xxxxxxxx',
