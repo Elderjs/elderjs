@@ -27,8 +27,6 @@ const prepareFindSvelteComponent = ({ ssrFolder, rootDir, clientComponents: clie
     const cacheKey = JSON.stringify({ name, folder });
     if (cache.has(cacheKey)) return cache.get(cacheKey);
 
-    console.log('findComponent: ', { nameFixed, folder });
-
     // abs path first
     if (nameFixed.includes(rootDirFixed)) {
       const rel = windowsPathFix(path.relative(path.join(rootDirFixed, 'src'), name)).replace('.svelte', '.js');
