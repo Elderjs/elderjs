@@ -14,20 +14,22 @@ export const removeHash = (pathWithHash) => {
 };
 
 const prepareFindSvelteComponent = ({ ssrFolder, rootDir, clientComponents: clientFolder, distDir }) => {
-  const ssrComponents = glob.sync(`${ssrFolder}/**/*.js`);
+  const rootDirFixed = windowsPathFix(rootDir);
+  const ssrComponents = glob.sync(`${ssrFolder}/**/*.js`).map(windowsPathFix);
   const clientComponents = glob
     .sync(`${clientFolder}/**/*.js`)
-    .map((c) => `${path.sep}${path.relative(windowsPathFix(distDir), c)}`);
+    .map((c) => windowsPathFix(`${path.sep}${path.relative(distDir, c)}`));
 
   const cache = new Map();
 
   const findComponent = (name, folder): SvelteComponentFiles => {
+    const nameFixed = windowsPathFix(name);
     const cacheKey = JSON.stringify({ name, folder });
     if (cache.has(cacheKey)) return cache.get(cacheKey);
 
     // abs path first
-    if (name.includes(rootDir)) {
-      const rel = path.relative(path.resolve(rootDir, `.${path.sep}src`), name).replace('.svelte', '.js');
+    if (nameFixed.includes(rootDirFixed)) {
+      const rel = windowsPathFix(path.relative(path.join(rootDirFixed, 'src'), name)).replace('.svelte', '.js');
       const parsed = path.parse(rel);
       const ssr = ssrComponents.find((c) => c.endsWith(rel));
       const client = windowsPathFix(clientComponents.find((c) => removeHash(c).endsWith(rel)));
