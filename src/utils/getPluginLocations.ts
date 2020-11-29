@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import glob from 'glob';
 import path from 'path';
 import fs from 'fs-extra';

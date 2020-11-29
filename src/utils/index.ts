@@ -1,6 +1,5 @@
 import asyncForEach from './asyncForEach';
 import capitalizeFirstLetter from './capitalizeFirstLetter';
-import getHashedSvelteComponents from './getHashedSvelteComponents';
 import getUniqueId from './getUniqueId';
 import IntersectionObserver from './IntersectionObserver';
 import Page from './Page';
@@ -16,14 +15,13 @@ import { prepareServer } from './prepareServer';
 import { validateHook, validateRoute, validatePlugin, validateShortcode } from './validations';
 import prepareProcessStack from './prepareProcessStack';
 import getConfig from './getConfig';
-import getRollupConfig from './getRollupConfig';
+import getRollupConfig from '../rollup/getRollupConfig';
 import prepareInlineShortcode from './prepareInlineShortcode';
 
 export {
   asyncForEach,
   capitalizeFirstLetter,
   svelteComponent,
-  getHashedSvelteComponents,
   getUniqueId,
   validateShortcode,
   IntersectionObserver,

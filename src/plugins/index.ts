@@ -1,3 +1,5 @@
+/* eslint-disable no-param-reassign */
+/* eslint-disable global-require */
 import fs from 'fs-extra';
 import defaultsDeep from 'lodash.defaultsdeep';
 

@@ -1,4 +1,5 @@
 import hooks from '../index';
+import normalizeSnapshot from '../../utils/normalizeSnapshot';
 
 jest.mock('../../externalHelpers', () => () => Promise.resolve({ permalink: jest.fn() }));
 
@@ -32,11 +33,12 @@ describe('#hooks', () => {
     expect(hooks.filter((h) => h.priority < 1 && h.priority > 100)).toEqual([]);
   });
   it('matchesSnapshot', () => {
-    expect(hooks).toMatchSnapshot();
+    expect(normalizeSnapshot(hooks)).toMatchSnapshot();
   });
   it('elderAddExternalHelpers', async () => {
     const hook = hooks.find((h) => h.name === 'elderAddExternalHelpers');
-    expect(await hook.run({ helpers: { old: jest.fn() }, query: {}, settings: {} })).toMatchSnapshot();
+    const c = await hook.run({ helpers: { old: jest.fn() }, query: {}, settings: {} });
+    expect(normalizeSnapshot(c)).toMatchSnapshot();
   });
   it('elderExpressLikeMiddleware', async () => {
     const hook = hooks.find((h) => h.name === 'elderExpressLikeMiddleware');
@@ -80,7 +82,7 @@ describe('#hooks', () => {
         },
         settings,
       }),
-    ).toEqual({});
+    ).toBeUndefined();
     expect(end).toHaveBeenCalledTimes(1);
     expect(headers).toEqual(['Content-Type-text/html']);
   });
@@ -108,15 +110,15 @@ describe('#hooks', () => {
   });
   it('elderAddMetaCharsetToHead', async () => {
     const hook = hooks.find((h) => h.name === 'elderAddMetaCharsetToHead');
-    expect(await hook.run({ headStack: [] })).toMatchSnapshot();
+    expect(normalizeSnapshot(await hook.run({ headStack: [] }))).toMatchSnapshot();
   });
   it('elderAddMetaViewportToHead', async () => {
     const hook = hooks.find((h) => h.name === 'elderAddMetaViewportToHead');
-    expect(await hook.run({ headStack: [] })).toMatchSnapshot();
+    expect(normalizeSnapshot(await hook.run({ headStack: [] }))).toMatchSnapshot();
   });
   it('elderAddDefaultIntersectionObserver', async () => {
     const hook = hooks.find((h) => h.name === 'elderAddDefaultIntersectionObserver');
-    expect(await hook.run({ beforeHydrateStack: [] })).toMatchSnapshot();
+    expect(normalizeSnapshot(await hook.run({ beforeHydrateStack: [] }))).toMatchSnapshot();
   });
 
   it('elderCompileHtml', async () => {
@@ -205,5 +207,76 @@ describe('#hooks', () => {
         settings: { debug: { performance: true }, rootDir: process.cwd() },
       }),
     ).toBeUndefined();
+  });
+
+  describe('#elderAddCssFileToHead', () => {
+    it('it respects settings.css = file', async () => {
+      const hook = hooks.find((h) => h.name === 'elderAddCssFileToHead');
+      expect(
+        await hook.run({
+          errors: ['error1', 'error2'],
+          headStack: [],
+          settings: {
+            css: 'file',
+            $$internal: {
+              publicCssFile: '/_elderjs/assets/svelte.123.js',
+            },
+          },
+        }),
+      ).toEqual({
+        headStack: [
+          {
+            priority: 30,
+            source: 'elderAddCssFileToHead',
+            string: `<link rel="stylesheet" href="/_elderjs/assets/svelte.123.js" media="all" />`,
+          },
+        ],
+      });
+    });
+
+    describe('#elderAddCssFileToHead', () => {
+      it('it respects settings.css = lazy', async () => {
+        const hook = hooks.find((h) => h.name === 'elderAddCssFileToHead');
+        expect(
+          await hook.run({
+            errors: ['error1', 'error2'],
+            headStack: [],
+            settings: {
+              css: 'lazy',
+              $$internal: {
+                publicCssFile: '/_elderjs/assets/svelte.123.js',
+              },
+            },
+          }),
+        ).toEqual({
+          headStack: [
+            {
+              priority: 30,
+              source: 'elderAddCssFileToHead',
+              string: `<link rel="preload" href="/_elderjs/assets/svelte.123.js" as="style" /><link rel="stylesheet" href="/_elderjs/assets/svelte.123.js" media="print" onload="this.media='all'" /><noscript><link rel="stylesheet" href="/_elderjs/assets/svelte.123.js" media="all" /></noscript>`,
+            },
+          ],
+        });
+      });
+    });
+
+    it('it respects settings.css = inline', async () => {
+      const hook = hooks.find((h) => h.name === 'elderAddCssFileToHead');
+      expect(
+        await hook.run({
+          errors: ['error1', 'error2'],
+          settings: { css: 'inline' },
+        }),
+      ).toBeUndefined();
+    });
+    it('it respects settings.css = none', async () => {
+      const hook = hooks.find((h) => h.name === 'elderAddCssFileToHead');
+      expect(
+        await hook.run({
+          errors: ['error1', 'error2'],
+          settings: { css: 'none' },
+        }),
+      ).toBeUndefined();
+    });
   });
 });

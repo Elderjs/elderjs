@@ -5,7 +5,6 @@ test('includes all', () => {
     'asyncForEach',
     'capitalizeFirstLetter',
     'svelteComponent',
-    'getHashedSvelteComponents',
     'getUniqueId',
     'validateShortcode',
     'IntersectionObserver',

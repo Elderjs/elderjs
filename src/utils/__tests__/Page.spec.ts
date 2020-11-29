@@ -1,4 +1,6 @@
+/* eslint-disable no-param-reassign */
 import Page from '../Page';
+import normalizeSnapshot from '../normalizeSnapshot';
 
 jest.mock('../getUniqueId', () => () => 'xxxxxxxxxx');
 jest.mock('../prepareProcessStack', () => (page) => (stackName) => {
@@ -207,7 +209,7 @@ describe('#Page', () => {
 
   it('initialize and build', async () => {
     const page = new Page(pageInput);
-    expect(page).toMatchSnapshot();
+    expect(normalizeSnapshot(page)).toMatchSnapshot();
     await page.build();
 
     expect(hooks).toEqual([
@@ -220,6 +222,6 @@ describe('#Page', () => {
       'html',
       'requestComplete',
     ]);
-    expect(page).toMatchSnapshot();
+    expect(normalizeSnapshot(page)).toMatchSnapshot();
   });
 });
