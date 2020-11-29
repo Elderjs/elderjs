@@ -120,11 +120,11 @@ describe('#hooks', () => {
   });
   it(' elderAddHtmlLangAttributes', async () => {
     const hook = hooks.find((h) => h.name === 'elderAddHtmlLangAttributes');
-    expect(await hook.run({ htmlAttributesStack: [], settings: { lang: 'en'} })).toMatchSnapshot();
+    expect(await hook.run({ htmlAttributesStack: [], settings: { lang: 'en' } })).toMatchSnapshot();
   });
   it(' elderAddBodyClassAttributes', async () => {
     const hook = hooks.find((h) => h.name === 'elderAddBodyClassAttributes');
-    expect(await hook.run({ bodyAttributesStack: [], request: { route: 'test'} })).toMatchSnapshot();
+    expect(await hook.run({ bodyAttributesStack: [], request: { route: 'test' } })).toMatchSnapshot();
   });
   it('elderCompileHtml', async () => {
     const hook = hooks.find((h) => h.name === 'elderCompileHtml');
