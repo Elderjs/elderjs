@@ -48,6 +48,7 @@ describe('#hydrateComponent', () => {
   });
 
   it(`tests hydrate-options={{ loading: 'lazy' }} This is the default config, uses intersection observer.`, () => {
+    // eslint-disable-next-line global-require
     const { default: hydrateComponent } = require('../hydrateComponent');
     const hydrateStack = [];
     const headStack = [];
@@ -84,6 +85,7 @@ describe('#hydrateComponent', () => {
     );
   });
   it(`tests hydrate-options={{ loading: 'eager' }} This would cause the component to be hydrate in a blocking manner as soon as the js is rendered.`, () => {
+    // eslint-disable-next-line global-require
     const { default: hydrateComponent } = require('../hydrateComponent');
     const hydrateStack = [];
     const headStack = [];
@@ -121,6 +123,7 @@ describe('#hydrateComponent', () => {
   });
 
   it(`tests hydrate-options={{ loading: 'none' }} This allows arbitrary svelte components to be rendered server side but not hydrated.`, () => {
+    // eslint-disable-next-line global-require
     const { default: hydrateComponent } = require('../hydrateComponent');
     const hydrateStack = [];
     const headStack = [];
@@ -135,6 +138,7 @@ describe('#hydrateComponent', () => {
   });
 
   it(`tests hydrate-options={{ preload: true }} This adds a preload to the head stack as outlined above... could be preloaded without forcing blocking.`, () => {
+    // eslint-disable-next-line global-require
     const { default: hydrateComponent } = require('../hydrateComponent');
     const hydrateStack = [];
     const headStack = [];
@@ -179,6 +183,7 @@ describe('#hydrateComponent', () => {
     );
   });
   it(`tests hydrate-options={{ preload: true, loading: 'eager' }} This would preload and be blocking.`, () => {
+    // eslint-disable-next-line global-require
     const { default: hydrateComponent } = require('../hydrateComponent');
     const hydrateStack = [];
     const headStack = [];
@@ -223,6 +228,7 @@ describe('#hydrateComponent', () => {
     );
   });
   it(`tests hydrate-options={{ rootMargin: '300px', threshold: 20 }} This would adjust the root margin of the intersection observer. Only usable with loading: 'lazy'`, () => {
+    // eslint-disable-next-line global-require
     const { default: hydrateComponent } = require('../hydrateComponent');
     const hydrateStack = [];
     const headStack = [];
@@ -260,6 +266,7 @@ describe('#hydrateComponent', () => {
   });
 
   it('tests with no iife', () => {
+    // eslint-disable-next-line global-require
     const { default: hydrateComponent } = require('../hydrateComponent');
     const hydrateStack = [];
     const headStack = [];
@@ -287,6 +294,7 @@ describe('#hydrateComponent', () => {
   });
 
   it('tests with no props', () => {
+    // eslint-disable-next-line global-require
     const { default: hydrateComponent } = require('../hydrateComponent');
     const hydrateStack = [];
     const headStack = [];
@@ -324,6 +332,7 @@ describe('#hydrateComponent', () => {
   });
 
   it(`tests hydrating multiple components, preload, eager, lazy`, () => {
+    // eslint-disable-next-line global-require
     const { default: hydrateComponent } = require('../hydrateComponent');
     const hydrateStack = [];
     const headStack = [];
@@ -421,6 +430,7 @@ describe('#hydrateComponent', () => {
   });
 
   it(`tests hydrating multiple components, 'eager' + preload: true, eager, lazy`, () => {
+    // eslint-disable-next-line global-require
     const { default: hydrateComponent } = require('../hydrateComponent');
     const hydrateStack = [];
     const headStack = [];

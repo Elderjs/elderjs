@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import cliProgress from 'cli-progress';
 import os from 'os';
 import cluster from 'cluster';

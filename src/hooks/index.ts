@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 import path from 'path';
 import fs from 'fs-extra';
 import { parseBuildPerf } from '../utils';
@@ -27,7 +28,6 @@ const hooks: Array<HookOptions> = [
           },
         };
       }
-      return null;
     },
   },
   {
@@ -106,7 +106,6 @@ const hooks: Array<HookOptions> = [
       } else {
         next();
       }
-      return {};
     },
   },
   {
@@ -189,6 +188,38 @@ const hooks: Array<HookOptions> = [
   },
   {
     hook: 'stacks',
+    name: 'elderAddCssFileToHead',
+    description: `Adds the css found in the svelte files to the head if 'css' in your 'elder.config.js' file is set to 'file'.`,
+    priority: 100,
+    run: async ({ headStack, settings }) => {
+      if (settings.css === 'file' && settings.$$internal.publicCssFile) {
+        return {
+          headStack: [
+            ...headStack,
+            {
+              source: 'elderAddCssFileToHead',
+              string: `<link rel="stylesheet" href="${settings.$$internal.publicCssFile}" media="all" />`,
+              priority: 30,
+            },
+          ],
+        };
+      }
+      if (settings.css === 'lazy' && settings.$$internal.publicCssFile) {
+        return {
+          headStack: [
+            ...headStack,
+            {
+              source: 'elderAddCssFileToHead',
+              string: `<link rel="preload" href="${settings.$$internal.publicCssFile}" as="style" /><link rel="stylesheet" href="${settings.$$internal.publicCssFile}" media="print" onload="this.media='all'" /><noscript><link rel="stylesheet" href="${settings.$$internal.publicCssFile}" media="all" /></noscript>`,
+              priority: 30,
+            },
+          ],
+        };
+      }
+    },
+  },
+  {
+    hook: 'stacks',
     name: 'elderAddDefaultIntersectionObserver',
     description: 'Sets up the default polyfill for the intersection observer',
     priority: 100,
@@ -200,7 +231,7 @@ const hooks: Array<HookOptions> = [
             string: `<script type="text/javascript">
       if (!('IntersectionObserver' in window)) {
           var script = document.createElement("script");
-          script.src = "/static/intersection-observer.js";
+          script.src = "/_elderjs/static/intersection-observer.js";
           document.getElementsByTagName('head')[0].appendChild(script);
       };
       </script>

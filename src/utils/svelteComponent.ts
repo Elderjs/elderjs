@@ -1,12 +1,7 @@
-import path from 'path';
-
+/* eslint-disable global-require */
 import { ComponentPayload } from './types';
 import mountComponentsInHtml from '../partialHydration/mountComponentsInHtml';
 import hydrateComponent from '../partialHydration/hydrateComponent';
-
-export const getClientSvelteFolder = (page) => {
-  return page.settings.$$internal.clientComponents.replace(page.settings.distDir, '').replace(/\\/gm, '/'); // windows fix.
-};
 
 export const getComponentName = (str) => {
   let out = str.replace('.svelte', '').replace('.js', '');
@@ -16,44 +11,27 @@ export const getComponentName = (str) => {
   return out;
 };
 
-const componentCache = {};
-
-const svelteComponent = (componentName: String, ssrFolder: String = 'components') => ({
+const svelteComponent = (componentName: String, folder: String = 'components') => ({
   page,
   props,
   hydrateOptions,
 }: ComponentPayload): string => {
+  const { ssr, client, iife } = page.settings.$$internal.findComponent(componentName, folder);
+
   const cleanComponentName = getComponentName(componentName);
 
-  if (!componentCache[cleanComponentName]) {
-    const clientComponents = page.settings.$$internal.hashedComponents;
-    const ssrComponent = path.resolve(
-      page.settings.$$internal.ssrComponents,
-      `./${ssrFolder}/${cleanComponentName}.js`,
-    );
-    const clientSvelteFolder = getClientSvelteFolder(page);
+  // eslint-disable-next-line import/no-dynamic-require
+  const ssrReq = require(ssr);
 
-    // eslint-disable-next-line global-require, import/no-dynamic-require
-    const { render, _css, _cssMap } = require(ssrComponent);
-
-    componentCache[cleanComponentName] = {
-      render,
-      clientSrcMjs: `${clientSvelteFolder}/${clientComponents[cleanComponentName].mjs}.mjs`,
-      iife: clientComponents[cleanComponentName].iife
-        ? `${clientSvelteFolder}/${clientComponents[cleanComponentName].iife}.js`
-        : false,
-      css: _css,
-      cssMap: _cssMap,
-    };
-  }
-
-  const { render, clientSrcMjs, iife, css, cssMap } = componentCache[cleanComponentName];
+  const { render, _css: css, _cssMap: cssMap } = ssrReq.default || ssrReq;
 
   try {
     const { html: htmlOutput, head } = render(props);
 
-    if (css && css.length > 0 && page.svelteCss) {
-      page.svelteCss.push({ css, cssMap });
+    if (page.settings.css === 'inline') {
+      if (css && css.length > 0 && page.svelteCss) {
+        page.svelteCss.push({ css, cssMap });
+      }
     }
 
     if (head && page.headStack) {
@@ -63,7 +41,7 @@ const svelteComponent = (componentName: String, ssrFolder: String = 'components'
     return hydrateComponent({
       page,
       iife,
-      clientSrcMjs,
+      clientSrcMjs: client,
       innerHtml: mountComponentsInHtml({ html: htmlOutput, page, hydrateOptions }),
       hydrateOptions,
       componentName: cleanComponentName,

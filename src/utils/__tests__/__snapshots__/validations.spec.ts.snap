@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`#validations configSchema 1`] = `
-ObjectSchema {
-  "_blacklist": RefSet {
+Object {
+  "_blacklist": Object {
     "list": Set {},
     "refs": Map {},
   },
@@ -13,6 +13,7 @@ ObjectSchema {
   "_exclusive": Object {},
   "_mutate": undefined,
   "_nodes": Array [
+    "css",
     "legacy",
     "plugins",
     "shortcodes",
@@ -32,13 +33,13 @@ ObjectSchema {
   },
   "_type": "object",
   "_typeError": [Function],
-  "_whitelist": RefSet {
+  "_whitelist": Object {
     "list": Set {},
     "refs": Map {},
   },
   "fields": Object {
-    "build": ObjectSchema {
-      "_blacklist": RefSet {
+    "build": Object {
+      "_blacklist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -58,13 +59,13 @@ ObjectSchema {
       },
       "_type": "object",
       "_typeError": [Function],
-      "_whitelist": RefSet {
+      "_whitelist": Object {
         "list": Set {},
         "refs": Map {},
       },
       "fields": Object {
-        "numberOfWorkers": NumberSchema {
-          "_blacklist": RefSet {
+        "numberOfWorkers": Object {
+          "_blacklist": Object {
             "list": Set {},
             "refs": Map {},
           },
@@ -80,7 +81,7 @@ ObjectSchema {
           },
           "_type": "number",
           "_typeError": [Function],
-          "_whitelist": RefSet {
+          "_whitelist": Object {
             "list": Set {},
             "refs": Map {},
           },
@@ -90,8 +91,8 @@ ObjectSchema {
           ],
           "type": "number",
         },
-        "shuffleRequests": BooleanSchema {
-          "_blacklist": RefSet {
+        "shuffleRequests": Object {
+          "_blacklist": Object {
             "list": Set {},
             "refs": Map {},
           },
@@ -107,7 +108,7 @@ ObjectSchema {
           },
           "_type": "boolean",
           "_typeError": [Function],
-          "_whitelist": RefSet {
+          "_whitelist": Object {
             "list": Set {},
             "refs": Map {},
           },
@@ -124,8 +125,41 @@ ObjectSchema {
       ],
       "type": "object",
     },
-    "debug": ObjectSchema {
-      "_blacklist": RefSet {
+    "css": Object {
+      "_blacklist": Object {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": Array [],
+      "_default": "file",
+      "_deps": Array [],
+      "_exclusive": Object {
+        "inline-lazy-none-file": false,
+        "required": true,
+      },
+      "_label": "How should css found in svelte files be handled? 'inline' emits styles into the head. 'file' adds a file include into the head. 'none' doesn't do anything with the styles.",
+      "_mutate": undefined,
+      "_options": Object {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "string",
+      "_typeError": [Function],
+      "_whitelist": Object {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": Array [
+        [Function],
+        [Function],
+      ],
+      "transforms": Array [
+        [Function],
+      ],
+      "type": "string",
+    },
+    "debug": Object {
+      "_blacklist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -150,13 +184,13 @@ ObjectSchema {
       },
       "_type": "object",
       "_typeError": [Function],
-      "_whitelist": RefSet {
+      "_whitelist": Object {
         "list": Set {},
         "refs": Map {},
       },
       "fields": Object {
-        "automagic": BooleanSchema {
-          "_blacklist": RefSet {
+        "automagic": Object {
+          "_blacklist": Object {
             "list": Set {},
             "refs": Map {},
           },
@@ -172,7 +206,7 @@ ObjectSchema {
           },
           "_type": "boolean",
           "_typeError": [Function],
-          "_whitelist": RefSet {
+          "_whitelist": Object {
             "list": Set {},
             "refs": Map {},
           },
@@ -182,8 +216,8 @@ ObjectSchema {
           ],
           "type": "boolean",
         },
-        "build": BooleanSchema {
-          "_blacklist": RefSet {
+        "build": Object {
+          "_blacklist": Object {
             "list": Set {},
             "refs": Map {},
           },
@@ -199,7 +233,7 @@ ObjectSchema {
           },
           "_type": "boolean",
           "_typeError": [Function],
-          "_whitelist": RefSet {
+          "_whitelist": Object {
             "list": Set {},
             "refs": Map {},
           },
@@ -209,8 +243,8 @@ ObjectSchema {
           ],
           "type": "boolean",
         },
-        "hooks": BooleanSchema {
-          "_blacklist": RefSet {
+        "hooks": Object {
+          "_blacklist": Object {
             "list": Set {},
             "refs": Map {},
           },
@@ -226,7 +260,7 @@ ObjectSchema {
           },
           "_type": "boolean",
           "_typeError": [Function],
-          "_whitelist": RefSet {
+          "_whitelist": Object {
             "list": Set {},
             "refs": Map {},
           },
@@ -236,8 +270,8 @@ ObjectSchema {
           ],
           "type": "boolean",
         },
-        "performance": BooleanSchema {
-          "_blacklist": RefSet {
+        "performance": Object {
+          "_blacklist": Object {
             "list": Set {},
             "refs": Map {},
           },
@@ -253,7 +287,7 @@ ObjectSchema {
           },
           "_type": "boolean",
           "_typeError": [Function],
-          "_whitelist": RefSet {
+          "_whitelist": Object {
             "list": Set {},
             "refs": Map {},
           },
@@ -263,8 +297,8 @@ ObjectSchema {
           ],
           "type": "boolean",
         },
-        "shortcodes": BooleanSchema {
-          "_blacklist": RefSet {
+        "shortcodes": Object {
+          "_blacklist": Object {
             "list": Set {},
             "refs": Map {},
           },
@@ -280,7 +314,7 @@ ObjectSchema {
           },
           "_type": "boolean",
           "_typeError": [Function],
-          "_whitelist": RefSet {
+          "_whitelist": Object {
             "list": Set {},
             "refs": Map {},
           },
@@ -290,8 +324,8 @@ ObjectSchema {
           ],
           "type": "boolean",
         },
-        "stacks": BooleanSchema {
-          "_blacklist": RefSet {
+        "stacks": Object {
+          "_blacklist": Object {
             "list": Set {},
             "refs": Map {},
           },
@@ -307,7 +341,7 @@ ObjectSchema {
           },
           "_type": "boolean",
           "_typeError": [Function],
-          "_whitelist": RefSet {
+          "_whitelist": Object {
             "list": Set {},
             "refs": Map {},
           },
@@ -324,8 +358,8 @@ ObjectSchema {
       ],
       "type": "object",
     },
-    "distDir": StringSchema {
-      "_blacklist": RefSet {
+    "distDir": Object {
+      "_blacklist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -341,7 +375,7 @@ ObjectSchema {
       },
       "_type": "string",
       "_typeError": [Function],
-      "_whitelist": RefSet {
+      "_whitelist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -351,8 +385,8 @@ ObjectSchema {
       ],
       "type": "string",
     },
-    "hooks": ObjectSchema {
-      "_blacklist": RefSet {
+    "hooks": Object {
+      "_blacklist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -371,13 +405,13 @@ ObjectSchema {
       },
       "_type": "object",
       "_typeError": [Function],
-      "_whitelist": RefSet {
+      "_whitelist": Object {
         "list": Set {},
         "refs": Map {},
       },
       "fields": Object {
-        "disable": ArraySchema {
-          "_blacklist": RefSet {
+        "disable": Object {
+          "_blacklist": Object {
             "list": Set {},
             "refs": Map {},
           },
@@ -391,8 +425,8 @@ ObjectSchema {
             "abortEarly": true,
             "recursive": true,
           },
-          "_subType": StringSchema {
-            "_blacklist": RefSet {
+          "_subType": Object {
+            "_blacklist": Object {
               "list": Set {},
               "refs": Map {},
             },
@@ -406,7 +440,7 @@ ObjectSchema {
             },
             "_type": "string",
             "_typeError": [Function],
-            "_whitelist": RefSet {
+            "_whitelist": Object {
               "list": Set {},
               "refs": Map {},
             },
@@ -418,12 +452,12 @@ ObjectSchema {
           },
           "_type": "array",
           "_typeError": [Function],
-          "_whitelist": RefSet {
+          "_whitelist": Object {
             "list": Set {},
             "refs": Map {},
           },
-          "innerType": StringSchema {
-            "_blacklist": RefSet {
+          "innerType": Object {
+            "_blacklist": Object {
               "list": Set {},
               "refs": Map {},
             },
@@ -437,7 +471,7 @@ ObjectSchema {
             },
             "_type": "string",
             "_typeError": [Function],
-            "_whitelist": RefSet {
+            "_whitelist": Object {
               "list": Set {},
               "refs": Map {},
             },
@@ -487,8 +521,8 @@ ObjectSchema {
       ],
       "type": "string",
     },
-    "legacy": BooleanSchema {
-      "_blacklist": RefSet {
+    "legacy": Object {
+      "_blacklist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -504,7 +538,7 @@ ObjectSchema {
       },
       "_type": "boolean",
       "_typeError": [Function],
-      "_whitelist": RefSet {
+      "_whitelist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -514,8 +548,8 @@ ObjectSchema {
       ],
       "type": "boolean",
     },
-    "origin": StringSchema {
-      "_blacklist": RefSet {
+    "origin": Object {
+      "_blacklist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -531,7 +565,7 @@ ObjectSchema {
       },
       "_type": "string",
       "_typeError": [Function],
-      "_whitelist": RefSet {
+      "_whitelist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -541,8 +575,8 @@ ObjectSchema {
       ],
       "type": "string",
     },
-    "plugins": ObjectSchema {
-      "_blacklist": RefSet {
+    "plugins": Object {
+      "_blacklist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -561,7 +595,7 @@ ObjectSchema {
       },
       "_type": "object",
       "_typeError": [Function],
-      "_whitelist": RefSet {
+      "_whitelist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -572,8 +606,8 @@ ObjectSchema {
       ],
       "type": "object",
     },
-    "rootDir": StringSchema {
-      "_blacklist": RefSet {
+    "rootDir": Object {
+      "_blacklist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -589,7 +623,7 @@ ObjectSchema {
       },
       "_type": "string",
       "_typeError": [Function],
-      "_whitelist": RefSet {
+      "_whitelist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -599,8 +633,8 @@ ObjectSchema {
       ],
       "type": "string",
     },
-    "server": ObjectSchema {
-      "_blacklist": RefSet {
+    "server": Object {
+      "_blacklist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -619,13 +653,13 @@ ObjectSchema {
       },
       "_type": "object",
       "_typeError": [Function],
-      "_whitelist": RefSet {
+      "_whitelist": Object {
         "list": Set {},
         "refs": Map {},
       },
       "fields": Object {
-        "prefix": StringSchema {
-          "_blacklist": RefSet {
+        "prefix": Object {
+          "_blacklist": Object {
             "list": Set {},
             "refs": Map {},
           },
@@ -641,7 +675,7 @@ ObjectSchema {
           },
           "_type": "string",
           "_typeError": [Function],
-          "_whitelist": RefSet {
+          "_whitelist": Object {
             "list": Set {},
             "refs": Map {},
           },
@@ -658,8 +692,8 @@ ObjectSchema {
       ],
       "type": "object",
     },
-    "shortcodes": ObjectSchema {
-      "_blacklist": RefSet {
+    "shortcodes": Object {
+      "_blacklist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -679,13 +713,13 @@ ObjectSchema {
       },
       "_type": "object",
       "_typeError": [Function],
-      "_whitelist": RefSet {
+      "_whitelist": Object {
         "list": Set {},
         "refs": Map {},
       },
       "fields": Object {
-        "closePattern": StringSchema {
-          "_blacklist": RefSet {
+        "closePattern": Object {
+          "_blacklist": Object {
             "list": Set {},
             "refs": Map {},
           },
@@ -701,7 +735,7 @@ ObjectSchema {
           },
           "_type": "string",
           "_typeError": [Function],
-          "_whitelist": RefSet {
+          "_whitelist": Object {
             "list": Set {},
             "refs": Map {},
           },
@@ -711,8 +745,8 @@ ObjectSchema {
           ],
           "type": "string",
         },
-        "openPattern": StringSchema {
-          "_blacklist": RefSet {
+        "openPattern": Object {
+          "_blacklist": Object {
             "list": Set {},
             "refs": Map {},
           },
@@ -728,7 +762,7 @@ ObjectSchema {
           },
           "_type": "string",
           "_typeError": [Function],
-          "_whitelist": RefSet {
+          "_whitelist": Object {
             "list": Set {},
             "refs": Map {},
           },
@@ -745,8 +779,8 @@ ObjectSchema {
       ],
       "type": "object",
     },
-    "srcDir": StringSchema {
-      "_blacklist": RefSet {
+    "srcDir": Object {
+      "_blacklist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -762,7 +796,7 @@ ObjectSchema {
       },
       "_type": "string",
       "_typeError": [Function],
-      "_whitelist": RefSet {
+      "_whitelist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -782,8 +816,8 @@ ObjectSchema {
 `;
 
 exports[`#validations hookSchema 1`] = `
-ObjectSchema {
-  "_blacklist": RefSet {
+Object {
+  "_blacklist": Object {
     "list": Set {},
     "refs": Map {},
   },
@@ -810,13 +844,13 @@ ObjectSchema {
   },
   "_type": "object",
   "_typeError": [Function],
-  "_whitelist": RefSet {
+  "_whitelist": Object {
     "list": Set {},
     "refs": Map {},
   },
   "fields": Object {
-    "$$meta": ObjectSchema {
-      "_blacklist": RefSet {
+    "$$meta": Object {
+      "_blacklist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -836,13 +870,13 @@ ObjectSchema {
       },
       "_type": "object",
       "_typeError": [Function],
-      "_whitelist": RefSet {
+      "_whitelist": Object {
         "list": Set {},
         "refs": Map {},
       },
       "fields": Object {
-        "addedBy": StringSchema {
-          "_blacklist": RefSet {
+        "addedBy": Object {
+          "_blacklist": Object {
             "list": Set {},
             "refs": Map {},
           },
@@ -859,7 +893,7 @@ ObjectSchema {
           },
           "_type": "string",
           "_typeError": [Function],
-          "_whitelist": RefSet {
+          "_whitelist": Object {
             "list": Set {},
             "refs": Map {},
           },
@@ -871,8 +905,8 @@ ObjectSchema {
           ],
           "type": "string",
         },
-        "type": StringSchema {
-          "_blacklist": RefSet {
+        "type": Object {
+          "_blacklist": Object {
             "list": Set {},
             "refs": Map {},
           },
@@ -889,7 +923,7 @@ ObjectSchema {
           },
           "_type": "string",
           "_typeError": [Function],
-          "_whitelist": RefSet {
+          "_whitelist": Object {
             "list": Set {},
             "refs": Map {},
           },
@@ -908,8 +942,8 @@ ObjectSchema {
       ],
       "type": "object",
     },
-    "description": StringSchema {
-      "_blacklist": RefSet {
+    "description": Object {
+      "_blacklist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -926,7 +960,7 @@ ObjectSchema {
       },
       "_type": "string",
       "_typeError": [Function],
-      "_whitelist": RefSet {
+      "_whitelist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -938,8 +972,8 @@ ObjectSchema {
       ],
       "type": "string",
     },
-    "hook": StringSchema {
-      "_blacklist": RefSet {
+    "hook": Object {
+      "_blacklist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -957,7 +991,7 @@ ObjectSchema {
       },
       "_type": "string",
       "_typeError": [Function],
-      "_whitelist": RefSet {
+      "_whitelist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -970,8 +1004,8 @@ ObjectSchema {
       ],
       "type": "string",
     },
-    "name": StringSchema {
-      "_blacklist": RefSet {
+    "name": Object {
+      "_blacklist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -988,7 +1022,7 @@ ObjectSchema {
       },
       "_type": "string",
       "_typeError": [Function],
-      "_whitelist": RefSet {
+      "_whitelist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -1000,8 +1034,8 @@ ObjectSchema {
       ],
       "type": "string",
     },
-    "priority": NumberSchema {
-      "_blacklist": RefSet {
+    "priority": Object {
+      "_blacklist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -1021,7 +1055,7 @@ ObjectSchema {
       },
       "_type": "number",
       "_typeError": [Function],
-      "_whitelist": RefSet {
+      "_whitelist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -1035,8 +1069,8 @@ ObjectSchema {
       ],
       "type": "number",
     },
-    "run": SchemaType {
-      "_blacklist": RefSet {
+    "run": Object {
+      "_blacklist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -1055,7 +1089,7 @@ ObjectSchema {
       },
       "_type": "mixed",
       "_typeError": [Function],
-      "_whitelist": RefSet {
+      "_whitelist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -1078,8 +1112,8 @@ ObjectSchema {
 `;
 
 exports[`#validations pluginSchema 1`] = `
-ObjectSchema {
-  "_blacklist": RefSet {
+Object {
+  "_blacklist": Object {
     "list": Set {},
     "refs": Map {},
   },
@@ -1104,13 +1138,13 @@ ObjectSchema {
   },
   "_type": "object",
   "_typeError": [Function],
-  "_whitelist": RefSet {
+  "_whitelist": Object {
     "list": Set {},
     "refs": Map {},
   },
   "fields": Object {
-    "config": ObjectSchema {
-      "_blacklist": RefSet {
+    "config": Object {
+      "_blacklist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -1129,7 +1163,7 @@ ObjectSchema {
       },
       "_type": "object",
       "_typeError": [Function],
-      "_whitelist": RefSet {
+      "_whitelist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -1140,8 +1174,8 @@ ObjectSchema {
       ],
       "type": "object",
     },
-    "description": StringSchema {
-      "_blacklist": RefSet {
+    "description": Object {
+      "_blacklist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -1157,7 +1191,7 @@ ObjectSchema {
       },
       "_type": "string",
       "_typeError": [Function],
-      "_whitelist": RefSet {
+      "_whitelist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -1167,8 +1201,8 @@ ObjectSchema {
       ],
       "type": "string",
     },
-    "hooks": ArraySchema {
-      "_blacklist": RefSet {
+    "hooks": Object {
+      "_blacklist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -1187,7 +1221,7 @@ ObjectSchema {
       "_subType": undefined,
       "_type": "array",
       "_typeError": [Function],
-      "_whitelist": RefSet {
+      "_whitelist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -1200,8 +1234,8 @@ ObjectSchema {
       ],
       "type": "array",
     },
-    "init": SchemaType {
-      "_blacklist": RefSet {
+    "init": Object {
+      "_blacklist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -1218,7 +1252,7 @@ ObjectSchema {
       },
       "_type": "mixed",
       "_typeError": [Function],
-      "_whitelist": RefSet {
+      "_whitelist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -1228,8 +1262,8 @@ ObjectSchema {
       "transforms": Array [],
       "type": "mixed",
     },
-    "name": StringSchema {
-      "_blacklist": RefSet {
+    "name": Object {
+      "_blacklist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -1245,7 +1279,7 @@ ObjectSchema {
       },
       "_type": "string",
       "_typeError": [Function],
-      "_whitelist": RefSet {
+      "_whitelist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -1255,8 +1289,8 @@ ObjectSchema {
       ],
       "type": "string",
     },
-    "routes": ObjectSchema {
-      "_blacklist": RefSet {
+    "routes": Object {
+      "_blacklist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -1275,7 +1309,7 @@ ObjectSchema {
       },
       "_type": "object",
       "_typeError": [Function],
-      "_whitelist": RefSet {
+      "_whitelist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -1286,8 +1320,8 @@ ObjectSchema {
       ],
       "type": "object",
     },
-    "shortcodes": ArraySchema {
-      "_blacklist": RefSet {
+    "shortcodes": Object {
+      "_blacklist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -1304,7 +1338,7 @@ ObjectSchema {
       "_subType": undefined,
       "_type": "array",
       "_typeError": [Function],
-      "_whitelist": RefSet {
+      "_whitelist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -1325,8 +1359,8 @@ ObjectSchema {
 `;
 
 exports[`#validations routeSchema 1`] = `
-ObjectSchema {
-  "_blacklist": RefSet {
+Object {
+  "_blacklist": Object {
     "list": Set {},
     "refs": Map {},
   },
@@ -1348,13 +1382,13 @@ ObjectSchema {
   },
   "_type": "object",
   "_typeError": [Function],
-  "_whitelist": RefSet {
+  "_whitelist": Object {
     "list": Set {},
     "refs": Map {},
   },
   "fields": Object {
-    "all": SchemaType {
-      "_blacklist": RefSet {
+    "all": Object {
+      "_blacklist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -1372,7 +1406,7 @@ ObjectSchema {
       },
       "_type": "mixed",
       "_typeError": [Function],
-      "_whitelist": RefSet {
+      "_whitelist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -1383,8 +1417,8 @@ ObjectSchema {
       "transforms": Array [],
       "type": "mixed",
     },
-    "data": SchemaType {
-      "_blacklist": RefSet {
+    "data": Object {
+      "_blacklist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -1400,7 +1434,7 @@ ObjectSchema {
       },
       "_type": "mixed",
       "_typeError": [Function],
-      "_whitelist": RefSet {
+      "_whitelist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -1408,8 +1442,8 @@ ObjectSchema {
       "transforms": Array [],
       "type": "mixed",
     },
-    "permalink": SchemaType {
-      "_blacklist": RefSet {
+    "permalink": Object {
+      "_blacklist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -1427,7 +1461,7 @@ ObjectSchema {
       },
       "_type": "mixed",
       "_typeError": [Function],
-      "_whitelist": RefSet {
+      "_whitelist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -1438,8 +1472,8 @@ ObjectSchema {
       "transforms": Array [],
       "type": "mixed",
     },
-    "template": StringSchema {
-      "_blacklist": RefSet {
+    "template": Object {
+      "_blacklist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -1456,7 +1490,7 @@ ObjectSchema {
       },
       "_type": "string",
       "_typeError": [Function],
-      "_whitelist": RefSet {
+      "_whitelist": Object {
         "list": Set {},
         "refs": Map {},
       },

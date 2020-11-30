@@ -17,7 +17,6 @@ import {
   validateShortcode,
   permalinks,
   asyncForEach,
-  getHashedSvelteComponents,
   getConfig,
   prepareInlineShortcode,
 } from './utils';
@@ -272,6 +271,7 @@ class Elder {
           }
 
           allRequestsForRoute.forEach((r) => {
+            // eslint-disable-next-line no-param-reassign
             r.route = routeName;
             if (!{}.hasOwnProperty.call(r, 'slug')) {
               throw new Error(`Request for ${routeName} is missing a slug property.`);
@@ -332,8 +332,6 @@ class Elder {
           }
         }
 
-        // do this last to try and prevent a common race condition.
-        this.settings.$$internal.hashedComponents = getHashedSvelteComponents(this.settings);
         this.markBootstrapComplete(this);
       });
     });

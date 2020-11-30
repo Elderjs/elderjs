@@ -15,6 +15,7 @@ function prepareProcessStack(page) {
           console.log(cv);
         }
         if (cv.string && cv.string.length > 0 && !seen.has(cv.string)) {
+          // eslint-disable-next-line no-param-reassign
           out = `${out}${cv.string}`;
           seen.add(cv.string);
         }

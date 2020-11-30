@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 const prepareInlineShortcode = ({ settings }) => ({ name, props = {}, content = '' }) => {
   const { openPattern, closePattern } = settings.shortcodes;
   const openNoEscape = openPattern.replace('\\', '');

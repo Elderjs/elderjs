@@ -102,6 +102,18 @@ const configSchema = yup.object({
     .label(
       'EXPERIMENTAL: This implementation will not work in all scenarios, may change in the future, or be dropped completely... but Elder.js will attempt to add an IE11/nomodule friendly iife bundle for each component on production rollup builds. Please note, currently shared stores do not work but see this issue: https://github.com/Elderjs/elderjs/issues/44#issue-709580756 and you may need to bring your own polyfills.',
     ),
+  css: yup
+    .string()
+    .required()
+    .default('file')
+    .test(
+      'inline-lazy-none-file',
+      'Css in your elder.config.js must be "inline", "file", "lazy", or "none".',
+      (value) => ['file', 'inline', 'lazy', 'none'].includes(value),
+    )
+    .label(
+      `How should css found in svelte files be handled? 'inline' emits styles into the head. 'file' adds a file include into the head. 'none' doesn't do anything with the styles.`,
+    ),
 });
 
 /**
@@ -198,15 +210,6 @@ const hookSchema = yup
 
 const rollupSchema = yup.object({
   svelteConfig: yup.object().default({}).notRequired().label('Usually imported from ./svelte.config.js'),
-  dev: yup.object({
-    splitComponents: yup
-      .boolean()
-      .default(false)
-      .notRequired()
-      .label(
-        "Dramatically speeds up development reloads but breaks some of Svelte's core functionality such as shared stores across hydrated components.",
-      ),
-  }),
   replacements: yup
     .object()
     .default({})

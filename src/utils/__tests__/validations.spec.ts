@@ -8,6 +8,7 @@ import {
   routeSchema,
   pluginSchema,
 } from '../validations';
+import normalizeSnapshot from '../normalizeSnapshot';
 
 describe('#validations', () => {
   const validHook = {
@@ -22,6 +23,7 @@ describe('#validations', () => {
   };
 
   const defaultConfig = {
+    css: 'file',
     legacy: false,
     build: {
       numberOfWorkers: -1,
@@ -108,15 +110,15 @@ describe('#validations', () => {
     });
   });
   test('configSchema', () => {
-    expect(configSchema).toMatchSnapshot();
+    expect(normalizeSnapshot(configSchema)).toMatchSnapshot();
   });
   test('hookSchema', () => {
-    expect(hookSchema).toMatchSnapshot();
+    expect(normalizeSnapshot(hookSchema)).toMatchSnapshot();
   });
   test('routeSchema', () => {
-    expect(routeSchema).toMatchSnapshot();
+    expect(normalizeSnapshot(routeSchema)).toMatchSnapshot();
   });
   test('pluginSchema', () => {
-    expect(pluginSchema).toMatchSnapshot();
+    expect(normalizeSnapshot(pluginSchema)).toMatchSnapshot();
   });
 });
