@@ -494,8 +494,8 @@ Object {
       ],
       "type": "object",
     },
-    "lang": StringSchema {
-      "_blacklist": RefSet {
+    "lang": Object {
+      "_blacklist": Object {
         "list": Set {},
         "refs": Map {},
       },
@@ -511,7 +511,7 @@ Object {
       },
       "_type": "string",
       "_typeError": [Function],
-      "_whitelist": RefSet {
+      "_whitelist": Object {
         "list": Set {},
         "refs": Map {},
       },
