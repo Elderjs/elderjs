@@ -136,7 +136,6 @@ describe('#hooks', () => {
         headString: 'head',
         htmlAttributesString: 'lang="en"',
         bodyAttributesString: 'class="test"',
-        AttributesString: 'class="test"',
         footerString: 'footer',
         layoutHtml: 'layout',
       }),
