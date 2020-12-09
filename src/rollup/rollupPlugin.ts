@@ -107,8 +107,6 @@ let cache: RollupCacheElder = {
   dependencies: {},
 };
 
-const extensions = ['.svelte'];
-
 const production = process.env.NODE_ENV === 'production' || !process.env.ROLLUP_WATCH;
 
 export interface IElderjsRollupConfig {
@@ -148,6 +146,8 @@ export default function elderjsRollup({
   if (legacy) {
     compilerOptions.legacy = true;
   }
+
+  const extensions = (svelteConfig && svelteConfig.extensions) || ['.svelte'];
 
   const preprocessors =
     svelteConfig && Array.isArray(svelteConfig.preprocess)
