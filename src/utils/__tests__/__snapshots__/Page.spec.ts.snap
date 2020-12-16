@@ -40,8 +40,6 @@ Object {
     "metersInAMile": 0.00062137119224,
     "permalinks": Object {},
   },
-  "htmlAttributesStack": Array [],
-  "htmlAttributesString": "",
   "htmlString": "",
   "hydrateStack": Array [],
   "moduleJsStack": Array [],
@@ -272,7 +270,6 @@ Object {
     "metersInAMile": 0.00062137119224,
     "permalinks": Object {},
   },
-  "htmlAttributesStack": Array [],
   "htmlAttributesString": "",
   "htmlString": "",
   "hydrateStack": Array [
@@ -490,7 +487,6 @@ Object {
                 "metersInAMile": 0.00062137119224,
                 "permalinks": Object {},
               },
-              "htmlAttributesStack": Array [],
               "htmlAttributesString": "",
               "htmlString": "",
               "hydrateStack": Array [
@@ -968,7 +964,6 @@ Object {
                 "metersInAMile": 0.00062137119224,
                 "permalinks": Object {},
               },
-              "htmlAttributesStack": Array [],
               "htmlAttributesString": "",
               "htmlString": "",
               "hydrateStack": Array [

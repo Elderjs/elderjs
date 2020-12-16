@@ -249,6 +249,7 @@ export const hookInterface: Array<HookInterface> = [
       'footerString',
       'layoutHtml',
       'htmlString',
+      'settings',
     ],
     mutable: ['errors', 'htmlString'],
     context: 'This is where Elder.js merges the html from the Svelte layout with stacks and wraps it in an <html> tag.',

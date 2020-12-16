@@ -160,8 +160,6 @@ class Page {
 
   bodyAttributesString: string;
 
-  htmlAttributesString: string;
-
   svelteCss: Array<SvelteCss>;
 
   htmlString: string;
@@ -169,8 +167,6 @@ class Page {
   moduleStack: Stack;
 
   moduleJsStack: Stack;
-
-  htmlAttributesStack: Stack;
 
   bodyAttributesStack: Stack;
 
@@ -205,9 +201,7 @@ class Page {
     this.routes = routes;
     this.cssString = '';
     this.htmlString = '';
-    this.htmlAttributesString = '';
     this.bodyAttributesString = '';
-    this.htmlAttributesStack = [];
     this.bodyAttributesStack = [];
     this.headStack = [];
     this.cssStack = [];
