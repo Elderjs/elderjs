@@ -270,14 +270,17 @@ class Elder {
             throw new Error(`${routeName}'s all() function isn't returning an array`);
           }
 
-          allRequestsForRoute.forEach((r) => {
-            // eslint-disable-next-line no-param-reassign
-            r.route = routeName;
-            if (!{}.hasOwnProperty.call(r, 'slug')) {
+          allRequestsForRoute = allRequestsForRoute.reduce((out, cv) => {
+            if (!{}.hasOwnProperty.call(cv, 'slug')) {
               throw new Error(`Request for ${routeName} is missing a slug property.`);
             }
-          });
-
+            // copy the obj so we don't have pass by reference issues.
+            const copy = JSON.parse(JSON.stringify(cv));
+            // add in routeName
+            copy.route = routeName;
+            out.push(copy);
+            return out;
+          }, []);
           this.allRequests = this.allRequests.concat(allRequestsForRoute);
         });
 
