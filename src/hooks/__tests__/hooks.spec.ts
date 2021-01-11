@@ -120,7 +120,6 @@ describe('#hooks', () => {
     const hook = hooks.find((h) => h.name === 'elderAddDefaultIntersectionObserver');
     expect(normalizeSnapshot(await hook.run({ beforeHydrateStack: [] }))).toMatchSnapshot();
   });
-
   it('elderCompileHtml', async () => {
     const hook = hooks.find((h) => h.name === 'elderCompileHtml');
     expect(
@@ -129,6 +128,7 @@ describe('#hooks', () => {
         headString: 'head',
         footerString: 'footer',
         layoutHtml: 'layout',
+        settings: { lang: 'en' },
       }),
     ).toStrictEqual({
       htmlString: '<!DOCTYPE html><html lang="en"><head>head</head><body class="test">layoutfooter</body></html>',

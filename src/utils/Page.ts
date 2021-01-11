@@ -85,6 +85,8 @@ const buildPage = async (page) => {
     // prepare for compileHtml
     const beforeHydrate = page.processStack('beforeHydrateStack');
     const hydrate = page.processStack('hydrateStack');
+    page.htmlAttributesString = page.processStack('htmlAttributesStack');
+    page.bodyAttributesString = page.processStack('bodyAttributesStack');
 
     const customJs = page.processStack('customJsStack');
     const footer = page.processStack('footerStack');
@@ -160,6 +162,14 @@ class Page {
 
   htmlString: string;
 
+  bodyAttributesString: string;
+
+  htmlAttributesString: string;
+
+  bodyAttributesStack: Stack;
+
+  htmlAttributesStack: Stack;
+
   moduleStack: Stack;
 
   moduleJsStack: Stack;
@@ -195,6 +205,10 @@ class Page {
     this.routes = routes;
     this.cssString = '';
     this.htmlString = '';
+    this.htmlAttributesString = '';
+    this.bodyAttributesString = '';
+    this.bodyAttributesStack = [];
+    this.htmlAttributesStack = [];
     this.headStack = [];
     this.cssStack = [];
     this.beforeHydrateStack = [];
