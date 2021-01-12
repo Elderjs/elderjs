@@ -61,7 +61,7 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
 
   if (config.origin === '') {
     console.error(
-      `WARN: Remember to put a valid "origin" in your elder.config.js. This should be a fully qualified domain. This is frequently used plugins and leaving it blank can cause SEO headaches.`,
+      `WARN: Remember to put a valid "origin" in your elder.config.js. This should be a fully qualified domain. This is frequently used by plugins and leaving it blank can cause SEO headaches.`,
     );
   }
 
