@@ -36,12 +36,23 @@ export function logDependency(importee, importer, memoryCache) {
   if (importee === 'svelte/internal' || importee === 'svelte') return;
   if (importer) {
     const parsedImporter = path.parse(importer);
+
+    // The following two expressions are used to determine if we are trying to import
+    // a svelte file from an external dependency and ensure that we add the correct path to that dependency
+    const externalDependencyImport = path.resolve(
+      parsedImporter.dir.substr(0, parsedImporter.dir.lastIndexOf('src/')),
+      'node_modules',
+      importee,
+    );
+    const isExternalDependency = fs.pathExistsSync(externalDependencyImport);
     if (!memoryCache.dependencies[importer]) memoryCache.dependencies[importer] = new Set();
     if (importee.includes('node_modules')) {
       memoryCache.dependencies[importer].add(importee);
     } else if (importer.includes('node_modules')) {
       const fullImportee = path.resolve(parsedImporter.dir, importee);
       memoryCache.dependencies[importer].add(fullImportee);
+    } else if (importee.includes('.svelte') && isExternalDependency) {
+      memoryCache.dependencies[importer].add(externalDependencyImport);
     } else if ((parsedImporter.ext === '.svelte' && importee.includes('.svelte')) || importee.includes('.css')) {
       const fullImportee = path.resolve(parsedImporter.dir, importee);
       memoryCache.dependencies[importer].add(fullImportee);
@@ -235,7 +246,6 @@ export default function elderjsRollup({
       // use pkg.svelte
       if (parts.length === 0 && pkg.svelte) {
         const svelteResolve = path.resolve(dir, pkg.svelte);
-        // console.log('-----------------', svelteResolve, name);
         logDependency(svelteResolve, name, cache);
         return svelteResolve;
       }
@@ -298,7 +308,6 @@ export default function elderjsRollup({
         if (type === 'ssr') {
           const trackedDeps = getDependencies(chunk.facadeModuleId, cache);
           // console.log(Object.keys(chunk.modules), trackedDeps);
-
           const cssEntries = getCssFromCache(trackedDeps, this.cache);
           const cssOutput = await prepareCss(cssEntries);
           code += `\nmodule.exports._css = ${devalue(cssOutput.styles)};`;

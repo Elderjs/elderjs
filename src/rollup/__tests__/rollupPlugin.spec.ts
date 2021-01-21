@@ -629,9 +629,7 @@ describe('#rollupPlugin', () => {
             const bound = ssrPlugin.renderChunk.bind(t);
             const r = await bound('', { isEntry: true, facadeModuleId: files[0] });
             expect(r.code).toContain(`.content{content`);
-            expect(r.code).toContain(
-              `\\u002Felderjs\\u002Felderjs\\u002Ftest\\u002Fsrc\\u002Fcomponents\\u002FAutoComplete.svelte`,
-            );
+            expect(r.code).toContain(`\\u002Felderjs\\u002Ftest\\u002Fsrc\\u002Fcomponents\\u002FAutoComplete.svelte`);
             expect(r.code).toContain('AutoComplete.svelte"]');
           });
 

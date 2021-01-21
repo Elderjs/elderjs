@@ -95,29 +95,30 @@ describe('#rollupPlugin', () => {
     const { output: out } = await bundle.generate({ output });
 
     const css = out.find((c) => c.name === 'svelte.css');
+    console.log(css.source)
     expect(css.source).toContain(
-      `.layout.svelte-1e9whng{content:'we did it.'}.component.svelte-1hi7b3d{background:orange}`,
+      `.layout.svelte-1e9whng{content:'we did it.'}.component.svelte-1be6npj{background:orange}`,
     );
 
     // css with the same priority is non-deterministic in the tests
     // node_modules is lowest priority
     expect(
       css.source.includes(
-        `.icon.svelte-qg30r{background-color:#fff;border-radius:10px;width:10px;height:10px;color:#000}.button.svelte-zc2di4{padding:10px 20px;background-color:#f50;color:#fff;font-weight:700}.layout.svelte-1e9whng{content:'we did it.'}.component.svelte-1hi7b3d{background:orange}`,
+        `.icon.svelte-1kfpccr{background-color:#fff;border-radius:10px;width:10px;height:10px;color:#000}.button.svelte-11xgp0c{padding:10px 20px;background-color:#f50;color:#fff;font-weight:700}.layout.svelte-1e9whng{content:'we did it.'}.component.svelte-1be6npj{background:orange}`,
       ) ||
         css.source.includes(
-          `.button.svelte-zc2di4{padding:10px 20px;background-color:#f50;color:#fff;font-weight:700}.icon.svelte-qg30r{background-color:#fff;border-radius:10px;width:10px;height:10px;color:#000}.layout.svelte-1e9whng{content:'we did it.'}.component.svelte-1hi7b3d{background:orange}`,
+          `.button.svelte-11xgp0c{padding:10px 20px;background-color:#f50;color:#fff;font-weight:700}.icon.svelte-1kfpccr{background-color:#fff;border-radius:10px;width:10px;height:10px;color:#000}.layout.svelte-1e9whng{content:'we did it.'}.component.svelte-1be6npj{background:orange}`,
         ),
     ).toBe(true);
 
     const externalSvelte = out.find((c) => c.facadeModuleId && c.facadeModuleId.endsWith('External.svelte'));
     expect(externalSvelte.code).toContain(
-      ".button.svelte-zc2di4{padding:10px 20px;background-color:#f50;color:#fff;font-weight:700}.icon.svelte-qg30r{background-color:#fff;border-radius:10px;width:10px;height:10px;color:#000}.layout.svelte-1e9whng{content:'we did it.'}.component.svelte-1hi7b3d{background:orange}",
+      ".button.svelte-11xgp0c{padding:10px 20px;background-color:#f50;color:#fff;font-weight:700}.icon.svelte-1kfpccr{background-color:#fff;border-radius:10px;width:10px;height:10px;color:#000}.layout.svelte-1e9whng{content:'we did it.'}.component.svelte-1be6npj{background:orange}",
     );
 
     const componentSvelte = out.find((c) => c.facadeModuleId.endsWith('Component.svelte'));
     expect(componentSvelte.code).toContain(
-      '.button.svelte-zc2di4{padding:10px 20px;background-color:#f50;color:#fff;font-weight:700}.icon.svelte-qg30r{background-color:#fff;border-radius:10px;width:10px;height:10px;color:#000}.component.svelte-1hi7b3d{background:orange}',
+      '.icon.svelte-1kfpccr{background-color:#fff;border-radius:10px;width:10px;height:10px;color:#000}.component.svelte-1be6npj{background:orange}',
     );
 
     process.cwd = cwd;
