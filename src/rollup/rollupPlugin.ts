@@ -40,7 +40,7 @@ export function logDependency(importee, importer, memoryCache) {
     // The following two expressions are used to determine if we are trying to import
     // a svelte file from an external dependency and ensure that we add the correct path to that dependency
     const externalDependencyImport = path.resolve(
-      parsedImporter.dir.substr(0, parsedImporter.dir.lastIndexOf('src/')),
+      parsedImporter.dir.substr(0, parsedImporter.dir.lastIndexOf('src')),
       'node_modules',
       importee,
     );
