@@ -246,6 +246,7 @@ export default function elderjsRollup({
       // use pkg.svelte
       if (parts.length === 0 && pkg.svelte) {
         const svelteResolve = path.resolve(dir, pkg.svelte);
+        // console.log('-----------------', svelteResolve, name);
         logDependency(svelteResolve, name, cache);
         return svelteResolve;
       }
@@ -308,6 +309,7 @@ export default function elderjsRollup({
         if (type === 'ssr') {
           const trackedDeps = getDependencies(chunk.facadeModuleId, cache);
           // console.log(Object.keys(chunk.modules), trackedDeps);
+
           const cssEntries = getCssFromCache(trackedDeps, this.cache);
           const cssOutput = await prepareCss(cssEntries);
           code += `\nmodule.exports._css = ${devalue(cssOutput.styles)};`;

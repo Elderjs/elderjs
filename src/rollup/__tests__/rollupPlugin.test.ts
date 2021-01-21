@@ -95,7 +95,6 @@ describe('#rollupPlugin', () => {
     const { output: out } = await bundle.generate({ output });
 
     const css = out.find((c) => c.name === 'svelte.css');
-    console.log(css.source)
     expect(css.source).toContain(
       `.layout.svelte-1e9whng{content:'we did it.'}.component.svelte-1be6npj{background:orange}`,
     );
