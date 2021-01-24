@@ -223,7 +223,7 @@ const hooks: Array<HookOptions> = [
     name: 'elderAddDefaultIntersectionObserver',
     description: 'Sets up the default polyfill for the intersection observer',
     priority: 100,
-    run: async ({ beforeHydrateStack }) => {
+    run: async ({ beforeHydrateStack, settings }) => {
       return {
         beforeHydrateStack: [
           {
@@ -231,7 +231,7 @@ const hooks: Array<HookOptions> = [
             string: `<script type="text/javascript">
       if (!('IntersectionObserver' in window)) {
           var script = document.createElement("script");
-          script.src = "/_elderjs/static/intersection-observer.js";
+          script.src = "${settings.$$internal.serverPrefix}/_elderjs/static/intersection-observer.js";
           document.getElementsByTagName('head')[0].appendChild(script);
       };
       </script>

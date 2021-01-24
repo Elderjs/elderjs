@@ -15,10 +15,12 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
   }
   const config: SettingsOptions = defaultsDeep(initializationOptions, loadedConfig, getDefaultConfig());
 
+  const serverPrefix = loadedConfig.server.prefix || '';
+
   const rootDir = config.rootDir === 'process.cwd()' ? process.cwd() : path.resolve(config.rootDir);
   config.rootDir = rootDir;
   config.srcDir = path.resolve(rootDir, `./${config.srcDir}`);
-  config.distDir = path.resolve(rootDir, `./${config.distDir}`);
+  config.distDir = path.resolve(rootDir, path.join(`./${config.distDir}`, `${serverPrefix}/`));
 
   config.context = typeof initializationOptions.context !== 'undefined' ? initializationOptions.context : 'unknown';
   config.server = initializationOptions.context === 'server' && config.server;
@@ -29,12 +31,14 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
   const clientComponents = path.resolve(config.distDir, './_elderjs/svelte/');
   const distElder = path.resolve(config.distDir, './_elderjs/');
   fs.ensureDirSync(path.resolve(distElder));
+  fs.ensureDirSync(path.resolve(clientComponents));
 
   config.$$internal = {
     ssrComponents,
     clientComponents,
     distElder,
     prefix: `[Elder.js]:`,
+    serverPrefix,
     findComponent: prepareFindSvelteComponent({
       ssrFolder: ssrComponents,
       rootDir,
@@ -53,7 +57,7 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
       );
     }
     if (cssFiles[0]) {
-      config.$$internal.publicCssFile = `/_elderjs/assets/${cssFiles[0]}`;
+      config.$$internal.publicCssFile = `${serverPrefix}/_elderjs/assets/${cssFiles[0]}`;
     } else {
       console.error(`CSS file not found in ${assetPath}`);
     }
