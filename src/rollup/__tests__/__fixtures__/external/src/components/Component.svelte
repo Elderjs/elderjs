@@ -1,11 +1,12 @@
 <script>
-    import { Icon } from 'test-external-svelte-library';
+  import Icon from 'test-external-svelte-library/src/components/Icon.svelte';
 </script>
-<style>
-    .component {
-        background:orange;
-    }
-</style>
 
-<div class="component"></div>
-<Icon></Icon>
+<div class="component" />
+<Icon />
+
+<style>
+  .component {
+    background: orange;
+  }
+</style>

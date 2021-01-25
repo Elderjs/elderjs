@@ -1,5 +1,5 @@
 <script>
-    import { Button } from 'test-external-svelte-library';
+    import Button from 'test-external-svelte-library/src/components/Button.svelte';
     import Component from '../components/Component.svelte'
 </script>
 
