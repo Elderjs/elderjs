@@ -44,6 +44,7 @@ describe('#getConfig', () => {
       distElder: resolve(process.cwd(), `./public/_elderjs`),
       // findComponent: () => {},
       prefix: '[Elder.js]:',
+      serverPrefix: '',
     },
     build: false,
     debug: {

@@ -46,6 +46,7 @@ describe('#validations', () => {
     origin: '',
     lang: 'en',
     plugins: {},
+    prefix: '',
     server: {
       prefix: '',
     },

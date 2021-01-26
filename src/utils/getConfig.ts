@@ -2,6 +2,7 @@ import { cosmiconfigSync } from 'cosmiconfig';
 import defaultsDeep from 'lodash.defaultsdeep';
 import path from 'path';
 import fs from 'fs-extra';
+import get from 'lodash.get';
 import { SettingsOptions, InitializationOptions } from './types';
 import { getDefaultConfig } from './validations';
 import prepareFindSvelteComponent from '../partialHydration/prepareFindSvelteComponent';
@@ -16,7 +17,7 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
   }
   const config: SettingsOptions = defaultsDeep(initializationOptions, loadedConfig, getDefaultConfig());
 
-  const serverPrefix = normalizePrefix(loadedConfig.prefix || loadedConfig.server.prefix);
+  const serverPrefix = normalizePrefix(loadedConfig.prefix || get(loadedConfig, 'server.prefix', ''));
 
   const rootDir = config.rootDir === 'process.cwd()' ? process.cwd() : path.resolve(config.rootDir);
   config.rootDir = rootDir;

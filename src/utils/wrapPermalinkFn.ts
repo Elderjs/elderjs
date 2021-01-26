@@ -1,4 +1,4 @@
-import normalizePrefix from './normalizePrefix';
+import get from 'lodash.get';
 
 const wrapPermalinkFn = ({ permalinkFn, routeName, settings }) => (payload) => {
   let permalink = permalinkFn(payload);
@@ -56,7 +56,9 @@ const wrapPermalinkFn = ({ permalinkFn, routeName, settings }) => (payload) => {
     );
   }
 
-  return settings.$$internal.serverPrefix + permalink;
+  const prefix = get(settings, '$$internal.serverPrefix', '');
+
+  return prefix ? prefix + permalink : permalink;
 };
 
 export default wrapPermalinkFn;
