@@ -32,6 +32,7 @@ type Internal = {
   clientComponents: string;
   distElder: string;
   prefix: string;
+  serverPrefix: string;
   findComponent: FindSvelteComponent;
   publicCssFile?: string;
 };
