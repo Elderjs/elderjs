@@ -1,3 +1,5 @@
+import normalizePrefix from './normalizePrefix';
+
 const wrapPermalinkFn = ({ permalinkFn, routeName, settings }) => (payload) => {
   let permalink = permalinkFn(payload);
 
@@ -54,7 +56,7 @@ const wrapPermalinkFn = ({ permalinkFn, routeName, settings }) => (payload) => {
     );
   }
 
-  return `${settings.prefix}${permalink}`;
+  return `${settings.$$internal.prefix}${permalink}`;
 };
 
 export default wrapPermalinkFn;
