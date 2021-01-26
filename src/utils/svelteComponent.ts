@@ -41,7 +41,7 @@ const svelteComponent = (componentName: String, folder: String = 'components') =
     return hydrateComponent({
       page,
       iife,
-      clientSrcMjs: `${page.settings.$$internal.serverPrefix}/${client}`,
+      clientSrcMjs: client,
       innerHtml: mountComponentsInHtml({ html: htmlOutput, page, hydrateOptions }),
       hydrateOptions,
       componentName: cleanComponentName,

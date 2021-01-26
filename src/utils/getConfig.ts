@@ -21,7 +21,7 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
   const rootDir = config.rootDir === 'process.cwd()' ? process.cwd() : path.resolve(config.rootDir);
   config.rootDir = rootDir;
   config.srcDir = path.resolve(rootDir, `./${config.srcDir}`);
-  config.distDir = path.resolve(rootDir, path.join(`./${config.distDir}`, `${serverPrefix}`));
+  config.distDir = path.resolve(rootDir, `./${config.distDir}`);
 
   config.context = typeof initializationOptions.context !== 'undefined' ? initializationOptions.context : 'unknown';
   config.server = initializationOptions.context === 'server' && config.server;
