@@ -5,6 +5,7 @@ import fs from 'fs-extra';
 import { SettingsOptions, InitializationOptions } from './types';
 import { getDefaultConfig } from './validations';
 import prepareFindSvelteComponent from '../partialHydration/prepareFindSvelteComponent';
+import normalizePrefix from './normalizePrefix';
 
 function getConfig(initializationOptions: InitializationOptions = {}): SettingsOptions {
   let loadedConfig: InitializationOptions = {};
@@ -15,12 +16,12 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
   }
   const config: SettingsOptions = defaultsDeep(initializationOptions, loadedConfig, getDefaultConfig());
 
-  const serverPrefix = loadedConfig.server.prefix || '';
+  const serverPrefix = normalizePrefix(loadedConfig.prefix || loadedConfig.server.prefix);
 
   const rootDir = config.rootDir === 'process.cwd()' ? process.cwd() : path.resolve(config.rootDir);
   config.rootDir = rootDir;
   config.srcDir = path.resolve(rootDir, `./${config.srcDir}`);
-  config.distDir = path.resolve(rootDir, path.join(`./${config.distDir}`, `${serverPrefix}/`));
+  config.distDir = path.resolve(rootDir, path.join(`./${config.distDir}`, `${serverPrefix}`));
 
   config.context = typeof initializationOptions.context !== 'undefined' ? initializationOptions.context : 'unknown';
   config.server = initializationOptions.context === 'server' && config.server;
@@ -28,8 +29,8 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
   config.worker = !!initializationOptions.worker;
 
   const ssrComponents = path.resolve(config.rootDir, './___ELDER___/compiled/');
-  const clientComponents = path.resolve(config.distDir, './_elderjs/svelte/');
-  const distElder = path.resolve(config.distDir, './_elderjs/');
+  const clientComponents = path.resolve(config.distDir, `.${serverPrefix}/_elderjs/svelte/`);
+  const distElder = path.resolve(config.distDir, `.${serverPrefix}/_elderjs/`);
   fs.ensureDirSync(path.resolve(distElder));
   fs.ensureDirSync(path.resolve(clientComponents));
 

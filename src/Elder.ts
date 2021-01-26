@@ -311,9 +311,9 @@ class Elder {
             helpers: createReadOnlyProxy(this.helpers, 'helpers', `${request.route} permalink function`),
           });
 
-          if (this.settings && this.settings.server && this.settings.server.prefix) {
-            request.permalink = this.settings.server.prefix + request.permalink;
-          }
+          // if (this.settings && this.settings.server && this.settings.server.prefix) {
+          //   request.permalink = this.settings.server.prefix + request.permalink;
+          // }
 
           if (this.settings.context === 'server') {
             this.serverLookupObject[request.permalink] = request;

@@ -73,8 +73,13 @@ const configSchema = yup.object({
       ),
   }),
   server: yup.object({
-    prefix: yup.string().notRequired().default('').label(`If Elder.js should serve all pages with a prefix.`),
+    prefix: yup
+      .string()
+      .notRequired()
+      .default('')
+      .label(`If Elder.js should serve all pages with a prefix. (deprecated)`),
   }),
+  prefix: yup.string().notRequired().default('').label(`If Elder.js should serve all pages with a prefix.`),
   build: yup.object({
     numberOfWorkers: yup
       .number()
