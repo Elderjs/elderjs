@@ -56,7 +56,7 @@ const wrapPermalinkFn = ({ permalinkFn, routeName, settings }) => (payload) => {
     );
   }
 
-  return `${settings.$$internal.prefix}${permalink}`;
+  return settings.$$internal.serverPrefix + permalink;
 };
 
 export default wrapPermalinkFn;

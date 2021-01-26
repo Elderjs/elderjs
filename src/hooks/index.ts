@@ -54,8 +54,8 @@ const hooks: Array<HookOptions> = [
       if (req.path) {
         let reqPath = req.path;
 
-        if (settings.$$internal.prefix && settings.$$internal.prefix.length > 0) {
-          if (reqPath.indexOf(settings.$$internal.prefix) !== 0) {
+        if (settings.$$internal.serverPrefix && settings.$$internal.serverPrefix.length > 0) {
+          if (reqPath.indexOf(settings.$$internal.serverPrefix) !== 0) {
             return next();
           }
         }
