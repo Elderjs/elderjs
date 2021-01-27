@@ -69,6 +69,7 @@ export type InitializationOptions = {
 };
 
 export type SettingsOptions = {
+  prefix: string;
   distDir: string;
   srcDir: string;
   rootDir: string;
