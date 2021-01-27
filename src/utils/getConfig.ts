@@ -39,7 +39,7 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
     ssrComponents,
     clientComponents,
     distElder,
-    prefix: `[Elder.js]:`,
+    logPrefix: `[Elder.js]:`,
     serverPrefix,
     findComponent: prepareFindSvelteComponent({
       ssrFolder: ssrComponents,
@@ -55,7 +55,7 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
     const cssFiles = fs.readdirSync(assetPath).filter((f) => f.endsWith('.css'));
     if (cssFiles.length > 1) {
       throw new Error(
-        `${config.$$internal.prefix} Race condition has caused multiple css files in ${assetPath}. If you keep seeing this delete the _elder and ___ELDER___  folders.`,
+        `${config.$$internal.logPrefix} Race condition has caused multiple css files in ${assetPath}. If you keep seeing this delete the _elder and ___ELDER___  folders.`,
       );
     }
     if (cssFiles[0]) {

@@ -226,6 +226,7 @@ const hooks: Array<HookOptions> = [
     description: 'Sets up the default polyfill for the intersection observer',
     priority: 100,
     run: async ({ beforeHydrateStack, settings }) => {
+      console.log('HOOK SETTINGS:', settings);
       const prefix = get(settings, '$$internal.serverPrefix', '');
 
       return {
