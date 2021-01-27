@@ -43,7 +43,7 @@ describe('#getConfig', () => {
       clientComponents: resolve(process.cwd(), `./public/_elderjs/svelte`),
       distElder: resolve(process.cwd(), `./public/_elderjs`),
       // findComponent: () => {},
-      prefix: '[Elder.js]:',
+      logPrefix: '[Elder.js]:',
       serverPrefix: '',
     },
     build: false,
