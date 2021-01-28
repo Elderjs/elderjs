@@ -117,7 +117,7 @@ describe('#getConfig', () => {
       clientComponents: resolve(process.cwd(), `./t/public/_elderjs/svelte`),
       distElder: resolve(process.cwd(), `./t/public/_elderjs`),
       // findComponent: () => {},
-      prefix: '[Elder.js]:',
+      logPrefix: '[Elder.js]:',
     };
 
     it('gives back a custom context such as serverless', () => {

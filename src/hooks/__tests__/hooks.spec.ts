@@ -44,8 +44,8 @@ describe('#hooks', () => {
     const hook = hooks.find((h) => h.name === 'elderExpressLikeMiddleware');
     const next = () => 'next() was called';
     const settings = {
-      server: {
-        prefix: '/dev',
+      $$internal: {
+        serverPrefix: '/dev',
       },
     };
     // prefix not found

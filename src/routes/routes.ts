@@ -71,7 +71,9 @@ function routes(settings: SettingsOptions) {
       // not defined, look for a svelte file...
       const svelteFile = filesForThisRoute.find((f) => f.endsWith(`/routes/${routeName}/${capitalizedRoute}.svelte`));
       if (settings.debug.automagic) {
-        console.log(`${logPrefix} No template defined for /routes/${routeName}/ looking for ${capitalizedRoute}.svelte`);
+        console.log(
+          `${logPrefix} No template defined for /routes/${routeName}/ looking for ${capitalizedRoute}.svelte`,
+        );
       }
 
       if (svelteFile) {
