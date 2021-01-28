@@ -17,7 +17,7 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
   }
   const config: SettingsOptions = defaultsDeep(initializationOptions, loadedConfig, getDefaultConfig());
 
-  const serverPrefix = normalizePrefix(loadedConfig.prefix || get(loadedConfig, 'server.prefix', ''));
+  const serverPrefix = normalizePrefix(config.prefix || get(config, 'server.prefix', ''));
 
   const rootDir = config.rootDir === 'process.cwd()' ? process.cwd() : path.resolve(config.rootDir);
   config.rootDir = rootDir;
@@ -28,6 +28,8 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
   config.server = initializationOptions.context === 'server' && config.server;
   config.build = initializationOptions.context === 'build' && config.build;
   config.worker = !!initializationOptions.worker;
+  config.prefix = serverPrefix;
+  config.server = serverPrefix ? { prefix: serverPrefix } : false;
 
   const ssrComponents = path.resolve(config.rootDir, './___ELDER___/compiled/');
   const clientComponents = path.resolve(config.distDir, `.${serverPrefix}/_elderjs/svelte/`);

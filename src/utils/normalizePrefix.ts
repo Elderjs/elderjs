@@ -2,10 +2,10 @@ const normalizePrefix = (prefix: string) => {
   if (!prefix) return '';
 
   // remove trailing slash
-  prefix.replace(/\/+$/, '');
+  const trimmed = prefix.replace(/\/+$/, '');
 
   // add leading slash
-  return prefix[0] === '/' ? prefix : `/${prefix}`;
+  return trimmed[0] === '/' ? trimmed : `/${trimmed}`;
 };
 
 export default normalizePrefix;
