@@ -1,3 +1,5 @@
+import get from 'lodash.get';
+
 /**
  * Helper function to allow permalinks to be referenced by obj.routeName.
  * It also handles adding of the /dev prefix when settings.server is true.
@@ -7,8 +9,10 @@
  */
 const permalinks = ({ routes, settings }) =>
   Object.keys(routes).reduce((out, cv) => {
+    const prefix = settings.prefix || get(settings, 'server.prefix', '');
+
     // eslint-disable-next-line no-param-reassign
-    out[cv] = (data) => `${routes[cv].permalink({ request: data, settings })}`;
+    out[cv] = (data) => `${prefix}${routes[cv].permalink({ request: data, settings })}`;
     return out;
   }, {});
 
