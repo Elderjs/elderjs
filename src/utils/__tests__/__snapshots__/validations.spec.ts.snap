@@ -616,7 +616,7 @@ Object {
       "_default": "",
       "_deps": Array [],
       "_exclusive": Object {},
-      "_label": "If Elder.js should serve all pages with a prefix.",
+      "_label": "The prefix Elder.js should prepend to all pages and assets built/served.",
       "_mutate": undefined,
       "_options": Object {
         "abortEarly": true,
