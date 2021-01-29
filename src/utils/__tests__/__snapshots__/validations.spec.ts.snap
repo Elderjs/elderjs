@@ -18,6 +18,7 @@ Object {
     "plugins",
     "shortcodes",
     "build",
+    "prefix",
     "server",
     "hooks",
     "debug",
@@ -606,6 +607,33 @@ Object {
       ],
       "type": "object",
     },
+    "prefix": Object {
+      "_blacklist": Object {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": Array [],
+      "_default": "",
+      "_deps": Array [],
+      "_exclusive": Object {},
+      "_label": "If Elder.js should serve all pages with a prefix.",
+      "_mutate": undefined,
+      "_options": Object {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "string",
+      "_typeError": [Function],
+      "_whitelist": Object {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": Array [],
+      "transforms": Array [
+        [Function],
+      ],
+      "type": "string",
+    },
     "rootDir": Object {
       "_blacklist": Object {
         "list": Set {},
@@ -667,7 +695,7 @@ Object {
           "_default": "",
           "_deps": Array [],
           "_exclusive": Object {},
-          "_label": "If Elder.js should serve all pages with a prefix.",
+          "_label": "If Elder.js should serve all pages with a prefix. (deprecated)",
           "_mutate": undefined,
           "_options": Object {
             "abortEarly": true,

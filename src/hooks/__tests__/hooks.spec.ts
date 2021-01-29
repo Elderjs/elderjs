@@ -44,8 +44,8 @@ describe('#hooks', () => {
     const hook = hooks.find((h) => h.name === 'elderExpressLikeMiddleware');
     const next = () => 'next() was called';
     const settings = {
-      server: {
-        prefix: '/dev',
+      $$internal: {
+        serverPrefix: '/dev',
       },
     };
     // prefix not found
@@ -83,6 +83,25 @@ describe('#hooks', () => {
         settings,
       }),
     ).toBeUndefined();
+    // no serverPrefix
+    // prefix not found
+    expect(
+      await hook.run({
+        next,
+        req: { path: '/not-found' },
+        settings: {
+          $$internal: {
+            serverPrefix: '',
+          },
+        },
+        serverLookupObject: {
+          '/': {
+            route: 'Home',
+          },
+        },
+      }),
+    ).toEqual('next() was called');
+
     expect(end).toHaveBeenCalledTimes(1);
     expect(headers).toEqual(['Content-Type-text/html']);
   });
@@ -119,6 +138,16 @@ describe('#hooks', () => {
   it('elderAddDefaultIntersectionObserver', async () => {
     const hook = hooks.find((h) => h.name === 'elderAddDefaultIntersectionObserver');
     expect(normalizeSnapshot(await hook.run({ beforeHydrateStack: [] }))).toMatchSnapshot();
+  });
+  it('elderAddDefaultIntersectionObserver with prefix', async () => {
+    const hook = hooks.find((h) => h.name === 'elderAddDefaultIntersectionObserver');
+    const settings = {
+      $$internal: {
+        serverPrefix: '/dev',
+      },
+    };
+    const result = await hook.run({ beforeHydrateStack: [], settings });
+    expect(result.beforeHydrateStack[0].string).toContain('/dev/_elderjs/static/intersection-observer.js');
   });
   it('elderCompileHtml', async () => {
     const hook = hooks.find((h) => h.name === 'elderCompileHtml');

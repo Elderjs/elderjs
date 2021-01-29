@@ -12,7 +12,7 @@ import wrapPermalinkFn from '../utils/wrapPermalinkFn';
 function routes(settings: SettingsOptions) {
   const files = glob.sync(`${settings.srcDir}/routes/*/+(*.js|*.svelte)`);
 
-  const { ssrComponents: ssrFolder, prefix } = settings.$$internal;
+  const { ssrComponents: ssrFolder, logPrefix } = settings.$$internal;
 
   const ssrComponents = glob.sync(`${ssrFolder}/**/*.js`);
 
@@ -31,7 +31,7 @@ function routes(settings: SettingsOptions) {
     if (!route.permalink) {
       if (settings.debug.automagic) {
         console.log(
-          `${prefix} No permalink function found for route "${routeName}". Setting default which will return / for home or /{request.slug}/.`,
+          `${logPrefix} No permalink function found for route "${routeName}". Setting default which will return / for home or /{request.slug}/.`,
         );
       }
       route.permalink = ({ request }) => (request.slug === '/' ? request.slug : `/${request.slug}/`);
@@ -48,7 +48,7 @@ function routes(settings: SettingsOptions) {
 
       if (settings.debug.automagic) {
         console.log(
-          `${prefix} No all function or array found for route "${routeName}". Setting default which will return ${JSON.stringify(
+          `${logPrefix} No all function or array found for route "${routeName}". Setting default which will return ${JSON.stringify(
             route.all,
           )}`,
         );
@@ -71,7 +71,9 @@ function routes(settings: SettingsOptions) {
       // not defined, look for a svelte file...
       const svelteFile = filesForThisRoute.find((f) => f.endsWith(`/routes/${routeName}/${capitalizedRoute}.svelte`));
       if (settings.debug.automagic) {
-        console.log(`${prefix} No template defined for /routes/${routeName}/ looking for ${capitalizedRoute}.svelte`);
+        console.log(
+          `${logPrefix} No template defined for /routes/${routeName}/ looking for ${capitalizedRoute}.svelte`,
+        );
       }
 
       if (svelteFile) {
@@ -115,7 +117,7 @@ function routes(settings: SettingsOptions) {
     } else {
       if (settings.debug.automagic) {
         console.log(
-          `${prefix} The route at /routes/${routeName}/route.js doesn't have a layout specified so going to look for a Layout.svelte file.`,
+          `${logPrefix} The route at /routes/${routeName}/route.js doesn't have a layout specified so going to look for a Layout.svelte file.`,
         );
       }
       route.layout = 'Layout.svelte';

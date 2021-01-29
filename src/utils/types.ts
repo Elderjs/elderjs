@@ -31,7 +31,8 @@ type Internal = {
   ssrComponents: string;
   clientComponents: string;
   distElder: string;
-  prefix: string;
+  logPrefix: string;
+  serverPrefix: string;
   findComponent: FindSvelteComponent;
   publicCssFile?: string;
 };
@@ -50,6 +51,7 @@ export type InitializationOptions = {
   srcDir?: string;
   rootDir?: string;
   origin?: string;
+  prefix?: string;
   lang?: string;
   server?: ServerOptions;
   build?: BuildOptions;
@@ -67,6 +69,7 @@ export type InitializationOptions = {
 };
 
 export type SettingsOptions = {
+  prefix: string;
   distDir: string;
   srcDir: string;
   rootDir: string;

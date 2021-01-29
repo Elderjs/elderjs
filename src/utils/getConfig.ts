@@ -2,9 +2,11 @@ import { cosmiconfigSync } from 'cosmiconfig';
 import defaultsDeep from 'lodash.defaultsdeep';
 import path from 'path';
 import fs from 'fs-extra';
+import get from 'lodash.get';
 import { SettingsOptions, InitializationOptions } from './types';
 import { getDefaultConfig } from './validations';
 import prepareFindSvelteComponent from '../partialHydration/prepareFindSvelteComponent';
+import normalizePrefix from './normalizePrefix';
 
 function getConfig(initializationOptions: InitializationOptions = {}): SettingsOptions {
   let loadedConfig: InitializationOptions = {};
@@ -15,6 +17,8 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
   }
   const config: SettingsOptions = defaultsDeep(initializationOptions, loadedConfig, getDefaultConfig());
 
+  const serverPrefix = normalizePrefix(config.prefix || get(config, 'server.prefix', ''));
+
   const rootDir = config.rootDir === 'process.cwd()' ? process.cwd() : path.resolve(config.rootDir);
   config.rootDir = rootDir;
   config.srcDir = path.resolve(rootDir, `./${config.srcDir}`);
@@ -24,17 +28,21 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
   config.server = initializationOptions.context === 'server' && config.server;
   config.build = initializationOptions.context === 'build' && config.build;
   config.worker = !!initializationOptions.worker;
+  config.prefix = serverPrefix;
+  config.server = serverPrefix ? { prefix: serverPrefix } : false;
 
   const ssrComponents = path.resolve(config.rootDir, './___ELDER___/compiled/');
-  const clientComponents = path.resolve(config.distDir, './_elderjs/svelte/');
-  const distElder = path.resolve(config.distDir, './_elderjs/');
+  const clientComponents = path.resolve(config.distDir, `.${serverPrefix}/_elderjs/svelte/`);
+  const distElder = path.resolve(config.distDir, `.${serverPrefix}/_elderjs/`);
   fs.ensureDirSync(path.resolve(distElder));
+  fs.ensureDirSync(path.resolve(clientComponents));
 
   config.$$internal = {
     ssrComponents,
     clientComponents,
     distElder,
-    prefix: `[Elder.js]:`,
+    logPrefix: `[Elder.js]:`,
+    serverPrefix,
     findComponent: prepareFindSvelteComponent({
       ssrFolder: ssrComponents,
       rootDir,
@@ -49,11 +57,11 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
     const cssFiles = fs.readdirSync(assetPath).filter((f) => f.endsWith('.css'));
     if (cssFiles.length > 1) {
       throw new Error(
-        `${config.$$internal.prefix} Race condition has caused multiple css files in ${assetPath}. If you keep seeing this delete the _elder and ___ELDER___  folders.`,
+        `${config.$$internal.logPrefix} Race condition has caused multiple css files in ${assetPath}. If you keep seeing this delete the _elder and ___ELDER___  folders.`,
       );
     }
     if (cssFiles[0]) {
-      config.$$internal.publicCssFile = `/_elderjs/assets/${cssFiles[0]}`;
+      config.$$internal.publicCssFile = `${serverPrefix}/_elderjs/assets/${cssFiles[0]}`;
     } else {
       console.error(`CSS file not found in ${assetPath}`);
     }

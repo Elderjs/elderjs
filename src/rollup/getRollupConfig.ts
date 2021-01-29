@@ -13,6 +13,7 @@ import { getElderConfig } from '../index';
 import { getDefaultRollup } from '../utils/validations';
 import getPluginLocations from '../utils/getPluginLocations';
 import elderSvelte from './rollupPlugin';
+import normalizePrefix from '../utils/normalizePrefix';
 
 const production = process.env.NODE_ENV === 'production' || !process.env.ROLLUP_WATCH;
 const elderJsDir = path.resolve(process.cwd(), './node_modules/@elderjs/elderjs/');
@@ -153,11 +154,12 @@ export default function getRollupConfig(options) {
     if (!fs.existsSync(path.resolve(elderConfig.rootDir, dep[0]))) {
       throw new Error(`Elder.js peer dependency not found at ${dep[0]}`);
     }
+    const prefix = normalizePrefix(elderConfig.prefix);
     configs.push({
       input: dep[0],
       output: [
         {
-          file: path.resolve(elderConfig.distDir, dep[1]),
+          file: path.resolve(prefix ? path.join(elderConfig.distDir, prefix) : elderConfig.distDir, dep[1]),
           format: 'iife',
           name: dep[1],
           plugins: [terser()],

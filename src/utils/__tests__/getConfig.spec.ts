@@ -43,7 +43,8 @@ describe('#getConfig', () => {
       clientComponents: resolve(process.cwd(), `./public/_elderjs/svelte`),
       distElder: resolve(process.cwd(), `./public/_elderjs`),
       // findComponent: () => {},
-      prefix: '[Elder.js]:',
+      logPrefix: '[Elder.js]:',
+      serverPrefix: '',
     },
     build: false,
     debug: {
@@ -58,6 +59,7 @@ describe('#getConfig', () => {
     rootDir: process.cwd(),
     srcDir: resolve(process.cwd(), './src'),
     server: false,
+    prefix: '',
     shortcodes: {
       closePattern: '}}',
       openPattern: '{{',
@@ -116,7 +118,7 @@ describe('#getConfig', () => {
       clientComponents: resolve(process.cwd(), `./t/public/_elderjs/svelte`),
       distElder: resolve(process.cwd(), `./t/public/_elderjs`),
       // findComponent: () => {},
-      prefix: '[Elder.js]:',
+      logPrefix: '[Elder.js]:',
     };
 
     it('gives back a custom context such as serverless', () => {
@@ -148,15 +150,13 @@ describe('#getConfig', () => {
         expect.objectContaining({
           ...common,
           context: 'server',
-          server: {
-            prefix: '',
-          },
+          server: false,
         }),
       );
       expect(r.$$internal).toMatchObject(common$$Internal);
     });
 
-    it('it sets a server with a prefix', () => {
+    it('it sets a server with a server.prefix without leading or trailing "/"', () => {
       jest.mock('fs-extra', () => {
         return {
           ensureDirSync: () => {},
@@ -169,12 +169,193 @@ describe('#getConfig', () => {
           ...common,
           context: 'server',
           server: {
-            prefix: 'testing',
+            prefix: '/testing',
           },
+          prefix: '/testing',
         }),
       );
-      expect(r.$$internal).toMatchObject(common$$Internal);
+      expect(r.$$internal).toMatchObject({
+        ...common$$Internal,
+        clientComponents: resolve(process.cwd(), `./t/public/testing/_elderjs/svelte`),
+        distElder: resolve(process.cwd(), `./t/public/testing/_elderjs`),
+      });
     });
+
+    it('it sets a server with a server.prefix with a trailing "/"', () => {
+      jest.mock('fs-extra', () => {
+        return {
+          ensureDirSync: () => {},
+          readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+        };
+      });
+      const r = getConfig({ context: 'server', server: { prefix: 'testing/' }, rootDir: 't' });
+      expect(r).toStrictEqual(
+        expect.objectContaining({
+          ...common,
+          context: 'server',
+          server: {
+            prefix: '/testing',
+          },
+          prefix: '/testing',
+        }),
+      );
+      expect(r.$$internal).toMatchObject({
+        ...common$$Internal,
+        clientComponents: resolve(process.cwd(), `./t/public/testing/_elderjs/svelte`),
+        distElder: resolve(process.cwd(), `./t/public/testing/_elderjs`),
+      });
+    });
+
+    it('it sets a server with a server.prefix with a leading "/"', () => {
+      jest.mock('fs-extra', () => {
+        return {
+          ensureDirSync: () => {},
+          readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+        };
+      });
+      const r = getConfig({ context: 'server', server: { prefix: '/testing' }, rootDir: 't' });
+      expect(r).toStrictEqual(
+        expect.objectContaining({
+          ...common,
+          context: 'server',
+          server: {
+            prefix: '/testing',
+          },
+          prefix: '/testing',
+        }),
+      );
+      expect(r.$$internal).toMatchObject({
+        ...common$$Internal,
+        clientComponents: resolve(process.cwd(), `./t/public/testing/_elderjs/svelte`),
+        distElder: resolve(process.cwd(), `./t/public/testing/_elderjs`),
+      });
+    });
+
+    it('it sets a server with a server.prefix with a leading and trailing "/"', () => {
+      jest.mock('fs-extra', () => {
+        return {
+          ensureDirSync: () => {},
+          readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+        };
+      });
+      const r = getConfig({ context: 'server', server: { prefix: '/testing/' }, rootDir: 't' });
+      expect(r).toStrictEqual(
+        expect.objectContaining({
+          ...common,
+          context: 'server',
+          server: {
+            prefix: '/testing',
+          },
+          prefix: '/testing',
+        }),
+      );
+      expect(r.$$internal).toMatchObject({
+        ...common$$Internal,
+        clientComponents: resolve(process.cwd(), `./t/public/testing/_elderjs/svelte`),
+        distElder: resolve(process.cwd(), `./t/public/testing/_elderjs`),
+      });
+    });
+
+    it('it sets a server with a prefix without a leading or trailing "/"', () => {
+      jest.mock('fs-extra', () => {
+        return {
+          ensureDirSync: () => {},
+          readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+        };
+      });
+      const r = getConfig({ context: 'server', prefix: 'testing', rootDir: 't' });
+      expect(r).toStrictEqual(
+        expect.objectContaining({
+          ...common,
+          context: 'server',
+          server: {
+            prefix: '/testing',
+          },
+          prefix: '/testing',
+        }),
+      );
+      expect(r.$$internal).toMatchObject({
+        ...common$$Internal,
+        clientComponents: resolve(process.cwd(), `./t/public/testing/_elderjs/svelte`),
+        distElder: resolve(process.cwd(), `./t/public/testing/_elderjs`),
+      });
+    });
+
+    it('it sets a server with a prefix with a leading "/"', () => {
+      jest.mock('fs-extra', () => {
+        return {
+          ensureDirSync: () => {},
+          readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+        };
+      });
+      const r = getConfig({ context: 'server', prefix: '/testing', rootDir: 't' });
+      expect(r).toStrictEqual(
+        expect.objectContaining({
+          ...common,
+          context: 'server',
+          server: {
+            prefix: '/testing',
+          },
+          prefix: '/testing',
+        }),
+      );
+      expect(r.$$internal).toMatchObject({
+        ...common$$Internal,
+        clientComponents: resolve(process.cwd(), `./t/public/testing/_elderjs/svelte`),
+        distElder: resolve(process.cwd(), `./t/public/testing/_elderjs`),
+      });
+    });
+
+    it('it sets a server with a prefix with a trailing "/"', () => {
+      jest.mock('fs-extra', () => {
+        return {
+          ensureDirSync: () => {},
+          readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+        };
+      });
+      const r = getConfig({ context: 'server', prefix: '/testing/', rootDir: 't' });
+      expect(r).toStrictEqual(
+        expect.objectContaining({
+          ...common,
+          context: 'server',
+          server: {
+            prefix: '/testing',
+          },
+          prefix: '/testing',
+        }),
+      );
+      expect(r.$$internal).toMatchObject({
+        ...common$$Internal,
+        clientComponents: resolve(process.cwd(), `./t/public/testing/_elderjs/svelte`),
+        distElder: resolve(process.cwd(), `./t/public/testing/_elderjs`),
+      });
+    });
+
+    it('it sets a server with a prefix with a leading and trailing "/"', () => {
+      jest.mock('fs-extra', () => {
+        return {
+          ensureDirSync: () => {},
+          readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+        };
+      });
+      const r = getConfig({ context: 'server', prefix: '/testing/', rootDir: 't' });
+      expect(r).toStrictEqual(
+        expect.objectContaining({
+          ...common,
+          context: 'server',
+          server: {
+            prefix: '/testing',
+          },
+          prefix: '/testing',
+        }),
+      );
+      expect(r.$$internal).toMatchObject({
+        ...common$$Internal,
+        clientComponents: resolve(process.cwd(), `./t/public/testing/_elderjs/svelte`),
+        distElder: resolve(process.cwd(), `./t/public/testing/_elderjs`),
+      });
+    });
+
     it('it sets build with default', () => {
       jest.mock('fs-extra', () => {
         return {

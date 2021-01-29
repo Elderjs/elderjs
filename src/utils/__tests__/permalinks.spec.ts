@@ -17,8 +17,14 @@ describe('#permalinks', () => {
     expect(plinks.blog()).toEqual('/blog/');
     expect(plinks.home()).toEqual('/');
   });
-  it('works with server prefix', () => {
+  it('works with server.prefix (deprecated)', () => {
     const settings = { server: { prefix: '/pages' } };
+    const plinks: any = permalinks({ routes, settings });
+    expect(plinks.blog()).toEqual('/pages/blog/');
+    expect(plinks.home()).toEqual('/pages/');
+  });
+  it('works with prefix', () => {
+    const settings = { prefix: '/pages' };
     const plinks: any = permalinks({ routes, settings });
     expect(plinks.blog()).toEqual('/pages/blog/');
     expect(plinks.home()).toEqual('/pages/');

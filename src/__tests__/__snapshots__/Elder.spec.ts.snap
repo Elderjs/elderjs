@@ -652,7 +652,7 @@ exports[`#Elder srcPlugin found 1`] = `
 Object {
   "allRequests": Array [
     Object {
-      "permalink": "/dev/",
+      "permalink": "/",
       "route": "test-a",
       "slug": "/test",
       "type": "server",
@@ -1301,8 +1301,8 @@ Object {
   "runHook": [Function],
   "server": [Function],
   "serverLookupObject": Object {
-    "/dev/": Object {
-      "permalink": "/dev/",
+    "/": Object {
+      "permalink": "/",
       "route": "test-a",
       "slug": "/test",
       "type": "server",

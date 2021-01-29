@@ -1,6 +1,7 @@
 /* eslint-disable consistent-return */
 import path from 'path';
 import fs from 'fs-extra';
+import get from 'lodash.get';
 import { parseBuildPerf } from '../utils';
 import externalHelpers from '../externalHelpers';
 import { HookOptions } from './types';
@@ -53,9 +54,10 @@ const hooks: Array<HookOptions> = [
     }) => {
       if (req.path) {
         let reqPath = req.path;
+        const prefix = get(settings, '$$internal.serverPrefix', '');
 
-        if (settings.server.prefix && settings.server.prefix.length > 0) {
-          if (reqPath.indexOf(settings.server.prefix) !== 0) {
+        if (prefix && prefix.length > 0) {
+          if (reqPath.indexOf(prefix) !== 0) {
             return next();
           }
         }
@@ -101,10 +103,10 @@ const hooks: Array<HookOptions> = [
             res.end(html);
           }
         } else {
-          next();
+          return next();
         }
       } else {
-        next();
+        return next();
       }
     },
   },
@@ -223,7 +225,9 @@ const hooks: Array<HookOptions> = [
     name: 'elderAddDefaultIntersectionObserver',
     description: 'Sets up the default polyfill for the intersection observer',
     priority: 100,
-    run: async ({ beforeHydrateStack }) => {
+    run: async ({ beforeHydrateStack, settings }) => {
+      const prefix = get(settings, '$$internal.serverPrefix', '');
+
       return {
         beforeHydrateStack: [
           {
@@ -231,7 +235,7 @@ const hooks: Array<HookOptions> = [
             string: `<script type="text/javascript">
       if (!('IntersectionObserver' in window)) {
           var script = document.createElement("script");
-          script.src = "/_elderjs/static/intersection-observer.js";
+          script.src = "${prefix}/_elderjs/static/intersection-observer.js";
           document.getElementsByTagName('head')[0].appendChild(script);
       };
       </script>
