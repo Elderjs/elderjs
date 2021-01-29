@@ -328,8 +328,7 @@ export default function elderjsRollup({
     },
 
     /**
-     * generateBundle is used to append all of the CSS required for a specific svelte file
-     * and write all of the CSS to the file system
+     * generateBundle is used to write all of the CSS to the file system
      * @param options
      * @param bundle
      * @param isWrite
