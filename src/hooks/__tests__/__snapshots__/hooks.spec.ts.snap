@@ -19,25 +19,6 @@ Object {
 }
 `;
 
-exports[`#hooks elderAddDefaultIntersectionObserver with prefix 1`] = `
-Object {
-  "beforeHydrateStack": Array [
-    Object {
-      "priority": 100,
-      "source": "elderAddDefaultIntersectionObserver",
-      "string": "<script type=\\"text/javascript\\">
-      if (!('IntersectionObserver' in window)) {
-          var script = document.createElement(\\"script\\");
-          script.src = \\"/_elderjs/static/intersection-observer.js\\";
-          document.getElementsByTagName('head')[0].appendChild(script);
-      };
-      </script>
-      ",
-    },
-  ],
-}
-`;
-
 exports[`#hooks elderAddExternalHelpers 1`] = `
 Object {
   "helpers": Object {
