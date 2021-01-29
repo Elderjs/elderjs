@@ -335,7 +335,7 @@ export default function elderjsRollup({
      */
 
     // eslint-disable-next-line consistent-return
-    async generateBundle(options, bundle, isWrite) {
+    async generateBundle() {
       // IMPORTANT!!!
       // all css is only available on the ssr version...
       // but we need to move the css to the client folder.
