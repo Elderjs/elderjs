@@ -16,13 +16,17 @@ class PerformanceObserverMock {
   }
 }
 
-function MockPage() {
-  this.uid = 'xxxxxxxx';
-  this.htmlString = '';
-}
-
 describe('#perf', () => {
-  it('works', () => {
+  it('works in performance', () => {
+    function MockPage() {
+      this.uid = 'xxxxxxxx';
+      this.htmlString = '';
+      this.settings = {
+        debug: {
+          performance: true,
+        },
+      };
+    }
     const calls = [];
     jest.mock('perf_hooks', () => ({
       PerformanceObserver: PerformanceObserverMock,
@@ -50,5 +54,37 @@ describe('#perf', () => {
       'mark test-end-xxxxxxxx',
       'measure test-xxxxxxxx',
     ]);
+  });
+  it('works in non performance', () => {
+    function MockPage() {
+      this.uid = 'xxxxxxxx';
+      this.htmlString = '';
+      this.settings = {
+        debug: {
+          performance: false,
+        },
+      };
+    }
+    const calls = [];
+    jest.mock('perf_hooks', () => ({
+      PerformanceObserver: PerformanceObserverMock,
+      performance: {
+        mark: (i) => calls.push(`mark ${i}`),
+        measure: (i) => calls.push(`measure ${i}`),
+        clearMarks: (i) => calls.push(`clearMarks ${i}`),
+      },
+    }));
+    const mockPage = new MockPage();
+    // eslint-disable-next-line global-require
+    const perf = require('../perf').default;
+
+    // mutate
+    perf(mockPage);
+
+    mockPage.perf.start('test');
+    mockPage.perf.end('test');
+    mockPage.perf.stop();
+
+    expect(calls).toEqual([]);
   });
 });

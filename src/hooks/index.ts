@@ -305,12 +305,14 @@ const hooks: Array<HookOptions> = [
     priority: 50,
     run: async ({ timings, request, settings }) => {
       if (!settings.build && process.env.NODE_ENV !== 'production') {
-        console.log(`${Math.round(timings.slice(-1)[0].duration * 10) / 10}ms: \t ${request.permalink}`);
         if (settings.debug.performance) {
+          console.log(`${Math.round(timings.slice(-1)[0].duration * 10) / 10}ms: \t ${request.permalink}`);
           const outTimings = [...timings];
           const display = outTimings.sort((a, b) => a.duration - b.duration).map((t) => ({ ...t, ms: t.duration }));
 
           console.table(display, ['name', 'ms']);
+        } else {
+          console.log(request.permalink);
         }
       }
     },

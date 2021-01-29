@@ -190,13 +190,13 @@ class Page {
 
   constructor({ request, settings, query, helpers, data, route, runHook, allRequests, routes, errors, shortcodes }) {
     this.uid = getUniqueId();
+    this.request = request;
+    this.settings = settings;
     perf(this);
     this.perf.start('page');
     this.perf.start('constructor');
     this.runHook = runHook;
     this.allRequests = allRequests;
-    this.request = request;
-    this.settings = settings;
     this.helpers = helpers;
     this.data = data;
     this.route = route;
@@ -219,7 +219,6 @@ class Page {
     this.moduleStack = [];
     this.shortcodes = shortcodes;
     this.svelteCss = [];
-
     this.processStack = prepareProcessStack(this);
     this.perf.end('constructor');
     this.perf.start('initToBuildGap');

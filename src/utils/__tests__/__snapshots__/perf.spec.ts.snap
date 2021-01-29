@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`#perf works 1`] = `
+exports[`#perf works in performance 1`] = `
 Object {
   "htmlString": "",
   "perf": Object {
@@ -13,6 +13,11 @@ Object {
         "name": "Page",
       },
     ],
+  },
+  "settings": Object {
+    "debug": Object {
+      "performance": true,
+    },
   },
   "uid": "xxxxxxxx",
 }
