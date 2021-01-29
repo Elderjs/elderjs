@@ -5,7 +5,7 @@ import get from 'lodash.get';
  * It also handles adding of the /dev prefix when settings.server is true.
  *
  * @param {Object} { routes, settings = {} }
- * @returns {Object} This object allows for referncing permalinks as obj.routeName()
+ * @returns {Object} This object allows for referencing permalinks as obj.routeName()
  */
 const permalinks = ({ routes, settings }) =>
   Object.keys(routes).reduce((out, cv) => {
