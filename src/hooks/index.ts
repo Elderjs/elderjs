@@ -103,10 +103,10 @@ const hooks: Array<HookOptions> = [
             res.end(html);
           }
         } else {
-          next();
+          return next();
         }
       } else {
-        next();
+        return next();
       }
     },
   },

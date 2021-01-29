@@ -83,6 +83,25 @@ describe('#hooks', () => {
         settings,
       }),
     ).toBeUndefined();
+    // no serverPrefix
+    // prefix not found
+    expect(
+      await hook.run({
+        next,
+        req: { path: '/not-found' },
+        settings: {
+          $$internal: {
+            serverPrefix: '',
+          },
+        },
+        serverLookupObject: {
+          '/': {
+            route: 'Home',
+          },
+        },
+      }),
+    ).toEqual('next() was called');
+
     expect(end).toHaveBeenCalledTimes(1);
     expect(headers).toEqual(['Content-Type-text/html']);
   });
