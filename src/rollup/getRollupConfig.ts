@@ -159,7 +159,7 @@ export default function getRollupConfig(options) {
       input: dep[0],
       output: [
         {
-          file: path.resolve(prefix ? elderConfig.distDir + prefix : elderConfig.distDir, dep[1]),
+          file: path.resolve(prefix ? path.join(elderConfig.distDir, prefix) : elderConfig.distDir, dep[1]),
           format: 'iife',
           name: dep[1],
           plugins: [terser()],
