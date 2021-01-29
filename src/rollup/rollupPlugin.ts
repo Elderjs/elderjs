@@ -274,7 +274,6 @@ export default function elderjsRollup({
 
       const digest = sparkMd5.hash(code + JSON.stringify(compilerOptions));
       if (this.cache.has(digest)) {
-        console.log(`${id} gotten from cache`);
         return this.cache.get(digest);
       }
 
@@ -297,7 +296,6 @@ export default function elderjsRollup({
         compiled.js.dependencies.map(this.addWatchFile);
       }
       if (type === 'ssr') {
-        console.log(`setting ${id}'s css`);
         this.cache.set(`css${id}`, {
           code: compiled.css.code || '',
           map: compiled.css.map || '',
@@ -346,7 +344,6 @@ export default function elderjsRollup({
         const cssEntries = getCssFromCache([...this.getModuleIds()], this.cache);
 
         const { styles, sourceMap } = await prepareCss(cssEntries);
-        console.log('setting styleCssHash', styles);
         if (styleCssMapHash) {
           // set the source later when we have it.
           this.setAssetSource(styleCssMapHash, sourceMap.toString());
