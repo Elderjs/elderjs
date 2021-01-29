@@ -187,8 +187,12 @@ export default function elderjsRollup({
       cache.dependencies = prior;
     },
 
+    /**
+     * Essentially what is happening here is that we need to say we're going to
+     * emit these files before we know the content.
+     * We are given a hash that we later use to populate them with data.
+     */
     buildStart() {
-      // console.log('start', options);
       if (type === 'ssr') {
         styleCssHash = this.emitFile({
           type: 'asset',
@@ -205,8 +209,9 @@ export default function elderjsRollup({
 
       if (type === 'ssr' && legacy === false) {
         del.sync(elderConfig.$$internal.ssrComponents);
+        del.sync(path.resolve(elderConfig.$$internal.distElder, `.${sep}assets${sep}`));
       } else if (type === 'client' && legacy === false) {
-        del.sync(elderConfig.$$internal.distElder);
+        del.sync(path.resolve(elderConfig.$$internal.distElder, `.${sep}svelte${sep}`));
       }
     },
 
@@ -269,6 +274,7 @@ export default function elderjsRollup({
 
       const digest = sparkMd5.hash(code + JSON.stringify(compilerOptions));
       if (this.cache.has(digest)) {
+        console.log(`${id} gotten from cache`);
         return this.cache.get(digest);
       }
 
@@ -291,6 +297,7 @@ export default function elderjsRollup({
         compiled.js.dependencies.map(this.addWatchFile);
       }
       if (type === 'ssr') {
+        console.log(`setting ${id}'s css`);
         this.cache.set(`css${id}`, {
           code: compiled.css.code || '',
           map: compiled.css.map || '',
@@ -308,7 +315,6 @@ export default function elderjsRollup({
       if (chunk.isEntry) {
         if (type === 'ssr') {
           const trackedDeps = getDependencies(chunk.facadeModuleId, cache);
-          // console.log(Object.keys(chunk.modules), trackedDeps);
 
           const cssEntries = getCssFromCache(trackedDeps, this.cache);
           const cssOutput = await prepareCss(cssEntries);
@@ -323,6 +329,14 @@ export default function elderjsRollup({
       }
     },
 
+    /**
+     * generateBundle is used to append all of the CSS required for a specific svelte file
+     * and write all of the CSS to the file system
+     * @param options
+     * @param bundle
+     * @param isWrite
+     */
+
     // eslint-disable-next-line consistent-return
     async generateBundle(options, bundle, isWrite) {
       // IMPORTANT!!!
@@ -332,8 +346,9 @@ export default function elderjsRollup({
         const cssEntries = getCssFromCache([...this.getModuleIds()], this.cache);
 
         const { styles, sourceMap } = await prepareCss(cssEntries);
-
+        console.log('setting styleCssHash', styles);
         if (styleCssMapHash) {
+          // set the source later when we have it.
           this.setAssetSource(styleCssMapHash, sourceMap.toString());
           const sourceMapFile = this.getFileName(styleCssMapHash);
           const sourceMapFileRel = `/${path.relative(
@@ -344,7 +359,11 @@ export default function elderjsRollup({
         } else {
           this.setAssetSource(styleCssHash, styles);
         }
-      } else if (type === 'client' && !legacy && isWrite) {
+      }
+    },
+
+    writeBundle() {
+      if (type === 'ssr') {
         // copy over assets from the ssr folder to the client folder
         const ssrAssets = path.resolve(elderConfig.rootDir, `.${sep}___ELDER___${sep}compiled${sep}assets`);
         const clientAssets = path.resolve(elderConfig.$$internal.distElder, `.${sep}assets${sep}`);
@@ -356,9 +375,7 @@ export default function elderjsRollup({
           });
         }
       }
-    },
 
-    writeBundle() {
       this.cache.set('dependencies', cache.dependencies);
     },
   };
