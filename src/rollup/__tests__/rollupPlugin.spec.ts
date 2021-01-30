@@ -601,8 +601,9 @@ describe('#rollupPlugin', () => {
             buildStartBound();
 
             expect(t.values).toEqual([{ name: 'svelte.css', type: 'asset' }]);
-            expect(del.sync).toHaveBeenCalledTimes(1);
+            expect(del.sync).toHaveBeenCalledTimes(2);
             expect(del.sync).toHaveBeenCalledWith(elderConfig.$$internal.ssrComponents);
+            expect(del.sync).toHaveBeenCalledWith(path.join(elderConfig.$$internal.distElder, 'assets'));
           });
           it('tests client functionality', () => {
             const t = {
@@ -614,8 +615,10 @@ describe('#rollupPlugin', () => {
             const buildStartBound = clientPlugin.buildStart.bind(t);
             buildStartBound();
             expect(t.values).toEqual([]);
-            expect(del.sync).toHaveBeenCalledTimes(2);
-            expect(del.sync).toHaveBeenCalledWith(elderConfig.$$internal.distElder);
+            expect(del.sync).toHaveBeenCalledTimes(3);
+            expect(del.sync).toHaveBeenCalledWith(elderConfig.$$internal.clientComponents);
+            expect(del.sync).toHaveBeenCalledWith(elderConfig.$$internal.ssrComponents);
+            expect(del.sync).toHaveBeenCalledWith(path.join(elderConfig.$$internal.distElder, 'assets'));
           });
         });
 
@@ -672,28 +675,6 @@ describe('#rollupPlugin', () => {
               ]),
             );
             expect(r).toBeUndefined();
-          });
-          it('tests client functionality', async () => {
-            const cfs = fsExtra.copyFileSync;
-            const rds = fsExtra.readdirSync;
-            const eds = fsExtra.ensureDirSync;
-
-            // @ts-ignore
-            fsExtra.copyFileSync = jest.fn(cfs).mockImplementation(() => 'copied');
-            // @ts-ignore
-            fsExtra.readdirSync = jest.fn(rds).mockImplementation(() => ['style.css', 'style.css.map']);
-            // @ts-ignore
-            fsExtra.ensureDirSync = jest.fn(eds).mockImplementation();
-            // @ts-ignore
-            await clientPlugin.generateBundle({}, {}, true);
-
-            expect(fsExtra.ensureDirSync).toHaveBeenCalledTimes(1);
-            expect(fsExtra.copyFileSync).toHaveBeenCalledTimes(2);
-            expect(fsExtra.readdirSync).toHaveBeenCalledTimes(1);
-
-            fsExtra.copyFileSync = cfs;
-            fsExtra.readdirSync = rds;
-            fsExtra.ensureDirSync = eds;
           });
         });
 
@@ -784,6 +765,9 @@ describe('#rollupPlugin', () => {
         });
 
         describe('#writeBundle', () => {
+          const cfs = fsExtra.copyFileSync;
+          const rds = fsExtra.readdirSync;
+          const eds = fsExtra.ensureDirSync;
           it('Sets the dependency cache from prior build', () => {
             const t = {
               cache: {
@@ -792,9 +776,45 @@ describe('#rollupPlugin', () => {
             };
             const ssrBound = ssrPlugin.writeBundle.bind(t);
 
+            // @ts-ignore
+            fsExtra.copyFileSync = jest.fn(cfs).mockImplementation(() => 'copied');
+            // @ts-ignore
+            fsExtra.readdirSync = jest.fn(rds).mockImplementation(() => ['style.css', 'style.css.map']);
+            // @ts-ignore
+            fsExtra.ensureDirSync = jest.fn(eds).mockImplementation();
             ssrBound();
 
+            expect(fsExtra.ensureDirSync).toHaveBeenCalledTimes(1);
+            expect(fsExtra.copyFileSync).toHaveBeenCalledTimes(2);
+            expect(fsExtra.readdirSync).toHaveBeenCalledTimes(1);
+
             expect(t.cache.set).toHaveBeenCalledTimes(1);
+          });
+
+          it('tests copying assets to client', async () => {
+            const t = {
+              cache: {
+                set: jest.fn(() => ({})),
+              },
+            };
+            const ssrBound = ssrPlugin.writeBundle.bind(t);
+
+            // @ts-ignore
+            fsExtra.copyFileSync = jest.fn(cfs).mockImplementation(() => 'copied');
+            // @ts-ignore
+            fsExtra.readdirSync = jest.fn(rds).mockImplementation(() => ['style.css', 'style.css.map']);
+            // @ts-ignore
+            fsExtra.ensureDirSync = jest.fn(eds).mockImplementation();
+            // @ts-ignore
+            await ssrBound({}, {}, true);
+
+            expect(fsExtra.ensureDirSync).toHaveBeenCalledTimes(1);
+            expect(fsExtra.copyFileSync).toHaveBeenCalledTimes(2);
+            expect(fsExtra.readdirSync).toHaveBeenCalledTimes(1);
+
+            fsExtra.copyFileSync = cfs;
+            fsExtra.readdirSync = rds;
+            fsExtra.ensureDirSync = eds;
           });
         });
         it('Sets the dependency cache from prior build', () => {
