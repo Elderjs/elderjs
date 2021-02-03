@@ -103,14 +103,18 @@ export type ExternalHelperRequestOptions = {
   settings: SettingsOptions;
 };
 
+export type ReqDetails = {
+  path?: string;
+  query?: any;
+  search?: string;
+};
+
 export type RequestOptions = {
-  slug: string;
-  random: number;
-  state: StateSlug;
-  uid: string;
+  slug?: string;
   route: string;
   type: string;
   permalink: string;
+  req?: ReqDetails;
 };
 
 export type RequestsOptions = {

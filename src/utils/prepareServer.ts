@@ -9,7 +9,7 @@ function prepareServer({ bootstrapComplete }) {
       req,
       next,
       res,
-      request: {},
+      request: { type: 'server' },
     });
   };
 }

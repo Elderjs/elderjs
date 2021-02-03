@@ -44,10 +44,12 @@
     "lodash.get": "^4.4.2",
     "lodash.kebabcase": "^4.1.1",
     "nanoid": "^3.1.12",
+    "regexparam": "^1.3.0",
     "rollup": "^2.21.0",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-multi-input": "^1.1.1",
     "rollup-plugin-terser": "^6.1.0",
+    "route-sort": "^1.0.0",
     "spark-md5": "^3.0.1",
     "svelte": "3.29.7",
     "yup": "^0.29.3"

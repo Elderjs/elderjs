@@ -35,6 +35,7 @@ import createReadOnlyProxy from './utils/createReadOnlyProxy';
 import workerBuild from './workerBuild';
 import { inlineSvelteComponent } from './partialHydration/inlineSvelteComponent';
 import elderJsShortcodes from './shortcodes';
+import prepareRouter from './routes/prepareRouter';
 
 class Elder {
   bootstrapComplete: Promise<any>;
@@ -68,6 +69,8 @@ class Elder {
   hookInterface: any;
 
   shortcodes: ShortcodeDefs;
+
+  router: (any) => any;
 
   constructor(initializationOptions: InitializationOptions = {}) {
     const initialOptions = { ...initializationOptions };
@@ -104,18 +107,6 @@ class Elder {
 
       // add meta to routes and collect hooks from routes
       const userRoutesJsFile = routes(this.settings);
-
-      const userRoutes = Object.keys(userRoutesJsFile);
-
-      userRoutes.forEach((routeName) => {
-        userRoutesJsFile[routeName] = {
-          ...userRoutesJsFile[routeName],
-          $$meta: {
-            type: 'route',
-            addedBy: 'routejs',
-          },
-        };
-      });
 
       // plugins should never overwrite user routes.
       const collectedRoutes: RoutesOptions = { ...pluginRoutes, ...userRoutesJsFile };
@@ -271,6 +262,7 @@ class Elder {
           }
 
           allRequestsForRoute = allRequestsForRoute.reduce((out, cv) => {
+            // TODO: we should probably remove this restriction if using a router.
             if (!{}.hasOwnProperty.call(cv, 'slug')) {
               throw new Error(`Request for ${routeName} is missing a slug property.`);
             }
@@ -330,6 +322,8 @@ class Elder {
             }
           }
         }
+
+        this.router = prepareRouter(this);
 
         this.markBootstrapComplete(this);
       });

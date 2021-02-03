@@ -16,9 +16,8 @@ const svelteComponent = (componentName: String, folder: String = 'components') =
   props,
   hydrateOptions,
 }: ComponentPayload): string => {
-  const { ssr, client, iife } = page.settings.$$internal.findComponent(componentName, folder);
-
   const cleanComponentName = getComponentName(componentName);
+  const { ssr, client, iife } = page.settings.$$internal.findComponent(cleanComponentName, folder);
 
   // eslint-disable-next-line import/no-dynamic-require
   const ssrReq = require(ssr);

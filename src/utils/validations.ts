@@ -129,7 +129,14 @@ const configSchema = yup.object({
  * Defaults are set when routes are imported in route.ts
  */
 const routeSchema = yup.object({
-  template: yup.string().required().label('Svelte file for your route. Defaults to RouteName.svelte if not defined.'),
+  template: yup
+    .string()
+    .required()
+    .label('Svelte file for your route. Defaults to [RouteName].svelte if not defined. Relative to /src'),
+  layout: yup
+    .string()
+    .required()
+    .label('Svelte file for your layout. Defaults to Layout.svelte if not defined. Relative to /src'),
   all: yup
     .mixed()
     .required()
@@ -156,6 +163,13 @@ const routeSchema = yup.object({
     .notRequired()
     .default({})
     .label(`Async/sync function that returns a JS object. Can also be a plain JS object.`),
+  name: yup
+    .string()
+    .optional()
+    .min(1)
+    .label(
+      'A name used to identify the route internally. If not defined, it uses [routeName] from "/routes/[routeName]/route.js". Mainly used with helpers.permalink.[name]().',
+    ),
 });
 
 const pluginSchema = yup.object({
