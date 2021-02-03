@@ -58,7 +58,6 @@ function prepareRouter(Elder) {
       request.req = { path, query, search };
       return request;
     }
-    console.log('no dynamic route', path);
     return false;
   }
 

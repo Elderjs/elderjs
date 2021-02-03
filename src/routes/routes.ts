@@ -31,7 +31,6 @@ function prepareRoutes(settings: SettingsOptions) {
   const { ssrComponents: ssrFolder, serverPrefix = '' } = settings.$$internal;
 
   const files = glob.sync(`${settings.srcDir}/routes/*/+(*.js|*.svelte)`);
-  const ssrComponents = glob.sync(`${ssrFolder}/**/*.js`);
   const routejsFiles = files.filter((f) => f.endsWith('/route.js'));
 
   // collect routes
@@ -232,12 +231,36 @@ function prepareRoutes(settings: SettingsOptions) {
   //   return out;
   // }, {});
 
+  const ssrComponents = glob.sync(`${ssrFolder}/**/*.js`);
   Object.keys(routes).forEach((routeName) => {
+    const parsedTemplate = path.parse(routes[routeName].template);
+    const templateLoc = path.join(parsedTemplate.dir, `${parsedTemplate.name}.js`);
+    const ssrTemplate = ssrComponents.find((f) => f.endsWith(templateLoc));
+    if (!ssrTemplate) {
+      console.error(
+        `No SSR template found for ${routeName}. Expected at ${path.resolve(
+          settings.$$internal.ssrComponents,
+          templateLoc,
+        )}. Make sure rollup finished running.`,
+      );
+    }
+
+    const parsedLayout = path.parse(routes[routeName].layout);
+    const layoutLoc = path.join(parsedLayout.dir, `${parsedLayout.name}.js`);
+    const ssrLayout = ssrComponents.find((f) => f.endsWith(layoutLoc));
+    if (!ssrLayout) {
+      console.error(
+        `No SSR Layout found for ${routeName}. Expected at ${path.resolve(
+          settings.$$internal.ssrComponents,
+          layoutLoc,
+        )}. Make sure rollup finished running.`,
+      );
+    }
+
     routes[routeName].templateComponent = svelteComponent(routes[routeName].template, 'routes');
     routes[routeName].layoutComponent = svelteComponent(routes[routeName].layout, 'layouts');
   });
 
-  console.log(routes);
   return routes;
 }
 
