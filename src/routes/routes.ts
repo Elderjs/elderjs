@@ -7,9 +7,8 @@ import kebabcase from 'lodash.kebabcase';
 import toRegExp from 'regexparam';
 import path from 'path';
 import fs from 'fs-extra';
-import type { RouteOptions } from './types';
 
-import { svelteComponent, capitalizeFirstLetter } from '../utils';
+import { svelteComponent } from '../utils';
 import { SettingsOptions } from '../utils/types';
 import wrapPermalinkFn from '../utils/wrapPermalinkFn';
 
@@ -20,6 +19,7 @@ const requireFile = (file: string) => {
 
 export function makeRoutesjsPermalink(routeString) {
   return function permalink({ request }) {
+    // eslint-disable-next-line no-useless-escape
     return routeString.replace(/(\/|^)([:*][^\/]*?)(\?)?(?=\/|$)/g, (_, start, key, optional) => {
       if ((_ = request[key.substring(1)])) return `/${_}`;
       return optional ? '' : `\${key}`; // TODO: error?

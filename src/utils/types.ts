@@ -1,4 +1,4 @@
-import type { StateSlug, RoutesOptions } from '../routes/types';
+import type { RoutesOptions } from '../routes/types';
 import type { HookOptions } from '../hooks/types';
 import type { ShortcodeDefs } from '../shortcodes/types';
 
