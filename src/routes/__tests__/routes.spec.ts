@@ -1,6 +1,6 @@
 import normalizeSnapshot from '../../utils/normalizeSnapshot';
 
-process.cwd = () => 'test';
+// process.cwd = () => 'test';
 
 jest.mock('../../utils/svelteComponent', () => (component) => `<div class="svelteComponent">${component}</div>`);
 
@@ -69,7 +69,6 @@ describe('#routes', () => {
 
     expect(routesObject.content.permalink({ request: { slug: 'content' } })).toEqual(`/content/`);
     expect(routesObject.content.permalink({ request: { slug: '/' } })).toEqual(`/`);
-    expect(normalizeSnapshot(routesObject)).toMatchSnapshot();
   });
 
   it('Sets a single request object for all array when when no all function', () => {
@@ -128,12 +127,11 @@ describe('#routes', () => {
     // eslint-disable-next-line global-require
     const routes = require('../routes').default;
     // @ts-ignore
-    const routesObject = routes(settings);
+    const routesObject = normalizeSnapshot(routes(settings));
 
     expect(routesObject.content.all).toEqual([{ slug: 'content' }]);
     expect(routesObject.SomethingCamel.all).toEqual([{ slug: 'something-camel' }]);
     expect(routesObject.home.all).toEqual([{ slug: '/' }]);
-    expect(normalizeSnapshot(routesObject)).toMatchSnapshot();
   });
 
   it('works where things are set', () => {
@@ -161,7 +159,7 @@ describe('#routes', () => {
       () => ({
         permalink: () => 'content-permalink',
         all: () => null,
-        template: 'Default',
+        template: 'Another.svelte',
         layout: 'Layout.svelte',
       }),
       { virtual: true },
@@ -180,10 +178,17 @@ describe('#routes', () => {
     // eslint-disable-next-line global-require
     const routes = require('../routes').default;
     // @ts-ignore
-    expect(normalizeSnapshot(routes(settings))).toMatchSnapshot();
+
+    const r = normalizeSnapshot(routes(settings));
+    expect(r.content.template).toContain('Another.svelte');
+    expect(r.home.template).toContain('test/src/routes/home/home.svelte');
+    expect(r.content.layout).toBe('Layout.svelte');
+    expect(r.home.layout).toBe('Layout.svelte');
+    expect(r.content.$$meta.type).toEqual('file');
+    expect(r.content.name).toEqual('content');
   });
 
-  it('no template, ts imports', () => {
+  it('no template', () => {
     jest.mock('glob', () => ({
       sync: jest
         .fn()
@@ -230,6 +235,52 @@ describe('#routes', () => {
     // eslint-disable-next-line global-require
     const routes = require('../routes').default;
     // @ts-ignore
-    expect(normalizeSnapshot(routes({ ...settings, typescript: true }))).toMatchSnapshot();
+
+    const r = normalizeSnapshot(routes(settings));
+    expect(r.content.template).toContain('test/src/routes/content/content.svelte');
+    expect(r.home.template).toContain('test/src/routes/home/home.svelte');
+    expect(r.content.layout).toBe('Layout.svelte');
+    expect(r.home.layout).toBe('Layout.svelte');
+  });
+
+  it('tests case sensitivity', () => {
+    jest.mock('glob', () => ({
+      sync: jest
+        .fn()
+        .mockImplementationOnce(() => [
+          `test/src/routes/content/route.js`,
+          `test/src/routes/content/Default.svelte`,
+          `test/src/routes/home/Home.svelte`,
+          `test/src/routes/home/route.js`,
+          `test/src/routes/content/data.js`,
+          `test/src/routes/content/Layout.svelte`,
+        ])
+        .mockImplementationOnce(() => [
+          `test/___ELDER___/compiled/routes/Home/Home.js`,
+          `test/___ELDER___/compiled/components/AutoComplete.js`,
+          `test/___ELDER___/compiled/routes/content/Default.js`,
+          `test/___ELDER___/compiled/routes/Content/Content.js`,
+        ]),
+    }));
+
+    jest.mock(
+      'test/src/routes/home/route.js',
+      () => ({
+        default: {
+          template: 'Home.svelte',
+          permalink: () => 'home-permalink',
+          all: () => null,
+        },
+      }),
+      { virtual: true },
+    );
+
+    // eslint-disable-next-line global-require
+    const routes = require('../routes').default;
+    // @ts-ignore
+
+    const r = normalizeSnapshot(routes(settings));
+    expect(r.home.template).toContain('Home.svelte');
+    expect(r.home.layout).toBe('Layout.svelte');
   });
 });

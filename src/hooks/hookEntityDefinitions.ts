@@ -1,5 +1,6 @@
 /* istanbul ignore file */
 const hookEntityDefinitions = {
+  router: `The Elder.js router that handles dynamic requests and explicit requests`,
   allRequests: `Every request object collected from all routes during bootstrap. It is important to note that 'allRequests' will be different at the 'request' hook during a build because the requests are split between different processes during build time using the allRequests object.`,
   hookInterface:
     'The hook interface is what defines the "contract" for each hook. It includes what properties the hook has access to and which of those properties can be mutated.',

@@ -29,12 +29,16 @@ const prepareFindSvelteComponent = ({ ssrFolder, rootDir, clientComponents: clie
 
     // abs path first
     if (nameFixed.includes(rootDirFixed)) {
-      const rel = windowsPathFix(path.relative(path.join(rootDirFixed, 'src'), name)).replace('.svelte', '.js');
+      const rel = windowsPathFix(path.relative(path.join(rootDirFixed, 'src'), name))
+        .replace('.svelte', '.js')
+        .toLowerCase();
       const parsed = path.parse(rel);
-      const ssr = ssrComponents.find((c) => c.endsWith(rel));
-      const client = windowsPathFix(clientComponents.find((c) => removeHash(c).endsWith(rel)));
+      const ssr = ssrComponents.find((c) => c.toLowerCase().endsWith(rel));
+      const client = windowsPathFix(clientComponents.find((c) => removeHash(c).toLowerCase().endsWith(rel)));
       const iife = windowsPathFix(
-        clientComponents.filter((c) => c.includes('iife')).find((c) => removeHash(c).endsWith(parsed.base)),
+        clientComponents
+          .filter((c) => c.includes('iife'))
+          .find((c) => removeHash(c).toLowerCase().endsWith(parsed.base)),
       );
 
       const out = { ssr, client, iife };
@@ -45,17 +49,17 @@ const prepareFindSvelteComponent = ({ ssrFolder, rootDir, clientComponents: clie
     // component name and folder only
     const ssr = ssrComponents
       .filter((c) => c.includes(folder))
-      .find((c) => path.parse(c).name === name.replace('.svelte', ''));
+      .find((c) => path.parse(c).name.toLowerCase() === name.replace('.svelte', '').toLowerCase());
     const client = windowsPathFix(
       clientComponents
         .filter((c) => c.includes(folder))
-        .find((c) => path.parse(removeHash(c)).name === name.replace('.svelte', '')),
+        .find((c) => path.parse(removeHash(c)).name.toLowerCase() === name.replace('.svelte', '').toLowerCase()),
     );
 
     const iife = windowsPathFix(
       clientComponents
         .filter((c) => c.includes('iife'))
-        .find((c) => removeHash(c).endsWith(`${name.replace('.svelte', '')}.js`)),
+        .find((c) => removeHash(c.toLowerCase()).endsWith(`${name.toLowerCase().replace('.svelte', '')}.js`)),
     );
 
     const out = { ssr, client, iife };

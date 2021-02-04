@@ -42,68 +42,9 @@ describe('#hooks', () => {
   });
   it('elderExpressLikeMiddleware', async () => {
     const hook = hooks.find((h) => h.name === 'elderExpressLikeMiddleware');
-    const next = () => 'next() was called';
-    const settings = {
-      $$internal: {
-        serverPrefix: '/dev',
-      },
-    };
-    // prefix not found
-    expect(
-      await hook.run({
-        next,
-        req: { path: '/' },
-        settings,
-      }),
-    ).toEqual('next() was called');
-    const headers = [];
-    const end = jest.fn();
-    // route found with slash added
-    expect(
-      await hook.run({
-        next,
-        req: { path: '/dev' },
-        res: {
-          headerSent: false,
-          setHeader: (key, val) => {
-            headers.push(`${key}-${val}`);
-          },
-          end,
-        },
-        routes: {
-          Home: {
-            data: { foo: 'bar' },
-          },
-        },
-        serverLookupObject: {
-          '/dev/': {
-            route: 'Home',
-          },
-        },
-        settings,
-      }),
-    ).toBeUndefined();
-    // no serverPrefix
-    // prefix not found
-    expect(
-      await hook.run({
-        next,
-        req: { path: '/not-found' },
-        settings: {
-          $$internal: {
-            serverPrefix: '',
-          },
-        },
-        serverLookupObject: {
-          '/': {
-            route: 'Home',
-          },
-        },
-      }),
-    ).toEqual('next() was called');
+    const router = () => 'router() was called';
 
-    expect(end).toHaveBeenCalledTimes(1);
-    expect(headers).toEqual(['Content-Type-text/html']);
+    expect(await hook.run({ router })).toBe('router() was called');
   });
   it('elderProcessShortcodes', async () => {
     const hook = hooks.find((h) => h.name === 'elderProcessShortcodes');
