@@ -9,10 +9,9 @@ import get from 'lodash.get';
  */
 const permalinks = ({ routes, settings }) =>
   Object.keys(routes).reduce((out, cv) => {
-    const prefix = settings.prefix || get(settings, 'server.prefix', '');
 
     // eslint-disable-next-line no-param-reassign
-    out[cv] = (data) => `${prefix}${routes[cv].permalink({ request: data, settings })}`;
+    out[cv] = (data) => routes[cv].permalink({ request: data, settings });
     return out;
   }, {});
 
