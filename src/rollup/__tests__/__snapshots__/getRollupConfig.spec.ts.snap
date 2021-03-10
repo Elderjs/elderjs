@@ -38,6 +38,7 @@ Array [
         "pluginName": "rollup-plugin-multi-input",
       },
       Object {
+        "buildStart": [Function],
         "name": "replace",
         "renderChunk": [Function],
         "transform": [Function],
@@ -68,6 +69,7 @@ Array [
       Object {
         "buildStart": [Function],
         "load": [Function],
+        "moduleParsed": [Function],
         "name": "commonjs",
         "resolveId": [Function],
         "transform": [Function],
@@ -98,6 +100,7 @@ Array [
         "pluginName": "rollup-plugin-multi-input",
       },
       Object {
+        "buildStart": [Function],
         "name": "replace",
         "renderChunk": [Function],
         "transform": [Function],
@@ -128,6 +131,7 @@ Array [
       Object {
         "buildStart": [Function],
         "load": [Function],
+        "moduleParsed": [Function],
         "name": "commonjs",
         "resolveId": [Function],
         "transform": [Function],
@@ -186,6 +190,7 @@ Array [
         "pluginName": "rollup-plugin-multi-input",
       },
       Object {
+        "buildStart": [Function],
         "name": "replace",
         "renderChunk": [Function],
         "transform": [Function],
@@ -216,6 +221,7 @@ Array [
       Object {
         "buildStart": [Function],
         "load": [Function],
+        "moduleParsed": [Function],
         "name": "commonjs",
         "resolveId": [Function],
         "transform": [Function],
@@ -246,6 +252,7 @@ Array [
         "pluginName": "rollup-plugin-multi-input",
       },
       Object {
+        "buildStart": [Function],
         "name": "replace",
         "renderChunk": [Function],
         "transform": [Function],
@@ -276,6 +283,7 @@ Array [
       Object {
         "buildStart": [Function],
         "load": [Function],
+        "moduleParsed": [Function],
         "name": "commonjs",
         "resolveId": [Function],
         "transform": [Function],
@@ -307,6 +315,7 @@ Array [
     ],
     "plugins": Array [
       Object {
+        "buildStart": [Function],
         "name": "replace",
         "renderChunk": [Function],
         "transform": [Function],
@@ -337,6 +346,7 @@ Array [
       Object {
         "buildStart": [Function],
         "load": [Function],
+        "moduleParsed": [Function],
         "name": "commonjs",
         "resolveId": [Function],
         "transform": [Function],
@@ -368,6 +378,7 @@ Array [
     ],
     "plugins": Array [
       Object {
+        "buildStart": [Function],
         "name": "replace",
         "renderChunk": [Function],
         "transform": [Function],
@@ -398,6 +409,7 @@ Array [
       Object {
         "buildStart": [Function],
         "load": [Function],
+        "moduleParsed": [Function],
         "name": "commonjs",
         "resolveId": [Function],
         "transform": [Function],
@@ -429,6 +441,7 @@ Array [
     ],
     "plugins": Array [
       Object {
+        "buildStart": [Function],
         "name": "replace",
         "renderChunk": [Function],
         "transform": [Function],
@@ -459,6 +472,7 @@ Array [
       Object {
         "buildStart": [Function],
         "load": [Function],
+        "moduleParsed": [Function],
         "name": "commonjs",
         "resolveId": [Function],
         "transform": [Function],
@@ -490,6 +504,7 @@ Array [
     ],
     "plugins": Array [
       Object {
+        "buildStart": [Function],
         "name": "replace",
         "renderChunk": [Function],
         "transform": [Function],
@@ -520,6 +535,7 @@ Array [
       Object {
         "buildStart": [Function],
         "load": [Function],
+        "moduleParsed": [Function],
         "name": "commonjs",
         "resolveId": [Function],
         "transform": [Function],
@@ -551,6 +567,7 @@ Array [
     ],
     "plugins": Array [
       Object {
+        "buildStart": [Function],
         "name": "replace",
         "renderChunk": [Function],
         "transform": [Function],
@@ -581,6 +598,7 @@ Array [
       Object {
         "buildStart": [Function],
         "load": [Function],
+        "moduleParsed": [Function],
         "name": "commonjs",
         "resolveId": [Function],
         "transform": [Function],
@@ -612,6 +630,7 @@ Array [
     ],
     "plugins": Array [
       Object {
+        "buildStart": [Function],
         "name": "replace",
         "renderChunk": [Function],
         "transform": [Function],
@@ -642,6 +661,7 @@ Array [
       Object {
         "buildStart": [Function],
         "load": [Function],
+        "moduleParsed": [Function],
         "name": "commonjs",
         "resolveId": [Function],
         "transform": [Function],
@@ -673,6 +693,7 @@ Array [
     ],
     "plugins": Array [
       Object {
+        "buildStart": [Function],
         "name": "replace",
         "renderChunk": [Function],
         "transform": [Function],
@@ -703,6 +724,7 @@ Array [
       Object {
         "buildStart": [Function],
         "load": [Function],
+        "moduleParsed": [Function],
         "name": "commonjs",
         "resolveId": [Function],
         "transform": [Function],
