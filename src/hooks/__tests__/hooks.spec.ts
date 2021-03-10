@@ -239,7 +239,7 @@ describe('#hooks', () => {
   });
 
   describe('#elderAddCssFileToHead', () => {
-    it('it respects settings.css = file', async () => {
+    it('respects settings.css = file', async () => {
       const hook = hooks.find((h) => h.name === 'elderAddCssFileToHead');
       expect(
         await hook.run({
@@ -264,7 +264,7 @@ describe('#hooks', () => {
     });
 
     describe('#elderAddCssFileToHead', () => {
-      it('it respects settings.css = lazy', async () => {
+      it('respects settings.css = lazy', async () => {
         const hook = hooks.find((h) => h.name === 'elderAddCssFileToHead');
         expect(
           await hook.run({
@@ -289,7 +289,7 @@ describe('#hooks', () => {
       });
     });
 
-    it('it respects settings.css = inline', async () => {
+    it('respects settings.css = inline', async () => {
       const hook = hooks.find((h) => h.name === 'elderAddCssFileToHead');
       expect(
         await hook.run({
@@ -298,7 +298,7 @@ describe('#hooks', () => {
         }),
       ).toBeUndefined();
     });
-    it('it respects settings.css = none', async () => {
+    it('respects settings.css = none', async () => {
       const hook = hooks.find((h) => h.name === 'elderAddCssFileToHead');
       expect(
         await hook.run({

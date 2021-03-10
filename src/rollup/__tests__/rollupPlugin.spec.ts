@@ -83,7 +83,7 @@ describe('#rollupPlugin', () => {
   });
 
   describe('#logDependency', () => {
-    it('It adds a css file as a dependency when it is imported.', () => {
+    it('adds a css file as a dependency when it is imported.', () => {
       const cache = {
         dependencies: {},
       };
@@ -96,7 +96,7 @@ describe('#rollupPlugin', () => {
       logDependency(importee, importer, cache);
       expect(normalizeSnapshot(cache.dependencies)).toEqual(normalizeSnapshot(expected));
     });
-    it('It adds the importee as the dependency of the importer', () => {
+    it('adds the importee as the dependency of the importer', () => {
       const cache = {
         dependencies: {},
       };
@@ -679,7 +679,7 @@ describe('#rollupPlugin', () => {
         });
 
         describe('#resolveId', () => {
-          it(`It doesn't resolve anything not in node_modules`, async () => {
+          it(`doesn't resolve anything not in node_modules`, async () => {
             expect(
               // @ts-ignore
               ssrPlugin.resolveId('../components/Header/Header.svelte', '/test/src/layouts/Layout.svelte'),
@@ -736,7 +736,7 @@ describe('#rollupPlugin', () => {
           });
         });
         describe('#transform', () => {
-          it('It compiles a svelte component and sets the css while adding to watch files', async () => {
+          it('compiles a svelte component and sets the css while adding to watch files', async () => {
             const t = {
               names: [],
               sets: [],
