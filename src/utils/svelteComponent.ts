@@ -29,7 +29,7 @@ const svelteComponent = (componentName: String, folder: String = 'components') =
     const { html: htmlOutput, head } = render(props);
 
     if (page.settings.css === 'inline') {
-      if (css && css.length > 0 && page.svelteCss) {
+      if (css && css.length > 0 && page.svelteCss && !hydrateOptions) {
         page.svelteCss.push({ css, cssMap });
       }
     }
