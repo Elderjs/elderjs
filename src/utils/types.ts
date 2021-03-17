@@ -142,6 +142,7 @@ interface Init {
 export type PluginOptions = {
   name: string;
   description: string;
+  minimalElder: string;
   init: Init | any;
   routes?: RoutesOptions;
   hooks: Array<HookOptions>;

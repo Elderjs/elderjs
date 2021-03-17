@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable global-require */
 import fs from 'fs-extra';
+import { semver } from 'semver';
 import defaultsDeep from 'lodash.defaultsdeep';
 
 import path from 'path';
@@ -16,6 +17,7 @@ async function plugins(elder: Elder) {
    * * Collect plugin routes
    * * Add plugin object and helpers to all plugin hook functions.
    */
+  const elderVersion = process.env.npm_package_version;
   let pluginRoutes: RoutesOptions = {};
   const pluginHooks: Array<HookOptions> = [];
   const pluginShortcodes: ShortcodeDefs = [];
@@ -56,6 +58,23 @@ async function plugins(elder: Elder) {
       continue;
     }
 
+    plugin.minimalElder = plugin.minimalElder || '1.0.0'
+
+    if (!semver.valid(plugin.minimalElder)) {
+      console.error(
+        new Error(`Plugin ${pluginName} have an invalid minimalElder declaration: ${plugin.minimalElder}. Skipping.`),
+      );
+      // eslint-disable-next-line no-continue
+      continue;
+    }
+    if (semver.gt(elderVersion, plugin.minimalElder)) {
+      console.error(
+        new Error(`Plugin ${pluginName} required at least Elderjs version ${plugin.minimalElder}. Skipping.`),
+      );
+      // eslint-disable-next-line no-continue
+      continue;
+    }
+
     if (typeof plugin.init === 'function' || (plugin.init && typeof plugin.init.then === 'function')) {
       plugin =
         // eslint-disable-next-line no-await-in-loop
@@ -68,147 +87,149 @@ async function plugins(elder: Elder) {
 
     const validatedPlugin = validatePlugin(plugin);
 
-    if (validatedPlugin) {
-      plugin = validatedPlugin;
+    if (!validatedPlugin) {
+      // eslint-disable-next-line no-continue
+      continue;
+    }
+    plugin = validatedPlugin;
 
-      // clean props the plugin shouldn't be able to change between hook... specifically their hooks;
-      let { hooks: pluginHooksArray } = plugin;
+    // clean props the plugin shouldn't be able to change between hook... specifically their hooks;
+    let { hooks: pluginHooksArray } = plugin;
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { init, ...sanitizedPlugin } = plugin;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { init, ...sanitizedPlugin } = plugin;
 
-      pluginHooksArray = pluginHooksArray.map(
-        (hook): HookOptions => {
-          return {
-            ...hook,
-            $$meta: {
-              type: 'plugin',
-              addedBy: pluginName,
-            },
-            run: async (payload: any = {}) => {
-              // pass the plugin definition into the closure of every hook.
-              let pluginDefinition = sanitizedPlugin;
+    pluginHooksArray = pluginHooksArray.map(
+      (hook): HookOptions => {
+        return {
+          ...hook,
+          $$meta: {
+            type: 'plugin',
+            addedBy: pluginName,
+          },
+          run: async (payload: any = {}) => {
+            // pass the plugin definition into the closure of every hook.
+            let pluginDefinition = sanitizedPlugin;
 
-              // eslint-disable-next-line no-param-reassign
-              payload.plugin = pluginDefinition;
+            // eslint-disable-next-line no-param-reassign
+            payload.plugin = pluginDefinition;
 
-              const pluginResp = await hook.run(payload);
-              if (pluginResp) {
-                if (pluginResp.plugin) {
-                  const { plugin: newPluginDef, ...rest } = pluginResp;
-                  // while objects are pass by reference, the pattern we encourage is to return the mutation of state.
-                  // if users followed this pattern for plugins, we may not be mutating the plugin definition, so this is added.
-                  pluginDefinition = newPluginDef;
-                  return rest;
-                }
-                return pluginResp;
+            const pluginResp = await hook.run(payload);
+            if (pluginResp) {
+              if (pluginResp.plugin) {
+                const { plugin: newPluginDef, ...rest } = pluginResp;
+                // while objects are pass by reference, the pattern we encourage is to return the mutation of state.
+                // if users followed this pattern for plugins, we may not be mutating the plugin definition, so this is added.
+                pluginDefinition = newPluginDef;
+                return rest;
               }
-
-              // make sure something is returned
-              return {};
-            },
-          };
-        },
-      );
-
-      pluginHooksArray.forEach((hook) => {
-        const validatedHook = validateHook(hook);
-        if (validatedHook) {
-          pluginHooks.push(validatedHook);
-        }
-      });
-
-      if (Object.hasOwnProperty.call(plugin, 'routes')) {
-        const routeNames = Object.keys(plugin.routes);
-        // eslint-disable-next-line no-loop-func
-        for (let ii = 0; ii < routeNames.length; ii += 1) {
-          const routeName = routeNames[ii];
-
-          // don't allow plugins to add hooks via the routes definitions like users can.
-          if (plugin.routes[routeName].hooks)
-            console.error(
-              `WARN: Plugin ${routeName} is trying to register a hooks via a the 'hooks' array on a route. This is not supported. Plugins must define the 'hooks' array at the plugin level.`,
-            );
-          if (!plugin.routes[routeName].data) {
-            plugin.routes[routeName].data = () => ({});
-          }
-
-          if (
-            typeof plugin.routes[routeName].template === 'string' &&
-            plugin.routes[routeName].template.endsWith('.svelte')
-          ) {
-            const templateName = plugin.routes[routeName].template.replace('.svelte', '');
-            const ssrComponent = path.resolve(
-              elder.settings.$$internal.ssrComponents,
-              `./plugins/${pluginName}/${templateName}.js`,
-            );
-
-            if (!fs.existsSync(ssrComponent)) {
-              console.warn(
-                `Plugin Route: ${routeName} added by plugin ${pluginName} has an error. No SSR svelte component found ${templateName}. This may cause unexpected outcomes. If you believe this should be working, make sure rollup has run before this file is initialized. If the issue persists, please contact the plugin author. Expected location \`${ssrComponent}\``,
-              );
+              return pluginResp;
             }
 
-            plugin.routes[routeName].templateComponent = svelteComponent(templateName);
-          } else {
+            // make sure something is returned
+            return {};
+          },
+        };
+      },
+    );
+
+    pluginHooksArray.forEach((hook) => {
+      const validatedHook = validateHook(hook);
+      if (validatedHook) {
+        pluginHooks.push(validatedHook);
+      }
+    });
+
+    if (Object.hasOwnProperty.call(plugin, 'routes')) {
+      const routeNames = Object.keys(plugin.routes);
+      // eslint-disable-next-line no-loop-func
+      for (let ii = 0; ii < routeNames.length; ii += 1) {
+        const routeName = routeNames[ii];
+
+        // don't allow plugins to add hooks via the routes definitions like users can.
+        if (plugin.routes[routeName].hooks)
+          console.error(
+            `WARN: Plugin ${routeName} is trying to register a hooks via a the 'hooks' array on a route. This is not supported. Plugins must define the 'hooks' array at the plugin level.`,
+          );
+        if (!plugin.routes[routeName].data) {
+          plugin.routes[routeName].data = () => ({});
+        }
+
+        if (
+          typeof plugin.routes[routeName].template === 'string' &&
+          plugin.routes[routeName].template.endsWith('.svelte')
+        ) {
+          const templateName = plugin.routes[routeName].template.replace('.svelte', '');
+          const ssrComponent = path.resolve(
+            elder.settings.$$internal.ssrComponents,
+            `./plugins/${pluginName}/${templateName}.js`,
+          );
+
+          if (!fs.existsSync(ssrComponent)) {
+            console.warn(
+              `Plugin Route: ${routeName} added by plugin ${pluginName} has an error. No SSR svelte component found ${templateName}. This may cause unexpected outcomes. If you believe this should be working, make sure rollup has run before this file is initialized. If the issue persists, please contact the plugin author. Expected location \`${ssrComponent}\``,
+            );
+          }
+
+          plugin.routes[routeName].templateComponent = svelteComponent(templateName);
+        } else {
+          console.error(
+            Error(
+              `Plugin Route: ${routeName} added by plugin ${pluginName} does not have a template defined. Disabling this route.`,
+            ),
+          );
+          // eslint-disable-next-line no-continue
+          continue;
+        }
+
+        if (
+          typeof plugin.routes[routeName].layout === 'string' &&
+          plugin.routes[routeName].layout.endsWith('.svelte')
+        ) {
+          const layoutName = plugin.routes[routeName].layout.replace('.svelte', '');
+          const ssrComponent = path.resolve(
+            elder.settings.$$internal.ssrComponents,
+            `./plugins/${pluginName}/${layoutName}.js`,
+          );
+
+          if (!fs.existsSync(ssrComponent)) {
+            console.warn(
+              `Plugin Route: ${routeName} added by plugin ${pluginName} has an error. No SSR svelte component found ${layoutName}. This may cause unexpected outcomes. If you believe this should be working, make sure rollup has run before this file is initialized. If the issue persists, please contact the plugin author. Expected location \`${ssrComponent}\``,
+            );
+          }
+          plugin.routes[routeName].layoutComponent = svelteComponent(layoutName);
+        } else {
+          plugin.routes[routeName].layout = 'Layout.svelte';
+          const ssrComponent = path.resolve(elder.settings.$$internal.ssrComponents, `./layouts/Layout.js`);
+
+          if (!fs.existsSync(ssrComponent)) {
             console.error(
-              Error(
-                `Plugin Route: ${routeName} added by plugin ${pluginName} does not have a template defined. Disabling this route.`,
-              ),
+              `Plugin Route: ${routeName} added by plugin ${pluginName} requires a /src/layouts/Layout.svelte to be compiled at ${ssrComponent}. Disabling this route.`,
             );
             // eslint-disable-next-line no-continue
             continue;
           }
-
-          if (
-            typeof plugin.routes[routeName].layout === 'string' &&
-            plugin.routes[routeName].layout.endsWith('.svelte')
-          ) {
-            const layoutName = plugin.routes[routeName].layout.replace('.svelte', '');
-            const ssrComponent = path.resolve(
-              elder.settings.$$internal.ssrComponents,
-              `./plugins/${pluginName}/${layoutName}.js`,
-            );
-
-            if (!fs.existsSync(ssrComponent)) {
-              console.warn(
-                `Plugin Route: ${routeName} added by plugin ${pluginName} has an error. No SSR svelte component found ${layoutName}. This may cause unexpected outcomes. If you believe this should be working, make sure rollup has run before this file is initialized. If the issue persists, please contact the plugin author. Expected location \`${ssrComponent}\``,
-              );
-            }
-            plugin.routes[routeName].layoutComponent = svelteComponent(layoutName);
-          } else {
-            plugin.routes[routeName].layout = 'Layout.svelte';
-            const ssrComponent = path.resolve(elder.settings.$$internal.ssrComponents, `./layouts/Layout.js`);
-
-            if (!fs.existsSync(ssrComponent)) {
-              console.error(
-                `Plugin Route: ${routeName} added by plugin ${pluginName} requires a /src/layouts/Layout.svelte to be compiled at ${ssrComponent}. Disabling this route.`,
-              );
-              // eslint-disable-next-line no-continue
-              continue;
-            }
-            plugin.routes[routeName].layoutComponent = svelteComponent('Layout.svelte');
-          }
-
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { hooks: pluginRouteHooks, ...sanitizedRouteDeets } = plugin.routes[routeName];
-          const sanitizedRoute = {};
-          sanitizedRoute[routeName] = { ...sanitizedRouteDeets, $$meta: { type: 'plugin', addedBy: pluginName } };
-
-          pluginRoutes = { ...pluginRoutes, ...sanitizedRoute };
+          plugin.routes[routeName].layoutComponent = svelteComponent('Layout.svelte');
         }
-      }
 
-      if (plugin.shortcodes && plugin.shortcodes.length > 0) {
-        plugin.shortcodes.forEach((shortcode) => {
-          shortcode.$$meta = {
-            type: 'plugin',
-            addedBy: pluginName,
-          };
-          shortcode.plugin = sanitizedPlugin;
-          pluginShortcodes.push(shortcode);
-        });
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { hooks: pluginRouteHooks, ...sanitizedRouteDeets } = plugin.routes[routeName];
+        const sanitizedRoute = {};
+        sanitizedRoute[routeName] = { ...sanitizedRouteDeets, $$meta: { type: 'plugin', addedBy: pluginName } };
+
+        pluginRoutes = { ...pluginRoutes, ...sanitizedRoute };
       }
+    }
+
+    if (plugin.shortcodes && plugin.shortcodes.length > 0) {
+      plugin.shortcodes.forEach((shortcode) => {
+        shortcode.$$meta = {
+          type: 'plugin',
+          addedBy: pluginName,
+        };
+        shortcode.plugin = sanitizedPlugin;
+        pluginShortcodes.push(shortcode);
+      });
     }
   }
 

@@ -172,6 +172,7 @@ const pluginSchema = yup.object({
       'Init should be a function or async function',
       (value) => typeof value === 'function' || (typeof value === 'object' && value.then === 'function'),
     ),
+  minimalElder: yup.string().default('1.0.0').label('Minimal Elderjs version compatibility.'),
   routes: yup.object().notRequired().default({}).label('(optional) Any routes the plugin is adding.'),
   hooks: yup.array().required().default([]).label('An array of hooks.'),
   config: yup
