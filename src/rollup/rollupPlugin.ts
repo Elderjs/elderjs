@@ -156,10 +156,12 @@ export default function elderjsRollup({
   };
 
   if (!production && type === 'ssr') {
-    const srcWatcher = chokidar.watch([
-      path.resolve(process.cwd(), './src'),
-      path.resolve(process.cwd(), './elder.config.js'),
-    ]);
+    const srcWatcher = chokidar.watch(
+      [path.resolve(process.cwd(), './src'), path.resolve(process.cwd(), './elder.config.js')],
+      {
+        ignored: '*.svelte',
+      },
+    );
 
     srcWatcher.on('change', (watchedPath) => {
       console.log(`> Elder.js ${path.relative(process.cwd(), watchedPath)} changed. Reloading server`);
@@ -406,12 +408,8 @@ export default function elderjsRollup({
         }
       }
 
-      if (!production) {
-        setTimeout(() => {
-          if (!production && type === 'ssr') {
-            forkServer();
-          }
-        }, 1000);
+      if (!production && type === 'ssr') {
+        forkServer();
       }
 
       this.cache.set('dependencies', cache.dependencies);
