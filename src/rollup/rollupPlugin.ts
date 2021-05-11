@@ -139,6 +139,7 @@ export default function elderjsRollup({
   let childProcess: ChildProcess;
 
   const forkServer = () => {
+    if (production) return;
     if (childProcess) childProcess.kill('SIGINT');
 
     childProcess = fork(path.resolve(process.cwd(), './src/server.js'));
@@ -405,11 +406,13 @@ export default function elderjsRollup({
         }
       }
 
-      setTimeout(() => {
-        if (!production && type === 'ssr') {
-          forkServer();
-        }
-      }, 10);
+      if (!production) {
+        setTimeout(() => {
+          if (!production && type === 'ssr') {
+            forkServer();
+          }
+        }, 1000);
+      }
 
       this.cache.set('dependencies', cache.dependencies);
     },
