@@ -12,6 +12,9 @@ import btoa from 'btoa';
 // eslint-disable-next-line import/no-unresolved
 import { CompileOptions } from 'svelte/types/compiler/interfaces';
 import del from 'del';
+import { fork, ChildProcess } from 'child_process';
+import chokidar from 'chokidar';
+
 import partialHydration from '../partialHydration/partialHydration';
 import windowsPathFix from '../utils/windowsPathFix';
 import { SettingsOptions } from '../utils/types';
@@ -133,6 +136,36 @@ export default function elderjsRollup({
   type = 'ssr',
   legacy = false,
 }: IElderjsRollupConfig): Partial<Plugin> {
+  let childProcess: ChildProcess;
+
+  const forkServer = () => {
+    if (childProcess) childProcess.kill('SIGINT');
+
+    childProcess = fork(path.resolve(process.cwd(), './src/server.js'));
+
+    childProcess.on('exit', (code) => {
+      if (code !== null) {
+        console.log(`> Elder.js process exited with code ${code}`);
+      }
+    });
+
+    childProcess.on('error', (err) => {
+      console.error(err);
+    });
+  };
+
+  if (!production && type === 'ssr') {
+    const srcWatcher = chokidar.watch([
+      path.resolve(process.cwd(), './src'),
+      path.resolve(process.cwd(), './elder.config.js'),
+    ]);
+
+    srcWatcher.on('change', (watchedPath) => {
+      console.log(`> Elder.js ${path.relative(process.cwd(), watchedPath)} changed. Reloading server`);
+      forkServer();
+    });
+  }
+
   const cleanCss = new CleanCSS({
     sourceMap: !production,
     sourceMapInlineSources: !production,
@@ -371,6 +404,12 @@ export default function elderjsRollup({
           });
         }
       }
+
+      setTimeout(() => {
+        if (!production && type === 'ssr') {
+          forkServer();
+        }
+      }, 10);
 
       this.cache.set('dependencies', cache.dependencies);
     },
