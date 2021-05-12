@@ -28,8 +28,8 @@ async function plugins(elder: Elder) {
     const pluginConfigFromConfig = elder.settings.plugins[pluginName];
 
     let plugin: PluginOptions | undefined;
-    const pluginPath = `./plugins/${pluginName}/index.js`;
-    const srcPlugin = path.resolve(elder.settings.srcDir, pluginPath);
+    const pluginPath = `./plugins/${pluginName}`;
+    const srcPlugin = path.resolve(elder.settings.srcDir, pluginPath, 'index');
 
     if (fs.existsSync(srcPlugin)) {
       // eslint-disable-next-line import/no-dynamic-require
@@ -140,7 +140,7 @@ async function plugins(elder: Elder) {
             const templateName = plugin.routes[routeName].template.replace('.svelte', '');
             const ssrComponent = path.resolve(
               elder.settings.$$internal.ssrComponents,
-              `./plugins/${pluginName}/${templateName}.js`,
+              `./plugins/${pluginName}/${templateName}`,
             );
 
             if (!fs.existsSync(ssrComponent)) {
@@ -167,7 +167,7 @@ async function plugins(elder: Elder) {
             const layoutName = plugin.routes[routeName].layout.replace('.svelte', '');
             const ssrComponent = path.resolve(
               elder.settings.$$internal.ssrComponents,
-              `./plugins/${pluginName}/${layoutName}.js`,
+              `./plugins/${pluginName}/${layoutName}`,
             );
 
             if (!fs.existsSync(ssrComponent)) {
@@ -178,7 +178,7 @@ async function plugins(elder: Elder) {
             plugin.routes[routeName].layoutComponent = svelteComponent(layoutName);
           } else {
             plugin.routes[routeName].layout = 'Layout.svelte';
-            const ssrComponent = path.resolve(elder.settings.$$internal.ssrComponents, `./layouts/Layout.js`);
+            const ssrComponent = path.resolve(elder.settings.$$internal.ssrComponents, `./layouts/Layout`);
 
             if (!fs.existsSync(ssrComponent)) {
               console.error(

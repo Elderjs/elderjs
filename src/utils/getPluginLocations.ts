@@ -4,6 +4,10 @@ import path from 'path';
 import fs from 'fs-extra';
 import { SettingsOptions } from '..';
 
+function resolveAndCheckIfExists(filepath: string) {
+  return fs.existsSync(`${filepath}.js`) || fs.existsSync(`${filepath}.ts`);
+}
+
 export default function getPluginLocations(elderConfig: SettingsOptions) {
   const pluginNames = Object.keys(elderConfig.plugins);
 
@@ -12,7 +16,7 @@ export default function getPluginLocations(elderConfig: SettingsOptions) {
       const pluginPath = path.resolve(elderConfig.srcDir, `./plugins/${pluginName}`);
       const nmPluginPath = path.resolve(elderConfig.rootDir, `./node_modules/${pluginName}`);
 
-      if (fs.existsSync(`${pluginPath}/index.js`)) {
+      if (resolveAndCheckIfExists(`${pluginPath}/index`)) {
         const svelteFiles = glob.sync(`${pluginPath}/*.svelte`);
         if (svelteFiles.length > 0) {
           out.paths.push(`${pluginPath}/`);

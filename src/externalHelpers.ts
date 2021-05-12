@@ -10,24 +10,19 @@ let userHelpers;
 let cache;
 
 async function externalHelpers({ settings, query, helpers }: ExternalHelperRequestOptions) {
-  const srcHelpers = path.join(settings.srcDir, 'helpers/index.js');
+  const srcHelpers = path.join(settings.srcDir, 'helpers');
   if (!cache) {
-    try {
-      fs.statSync(srcHelpers);
+    if (fs.existsSync(`${srcHelpers}${path.sep}index.js`) || fs.existsSync(`${srcHelpers}${path.sep}index.ts`)) {
       userHelpers = require(srcHelpers);
 
       if (typeof userHelpers === 'function') {
         userHelpers = await userHelpers({ settings, query, helpers });
       }
       cache = userHelpers;
-    } catch (err) {
-      if (err.code === 'ENOENT') {
-        if (settings.debug.automagic) {
-          console.log(
-            `debug.automagic:: We attempted to automatically add in helpers, but we couldn't find the file at ${srcHelpers}.`,
-          );
-        }
-      }
+    } else if (settings.debug.automagic) {
+      console.log(
+        `debug.automagic:: We attempted to automatically add in helpers, but we couldn't find the file at ${srcHelpers}.`,
+      );
     }
   } else {
     userHelpers = cache;

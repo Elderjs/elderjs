@@ -22,7 +22,7 @@ export const hookInterface: Array<HookInterface> = [
     context: 'Routes, plugins, and hooks have been collected and validated.',
     use: `<ul>
     <li>Often used to populate the empty query object with a database or API connection as query is passed to the all() function which is used to generate request objects.</li>
-    <li>Internally used to automatically populate the helpers object with the helpers found in './src/helpers/index.js'.</li>
+    <li>Internally used to automatically populate the helpers object with the helpers found in './src/helpers'.</li>
     <li>Can be used to set information on the data object that is needed throughout the entire lifecycle. (sitewide settings)</li>
     </ul>`,
     location: 'Elder.ts',

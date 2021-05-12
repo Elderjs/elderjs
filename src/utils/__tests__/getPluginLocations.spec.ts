@@ -6,7 +6,6 @@ describe('#getPluginLocations', () => {
     jest.mock('glob', () => ({
       sync: jest
         .fn()
-
         .mockImplementationOnce(() => [
           '/src/plugins/elderjs-plugin-reload/SimplePlugin.svelte',
           '/src/plugins/elderjs-plugin-reload/Test.svelte',
@@ -15,11 +14,32 @@ describe('#getPluginLocations', () => {
     }));
 
     jest.mock('fs-extra', () => ({
-      existsSync: jest
-        .fn()
-        .mockImplementationOnce(() => true) // first plugin from src
-        .mockImplementationOnce(() => false) // 2nd from node modules
-        .mockImplementationOnce(() => true),
+      existsSync: jest.fn().mockImplementation((filepath: string) => {
+        if (
+          filepath.endsWith('src/plugins/@elderjs/plugin-browser-reload/index.js') ||
+          filepath.endsWith('src/plugins/@elderjs/plugin-browser-reload/index.ts')
+        ) {
+          return false;
+        }
+
+        if (filepath.endsWith('src/plugins/elderjs-plugin-reload/index.js')) {
+          return false;
+        }
+
+        if (filepath.endsWith('src/plugins/elderjs-plugin-reload/index.ts')) {
+          return true;
+        }
+
+        if (filepath.endsWith('node_modules/@elderjs/plugin-browser-reload/package.json')) {
+          return true;
+        }
+
+        if (filepath.endsWith('node_modules/elderjs-plugin-reload/package.json')) {
+          return false;
+        }
+
+        return jest.requireActual('fs-extra').existsSync(path);
+      }),
     }));
 
     expect(

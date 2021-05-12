@@ -90,7 +90,7 @@ describe('#Elder', () => {
       { virtual: true },
     );
     jest.mock(
-      path.resolve(process.cwd(), `./test/src/plugins/elder-plugin-upload-s3/index.js`),
+      path.resolve(process.cwd(), `./test/src/plugins/elder-plugin-upload-s3/index`),
       () => ({
         hooks: [],
         routes: { 'test-a': { hooks: [], template: 'fakepath/Test.svelte', all: [] }, 'test-b': { data: () => {} } },
@@ -127,7 +127,7 @@ describe('#Elder', () => {
       { virtual: true },
     );
     jest.mock(
-      `${process.cwd()}${sep}test${sep}src${sep}hooks.js`,
+      `${process.cwd()}${sep}test${sep}src${sep}hooks`,
       () => ({
         default: [
           {
@@ -141,7 +141,7 @@ describe('#Elder', () => {
       { virtual: true },
     );
     jest.mock(
-      `${process.cwd()}${sep}test${sep}src${sep}plugins${sep}elder-plugin-upload-s3${sep}index.js`,
+      `${process.cwd()}${sep}test${sep}src${sep}plugins${sep}elder-plugin-upload-s3${sep}index`,
       () => ({
         hooks: [
           {
@@ -150,7 +150,7 @@ describe('#Elder', () => {
             description: 'just for testing',
             run: () => Promise.resolve({ plugin: 'elder-plugin-upload-s3' }),
             $$meta: {
-              type: 'hooks.js',
+              type: 'hooks',
               addedBy: 'validations.spec.ts',
             },
           },
@@ -160,7 +160,7 @@ describe('#Elder', () => {
             description: 'just for testing',
             run: () => Promise.resolve({}),
             $$meta: {
-              type: 'hooks.js',
+              type: 'hooks',
               addedBy: 'validations.spec.ts',
             },
           },
@@ -170,7 +170,7 @@ describe('#Elder', () => {
             description: 'just for testing',
             run: () => Promise.resolve(null),
             $$meta: {
-              type: 'hooks.js',
+              type: 'hooks',
               addedBy: 'validations.spec.ts',
             },
           },
