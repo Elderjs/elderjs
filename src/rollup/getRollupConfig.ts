@@ -74,7 +74,7 @@ export function createBrowserConfig({
     ],
     watch: {
       chokidar: {
-        usePolling: !/^(win32|darwin)$/.test(process.platform),
+        usePolling: process.platform !== 'darwin',
       },
     },
   };
@@ -135,7 +135,7 @@ export function createSSRConfig({ input, output, svelteConfig, replacements = {}
     ],
     watch: {
       chokidar: {
-        usePolling: !/^(win32|darwin)$/.test(process.platform),
+        usePolling: process.platform !== 'darwin',
       },
     },
   };
