@@ -185,7 +185,7 @@ export default function elderjsRollup({
   let childProcess: ChildProcess;
   let bootingServer = false;
 
-  function forkServer() {
+  function forkServer(count = 0) {
     if (production) return;
     if (!bootingServer) {
       bootingServer = true;
@@ -201,6 +201,9 @@ export default function elderjsRollup({
         });
         childProcess.on('error', (err) => {
           console.error(err);
+          if (count < 1) {
+            forkServer(count + 1);
+          }
         });
         bootingServer = false;
       }, 100);
@@ -211,7 +214,8 @@ export default function elderjsRollup({
     // notes: This is hard to reason about.
     // This should only run on the client rollup as it is a separate process from the server rollup.
     // this should watch the ./src, elder.config.js, and the client side folders... reloading when something changes
-    if (!production) {
+    // We don't want to change when a svelte file changes because it will cause a double reload when rollup outputs the rebundled file.
+    if (!production && type === 'client') {
       const srcWatcher = chokidar.watch(
         [
           path.resolve(process.cwd(), './src'),
@@ -244,6 +248,7 @@ export default function elderjsRollup({
     name: 'rollup-plugin-elder',
 
     watchChange(id) {
+      // clean out dependency relationships on a file change.
       const prior = this.cache.get('dependencies');
       prior[id] = new Set();
 
@@ -257,6 +262,7 @@ export default function elderjsRollup({
      * We are given a hash that we later use to populate them with data.
      */
     buildStart() {
+      if (childProcess) childProcess.kill('SIGINT');
       if (type === 'ssr') {
         styleCssHash = this.emitFile({
           type: 'asset',
@@ -271,6 +277,7 @@ export default function elderjsRollup({
         }
       }
 
+      // cleaning up folders that need to be deleted.
       if (type === 'ssr' && legacy === false) {
         del.sync(elderConfig.$$internal.ssrComponents);
         del.sync(path.resolve(elderConfig.$$internal.distElder, `.${sep}assets${sep}`));
@@ -283,7 +290,6 @@ export default function elderjsRollup({
       // build list of dependencies so we know what CSS to inject into the export.
 
       logDependency(importee, importer, cache);
-
       // below largely adapted from the rollup svelte plugin
       // ----------------------------------------------
 
@@ -323,53 +329,54 @@ export default function elderjsRollup({
     },
     load,
     async transform(code, id) {
-      const extension = path.extname(id);
+      try {
+        const extension = path.extname(id);
 
-      // eslint-disable-next-line no-bitwise
-      if (!~extensions.indexOf(extension)) return null;
+        // eslint-disable-next-line no-bitwise
+        if (!~extensions.indexOf(extension)) return null;
 
-      const dependencies = getDependencies(id, cache);
+        // look in the cache
 
-      if (this.addWatchFile) {
-        this.addWatchFile(id);
-      }
+        const digest = sparkMd5.hash(code + JSON.stringify(compilerOptions));
+        if (this.cache.has(digest)) {
+          return this.cache.get(digest);
+        }
 
-      // look in the cache
+        const filename = path.relative(elderConfig.rootDir, id);
 
-      const digest = sparkMd5.hash(code + JSON.stringify(compilerOptions));
-      if (this.cache.has(digest)) {
-        return this.cache.get(digest);
-      }
+        const processed = await preprocess(code, preprocessors, { filename });
 
-      const filename = path.relative(elderConfig.rootDir, id);
+        // @ts-ignore - these types aren't in the type files... but if we don't pass in a map things break.
+        if (processed.map) compilerOptions.sourcemap = processed.map;
 
-      const processed = await preprocess(code, preprocessors, { filename });
-
-      // @ts-ignore - these types aren't in the type files... but if we don't pass in a map things break.
-      if (processed.map) compilerOptions.sourcemap = processed.map;
-
-      const compiled = await compile(processed.code, { ...compilerOptions, filename });
-      (compiled.warnings || []).forEach((warning) => {
-        if (warning.code === 'css-unused-selector') return;
-        this.warn(warning);
-      });
-
-      compiled.js.dependencies = [...dependencies, ...processed.dependencies];
-
-      if (this.addWatchFile) {
-        compiled.js.dependencies.map(this.addWatchFile);
-      }
-      if (type === 'ssr') {
-        this.cache.set(`css${id}`, {
-          code: compiled.css.code || '',
-          map: compiled.css.map || '',
-          priority: cssFilePriority(id),
+        const compiled = await compile(processed.code, { ...compilerOptions, filename });
+        (compiled.warnings || []).forEach((warning) => {
+          if (warning.code === 'css-unused-selector') return;
+          this.warn(warning);
         });
+
+        const dependencies = getDependencies(id, cache);
+        compiled.js.dependencies = [...dependencies, ...processed.dependencies];
+
+        if (this.addWatchFile) {
+          this.addWatchFile(id);
+          compiled.js.dependencies.map((d) => this.addWatchFile(d));
+        }
+        if (type === 'ssr') {
+          this.cache.set(`css${id}`, {
+            code: compiled.css.code || '',
+            map: compiled.css.map || '',
+            priority: cssFilePriority(id),
+          });
+        }
+
+        this.cache.set(digest, compiled.js);
+
+        return compiled.js;
+      } catch (e) {
+        console.error('> Elder.js error in rollupPlugin > transform.');
+        throw e;
       }
-
-      this.cache.set(digest, compiled.js);
-
-      return compiled.js;
     },
 
     // eslint-disable-next-line consistent-return
@@ -436,10 +443,8 @@ export default function elderjsRollup({
         }
       }
 
-      if (!production && type === 'client') {
-        // this is the end of the build process as client bundles are generated last (Aside form iife)
-        startServerAndWatcher();
-      }
+      // this is the end of the build process as client bundles are generated last (Aside form iife)
+      startServerAndWatcher();
 
       this.cache.set('dependencies', cache.dependencies);
     },
