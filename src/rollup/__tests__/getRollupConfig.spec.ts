@@ -55,6 +55,11 @@ describe('#getRollupConfig', () => {
           sourcemap,
         },
         treeshake: true,
+        watch: {
+          chokidar: {
+            usePolling: !/^(win32|darwin)$/.test(process.platform),
+          },
+        },
       });
       expect(plugins).toHaveLength(8);
     });
@@ -127,6 +132,11 @@ describe('#getRollupConfig', () => {
         format: 'cjs',
       },
       treeshake: true,
+      watch: {
+        chokidar: {
+          usePolling: !/^(win32|darwin)$/.test(process.platform),
+        },
+      },
     });
 
     expect(plugins).toHaveLength(7);

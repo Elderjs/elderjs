@@ -80,6 +80,11 @@ Array [
       },
     ],
     "treeshake": true,
+    "watch": Object {
+      "chokidar": Object {
+        "usePolling": false,
+      },
+    },
   },
   Object {
     "cache": true,
@@ -148,6 +153,11 @@ Array [
       },
     ],
     "treeshake": true,
+    "watch": Object {
+      "chokidar": Object {
+        "usePolling": false,
+      },
+    },
   },
 ]
 `;
@@ -232,6 +242,11 @@ Array [
       },
     ],
     "treeshake": true,
+    "watch": Object {
+      "chokidar": Object {
+        "usePolling": false,
+      },
+    },
   },
   Object {
     "cache": true,
@@ -300,6 +315,11 @@ Array [
       },
     ],
     "treeshake": true,
+    "watch": Object {
+      "chokidar": Object {
+        "usePolling": false,
+      },
+    },
   },
   Object {
     "cache": true,
@@ -363,6 +383,11 @@ Array [
       },
     ],
     "treeshake": true,
+    "watch": Object {
+      "chokidar": Object {
+        "usePolling": false,
+      },
+    },
   },
   Object {
     "cache": true,
@@ -426,6 +451,11 @@ Array [
       },
     ],
     "treeshake": true,
+    "watch": Object {
+      "chokidar": Object {
+        "usePolling": false,
+      },
+    },
   },
   Object {
     "cache": true,
@@ -489,6 +519,11 @@ Array [
       },
     ],
     "treeshake": true,
+    "watch": Object {
+      "chokidar": Object {
+        "usePolling": false,
+      },
+    },
   },
   Object {
     "cache": true,
@@ -552,6 +587,11 @@ Array [
       },
     ],
     "treeshake": true,
+    "watch": Object {
+      "chokidar": Object {
+        "usePolling": false,
+      },
+    },
   },
   Object {
     "cache": true,
@@ -615,6 +655,11 @@ Array [
       },
     ],
     "treeshake": true,
+    "watch": Object {
+      "chokidar": Object {
+        "usePolling": false,
+      },
+    },
   },
   Object {
     "cache": true,
@@ -678,6 +723,11 @@ Array [
       },
     ],
     "treeshake": true,
+    "watch": Object {
+      "chokidar": Object {
+        "usePolling": false,
+      },
+    },
   },
   Object {
     "cache": true,
@@ -741,6 +791,11 @@ Array [
       },
     ],
     "treeshake": true,
+    "watch": Object {
+      "chokidar": Object {
+        "usePolling": false,
+      },
+    },
   },
 ]
 `;
