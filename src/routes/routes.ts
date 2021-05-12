@@ -22,7 +22,7 @@ export function makeRoutesjsPermalink(routeString) {
     // eslint-disable-next-line no-useless-escape
     return routeString.replace(/(\/|^)([:*][^\/]*?)(\?)?(?=\/|$)/g, (_, start, key, optional) => {
       if ((_ = request[key.substring(1)])) return `/${_}`;
-      return optional ? '' : `\${key}`; // TODO: error?
+      return optional ? '' : `/${key}`; // TODO: error?
     });
   };
 }
@@ -33,13 +33,6 @@ function prepareRoutes(settings: SettingsOptions) {
 
     const files = glob.sync(`${settings.srcDir}/routes/*/+(*.js|*.svelte)`);
     const routejsFiles = files.filter((f) => f.endsWith('/route.js'));
-
-    // collect routes
-    // make sure routes have all the required fields.
-    // validate that template exists
-    // validate that the layout exists
-
-    // build the router.
 
     const routes = {};
 
@@ -110,7 +103,7 @@ function prepareRoutes(settings: SettingsOptions) {
       routes[routeName] = route;
     });
 
-    /** Import routes.js file. */
+    /** Import routes/index.js file. */
 
     if (fs.existsSync(path.resolve(settings.srcDir, `./routes/index.js`))) {
       const routesjs = requireFile(path.resolve(settings.srcDir, `./routes/index.js`));
@@ -183,90 +176,3 @@ function prepareRoutes(settings: SettingsOptions) {
 }
 
 export default prepareRoutes;
-
-// const output = routejsFiles.reduce((out, cv) => {
-//   const routeName = cv.replace('/route.js', '').split('/').pop();
-//   const capitalizedRoute = capitalizeFirstLetter(routeName);
-
-//   const routeReq = require(cv);
-//   const route: RouteOptions = routeReq.default || routeReq;
-//   route.name = routeName;
-//   const filesForThisRoute = files
-//     .filter((r) => r.includes(`/routes/${routeName}`))
-//     .filter((r) => !r.includes('route.js'));
-
-//   route.permalink = wrapPermalinkFn({ permalinkFn: route.permalink, routeName, settings });
-
-//   if (!Array.isArray(route.all) && typeof route.all !== 'function') {
-//     if (routeName.toLowerCase() === 'home') {
-//       route.all = [{ slug: '/' }];
-//     } else {
-//       route.all = [{ slug: kebabcase(routeName) }];
-//     }
-
-//     if (settings.debug.automagic) {
-//       console.log(
-//         `${logPrefix} No all function or array found for route "${routeName}". Setting default which will return ${JSON.stringify(
-//           route.all,
-//         )}`,
-//       );
-//     }
-//   }
-
-//   if (route.template) {
-//     if (typeof route.template === 'string') {
-//       const componentName = route.template.replace('.svelte', '');
-//       const ssrComponent = ssrComponents.find((f) => f.endsWith(`/routes/${routeName}/${componentName}.js`));
-//       if (!ssrComponent) {
-//         console.error(
-//           `We see you want to load ${route.template}, but we don't see a compiled template in ${settings.$$internal.ssrComponents}. You'll probably see more errors in a second. Make sure you've run rollup.`,
-//         );
-//       }
-
-//       route.templateComponent = svelteComponent(componentName, 'routes');
-//     }
-//   } else {
-//     // not defined, look for a svelte file...
-//     const svelteFile = filesForThisRoute.find((f) => f.endsWith(`/routes/${routeName}/${capitalizedRoute}.svelte`));
-//     if (settings.debug.automagic) {
-//       console.log(
-//         `${logPrefix} No template defined for /routes/${routeName}/ looking for ${capitalizedRoute}.svelte`,
-//       );
-//     }
-
-//     if (svelteFile) {
-//       route.template = `${capitalizedRoute}.svelte`;
-//       route.templateComponent = svelteComponent(svelteFile, 'routes');
-
-//       const ssrComponent = ssrComponents.find((f) => f.endsWith(`/routes/${routeName}/${capitalizedRoute}.js`));
-//       if (!ssrComponent) {
-//         console.error(
-//           `We see you want to load ${route.template}, but we don't see a compiled template in ${settings.$$internal.ssrComponents}. You'll probably see more errors in a second. Make sure you've run rollup.`,
-//         );
-//       }
-//     } else {
-//       // no svelte file
-//       route.template = `${capitalizedRoute}.svelte`;
-//       route.templateComponent = svelteComponent(capitalizedRoute, 'routes');
-//     }
-//   }
-
-//   if (route.layout) {
-//     if (typeof route.layout === 'string' && route.layout.endsWith('.svelte')) {
-//       route.layout = route.layout.replace('.svelte', '');
-//       route.layoutComponent = svelteComponent(route.layout, 'layouts');
-//     }
-//   } else {
-//     if (settings.debug.automagic) {
-//       console.log(
-//         `${logPrefix} The route at /routes/${routeName}/route.js doesn't have a layout specified so going to look for a Layout.svelte file.`,
-//       );
-//     }
-//     route.layout = 'Layout.svelte';
-//     route.layoutComponent = svelteComponent(route.layout, 'layouts');
-//   }
-//   // console.log(route);
-//   out[routeName] = route;
-
-//   return out;
-// }, {});

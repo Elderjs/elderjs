@@ -30,76 +30,74 @@ export function getDynamicRoute({ path, dynamicRoutes }: IGetDynamicRoute): Rout
   return false;
 }
 
-interface IFindPrebuildRequest {
+type Req = {
   path: string;
   query?: any;
   search?: string;
+};
+
+interface IFindPrebuildRequest {
+  req: Req;
   serverLookupObject: any;
 }
-export const findPrebuiltRequest = ({
-  path,
-  query,
-  search,
-  serverLookupObject,
-}: IFindPrebuildRequest): RequestOptions | false => {
+export const findPrebuiltRequest = ({ req, serverLookupObject }: IFindPrebuildRequest): RequestOptions | false => {
   // see if we have a request object with the path as is. (could include / or not.)
-  let request = serverLookupObject[path] ? serverLookupObject[path] : false;
-  if (!request && path[path.length - 1] === '/') {
-    // check the path without a slash.
-    request = serverLookupObject[path.substring(0, path.length - 1)];
+  let request = serverLookupObject[req.path] ? serverLookupObject[req.path] : false;
+  if (!request && req.path[req.path.length - 1] === '/') {
+    // check the req.path without a slash.
+    request = serverLookupObject[req.path.substring(0, req.path.length - 1)];
   } else if (!request) {
-    // check the path with a slash.
-    request = serverLookupObject[`${path}/`];
+    // check the req.path with a slash.
+    request = serverLookupObject[`${req.path}/`];
   }
 
   if (request) {
-    request.req = { path, query, search };
+    request.req = req;
   }
 
   return request;
 };
 
+// used to filter out requests which we know shouldn't be passed to the elder router.
 export const needsElderRequest = ({ req, prefix }) => {
   if (!req.path) return false;
+  // check against prefix defined in elder.config.js
   if (prefix.length > 0 && !req.path.startsWith(prefix)) return false;
   if (req.path.startsWith(`${prefix}/_elderjs/`)) return false;
   return true;
 };
 
-export const initialRequestIsWellFormed = (request: RequestOptions): Boolean =>
+// make sure we're dealing with a well form elderjs request.
+export const initialRequestIsWellFormed = (request: RequestOptions) =>
   !!(request && request.permalink && request.route);
 
 interface IRequestFromDynamicRoute {
-  path: string;
-  query?: any;
-  search?: string;
+  req: Req;
   dynamicRoutes: RouteOptions[];
   requestCache: Map<string, RequestOptions>;
 }
 
 export function requestFromDynamicRoute({
-  path,
-  query,
-  search,
+  req,
   dynamicRoutes,
   requestCache,
 }: IRequestFromDynamicRoute): RequestOptions | false {
-  if (requestCache.has(path)) {
-    const request = requestCache.get(path);
-    request.req = { path, query, search };
+  if (requestCache.has(req.path)) {
+    const request = requestCache.get(req.path);
+    request.req = req;
     return request;
   }
-  const route = getDynamicRoute({ path, dynamicRoutes });
+  const route = getDynamicRoute({ path: req.path, dynamicRoutes });
   if (route) {
-    const params = extractDynamicRouteParams({ path, $$meta: route.$$meta });
+    const params = extractDynamicRouteParams({ path: req.path, $$meta: route.$$meta });
     const request: RequestOptions = {
       permalink: route.permalink({ request: params }),
       route: route.name,
       type: 'server',
       ...params,
     };
-    requestCache.set(path, request);
-    request.req = { path, query, search };
+    requestCache.set(req.path, request);
+    request.req = req;
     return request;
   }
   return false;
@@ -145,12 +143,13 @@ function prepareRouter(Elder) {
     try {
       if (initialRequestIsWellFormed(initialRequest)) return handleRequest({ res, next, request: initialRequest });
       if (!needsElderRequest({ req, prefix })) return next();
-      let request = findPrebuiltRequest({ ...req, serverLookupObject });
-      if (!request) request = requestFromDynamicRoute({ ...req, dynamicRoutes, requestCache });
+      let request = findPrebuiltRequest({ req, serverLookupObject });
+      if (!request) request = requestFromDynamicRoute({ req, dynamicRoutes, requestCache });
       if (request) return handleRequest({ res, next, request });
       return next();
     } catch (e) {
       console.error(e);
+      // should fall through to 404
       return next();
     }
   };

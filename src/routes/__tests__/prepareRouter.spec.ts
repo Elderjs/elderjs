@@ -73,7 +73,7 @@ describe('#prepareRouter', () => {
     });
   });
   describe('#getDynamicRoute', () => {
-    it('It properly identifies dynamic routes', () => {
+    it('Properly identifies dynamic routes', () => {
       const r = getDynamicRoute({
         path: `/dev/reports/test/`,
         dynamicRoutes,
@@ -94,35 +94,35 @@ describe('#prepareRouter', () => {
     };
 
     it('Finds root', () => {
-      expect(findPrebuiltRequest({ path: '/', serverLookupObject })).toEqual({
+      expect(findPrebuiltRequest({ req: { path: '/' }, serverLookupObject })).toEqual({
         name: 'root',
         req: { path: '/', query: undefined, search: undefined },
       });
     });
     it('Finds finds a request it should', () => {
-      expect(findPrebuiltRequest({ path: '/test/', serverLookupObject })).toEqual({
+      expect(findPrebuiltRequest({ req: { path: '/test/' }, serverLookupObject })).toEqual({
         name: 'test',
         req: { path: '/test/', query: undefined, search: undefined },
       });
     });
     it('Finds finds a request with missing trailing slash', () => {
-      expect(findPrebuiltRequest({ path: '/test', serverLookupObject })).toEqual({
+      expect(findPrebuiltRequest({ req: { path: '/test' }, serverLookupObject })).toEqual({
         name: 'test',
         req: { path: '/test', query: undefined, search: undefined },
       });
     });
     it('Misses a request it should', () => {
-      expect(findPrebuiltRequest({ path: '/nope', serverLookupObject })).toBeUndefined();
+      expect(findPrebuiltRequest({ req: { path: '/nope' }, serverLookupObject })).toBeUndefined();
     });
   });
   describe('#needsElderRequest', () => {
-    it(`It doesn't include a req.path`, () => {
+    it(`Doesn't include a req.path`, () => {
       expect(needsElderRequest({ req: {}, prefix: '' })).toBeFalsy();
     });
     it('No prefix Needs an elder response', () => {
       expect(needsElderRequest({ req: { path: '/foo' }, prefix: '' })).toBeTruthy();
     });
-    it('It includes a prefix and needs a response', () => {
+    it('Includes a prefix and needs a response', () => {
       expect(needsElderRequest({ req: { path: '/test/foo' }, prefix: '/test' })).toBeTruthy();
     });
     it('Is a /_elderjs/ request', () => {
@@ -144,21 +144,21 @@ describe('#prepareRouter', () => {
   describe('#requestFromDynamicRoute', () => {
     const requestCache = new Map();
     it('Parses a dynamic route into a request properly and populates cache', () => {
-      expect(requestFromDynamicRoute({ path: '/dev/reports/hereitis/', requestCache, dynamicRoutes })).toEqual({
-        permalink: '',
-        report: 'hereitis',
-        req: { path: '/dev/reports/hereitis/', query: undefined, search: undefined },
-        route: 'reports',
-        type: 'server',
-      });
+      expect(requestFromDynamicRoute({ req: { path: '/dev/reports/hereitis/' }, requestCache, dynamicRoutes })).toEqual(
+        {
+          permalink: '',
+          report: 'hereitis',
+          req: { path: '/dev/reports/hereitis/', query: undefined, search: undefined },
+          route: 'reports',
+          type: 'server',
+        },
+      );
       expect(requestCache.has('/dev/reports/hereitis/')).toBeTruthy();
     });
-    it('It correctly adds in different search and query params', () => {
+    it('correctly adds in different search and query params', () => {
       expect(
         requestFromDynamicRoute({
-          path: '/dev/reports/somethingnew/',
-          query: { foo: 'bar' },
-          search: '?foo=bar',
+          req: { path: '/dev/reports/somethingnew/', query: { foo: 'bar' }, search: '?foo=bar' },
           requestCache,
           dynamicRoutes,
         }),
