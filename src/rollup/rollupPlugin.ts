@@ -408,7 +408,7 @@ export default function elderjsRollup({
         }
       }
 
-      if (!production && type === 'ssr') {
+      if (!production && type === 'client') {
         forkServer();
       }
 
