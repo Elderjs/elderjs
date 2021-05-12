@@ -138,35 +138,65 @@ export default function elderjsRollup({
 }: IElderjsRollupConfig): Partial<Plugin> {
   let childProcess: ChildProcess;
 
-  const forkServer = () => {
+  /**
+   * Dev server bootstrapping and restarting.
+   */
+
+  let bootingServer = false;
+
+  function forkServer() {
     if (production) return;
-    if (childProcess) childProcess.kill('SIGINT');
+    if (!bootingServer) {
+      bootingServer = true;
 
-    childProcess = fork(path.resolve(process.cwd(), './src/server.js'));
+      setTimeout(() => {
+        // prevent multiple calls
+        if (childProcess) childProcess.kill('SIGINT');
+        childProcess = fork(path.resolve(process.cwd(), './src/server.js'));
+        childProcess.on('exit', (code) => {
+          if (code !== null) {
+            console.log(`> Elder.js process exited with code ${code}`);
+          }
+        });
+        childProcess.on('error', (err) => {
+          console.error(err);
+        });
+        bootingServer = false;
+      }, 100);
+    }
+  }
 
-    childProcess.on('exit', (code) => {
-      if (code !== null) {
-        console.log(`> Elder.js process exited with code ${code}`);
-      }
-    });
+  function startServerBootstrapWatcher() {
+    // notes: This is hard to reason about.
+    // This should only run on the client rollup as it is a separate process from the server rollup.
+    // this should watch the ./src, elder.config.js, and the client side folders... reloading when something changes
+    if (!production) {
+      const srcWatcher = chokidar.watch(
+        [
+          path.resolve(process.cwd(), './src'),
+          path.resolve(process.cwd(), './elder.config.js'),
+          elderConfig.$$internal.distElder,
+          path.join(elderConfig.$$internal.ssrComponents, 'components'),
+          path.join(elderConfig.$$internal.ssrComponents, 'layouts'),
+          path.join(elderConfig.$$internal.ssrComponents, 'routes'),
+        ],
+        {
+          ignored: '*.svelte',
+        },
+      );
 
-    childProcess.on('error', (err) => {
-      console.error(err);
-    });
-  };
+      srcWatcher.on('change', (watchedPath) => {
+        const parsed = path.parse(watchedPath);
+        if (parsed.ext !== '.svelte') {
+          // prevents double reload as the compiled svelte templates are output
+          forkServer();
+        }
+      });
 
-  if (!production && type === 'ssr') {
-    const srcWatcher = chokidar.watch(
-      [path.resolve(process.cwd(), './src'), path.resolve(process.cwd(), './elder.config.js')],
-      {
-        ignored: '*.svelte',
-      },
-    );
-
-    srcWatcher.on('change', (watchedPath) => {
-      console.log(`> Elder.js ${path.relative(process.cwd(), watchedPath)} changed. Reloading server`);
-      forkServer();
-    });
+      srcWatcher.on('ready', () => {
+        forkServer();
+      });
+    }
   }
 
   const cleanCss = new CleanCSS({
@@ -409,7 +439,8 @@ export default function elderjsRollup({
       }
 
       if (!production && type === 'client') {
-        forkServer();
+        // this is the end of the build process as client bundles are generated last (Aside form iife)
+        startServerBootstrapWatcher();
       }
 
       this.cache.set('dependencies', cache.dependencies);
