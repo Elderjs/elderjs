@@ -72,6 +72,11 @@ export function createBrowserConfig({
       }),
       commonjs({ sourceMap: !production }),
     ],
+    watch: {
+      chokidar: {
+        usePolling: !/^(win32|darwin)$/.test(process.platform),
+      },
+    },
   };
 
   // bundle splitting.
@@ -128,6 +133,11 @@ export function createSSRConfig({ input, output, svelteConfig, replacements = {}
       commonjs({ sourceMap: true }),
       production && terser(),
     ],
+    watch: {
+      chokidar: {
+        usePolling: !/^(win32|darwin)$/.test(process.platform),
+      },
+    },
   };
   // if we are bundle splitting include them.
   if (multiInputConfig) {

@@ -227,6 +227,7 @@ export default function elderjsRollup({
         ],
         {
           ignored: '*.svelte',
+          usePolling: !/^(win32|darwin)$/.test(process.platform),
         },
       );
 
