@@ -45,22 +45,19 @@ describe('#getRollupConfig', () => {
         svelteConfig: {},
         elderConfig,
       });
-      expect(config).toEqual({
-        cache: true,
-        input: ['./components/*/*.svelte'],
-        output: {
-          dir: './public/dist/svelte/',
-          entryFileNames: '[name].[hash].js',
-          format: 'system',
-          sourcemap,
-        },
-        treeshake: true,
-        watch: {
-          chokidar: {
-            usePolling: !/^(win32|darwin)$/.test(process.platform),
+      expect(config).toEqual(
+        expect.objectContaining({
+          cache: true,
+          input: ['./components/*/*.svelte'],
+          output: {
+            dir: './public/dist/svelte/',
+            entryFileNames: '[name].[hash].js',
+            format: 'system',
+            sourcemap,
           },
-        },
-      });
+          treeshake: true,
+        }),
+      );
       expect(plugins).toHaveLength(8);
     });
   });
@@ -123,21 +120,18 @@ describe('#getRollupConfig', () => {
         ],
       },
     });
-    expect(config).toEqual({
-      cache: true,
-      input: ['./components/*/*.svelte'],
-      output: {
-        dir: './___ELDER___/compiled/',
-        exports: 'auto',
-        format: 'cjs',
-      },
-      treeshake: true,
-      watch: {
-        chokidar: {
-          usePolling: !/^(win32|darwin)$/.test(process.platform),
+    expect(config).toEqual(
+      expect.objectContaining({
+        cache: true,
+        input: ['./components/*/*.svelte'],
+        output: {
+          dir: './___ELDER___/compiled/',
+          exports: 'auto',
+          format: 'cjs',
         },
-      },
-    });
+        treeshake: true,
+      }),
+    );
 
     expect(plugins).toHaveLength(7);
   });
