@@ -136,69 +136,6 @@ export default function elderjsRollup({
   type = 'ssr',
   legacy = false,
 }: IElderjsRollupConfig): Partial<Plugin> {
-  let childProcess: ChildProcess;
-
-  /**
-   * Dev server bootstrapping and restarting.
-   */
-
-  let bootingServer = false;
-
-  function forkServer() {
-    if (production) return;
-    if (!bootingServer) {
-      bootingServer = true;
-
-      setTimeout(() => {
-        // prevent multiple calls
-        if (childProcess) childProcess.kill('SIGINT');
-        childProcess = fork(path.resolve(process.cwd(), './src/server.js'));
-        childProcess.on('exit', (code) => {
-          if (code !== null) {
-            console.log(`> Elder.js process exited with code ${code}`);
-          }
-        });
-        childProcess.on('error', (err) => {
-          console.error(err);
-        });
-        bootingServer = false;
-      }, 100);
-    }
-  }
-
-  function startServerBootstrapWatcher() {
-    // notes: This is hard to reason about.
-    // This should only run on the client rollup as it is a separate process from the server rollup.
-    // this should watch the ./src, elder.config.js, and the client side folders... reloading when something changes
-    if (!production) {
-      const srcWatcher = chokidar.watch(
-        [
-          path.resolve(process.cwd(), './src'),
-          path.resolve(process.cwd(), './elder.config.js'),
-          elderConfig.$$internal.distElder,
-          path.join(elderConfig.$$internal.ssrComponents, 'components'),
-          path.join(elderConfig.$$internal.ssrComponents, 'layouts'),
-          path.join(elderConfig.$$internal.ssrComponents, 'routes'),
-        ],
-        {
-          ignored: '*.svelte',
-        },
-      );
-
-      srcWatcher.on('change', (watchedPath) => {
-        const parsed = path.parse(watchedPath);
-        if (parsed.ext !== '.svelte') {
-          // prevents double reload as the compiled svelte templates are output
-          forkServer();
-        }
-      });
-
-      srcWatcher.on('ready', () => {
-        forkServer();
-      });
-    }
-  }
-
   const cleanCss = new CleanCSS({
     sourceMap: !production,
     sourceMapInlineSources: !production,
@@ -241,6 +178,67 @@ export default function elderjsRollup({
 
   let styleCssHash;
   let styleCssMapHash;
+
+  /**
+   * Dev server bootstrapping and restarting.
+   */
+  let childProcess: ChildProcess;
+  let bootingServer = false;
+
+  function forkServer() {
+    if (production) return;
+    if (!bootingServer) {
+      bootingServer = true;
+
+      setTimeout(() => {
+        // prevent multiple calls
+        if (childProcess) childProcess.kill('SIGINT');
+        childProcess = fork(path.resolve(process.cwd(), './src/server.js'));
+        childProcess.on('exit', (code) => {
+          if (code !== null) {
+            console.log(`> Elder.js process exited with code ${code}`);
+          }
+        });
+        childProcess.on('error', (err) => {
+          console.error(err);
+        });
+        bootingServer = false;
+      }, 100);
+    }
+  }
+
+  function startServerAndWatcher() {
+    // notes: This is hard to reason about.
+    // This should only run on the client rollup as it is a separate process from the server rollup.
+    // this should watch the ./src, elder.config.js, and the client side folders... reloading when something changes
+    if (!production) {
+      const srcWatcher = chokidar.watch(
+        [
+          path.resolve(process.cwd(), './src'),
+          path.resolve(process.cwd(), './elder.config.js'),
+          elderConfig.$$internal.distElder,
+          path.join(elderConfig.$$internal.ssrComponents, 'components'),
+          path.join(elderConfig.$$internal.ssrComponents, 'layouts'),
+          path.join(elderConfig.$$internal.ssrComponents, 'routes'),
+        ],
+        {
+          ignored: '*.svelte',
+        },
+      );
+
+      srcWatcher.on('change', (watchedPath) => {
+        const parsed = path.parse(watchedPath);
+        if (parsed.ext !== '.svelte') {
+          // prevents double reload as the compiled svelte templates are output
+          forkServer();
+        }
+      });
+
+      srcWatcher.on('ready', () => {
+        forkServer();
+      });
+    }
+  }
 
   return {
     name: 'rollup-plugin-elder',
@@ -440,7 +438,7 @@ export default function elderjsRollup({
 
       if (!production && type === 'client') {
         // this is the end of the build process as client bundles are generated last (Aside form iife)
-        startServerBootstrapWatcher();
+        startServerAndWatcher();
       }
 
       this.cache.set('dependencies', cache.dependencies);
