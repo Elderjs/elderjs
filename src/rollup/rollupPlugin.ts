@@ -193,6 +193,7 @@ export default function elderjsRollup({
       setTimeout(() => {
         // prevent multiple calls
         if (childProcess) childProcess.kill('SIGINT');
+        bootingServer = false;
         childProcess = fork(path.resolve(process.cwd(), './src/server.js'));
         childProcess.on('exit', (code) => {
           if (code !== null) {
@@ -205,8 +206,7 @@ export default function elderjsRollup({
             forkServer(count + 1);
           }
         });
-        bootingServer = false;
-      }, 100);
+      }, 10);
     }
   }
 
@@ -218,12 +218,12 @@ export default function elderjsRollup({
     if (!production && type === 'client') {
       const srcWatcher = chokidar.watch(
         [
-          path.resolve(process.cwd(), './src'),
+          path.resolve(process.cwd(), './src/**'),
           path.resolve(process.cwd(), './elder.config.js'),
           elderConfig.$$internal.distElder,
-          path.join(elderConfig.$$internal.ssrComponents, 'components'),
-          path.join(elderConfig.$$internal.ssrComponents, 'layouts'),
-          path.join(elderConfig.$$internal.ssrComponents, 'routes'),
+          path.join(elderConfig.$$internal.ssrComponents, 'components/**'),
+          path.join(elderConfig.$$internal.ssrComponents, 'layouts/**'),
+          path.join(elderConfig.$$internal.ssrComponents, 'routes/**'),
         ],
         {
           ignored: '*.svelte',
@@ -239,9 +239,7 @@ export default function elderjsRollup({
         }
       });
 
-      srcWatcher.on('ready', () => {
-        forkServer();
-      });
+      forkServer();
     }
   }
 

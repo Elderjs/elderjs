@@ -135,7 +135,7 @@ export function createSSRConfig({ input, output, svelteConfig, replacements = {}
     ],
     watch: {
       chokidar: {
-        usePolling: process.platform !== 'darwin',
+        usePolling: !/^(win32|darwin)$/.test(process.platform),
       },
     },
   };
