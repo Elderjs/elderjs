@@ -142,6 +142,7 @@ function prepareRouter(Elder) {
 
   return async ({ req, res, next, request: initialRequest }) => {
     try {
+      // initial request may be well formed if it is modified via a hook BEFORE the router runs.
       if (initialRequestIsWellFormed(initialRequest)) return handleRequest({ res, next, request: initialRequest });
       if (!needsElderRequest({ req, prefix })) return next();
       const request = findPrebuiltRequest({ req, serverLookupObject });
