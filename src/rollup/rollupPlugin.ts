@@ -137,7 +137,7 @@ export default function elderjsRollup({
   svelteConfig,
   type = 'ssr',
   legacy = false,
-  startDevServer,
+  startDevServer = false,
 }: IElderjsRollupConfig): Partial<Plugin> {
   const cleanCss = new CleanCSS({
     sourceMap: !production,
@@ -220,6 +220,14 @@ export default function elderjsRollup({
     }
   }
 
+  function handleChange(watchedPath) {
+    const parsed = path.parse(watchedPath);
+    if (parsed.ext !== '.svelte') {
+      // prevents double reload as the compiled svelte templates are output
+      forkServer();
+    }
+  }
+
   function startServerAndWatcher() {
     // notes: This is hard to reason about.
     // This should only after the initial client rollup as finished as it runs last. The srcWatcher should then live between reloads
@@ -244,13 +252,8 @@ export default function elderjsRollup({
         },
       );
 
-      srcWatcher.on('change', (watchedPath) => {
-        const parsed = path.parse(watchedPath);
-        if (parsed.ext !== '.svelte') {
-          // prevents double reload as the compiled svelte templates are output
-          forkServer();
-        }
-      });
+      srcWatcher.on('change', handleChange);
+      srcWatcher.on('add', handleChange);
 
       forkServer();
     }

@@ -48,7 +48,7 @@ export function createBrowserConfig({
   replacements = {},
   ie11 = false as boolean,
   elderConfig,
-  startDevServer,
+  startDevServer = false,
 }) {
   const toReplace = {
     'process.env.componentType': "'browser'",
@@ -118,7 +118,7 @@ export function createSSRConfig({
   replacements = {},
   multiInputConfig,
   elderConfig,
-  startDevServer,
+  startDevServer = false,
 }) {
   const toReplace = {
     'process.env.componentType': "'server'",
