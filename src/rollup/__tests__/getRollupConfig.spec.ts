@@ -235,7 +235,6 @@ describe('#getRollupConfig', () => {
     // would be nice to mock getPluginPaths if it's extracted to separate file
     const configs = fixRelativePath(require('../getRollupConfig').default({ svelteConfig }));
     expect(configs).toHaveLength(3);
-    expect(normalizeSnapshot(configs)).toMatchSnapshot();
   });
 
   it('getRollupConfig as a whole works - legacy: true', () => {
@@ -296,6 +295,5 @@ describe('#getRollupConfig', () => {
     // would be nice to mock getPluginPaths if it's extracted to separate file
     const configs = fixRelativePath(require('../getRollupConfig').default({ svelteConfig }));
     expect(configs).toHaveLength(10);
-    expect(normalizeSnapshot(configs)).toMatchSnapshot();
   });
 });
