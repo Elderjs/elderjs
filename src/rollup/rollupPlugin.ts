@@ -129,7 +129,7 @@ export interface IElderjsRollupConfig {
   svelteConfig: any;
   legacy?: boolean;
   elderConfig: SettingsOptions;
-  startDevServer: boolean;
+  startDevServer?: boolean;
 }
 
 export default function elderjsRollup({
