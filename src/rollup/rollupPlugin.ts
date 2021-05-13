@@ -129,6 +129,7 @@ export interface IElderjsRollupConfig {
   svelteConfig: any;
   legacy?: boolean;
   elderConfig: SettingsOptions;
+  startDevServer: boolean;
 }
 
 export default function elderjsRollup({
@@ -136,6 +137,7 @@ export default function elderjsRollup({
   svelteConfig,
   type = 'ssr',
   legacy = false,
+  startDevServer,
 }: IElderjsRollupConfig): Partial<Plugin> {
   const cleanCss = new CleanCSS({
     sourceMap: !production,
@@ -226,7 +228,7 @@ export default function elderjsRollup({
     // this should watch the ./src, elder.config.js, and the client side folders... trigging a restart of the server when something changes
     // We don't want to change when a svelte file changes because it will cause a double reload when rollup outputs the rebundled file.
 
-    if (!production && type === 'client' && !srcWatcher) {
+    if (!production && type === 'client' && !srcWatcher && startDevServer) {
       srcWatcher = chokidar.watch(
         [
           path.resolve(process.cwd(), './src/**'),
@@ -272,7 +274,10 @@ export default function elderjsRollup({
      * We are given a hash that we later use to populate them with data.
      */
     buildStart() {
+      // kill server to prevent failures.
       if (childProcess) childProcess.kill('SIGINT');
+
+      // create placeholder files to be filled later.
       if (type === 'ssr') {
         styleCssHash = this.emitFile({
           type: 'asset',
@@ -288,6 +293,7 @@ export default function elderjsRollup({
       }
 
       // cleaning up folders that need to be deleted.
+      // this shouldn't happen on legacy as it runs last and would result in deleting needed code.
       if (type === 'ssr' && legacy === false) {
         del.sync(elderConfig.$$internal.ssrComponents);
         del.sync(path.resolve(elderConfig.$$internal.distElder, `.${sep}assets${sep}`));
