@@ -28,7 +28,7 @@ const buildPage = async (page) => {
         errors: page.errors,
         perf: page.perf,
         allRequests: createReadOnlyProxy(page.allRequests, 'allRequests', `${page.request.route}: data function`),
-        skip: page.skip,
+        next: page.skipRequest,
       });
       if (dataResponse && Object.keys(dataResponse).length > 0) {
         page.data = {
@@ -39,7 +39,7 @@ const buildPage = async (page) => {
     }
     page.perf.end('data');
 
-    if (page.skipRequest) {
+    if (page.shouldSkipRequest) {
       page.next();
       return page;
     }
@@ -137,11 +137,11 @@ class Page {
 
   runHook: (string, Object) => Promise<any>;
 
-  skip: () => void;
+  skipRequest: () => void;
 
   next: () => void;
 
-  skipRequest: boolean;
+  shouldSkipRequest: boolean;
 
   allRequests: Array<RequestOptions>;
 
@@ -250,9 +250,9 @@ class Page {
     this.processStack = prepareProcessStack(this);
     this.perf.end('constructor');
     this.perf.start('initToBuildGap');
-    this.skipRequest = false;
-    this.skip = () => {
-      this.skipRequest = true;
+    this.shouldSkipRequest = false;
+    this.skipRequest = () => {
+      this.shouldSkipRequest = true;
     };
     this.next = next;
   }

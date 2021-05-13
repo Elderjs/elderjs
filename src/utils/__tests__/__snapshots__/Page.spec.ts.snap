@@ -46,6 +46,7 @@ Object {
   "hydrateStack": Array [],
   "moduleJsStack": Array [],
   "moduleStack": Array [],
+  "next": [Function],
   "perf": Object {
     "end": [MockFunction] {
       "calls": Array [
@@ -213,6 +214,8 @@ Object {
     "worker": true,
   },
   "shortcodes": Array [],
+  "skip": [Function],
+  "skipRequest": false,
   "svelteCss": Array [],
   "uid": "xxxxxxxxxx",
 }
@@ -281,6 +284,7 @@ Object {
   "layoutHtml": "<div class=\\"container\\"></div>",
   "moduleJsStack": Array [],
   "moduleStack": Array [],
+  "next": [Function],
   "perf": Object {
     "end": [MockFunction] {
       "calls": Array [
@@ -499,6 +503,7 @@ Object {
               "layoutHtml": "<div class=\\"container\\"></div>",
               "moduleJsStack": Array [],
               "moduleStack": Array [],
+              "next": [Function],
               "perf": Object {
                 "end": [MockFunction] {
                   "calls": Array [
@@ -823,6 +828,8 @@ Object {
                 "worker": true,
               },
               "shortcodes": Array [],
+              "skip": [Function],
+              "skipRequest": false,
               "styleTag": "<style>cssStack</style>",
               "svelteCss": Array [],
               "templateHtml": undefined,
@@ -977,6 +984,7 @@ Object {
               "layoutHtml": "<div class=\\"container\\"></div>",
               "moduleJsStack": Array [],
               "moduleStack": Array [],
+              "next": [Function],
               "perf": Object {
                 "end": [MockFunction] {
                   "calls": Array [
@@ -1302,6 +1310,8 @@ Object {
                 "worker": true,
               },
               "shortcodes": Array [],
+              "skip": [Function],
+              "skipRequest": false,
               "styleTag": "<style>cssStack</style>",
               "svelteCss": Array [],
               "templateHtml": undefined,
@@ -1464,6 +1474,8 @@ Object {
     "worker": true,
   },
   "shortcodes": Array [],
+  "skip": [Function],
+  "skipRequest": false,
   "styleTag": "<style>cssStack</style>",
   "svelteCss": Array [],
   "templateHtml": undefined,
