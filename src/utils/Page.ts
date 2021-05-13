@@ -28,6 +28,7 @@ const buildPage = async (page) => {
         errors: page.errors,
         perf: page.perf,
         allRequests: createReadOnlyProxy(page.allRequests, 'allRequests', `${page.request.route}: data function`),
+        skip: page.skip,
       });
       if (dataResponse && Object.keys(dataResponse).length > 0) {
         page.data = {
@@ -37,6 +38,12 @@ const buildPage = async (page) => {
       }
     }
     page.perf.end('data');
+
+    if (page.skipRequest) {
+      page.next();
+      return page;
+    }
+
     await page.runHook('data', page);
 
     // start building templates
@@ -130,6 +137,12 @@ class Page {
 
   runHook: (string, Object) => Promise<any>;
 
+  skip: () => void;
+
+  next: () => void;
+
+  skipRequest: boolean;
+
   allRequests: Array<RequestOptions>;
 
   request: RequestOptions;
@@ -188,7 +201,22 @@ class Page {
 
   shortcodes: ShortcodeDefs;
 
-  constructor({ request, settings, query, helpers, data, route, runHook, allRequests, routes, errors, shortcodes }) {
+  constructor({
+    request,
+    settings,
+    next = () => {
+      console.error('cannot call next on a non dynamic route');
+    },
+    query,
+    helpers,
+    data,
+    route,
+    runHook,
+    allRequests,
+    routes,
+    errors,
+    shortcodes,
+  }) {
     this.uid = getUniqueId();
     this.request = request;
     this.settings = settings;
@@ -222,6 +250,11 @@ class Page {
     this.processStack = prepareProcessStack(this);
     this.perf.end('constructor');
     this.perf.start('initToBuildGap');
+    this.skipRequest = false;
+    this.skip = () => {
+      this.skipRequest = true;
+    };
+    this.next = next;
   }
 
   build() {

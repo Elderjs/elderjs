@@ -126,12 +126,13 @@ function prepareRouter(Elder) {
     shortcodes: elder.shortcodes,
   };
 
-  async function handleRequest({ res, next, request }) {
+  async function handleRequest({ res, next, request, dynamic = false }) {
     if (!request.route || typeof request.route !== 'string') return next();
     if (!routes[request.route]) return next();
-    const page = new Page({ ...forPage, request, route: routes[request.route] });
+    const page = new Page({ ...forPage, request, next: dynamic ? next : undefined, route: routes[request.route] });
     const html = await page.html();
 
+    // note: html will be undefined if a dynamic route calls skip() as it aborts page building.
     if (html && !res.headerSent) {
       res.setHeader('Content-Type', 'text/html');
       res.end(html);
@@ -143,9 +144,10 @@ function prepareRouter(Elder) {
     try {
       if (initialRequestIsWellFormed(initialRequest)) return handleRequest({ res, next, request: initialRequest });
       if (!needsElderRequest({ req, prefix })) return next();
-      let request = findPrebuiltRequest({ req, serverLookupObject });
-      if (!request) request = requestFromDynamicRoute({ req, dynamicRoutes, requestCache });
+      const request = findPrebuiltRequest({ req, serverLookupObject });
       if (request) return handleRequest({ res, next, request });
+      const dynamicRequest = requestFromDynamicRoute({ req, dynamicRoutes, requestCache });
+      if (dynamicRequest) return handleRequest({ res, next, request: dynamicRequest, dynamic: true });
       return next();
     } catch (e) {
       console.error(e);
