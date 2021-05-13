@@ -231,12 +231,12 @@ export default function elderjsRollup({
     if (!production && type === 'client' && !srcWatcher && startDevServer) {
       srcWatcher = chokidar.watch(
         [
-          path.resolve(process.cwd(), './src/**'),
+          path.resolve(process.cwd(), './src'),
           path.resolve(process.cwd(), './elder.config.js'),
           elderConfig.$$internal.distElder,
-          path.join(elderConfig.$$internal.ssrComponents, 'components/**'),
-          path.join(elderConfig.$$internal.ssrComponents, 'layouts/**'),
-          path.join(elderConfig.$$internal.ssrComponents, 'routes/**'),
+          path.join(elderConfig.$$internal.ssrComponents, 'components'),
+          path.join(elderConfig.$$internal.ssrComponents, 'layouts'),
+          path.join(elderConfig.$$internal.ssrComponents, 'routes'),
         ],
         {
           ignored: '*.svelte',
