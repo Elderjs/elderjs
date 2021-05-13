@@ -2,7 +2,6 @@
 import multiInput from 'rollup-plugin-multi-input';
 import path from 'path';
 import { createBrowserConfig, createSSRConfig } from '../getRollupConfig';
-import normalizeSnapshot from '../../utils/normalizeSnapshot';
 import getConfig from '../../utils/getConfig';
 
 // TODO: test replace
