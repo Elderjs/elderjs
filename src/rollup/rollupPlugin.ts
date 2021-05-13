@@ -193,7 +193,7 @@ export default function elderjsRollup({
     if (!bootingServer) {
       bootingServer = true;
 
-      const serverJs = path.resolve(process.cwd(), './src/server.js');
+      const serverJs = path.resolve(process.cwd(), elderConfig.srcDir, './server.js');
 
       if (!fs.existsSync(serverJs)) {
         console.error(`No server file found at ${serverJs}, unable to start dev server.`);
