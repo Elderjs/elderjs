@@ -123,6 +123,7 @@ let cache: RollupCacheElder = {
 
 const production = process.env.NODE_ENV === 'production' || !process.env.ROLLUP_WATCH;
 
+let srcWatcher;
 export interface IElderjsRollupConfig {
   type: 'ssr' | 'client';
   svelteConfig: any;
@@ -190,11 +191,18 @@ export default function elderjsRollup({
     if (!bootingServer) {
       bootingServer = true;
 
+      const serverJs = path.resolve(process.cwd(), './src/server.js');
+
+      if (!fs.existsSync(serverJs)) {
+        console.error(`No server file found at ${serverJs}, unable to start dev server.`);
+        return;
+      }
+
       setTimeout(() => {
         // prevent multiple calls
         if (childProcess) childProcess.kill('SIGINT');
         bootingServer = false;
-        childProcess = fork(path.resolve(process.cwd(), './src/server.js'));
+        childProcess = fork(serverJs);
         childProcess.on('exit', (code) => {
           if (code !== null) {
             console.log(`> Elder.js process exited with code ${code}`);
@@ -212,11 +220,14 @@ export default function elderjsRollup({
 
   function startServerAndWatcher() {
     // notes: This is hard to reason about.
-    // This should only run on the client rollup as it is a separate process from the server rollup.
-    // this should watch the ./src, elder.config.js, and the client side folders... reloading when something changes
+    // This should only after the initial client rollup as finished as it runs last. The srcWatcher should then live between reloads
+    // until the watch process is killed.
+    //
+    // this should watch the ./src, elder.config.js, and the client side folders... trigging a restart of the server when something changes
     // We don't want to change when a svelte file changes because it will cause a double reload when rollup outputs the rebundled file.
-    if (!production && type === 'client') {
-      const srcWatcher = chokidar.watch(
+
+    if (!production && type === 'client' && !srcWatcher) {
+      srcWatcher = chokidar.watch(
         [
           path.resolve(process.cwd(), './src/**'),
           path.resolve(process.cwd(), './elder.config.js'),
@@ -442,7 +453,6 @@ export default function elderjsRollup({
         }
       }
 
-      // this is the end of the build process as client bundles are generated last (Aside form iife)
       startServerAndWatcher();
 
       this.cache.set('dependencies', cache.dependencies);
