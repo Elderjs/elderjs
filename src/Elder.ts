@@ -262,10 +262,6 @@ class Elder {
           }
 
           allRequestsForRoute = allRequestsForRoute.reduce((out, cv) => {
-            // TODO: we should probably remove this restriction if using a router.
-            if (!{}.hasOwnProperty.call(cv, 'slug')) {
-              throw new Error(`Request for ${routeName} is missing a slug property.`);
-            }
             // copy the obj so we don't have pass by reference issues.
             const copy = JSON.parse(JSON.stringify(cv));
             // add in routeName

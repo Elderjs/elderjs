@@ -170,6 +170,13 @@ const routeSchema = yup.object({
     .label(
       'A name used to identify the route internally. If not defined, it uses [routeName] from "/routes/[routeName]/route.js". Mainly used with helpers.permalink.[name]().',
     ),
+  dynamic: yup
+    .boolean()
+    .optional()
+    .default(false)
+    .label(
+      'Enables dynamic route parameters in SSR mode. This means /:foo/ will be derived from the visited URL. Useful for logged in experiences.',
+    ),
 });
 
 const pluginSchema = yup.object({

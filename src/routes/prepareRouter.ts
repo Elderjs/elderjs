@@ -52,7 +52,7 @@ export const findPrebuiltRequest = ({ req, serverLookupObject }: IFindPrebuildRe
   }
 
   if (request) {
-    request.req = req;
+    request.req = { path: req.path };
   }
 
   return request;
@@ -97,7 +97,7 @@ export function requestFromDynamicRoute({
       ...params,
     };
     requestCache.set(req.path, request);
-    request.req = req;
+    request.req = { ...req };
     return request;
   }
   return false;

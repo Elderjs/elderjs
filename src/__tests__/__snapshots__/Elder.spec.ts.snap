@@ -195,6 +195,7 @@ Object {
         "customJsStack",
         "footerStack",
         "settings",
+        "next",
       ],
       "use": "<p>This hook is mainly used by plugins/hooks to offer functionality at the route level that is dependent on the route's \\"data\\" function has returning but isn't suitable to live in multiple data function across many routes due to code duplication.</p>
     <p>Examples of things we (ElderGuide.com) have done or have seen users do:</p>
@@ -844,6 +845,7 @@ Object {
         "customJsStack",
         "footerStack",
         "settings",
+        "next",
       ],
       "use": "<p>This hook is mainly used by plugins/hooks to offer functionality at the route level that is dependent on the route's \\"data\\" function has returning but isn't suitable to live in multiple data function across many routes due to code duplication.</p>
     <p>Examples of things we (ElderGuide.com) have done or have seen users do:</p>

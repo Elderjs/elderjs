@@ -44,12 +44,35 @@ function prepareRoutes(settings: SettingsOptions) {
     routejsFiles.forEach((routeFile) => {
       const routeName = routeFile.replace('/route.js', '').split('/').pop();
       const route = requireFile(routeFile);
+      route.$$meta = {
+        type: 'file',
+        addedBy: routeFile,
+      };
+
       const filesForThisRoute = files
         .filter((r) => r.includes(`/routes/${routeName}`))
         .filter((r) => !r.includes('route.js'));
 
       if (!route.name) {
         route.name = routeName;
+      }
+
+      // handle string based permalinks
+      if (typeof route.permalink === 'string') {
+        const routeString = `${serverPrefix}${route.permalink}`;
+        route.permalink = wrapPermalinkFn({
+          // wrapPermalink adds in prefix
+          permalinkFn: makeRoutesjsPermalink(route.permalink),
+          routeName: route.name,
+          settings,
+        });
+
+        route.$$meta = {
+          ...route.$$meta,
+          routeString,
+          ...toRegExp(routeString),
+          type: route.dynamic ? `dynamic` : 'file',
+        };
       }
 
       // set default permalink if it doesn't exist.
@@ -95,45 +118,8 @@ function prepareRoutes(settings: SettingsOptions) {
         route.layout = `Layout.svelte`;
       }
 
-      route.$$meta = {
-        type: 'file',
-        addedBy: routeFile,
-      };
-
       routes[routeName] = route;
     });
-
-    /** Import routes/index.js file. */
-
-    if (fs.existsSync(path.resolve(settings.srcDir, `./routes/index.js`))) {
-      const routesjs = requireFile(path.resolve(settings.srcDir, `./routes/index.js`));
-
-      Object.keys(routesjs).forEach((unprefixedRouteString) => {
-        const routeString = `${serverPrefix}${unprefixedRouteString}`;
-        const route = routesjs[unprefixedRouteString];
-
-        if (!route.name) throw new Error(`name required for route defined as ${routeString}`);
-        routes[route.name] = {
-          data: {}, // default
-          all: () => [], // default
-          // permalink can be overwritten by the routejs definition if you need more control.
-          permalink: wrapPermalinkFn({
-            // wrapPermalink adds in prefix
-            permalinkFn: makeRoutesjsPermalink(unprefixedRouteString),
-            routeName: route.name,
-            settings,
-          }),
-          ...route,
-
-          $$meta: {
-            type: `dynamic`,
-            addedBy: 'routes.js',
-            routeString,
-            ...toRegExp(routeString),
-          },
-        };
-      });
-    }
 
     const ssrComponents = glob.sync(`${ssrFolder}/**/*.js`);
     Object.keys(routes).forEach((routeName) => {
@@ -169,11 +155,8 @@ function prepareRoutes(settings: SettingsOptions) {
         );
       }
 
-      routes[routeName].templateComponent = svelteComponent(
-        routes[routeName].template.replace('.svlete', ''),
-        'routes',
-      );
-      routes[routeName].layoutComponent = svelteComponent(routes[routeName].layout.replace('.svlete', ''), 'layouts');
+      routes[routeName].templateComponent = svelteComponent(routes[routeName].template, 'routes');
+      routes[routeName].layoutComponent = svelteComponent(routes[routeName].layout, 'layouts');
     });
 
     return routes;

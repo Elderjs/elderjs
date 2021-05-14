@@ -125,6 +125,7 @@ Object {
     },
     "type": "build",
   },
+  "resNext": [Function],
   "route": Object {
     "$$meta": Object {
       "addedBy": "routejs",
@@ -214,8 +215,7 @@ Object {
     "worker": true,
   },
   "shortcodes": Array [],
-  "skip": [Function],
-  "skipRequest": false,
+  "shouldSkipRequest": false,
   "svelteCss": Array [],
   "uid": "xxxxxxxxxx",
 }
@@ -429,6 +429,7 @@ Object {
     },
     "type": "build",
   },
+  "resNext": [Function],
   "route": Object {
     "$$meta": Object {
       "addedBy": "routejs",
@@ -648,6 +649,7 @@ Object {
                 },
                 "type": "build",
               },
+              "resNext": [Function],
               "route": Object {
                 "$$meta": Object {
                   "addedBy": "routejs",
@@ -828,8 +830,7 @@ Object {
                 "worker": true,
               },
               "shortcodes": Array [],
-              "skip": [Function],
-              "skipRequest": false,
+              "shouldSkipRequest": false,
               "styleTag": "<style>cssStack</style>",
               "svelteCss": Array [],
               "templateHtml": undefined,
@@ -1129,6 +1130,7 @@ Object {
                 },
                 "type": "build",
               },
+              "resNext": [Function],
               "route": Object {
                 "$$meta": Object {
                   "addedBy": "routejs",
@@ -1310,8 +1312,7 @@ Object {
                 "worker": true,
               },
               "shortcodes": Array [],
-              "skip": [Function],
-              "skipRequest": false,
+              "shouldSkipRequest": false,
               "styleTag": "<style>cssStack</style>",
               "svelteCss": Array [],
               "templateHtml": undefined,
@@ -1474,8 +1475,7 @@ Object {
     "worker": true,
   },
   "shortcodes": Array [],
-  "skip": [Function],
-  "skipRequest": false,
+  "shouldSkipRequest": false,
   "styleTag": "<style>cssStack</style>",
   "svelteCss": Array [],
   "templateHtml": undefined,

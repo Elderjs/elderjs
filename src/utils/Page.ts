@@ -28,7 +28,7 @@ const buildPage = async (page) => {
         errors: page.errors,
         perf: page.perf,
         allRequests: createReadOnlyProxy(page.allRequests, 'allRequests', `${page.request.route}: data function`),
-        next: page.skipRequest,
+        next: page.next,
       });
       if (dataResponse && Object.keys(dataResponse).length > 0) {
         page.data = {
@@ -39,12 +39,12 @@ const buildPage = async (page) => {
     }
     page.perf.end('data');
 
+    await page.runHook('data', page);
+
     if (page.shouldSkipRequest) {
       page.next();
       return page;
     }
-
-    await page.runHook('data', page);
 
     // start building templates
     page.perf.start('html.template');
@@ -137,9 +137,9 @@ class Page {
 
   runHook: (string, Object) => Promise<any>;
 
-  skipRequest: () => void;
-
   next: () => void;
+
+  resNext: () => void;
 
   shouldSkipRequest: boolean;
 
@@ -205,7 +205,7 @@ class Page {
     request,
     settings,
     next = () => {
-      console.error('cannot call next on a non dynamic route');
+      console.error(`Cannot call next on a non SSR route ${this.route.name}`);
     },
     query,
     helpers,
@@ -251,10 +251,10 @@ class Page {
     this.perf.end('constructor');
     this.perf.start('initToBuildGap');
     this.shouldSkipRequest = false;
-    this.skipRequest = () => {
+    this.next = () => {
       this.shouldSkipRequest = true;
     };
-    this.next = next;
+    this.resNext = next;
   }
 
   build() {

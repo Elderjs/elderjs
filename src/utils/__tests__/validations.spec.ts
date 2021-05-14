@@ -85,6 +85,7 @@ describe('#validations', () => {
       hooks: [],
       data: {},
       name: 'home',
+      dynamic: false,
     };
     expect(validateRoute(validRoute, 'Home')).toEqual(validRoute);
     // works with valid hook

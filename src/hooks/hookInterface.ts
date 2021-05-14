@@ -127,6 +127,7 @@ export const hookInterface: Array<HookInterface> = [
       'customJsStack',
       'footerStack',
       'settings',
+      'next',
     ],
     mutable: [
       'errors',

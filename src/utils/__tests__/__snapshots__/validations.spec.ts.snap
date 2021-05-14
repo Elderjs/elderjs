@@ -1399,6 +1399,7 @@ Object {
   "_exclusive": Object {},
   "_mutate": undefined,
   "_nodes": Array [
+    "dynamic",
     "name",
     "data",
     "permalink",
@@ -1471,6 +1472,33 @@ Object {
       "tests": Array [],
       "transforms": Array [],
       "type": "mixed",
+    },
+    "dynamic": Object {
+      "_blacklist": Object {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": Array [],
+      "_default": false,
+      "_deps": Array [],
+      "_exclusive": Object {},
+      "_label": "Enables dynamic route parameters in SSR mode. This means /:foo/ will be derived from the visited URL. Useful for logged in experiences.",
+      "_mutate": undefined,
+      "_options": Object {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "boolean",
+      "_typeError": [Function],
+      "_whitelist": Object {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": Array [],
+      "transforms": Array [
+        [Function],
+      ],
+      "type": "boolean",
     },
     "layout": Object {
       "_blacklist": Object {
