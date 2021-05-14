@@ -10,23 +10,26 @@ import { SettingsOptions } from '../utils/types';
 import wrapPermalinkFn from '../utils/wrapPermalinkFn';
 
 function routes(settings: SettingsOptions) {
-  const files = glob.sync(`${settings.srcDir}/routes/*/+(*.js|*.svelte)`);
+  const files = glob.sync(`${settings.srcDir}/routes/*/+(*.[jt]s|*.svelte)`);
 
   const { ssrComponents: ssrFolder, logPrefix } = settings.$$internal;
 
-  const ssrComponents = glob.sync(`${ssrFolder}/**/*.js`);
+  const ssrComponents = glob.sync(`${ssrFolder}/**/*.[jt]s`);
 
-  const routejsFiles = files.filter((f) => f.endsWith('/route.js'));
+  const routejsFiles = files.filter((f) => /\/route\.[jt]s$/.test(f));
 
   const output = routejsFiles.reduce((out, cv) => {
-    const routeName = cv.replace('/route.js', '').split('/').pop();
+    const routeName = cv
+      .replace(/\/route\.[jt]s/, '')
+      .split('/')
+      .pop();
     const capitalizedRoute = capitalizeFirstLetter(routeName);
 
     const routeReq = require(cv);
     const route: RouteOptions = routeReq.default || routeReq;
     const filesForThisRoute = files
       .filter((r) => r.includes(`/routes/${routeName}`))
-      .filter((r) => !r.includes('route.js'));
+      .filter((r) => !/route\.[jt]s/.test(r));
 
     if (!route.permalink) {
       if (settings.debug.automagic) {
@@ -58,7 +61,7 @@ function routes(settings: SettingsOptions) {
     if (route.template) {
       if (typeof route.template === 'string') {
         const componentName = route.template.replace('.svelte', '');
-        const ssrComponent = ssrComponents.find((f) => f.endsWith(`/routes/${routeName}/${componentName}.js`));
+        const ssrComponent = ssrComponents.find((f) => /\/routes\/${routeName}\/${componentName}\.[jt]s$/.test(f));
         if (!ssrComponent) {
           console.error(
             `We see you want to load ${route.template}, but we don't see a compiled template in ${settings.$$internal.ssrComponents}. You'll probably see more errors in a second. Make sure you've run rollup.`,
@@ -80,7 +83,9 @@ function routes(settings: SettingsOptions) {
         route.template = `${capitalizedRoute}.svelte`;
         route.templateComponent = svelteComponent(svelteFile, 'routes');
 
-        const ssrComponent = ssrComponents.find((f) => f.endsWith(`/routes/${routeName}/${capitalizedRoute}.js`));
+        const ssrComponent = ssrComponents.find((f) =>
+          new RegExp(`\\/routes\\/${routeName}\\/${capitalizedRoute}.[jt]s$`).test(f),
+        );
         if (!ssrComponent) {
           console.error(
             `We see you want to load ${route.template}, but we don't see a compiled template in ${settings.$$internal.ssrComponents}. You'll probably see more errors in a second. Make sure you've run rollup.`,
@@ -94,13 +99,13 @@ function routes(settings: SettingsOptions) {
     }
 
     if (!route.data) {
-      const dataFile = filesForThisRoute.find((f) => f.endsWith(`data.js`));
+      const dataFile = filesForThisRoute.find((f) => /data\.[jt]s$/.test(f));
       if (dataFile) {
         // TODO: v1 removal
         const dataReq = require(dataFile);
         route.data = dataReq.default || dataReq;
         console.warn(
-          `WARN: Loading your /routes/${routeName}/data.js file. This functionality is deprecated. Please include your data function in your /routes/${routeName}/route.js object under the 'data' key. As a quick fix you can just import the existing data file and include it as "data" key.`,
+          `WARN: Loading your /routes/${routeName}/data file. This functionality is deprecated. Please include your data function in your /routes/${routeName}/route object under the 'data' key. As a quick fix you can just import the existing data file and include it as "data" key.`,
         );
       } else {
         route.data = (page) => {
@@ -117,7 +122,7 @@ function routes(settings: SettingsOptions) {
     } else {
       if (settings.debug.automagic) {
         console.log(
-          `${logPrefix} The route at /routes/${routeName}/route.js doesn't have a layout specified so going to look for a Layout.svelte file.`,
+          `${logPrefix} The route at /routes/${routeName}/route doesn't have a layout specified so going to look for a Layout.svelte file.`,
         );
       }
       route.layout = 'Layout.svelte';

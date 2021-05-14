@@ -19,7 +19,7 @@ const production = process.env.NODE_ENV === 'production' || !process.env.ROLLUP_
 const elderJsDir = path.resolve(process.cwd(), './node_modules/@elderjs/elderjs/');
 
 const babelIE11 = babel({
-  extensions: ['.js', '.mjs', '.html', '.svelte'],
+  extensions: ['.js', '.ts', '.mjs', '.html', '.svelte'],
   runtimeHelpers: true,
   exclude: ['node_modules/@babel/**', 'node_modules/core-js/**', /\/core-js\//],
   presets: [
@@ -96,7 +96,7 @@ export function createBrowserConfig({
     if (!ie11) {
       config.plugins.push(
         babel({
-          extensions: ['.js', '.mjs', '.cjs', '.html', '.svelte'],
+          extensions: ['.js', '.ts', '.mjs', '.cjs', '.html', '.svelte'],
           include: ['node_modules/**', 'src/**'],
           exclude: ['node_modules/@babel/**'],
           runtimeHelpers: true,

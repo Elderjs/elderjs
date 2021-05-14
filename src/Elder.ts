@@ -134,22 +134,23 @@ class Elder {
 
       /**
        * Finalize hooks
-       * Import User Hooks.js
+       * Import User Hooks
        * Validate Hooks
        * Filter out hooks that are disabled.
        */
 
       let hooksJs: Array<HookOptions> = [];
-      const hookSrcPath = path.resolve(this.settings.srcDir, './hooks.js');
+      const hookSrcPath = path.resolve(this.settings.srcDir, './hooks');
 
       try {
         const hooksReq = require(hookSrcPath);
         const hookSrcFile: Array<HookOptions> = hooksReq.default || hooksReq;
+
         hooksJs = hookSrcFile.map((hook) => ({
           ...hook,
           $$meta: {
-            type: 'hooks.js',
-            addedBy: 'hooks.js',
+            type: 'hooks',
+            addedBy: 'hooks',
           },
         }));
       } catch (err) {
@@ -180,12 +181,12 @@ class Elder {
 
       /**
        * Finalize Shortcodes
-       * Import User Shortcodes.js
+       * Import User Shortcodes
        * Validate Shortcodes
        */
 
       let shortcodesJs: ShortcodeDefs = [];
-      const shortcodeSrcPath = path.resolve(this.settings.srcDir, './shortcodes.js');
+      const shortcodeSrcPath = path.resolve(this.settings.srcDir, './shortcodes');
 
       try {
         const shortcodeReq = require(shortcodeSrcPath);
@@ -193,8 +194,8 @@ class Elder {
         shortcodesJs = shortcodes.map((shortcode) => ({
           ...shortcode,
           $$meta: {
-            type: 'shortcodes.js',
-            addedBy: 'shortcodes.js',
+            type: 'shortcodes',
+            addedBy: 'shortcodes',
           },
         }));
       } catch (err) {

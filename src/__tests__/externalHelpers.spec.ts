@@ -11,22 +11,11 @@ const settings = {
 };
 const query = {};
 
-class StatSyncError extends Error {
-  code: 'ENOENT';
-
-  constructor(msg: string) {
-    super(msg);
-    this.code = 'ENOENT';
-  }
-}
-
 describe('#externalHelpers', () => {
   beforeEach(() => jest.resetModules());
   it('throws', async () => {
     jest.mock('fs', () => ({
-      statSync: jest.fn(() => {
-        throw new StatSyncError('no file');
-      }),
+      existsSync: jest.fn(() => false),
     }));
     // eslint-disable-next-line global-require
     const externalHelpers = require('../externalHelpers').default;
@@ -47,9 +36,7 @@ describe('#externalHelpers', () => {
   });
   it('returns undefined if file is not there', async () => {
     jest.mock('fs', () => ({
-      statSync: jest.fn().mockImplementationOnce(() => {
-        throw new Error('');
-      }),
+      existsSync: jest.fn().mockImplementationOnce(() => false),
     }));
     // eslint-disable-next-line global-require
     const externalHelpers = require('../externalHelpers').default;
@@ -58,15 +45,14 @@ describe('#externalHelpers', () => {
   });
   it('works - userHelpers is not a function', async () => {
     jest.mock(
-      `src${sep}helpers${sep}index.js`,
-
+      `src${sep}helpers`,
       () => ({
         userHelper: () => 'something',
       }),
       { virtual: true },
     );
     jest.mock('fs', () => ({
-      statSync: jest.fn().mockImplementationOnce(() => {}),
+      existsSync: jest.fn().mockImplementationOnce(() => true),
     }));
     // eslint-disable-next-line global-require
     const externalHelpers = require('../externalHelpers').default;
@@ -80,7 +66,7 @@ describe('#externalHelpers', () => {
   });
   it('works - userHelpers is a function', async () => {
     jest.mock(
-      `src${sep}helpers${sep}index.js`,
+      `src${sep}helpers`,
       () => () =>
         Promise.resolve({
           userHelper: () => 'something',
@@ -88,7 +74,7 @@ describe('#externalHelpers', () => {
       { virtual: true },
     );
     jest.mock('fs', () => ({
-      statSync: jest.fn().mockImplementationOnce(() => {}),
+      existsSync: jest.fn().mockImplementationOnce(() => true),
     }));
     // eslint-disable-next-line global-require
     const externalHelpers = require('../externalHelpers').default;

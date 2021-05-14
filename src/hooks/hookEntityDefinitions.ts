@@ -4,14 +4,13 @@ const hookEntityDefinitions = {
   hookInterface:
     'The hook interface is what defines the "contract" for each hook. It includes what properties the hook has access to and which of those properties can be mutated.',
   errors: 'An array of errors collected during the build process.',
-  helpers:
-    'An object of helpers loaded from `./src/helpers/index.js` in addition to the Elder.js provided helper functions.',
+  helpers: 'An object of helpers loaded from `./src/helpers/` in addition to the Elder.js provided helper functions.',
   data: 'An object that is passed to Svelte templates as the "data" prop.',
   settings: 'An object representing the elder.config.js and other details about the build.',
   routes: 'An object that represents all of the routes registered with Elder.js.',
   hooks: 'An array of all of the hooks that have been validated by Elder.js.',
   query: 'An object that is initially empty but is reserved for plugins and sites to add database or api access to.',
-  route: 'An object representing the specific route (similar to a route.js file) for a specific request.',
+  route: 'An object representing the specific route (similar to a route file) for a specific request.',
   htmlAttributesStack:
     'A "stack" of attributes to be merged together that are written to the <html> tag.By default, it containt "{lang: "en"}" or an other lang set in your elder.config.js',
   bodyAttributesStack: 'A "stack" of attributes to be merged together that are written to the <body> tag.',
@@ -26,7 +25,7 @@ const hookEntityDefinitions = {
   bodyAttributesString: 'Body attributes as a string just before it is written.',
   headString: 'The complete <head></head> string just before it is written to the head.',
   request:
-    'An object that represents the parameters required to generate a specific page on a specific route. This object originating from the all() query of a route.js file.',
+    'An object that represents the parameters required to generate a specific page on a specific route. This object originating from the all() query of a route file.',
   beforeHydrateStack:
     'A "stack" of generally JS script tags that are required to be loaded before a Svelte component is hydrated. This is only written to the page when a Svelte component needs to be hydrated.',
   hydrateStack: 'A "stack" Svelte components that will be hydrated.',

@@ -15,9 +15,9 @@ export const removeHash = (pathWithHash) => {
 
 const prepareFindSvelteComponent = ({ ssrFolder, rootDir, clientComponents: clientFolder, distDir }) => {
   const rootDirFixed = windowsPathFix(rootDir);
-  const ssrComponents = glob.sync(`${ssrFolder}/**/*.js`).map(windowsPathFix);
+  const ssrComponents = glob.sync(`${ssrFolder}/**/*.[jt]s`).map(windowsPathFix);
   const clientComponents = glob
-    .sync(`${clientFolder}/**/*.js`)
+    .sync(`${clientFolder}/**/*.[jt]s`)
     .map((c) => windowsPathFix(`${path.sep}${path.relative(distDir, c)}`));
 
   const cache = new Map();
