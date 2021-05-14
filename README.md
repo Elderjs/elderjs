@@ -78,7 +78,7 @@ open http://localhost:3000
 
 This spawns a development server, so simply edit a file in `src`, save it, and reload the page to see your changes.
 
-Here is a demo of the template: [https://elderjs.netlify.app/](https://elderjs.netlify.app/)
+Here is a demo of the template: [https://elderjs.pages.dev/](https://elderjs.pages.dev/)
 
 ### To Build/Serve HTML Locally:
 
