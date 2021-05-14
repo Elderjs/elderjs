@@ -2,7 +2,6 @@
 import multiInput from 'rollup-plugin-multi-input';
 import path from 'path';
 import { createBrowserConfig, createSSRConfig } from '../getRollupConfig';
-import normalizeSnapshot from '../../utils/normalizeSnapshot';
 import getConfig from '../../utils/getConfig';
 
 // TODO: test replace
@@ -45,17 +44,19 @@ describe('#getRollupConfig', () => {
         svelteConfig: {},
         elderConfig,
       });
-      expect(config).toEqual({
-        cache: true,
-        input: ['./components/*/*.svelte'],
-        output: {
-          dir: './public/dist/svelte/',
-          entryFileNames: '[name].[hash].js',
-          format: 'system',
-          sourcemap,
-        },
-        treeshake: true,
-      });
+      expect(config).toEqual(
+        expect.objectContaining({
+          cache: true,
+          input: ['./components/*/*.svelte'],
+          output: {
+            dir: './public/dist/svelte/',
+            entryFileNames: '[name].[hash].js',
+            format: 'system',
+            sourcemap,
+          },
+          treeshake: true,
+        }),
+      );
       expect(plugins).toHaveLength(8);
     });
   });
@@ -118,16 +119,18 @@ describe('#getRollupConfig', () => {
         ],
       },
     });
-    expect(config).toEqual({
-      cache: true,
-      input: ['./components/*/*.svelte'],
-      output: {
-        dir: './___ELDER___/compiled/',
-        exports: 'auto',
-        format: 'cjs',
-      },
-      treeshake: true,
-    });
+    expect(config).toEqual(
+      expect.objectContaining({
+        cache: true,
+        input: ['./components/*/*.svelte'],
+        output: {
+          dir: './___ELDER___/compiled/',
+          exports: 'auto',
+          format: 'cjs',
+        },
+        treeshake: true,
+      }),
+    );
 
     expect(plugins).toHaveLength(7);
   });
@@ -231,7 +234,6 @@ describe('#getRollupConfig', () => {
     // would be nice to mock getPluginPaths if it's extracted to separate file
     const configs = fixRelativePath(require('../getRollupConfig').default({ svelteConfig }));
     expect(configs).toHaveLength(3);
-    expect(normalizeSnapshot(configs)).toMatchSnapshot();
   });
 
   it('getRollupConfig as a whole works - legacy: true', () => {
@@ -292,6 +294,5 @@ describe('#getRollupConfig', () => {
     // would be nice to mock getPluginPaths if it's extracted to separate file
     const configs = fixRelativePath(require('../getRollupConfig').default({ svelteConfig }));
     expect(configs).toHaveLength(10);
-    expect(normalizeSnapshot(configs)).toMatchSnapshot();
   });
 });

@@ -12,6 +12,9 @@ import btoa from 'btoa';
 // eslint-disable-next-line import/no-unresolved
 import { CompileOptions } from 'svelte/types/compiler/interfaces';
 import del from 'del';
+import { fork, ChildProcess } from 'child_process';
+import chokidar from 'chokidar';
+
 import partialHydration from '../partialHydration/partialHydration';
 import windowsPathFix from '../utils/windowsPathFix';
 import { SettingsOptions } from '../utils/types';
@@ -120,11 +123,13 @@ let cache: RollupCacheElder = {
 
 const production = process.env.NODE_ENV === 'production' || !process.env.ROLLUP_WATCH;
 
+let srcWatcher;
 export interface IElderjsRollupConfig {
   type: 'ssr' | 'client';
   svelteConfig: any;
   legacy?: boolean;
   elderConfig: SettingsOptions;
+  startDevServer?: boolean;
 }
 
 export default function elderjsRollup({
@@ -132,6 +137,7 @@ export default function elderjsRollup({
   svelteConfig,
   type = 'ssr',
   legacy = false,
+  startDevServer = false,
 }: IElderjsRollupConfig): Partial<Plugin> {
   const cleanCss = new CleanCSS({
     sourceMap: !production,
@@ -176,10 +182,88 @@ export default function elderjsRollup({
   let styleCssHash;
   let styleCssMapHash;
 
+  /**
+   * Dev server bootstrapping and restarting.
+   */
+  let childProcess: ChildProcess;
+  let bootingServer = false;
+
+  function forkServer(count = 0) {
+    if (production) return;
+    if (!bootingServer) {
+      bootingServer = true;
+
+      const serverJs = path.resolve(process.cwd(), elderConfig.srcDir, './server.js');
+
+      if (!fs.existsSync(serverJs)) {
+        console.error(`No server file found at ${serverJs}, unable to start dev server.`);
+        return;
+      }
+
+      setTimeout(() => {
+        // prevent multiple calls
+        if (childProcess) childProcess.kill('SIGINT');
+        bootingServer = false;
+        childProcess = fork(serverJs);
+        childProcess.on('exit', (code) => {
+          if (code !== null) {
+            console.log(`> Elder.js process exited with code ${code}`);
+          }
+        });
+        childProcess.on('error', (err) => {
+          console.error(err);
+          if (count < 1) {
+            forkServer(count + 1);
+          }
+        });
+      }, 10);
+    }
+  }
+
+  function handleChange(watchedPath) {
+    const parsed = path.parse(watchedPath);
+    if (parsed.ext !== '.svelte') {
+      // prevents double reload as the compiled svelte templates are output
+      forkServer();
+    }
+  }
+
+  function startServerAndWatcher() {
+    // notes: This is hard to reason about.
+    // This should only after the initial client rollup as finished as it runs last. The srcWatcher should then live between reloads
+    // until the watch process is killed.
+    //
+    // this should watch the ./src, elder.config.js, and the client side folders... trigging a restart of the server when something changes
+    // We don't want to change when a svelte file changes because it will cause a double reload when rollup outputs the rebundled file.
+
+    if (!production && type === 'client' && !srcWatcher && startDevServer) {
+      srcWatcher = chokidar.watch(
+        [
+          path.resolve(process.cwd(), './src'),
+          path.resolve(process.cwd(), './elder.config.js'),
+          elderConfig.$$internal.distElder,
+          path.join(elderConfig.$$internal.ssrComponents, 'components'),
+          path.join(elderConfig.$$internal.ssrComponents, 'layouts'),
+          path.join(elderConfig.$$internal.ssrComponents, 'routes'),
+        ],
+        {
+          ignored: '*.svelte',
+          usePolling: !/^(win32|darwin)$/.test(process.platform),
+        },
+      );
+
+      srcWatcher.on('change', handleChange);
+      srcWatcher.on('add', handleChange);
+
+      forkServer();
+    }
+  }
+
   return {
     name: 'rollup-plugin-elder',
 
     watchChange(id) {
+      // clean out dependency relationships on a file change.
       const prior = this.cache.get('dependencies');
       prior[id] = new Set();
 
@@ -193,6 +277,10 @@ export default function elderjsRollup({
      * We are given a hash that we later use to populate them with data.
      */
     buildStart() {
+      // kill server to prevent failures.
+      if (childProcess) childProcess.kill('SIGINT');
+
+      // create placeholder files to be filled later.
       if (type === 'ssr') {
         styleCssHash = this.emitFile({
           type: 'asset',
@@ -207,6 +295,8 @@ export default function elderjsRollup({
         }
       }
 
+      // cleaning up folders that need to be deleted.
+      // this shouldn't happen on legacy as it runs last and would result in deleting needed code.
       if (type === 'ssr' && legacy === false) {
         del.sync(elderConfig.$$internal.ssrComponents);
         del.sync(path.resolve(elderConfig.$$internal.distElder, `.${sep}assets${sep}`));
@@ -219,7 +309,6 @@ export default function elderjsRollup({
       // build list of dependencies so we know what CSS to inject into the export.
 
       logDependency(importee, importer, cache);
-
       // below largely adapted from the rollup svelte plugin
       // ----------------------------------------------
 
@@ -259,53 +348,54 @@ export default function elderjsRollup({
     },
     load,
     async transform(code, id) {
-      const extension = path.extname(id);
+      try {
+        const extension = path.extname(id);
 
-      // eslint-disable-next-line no-bitwise
-      if (!~extensions.indexOf(extension)) return null;
+        // eslint-disable-next-line no-bitwise
+        if (!~extensions.indexOf(extension)) return null;
 
-      const dependencies = getDependencies(id, cache);
+        // look in the cache
 
-      if (this.addWatchFile) {
-        this.addWatchFile(id);
-      }
+        const digest = sparkMd5.hash(code + JSON.stringify(compilerOptions));
+        if (this.cache.has(digest)) {
+          return this.cache.get(digest);
+        }
 
-      // look in the cache
+        const filename = path.relative(elderConfig.rootDir, id);
 
-      const digest = sparkMd5.hash(code + JSON.stringify(compilerOptions));
-      if (this.cache.has(digest)) {
-        return this.cache.get(digest);
-      }
+        const processed = await preprocess(code, preprocessors, { filename });
 
-      const filename = path.relative(elderConfig.rootDir, id);
+        // @ts-ignore - these types aren't in the type files... but if we don't pass in a map things break.
+        if (processed.map) compilerOptions.sourcemap = processed.map;
 
-      const processed = await preprocess(code, preprocessors, { filename });
-
-      // @ts-ignore - these types aren't in the type files... but if we don't pass in a map things break.
-      if (processed.map) compilerOptions.sourcemap = processed.map;
-
-      const compiled = await compile(processed.code, { ...compilerOptions, filename });
-      (compiled.warnings || []).forEach((warning) => {
-        if (warning.code === 'css-unused-selector') return;
-        this.warn(warning);
-      });
-
-      compiled.js.dependencies = [...dependencies, ...processed.dependencies];
-
-      if (this.addWatchFile) {
-        compiled.js.dependencies.map(this.addWatchFile);
-      }
-      if (type === 'ssr') {
-        this.cache.set(`css${id}`, {
-          code: compiled.css.code || '',
-          map: compiled.css.map || '',
-          priority: cssFilePriority(id),
+        const compiled = await compile(processed.code, { ...compilerOptions, filename });
+        (compiled.warnings || []).forEach((warning) => {
+          if (warning.code === 'css-unused-selector') return;
+          this.warn(warning);
         });
+
+        const dependencies = getDependencies(id, cache);
+        compiled.js.dependencies = [...dependencies, ...processed.dependencies];
+
+        if (this.addWatchFile) {
+          this.addWatchFile(id);
+          compiled.js.dependencies.map((d) => this.addWatchFile(d));
+        }
+        if (type === 'ssr') {
+          this.cache.set(`css${id}`, {
+            code: compiled.css.code || '',
+            map: compiled.css.map || '',
+            priority: cssFilePriority(id),
+          });
+        }
+
+        this.cache.set(digest, compiled.js);
+
+        return compiled.js;
+      } catch (e) {
+        console.error('> Elder.js error in rollupPlugin > transform.');
+        throw e;
       }
-
-      this.cache.set(digest, compiled.js);
-
-      return compiled.js;
     },
 
     // eslint-disable-next-line consistent-return
@@ -371,6 +461,8 @@ export default function elderjsRollup({
           });
         }
       }
+
+      startServerAndWatcher();
 
       this.cache.set('dependencies', cache.dependencies);
     },
