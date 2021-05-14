@@ -6,7 +6,6 @@ import glob from 'glob';
 import kebabcase from 'lodash.kebabcase';
 import toRegExp from 'regexparam';
 import path from 'path';
-import fs from 'fs-extra';
 
 import { svelteComponent } from '../utils';
 import { SettingsOptions } from '../utils/types';
@@ -71,7 +70,7 @@ function prepareRoutes(settings: SettingsOptions) {
           ...route.$$meta,
           routeString,
           ...toRegExp(routeString),
-          type: route.dynamic ? `dynamic` : 'file',
+          type: route.dynamic ? `dynamic` : 'static',
         };
       }
 
