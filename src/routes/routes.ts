@@ -137,9 +137,13 @@ function prepareRoutes(settings: SettingsOptions) {
 
     const ssrComponents = glob.sync(`${ssrFolder}/**/*.js`);
     Object.keys(routes).forEach((routeName) => {
-      const ssrTemplate = ssrComponents.find((f) =>
-        f.toLowerCase().endsWith(routes[routeName].template.replace('.svelte', '.js').toLowerCase()),
-      );
+      const ssrTemplate = ssrComponents.find((f) => {
+        const suffix = routes[routeName].template
+          .toLowerCase()
+          .replace('.svelte', '.js')
+          .replace(settings.srcDir.toLowerCase(), '');
+        return f.toLowerCase().endsWith(suffix);
+      });
       if (!ssrTemplate) {
         console.error(
           `No SSR template found for ${routeName}. Expected at ${routes[routeName].template.replace(
@@ -149,9 +153,13 @@ function prepareRoutes(settings: SettingsOptions) {
         );
       }
 
-      const ssrLayout = ssrComponents.find((f) =>
-        f.toLowerCase().endsWith(routes[routeName].layout.replace('.svelte', '.js').toLowerCase()),
-      );
+      const ssrLayout = ssrComponents.find((f) => {
+        const suffix = routes[routeName].layout
+          .toLowerCase()
+          .replace('.svelte', '.js')
+          .replace(settings.srcDir.toLowerCase(), '');
+        return f.toLowerCase().endsWith(suffix);
+      });
       if (!ssrLayout) {
         console.error(
           `No SSR Layout found for ${routeName}. Expected at ${routes[routeName].layout.replace(
