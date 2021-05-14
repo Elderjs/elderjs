@@ -334,7 +334,7 @@ describe('#prepareFindSvelteComponent', () => {
     const findComponent = prepareFindSvelteComponent(common);
 
     describe('absolute path', () => {
-      it('it finds item in components folder with hash', () => {
+      it('finds item in components folder with hash', () => {
         const out = findComponent(
           path.resolve(common.rootDir, `./src/components/AutoComplete/AutoComplete.svelte`),
           'component',
@@ -348,7 +348,7 @@ describe('#prepareFindSvelteComponent', () => {
         });
       });
 
-      it('it finds item in a sub folder of a route with hash', () => {
+      it('finds item in a sub folder of a route with hash', () => {
         const out = findComponent(
           path.resolve(common.rootDir, `./src/routes/content/article/Article.svelte`),
           'routes',
@@ -360,7 +360,7 @@ describe('#prepareFindSvelteComponent', () => {
         });
       });
 
-      it('it finds a layout', () => {
+      it('finds a layout', () => {
         const out = findComponent(path.resolve(common.rootDir, `./src/layouts/Layout.svelte`), 'layouts');
         expect(normalizeSnapshot(out)).toEqual({
           client: undefined,
@@ -371,7 +371,7 @@ describe('#prepareFindSvelteComponent', () => {
     });
 
     describe('name and folder search', () => {
-      it('it finds item in components folder by name', () => {
+      it('finds item in components folder by name', () => {
         const out = findComponent(`AutoComplete`, 'component');
         expect(normalizeSnapshot(out)).toEqual({
           client: '/_elderjs/svelte/components/AutoComplete/AutoComplete.c3c8f64b.js',
@@ -382,7 +382,7 @@ describe('#prepareFindSvelteComponent', () => {
         });
       });
 
-      it('it finds item in components folder by name including ".svelte"', () => {
+      it('finds item in components folder by name including ".svelte"', () => {
         const out = findComponent(`AutoComplete.svelte`, 'component');
         expect(normalizeSnapshot(out)).toEqual({
           client: '/_elderjs/svelte/components/AutoComplete/AutoComplete.c3c8f64b.js',
@@ -393,7 +393,7 @@ describe('#prepareFindSvelteComponent', () => {
         });
       });
 
-      it('it finds a route by name', () => {
+      it('finds a route by name', () => {
         const out = findComponent(`Article.svelte`, 'routes');
         expect(normalizeSnapshot(out)).toEqual({
           client: undefined,
@@ -402,7 +402,7 @@ describe('#prepareFindSvelteComponent', () => {
         });
       });
 
-      it('it finds a layout by name', () => {
+      it('finds a layout by name', () => {
         const out = findComponent(`Layout.svelte`, 'layouts');
         expect(normalizeSnapshot(out)).toEqual({
           client: undefined,

@@ -202,10 +202,7 @@ describe('#svelteComponent', () => {
     expect(home(props)).toEqual(
       `<div class="svelte-datepicker"><div class="datepicker-component" id="datepickerSwrzsrVDCd"><div>DATEPICKER</div></div></div>`,
     );
-    expect(props.page.svelteCss).toEqual([
-      { css: ['<css>', '<css2>'], cssMap: ['<cssmap>', '<cssmap2>'] },
-      { css: ['<css3>'], cssMap: ['<cssmap3>'] },
-    ]);
+    expect(props.page.svelteCss).toEqual([{ css: ['<css>', '<css2>'], cssMap: ['<cssmap>', '<cssmap2>'] }]);
   });
 
   it('svelteComponent respects css settings: file', () => {

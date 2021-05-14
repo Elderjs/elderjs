@@ -238,6 +238,11 @@ const rollupSchema = yup.object({
     .default({})
     .notRequired()
     .label('Replaces the key with the value when rolling up templates'),
+  startDevServer: yup
+    .boolean()
+    .notRequired()
+    .default(true)
+    .label('Starts a dev server when rollup is in watch mode. This uses the file expected in ./src/server.js'),
 });
 
 function getDefaultRollup(): RollupSettings {

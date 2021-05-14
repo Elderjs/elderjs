@@ -48,6 +48,7 @@ export function createBrowserConfig({
   replacements = {},
   ie11 = false as boolean,
   elderConfig,
+  startDevServer = false,
 }) {
   const toReplace = {
     'process.env.componentType': "'browser'",
@@ -63,7 +64,7 @@ export function createBrowserConfig({
     plugins: [
       replace(toReplace),
       json(),
-      elderSvelte({ svelteConfig, type: 'client', legacy: ie11, elderConfig }),
+      elderSvelte({ svelteConfig, type: 'client', legacy: ie11, elderConfig, startDevServer }),
       nodeResolve({
         browser: true,
         dedupe: ['svelte', 'core-js'],
@@ -72,6 +73,11 @@ export function createBrowserConfig({
       }),
       commonjs({ sourceMap: !production }),
     ],
+    watch: {
+      chokidar: {
+        usePolling: process.platform !== 'darwin',
+      },
+    },
   };
 
   // bundle splitting.
@@ -105,7 +111,15 @@ export function createBrowserConfig({
   return config;
 }
 
-export function createSSRConfig({ input, output, svelteConfig, replacements = {}, multiInputConfig, elderConfig }) {
+export function createSSRConfig({
+  input,
+  output,
+  svelteConfig,
+  replacements = {},
+  multiInputConfig,
+  elderConfig,
+  startDevServer = false,
+}) {
   const toReplace = {
     'process.env.componentType': "'server'",
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
@@ -120,7 +134,7 @@ export function createSSRConfig({ input, output, svelteConfig, replacements = {}
     plugins: [
       replace(toReplace),
       json(),
-      elderSvelte({ svelteConfig, type: 'ssr', elderConfig }),
+      elderSvelte({ svelteConfig, type: 'ssr', elderConfig, startDevServer }),
       nodeResolve({
         browser: false,
         dedupe: ['svelte'],
@@ -128,6 +142,11 @@ export function createSSRConfig({ input, output, svelteConfig, replacements = {}
       commonjs({ sourceMap: true }),
       production && terser(),
     ],
+    watch: {
+      chokidar: {
+        usePolling: !/^(win32|darwin)$/.test(process.platform),
+      },
+    },
   };
   // if we are bundle splitting include them.
   if (multiInputConfig) {
@@ -139,7 +158,7 @@ export function createSSRConfig({ input, output, svelteConfig, replacements = {}
 
 export default function getRollupConfig(options) {
   const defaultOptions = getDefaultRollup();
-  const { svelteConfig, replacements } = defaultsDeep(options, defaultOptions);
+  const { svelteConfig, replacements, startDevServer } = defaultsDeep(options, defaultOptions);
   const elderConfig = getElderConfig();
   const relSrcDir = elderConfig.srcDir.replace(elderConfig.rootDir, '').substr(1);
 
@@ -191,6 +210,7 @@ export default function getRollupConfig(options) {
       svelteConfig,
       replacements,
       elderConfig,
+      startDevServer,
     }),
   );
 
@@ -212,6 +232,7 @@ export default function getRollupConfig(options) {
       svelteConfig,
       replacements,
       elderConfig,
+      startDevServer,
     }),
   );
 
@@ -245,6 +266,7 @@ export default function getRollupConfig(options) {
           multiInputConfig: false,
           ie11: true,
           elderConfig,
+          startDevServer,
         }),
       );
     });

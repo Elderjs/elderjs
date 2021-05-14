@@ -77,7 +77,7 @@ describe('#getConfig', () => {
     jest.resetModules();
   });
 
-  it('it sets the expected default', () => {
+  it('sets the expected default', () => {
     jest.mock('fs-extra', () => {
       return {
         ensureDirSync: () => {},
@@ -138,7 +138,7 @@ describe('#getConfig', () => {
       expect(r.$$internal).toMatchObject(common$$Internal);
     });
 
-    it('it sets a server without a prefix', () => {
+    it('sets a server without a prefix', () => {
       jest.mock('fs-extra', () => {
         return {
           ensureDirSync: () => {},
@@ -156,7 +156,7 @@ describe('#getConfig', () => {
       expect(r.$$internal).toMatchObject(common$$Internal);
     });
 
-    it('it sets a server with a server.prefix without leading or trailing "/"', () => {
+    it('sets a server with a server.prefix without leading or trailing "/"', () => {
       jest.mock('fs-extra', () => {
         return {
           ensureDirSync: () => {},
@@ -181,7 +181,7 @@ describe('#getConfig', () => {
       });
     });
 
-    it('it sets a server with a server.prefix with a trailing "/"', () => {
+    it('sets a server with a server.prefix with a trailing "/"', () => {
       jest.mock('fs-extra', () => {
         return {
           ensureDirSync: () => {},
@@ -206,7 +206,7 @@ describe('#getConfig', () => {
       });
     });
 
-    it('it sets a server with a server.prefix with a leading "/"', () => {
+    it('sets a server with a server.prefix with a leading "/"', () => {
       jest.mock('fs-extra', () => {
         return {
           ensureDirSync: () => {},
@@ -231,7 +231,7 @@ describe('#getConfig', () => {
       });
     });
 
-    it('it sets a server with a server.prefix with a leading and trailing "/"', () => {
+    it('sets a server with a server.prefix with a leading and trailing "/"', () => {
       jest.mock('fs-extra', () => {
         return {
           ensureDirSync: () => {},
@@ -256,7 +256,7 @@ describe('#getConfig', () => {
       });
     });
 
-    it('it sets a server with a prefix without a leading or trailing "/"', () => {
+    it('sets a server with a prefix without a leading or trailing "/"', () => {
       jest.mock('fs-extra', () => {
         return {
           ensureDirSync: () => {},
@@ -281,7 +281,7 @@ describe('#getConfig', () => {
       });
     });
 
-    it('it sets a server with a prefix with a leading "/"', () => {
+    it('sets a server with a prefix with a leading "/"', () => {
       jest.mock('fs-extra', () => {
         return {
           ensureDirSync: () => {},
@@ -306,7 +306,7 @@ describe('#getConfig', () => {
       });
     });
 
-    it('it sets a server with a prefix with a trailing "/"', () => {
+    it('sets a server with a prefix with a trailing "/"', () => {
       jest.mock('fs-extra', () => {
         return {
           ensureDirSync: () => {},
@@ -331,7 +331,7 @@ describe('#getConfig', () => {
       });
     });
 
-    it('it sets a server with a prefix with a leading and trailing "/"', () => {
+    it('sets a server with a prefix with a leading and trailing "/"', () => {
       jest.mock('fs-extra', () => {
         return {
           ensureDirSync: () => {},
@@ -356,7 +356,7 @@ describe('#getConfig', () => {
       });
     });
 
-    it('it sets build with default', () => {
+    it('sets build with default', () => {
       jest.mock('fs-extra', () => {
         return {
           ensureDirSync: () => {},
@@ -379,7 +379,7 @@ describe('#getConfig', () => {
   });
 
   describe('Css Options', () => {
-    it('it sets the publicCssFile', () => {
+    it('sets the publicCssFile', () => {
       jest.mock('fs-extra', () => {
         return {
           ensureDirSync: () => {},
@@ -402,7 +402,7 @@ describe('#getConfig', () => {
       );
     });
 
-    it('it throws an error on multiple css for publicCssFile', () => {
+    it('throws an error on multiple css for publicCssFile', () => {
       // eslint-disable-next-line global-require
       const getConfig = require('../getConfig').default;
 
