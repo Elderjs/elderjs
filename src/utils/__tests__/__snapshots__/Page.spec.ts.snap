@@ -46,6 +46,7 @@ Object {
   "hydrateStack": Array [],
   "moduleJsStack": Array [],
   "moduleStack": Array [],
+  "next": [Function],
   "perf": Object {
     "end": [MockFunction] {
       "calls": Array [
@@ -124,6 +125,7 @@ Object {
     },
     "type": "build",
   },
+  "resNext": [Function],
   "route": Object {
     "$$meta": Object {
       "addedBy": "routejs",
@@ -213,6 +215,7 @@ Object {
     "worker": true,
   },
   "shortcodes": Array [],
+  "shouldSkipRequest": false,
   "svelteCss": Array [],
   "uid": "xxxxxxxxxx",
 }
@@ -281,6 +284,7 @@ Object {
   "layoutHtml": "<div class=\\"container\\"></div>",
   "moduleJsStack": Array [],
   "moduleStack": Array [],
+  "next": [Function],
   "perf": Object {
     "end": [MockFunction] {
       "calls": Array [
@@ -425,6 +429,7 @@ Object {
     },
     "type": "build",
   },
+  "resNext": [Function],
   "route": Object {
     "$$meta": Object {
       "addedBy": "routejs",
@@ -499,6 +504,7 @@ Object {
               "layoutHtml": "<div class=\\"container\\"></div>",
               "moduleJsStack": Array [],
               "moduleStack": Array [],
+              "next": [Function],
               "perf": Object {
                 "end": [MockFunction] {
                   "calls": Array [
@@ -643,6 +649,7 @@ Object {
                 },
                 "type": "build",
               },
+              "resNext": [Function],
               "route": Object {
                 "$$meta": Object {
                   "addedBy": "routejs",
@@ -823,6 +830,7 @@ Object {
                 "worker": true,
               },
               "shortcodes": Array [],
+              "shouldSkipRequest": false,
               "styleTag": "<style>cssStack</style>",
               "svelteCss": Array [],
               "templateHtml": undefined,
@@ -977,6 +985,7 @@ Object {
               "layoutHtml": "<div class=\\"container\\"></div>",
               "moduleJsStack": Array [],
               "moduleStack": Array [],
+              "next": [Function],
               "perf": Object {
                 "end": [MockFunction] {
                   "calls": Array [
@@ -1121,6 +1130,7 @@ Object {
                 },
                 "type": "build",
               },
+              "resNext": [Function],
               "route": Object {
                 "$$meta": Object {
                   "addedBy": "routejs",
@@ -1302,6 +1312,7 @@ Object {
                 "worker": true,
               },
               "shortcodes": Array [],
+              "shouldSkipRequest": false,
               "styleTag": "<style>cssStack</style>",
               "svelteCss": Array [],
               "templateHtml": undefined,
@@ -1464,6 +1475,7 @@ Object {
     "worker": true,
   },
   "shortcodes": Array [],
+  "shouldSkipRequest": false,
   "styleTag": "<style>cssStack</style>",
   "svelteCss": Array [],
   "templateHtml": undefined,

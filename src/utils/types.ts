@@ -1,4 +1,4 @@
-import type { StateSlug, RoutesOptions } from '../routes/types';
+import type { RoutesOptions } from '../routes/types';
 import type { HookOptions } from '../hooks/types';
 import type { ShortcodeDefs } from '../shortcodes/types';
 
@@ -103,14 +103,18 @@ export type ExternalHelperRequestOptions = {
   settings: SettingsOptions;
 };
 
+export type ReqDetails = {
+  path?: string;
+  query?: any;
+  search?: string;
+};
+
 export type RequestOptions = {
-  slug: string;
-  random: number;
-  state: StateSlug;
-  uid: string;
+  slug?: string;
   route: string;
   type: string;
   permalink: string;
+  req?: ReqDetails;
 };
 
 export type RequestsOptions = {

@@ -38,6 +38,7 @@ async function workerBuild({ bootstrapComplete, workerRequests }) {
       routes: workerRoutes,
       errors,
       shortcodes,
+      next: () => {},
     });
     i += 1;
     const response: any = ['requestComplete', i];

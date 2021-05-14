@@ -28,6 +28,7 @@ const buildPage = async (page) => {
         errors: page.errors,
         perf: page.perf,
         allRequests: createReadOnlyProxy(page.allRequests, 'allRequests', `${page.request.route}: data function`),
+        next: page.next,
       });
       if (dataResponse && Object.keys(dataResponse).length > 0) {
         page.data = {
@@ -37,7 +38,13 @@ const buildPage = async (page) => {
       }
     }
     page.perf.end('data');
+
     await page.runHook('data', page);
+
+    if (page.shouldSkipRequest) {
+      page.next();
+      return page;
+    }
 
     // start building templates
     page.perf.start('html.template');
@@ -130,6 +137,12 @@ class Page {
 
   runHook: (string, Object) => Promise<any>;
 
+  next: () => void;
+
+  resNext: () => void;
+
+  shouldSkipRequest: boolean;
+
   allRequests: Array<RequestOptions>;
 
   request: RequestOptions;
@@ -188,7 +201,22 @@ class Page {
 
   shortcodes: ShortcodeDefs;
 
-  constructor({ request, settings, query, helpers, data, route, runHook, allRequests, routes, errors, shortcodes }) {
+  constructor({
+    request,
+    settings,
+    next = () => {
+      console.error(`Cannot call next on a non SSR route ${this.route.name}`);
+    },
+    query,
+    helpers,
+    data,
+    route,
+    runHook,
+    allRequests,
+    routes,
+    errors,
+    shortcodes,
+  }) {
     this.uid = getUniqueId();
     this.request = request;
     this.settings = settings;
@@ -222,6 +250,11 @@ class Page {
     this.processStack = prepareProcessStack(this);
     this.perf.end('constructor');
     this.perf.start('initToBuildGap');
+    this.shouldSkipRequest = false;
+    this.next = () => {
+      this.shouldSkipRequest = true;
+    };
+    this.resNext = next;
   }
 
   build() {

@@ -34,7 +34,9 @@ describe('#prepareServer', () => {
           req: {
             desc: 'req',
           },
-          request: {},
+          request: {
+            type: 'server',
+          },
           res: {
             desc: 'res',
           },

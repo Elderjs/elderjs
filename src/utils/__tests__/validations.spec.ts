@@ -78,11 +78,14 @@ describe('#validations', () => {
       ),
     ).toEqual(false);
     const validRoute = {
+      layout: 'Layout.svelte',
       template: 'Home.svelte',
       all: jest.fn(),
       permalink: jest.fn(),
       hooks: [],
       data: {},
+      name: 'home',
+      dynamic: false,
     };
     expect(validateRoute(validRoute, 'Home')).toEqual(validRoute);
     // works with valid hook

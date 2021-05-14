@@ -1399,9 +1399,12 @@ Object {
   "_exclusive": Object {},
   "_mutate": undefined,
   "_nodes": Array [
+    "dynamic",
+    "name",
     "data",
     "permalink",
     "all",
+    "layout",
     "template",
   ],
   "_options": Object {
@@ -1470,6 +1473,93 @@ Object {
       "transforms": Array [],
       "type": "mixed",
     },
+    "dynamic": Object {
+      "_blacklist": Object {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": Array [],
+      "_default": false,
+      "_deps": Array [],
+      "_exclusive": Object {},
+      "_label": "Enables dynamic route parameters in SSR mode. This means /:foo/ will be derived from the visited URL. Useful for logged in experiences.",
+      "_mutate": undefined,
+      "_options": Object {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "boolean",
+      "_typeError": [Function],
+      "_whitelist": Object {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": Array [],
+      "transforms": Array [
+        [Function],
+      ],
+      "type": "boolean",
+    },
+    "layout": Object {
+      "_blacklist": Object {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": Array [],
+      "_deps": Array [],
+      "_exclusive": Object {
+        "required": true,
+      },
+      "_label": "Svelte file for your layout. Defaults to Layout.svelte if not defined. Relative to /src",
+      "_mutate": undefined,
+      "_options": Object {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "string",
+      "_typeError": [Function],
+      "_whitelist": Object {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": Array [
+        [Function],
+      ],
+      "transforms": Array [
+        [Function],
+      ],
+      "type": "string",
+    },
+    "name": Object {
+      "_blacklist": Object {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": Array [],
+      "_deps": Array [],
+      "_exclusive": Object {
+        "min": true,
+      },
+      "_label": "A name used to identify the route internally. If not defined, it uses [routeName] from \\"/routes/[routeName]/route.js\\". Mainly used with helpers.permalink.[name]().",
+      "_mutate": undefined,
+      "_options": Object {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "string",
+      "_typeError": [Function],
+      "_whitelist": Object {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": Array [
+        [Function],
+      ],
+      "transforms": Array [
+        [Function],
+      ],
+      "type": "string",
+    },
     "permalink": Object {
       "_blacklist": Object {
         "list": Set {},
@@ -1510,7 +1600,7 @@ Object {
       "_exclusive": Object {
         "required": true,
       },
-      "_label": "Svelte file for your route. Defaults to RouteName.svelte if not defined.",
+      "_label": "Svelte file for your route. Defaults to [RouteName].svelte if not defined. Relative to /src",
       "_mutate": undefined,
       "_options": Object {
         "abortEarly": true,

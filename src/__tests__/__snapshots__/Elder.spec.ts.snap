@@ -120,10 +120,11 @@ Object {
         "runHook",
         "shortcodes",
         "request",
+        "router",
       ],
       "use": "<p>If you're looking to use Elder.js with express/polka to build a server rendered website, then you'll be interested in this hook as it includes the familiar 'req' and 'next' objects as often used in Express middleware.</p>
     <ul>
-    <li>Under the hook Elder.js uses this hook to power the server implementation.</li>
+    <li>Under the hood Elder.js uses this hook to power the server implementation.</li>
     <li>If you want to change the route of a request, you can do so by modifying the 'request.route' to the name of the new request, and it will be picked up by the default Elder.js server.</li>
     <li>If you're looking to set user or session information stored on the 'req' prop we recommend using a hook to modify the 'request' object or 'data' objects. Change to the request object will be passed down. </li>
     <li>If you're looking to pass in details about the query string deeper into your application, you could use this hook to do so.</li>
@@ -194,6 +195,7 @@ Object {
         "customJsStack",
         "footerStack",
         "settings",
+        "next",
       ],
       "use": "<p>This hook is mainly used by plugins/hooks to offer functionality at the route level that is dependent on the route's \\"data\\" function has returning but isn't suitable to live in multiple data function across many routes due to code duplication.</p>
     <p>Examples of things we (ElderGuide.com) have done or have seen users do:</p>
@@ -567,12 +569,9 @@ Object {
   ],
   "markBootstrapComplete": [Function],
   "query": Object {},
+  "router": [Function],
   "routes": Object {
     "route-a": Object {
-      "$$meta": Object {
-        "addedBy": "routejs",
-        "type": "route",
-      },
       "hooks": Array [
         Object {
           "description": "test",
@@ -595,10 +594,6 @@ Object {
       "templateComponent": [Function],
     },
     "test-b": Object {
-      "$$meta": Object {
-        "addedBy": "routejs",
-        "type": "route",
-      },
       "hooks": Array [],
     },
   },
@@ -775,10 +770,11 @@ Object {
         "runHook",
         "shortcodes",
         "request",
+        "router",
       ],
       "use": "<p>If you're looking to use Elder.js with express/polka to build a server rendered website, then you'll be interested in this hook as it includes the familiar 'req' and 'next' objects as often used in Express middleware.</p>
     <ul>
-    <li>Under the hook Elder.js uses this hook to power the server implementation.</li>
+    <li>Under the hood Elder.js uses this hook to power the server implementation.</li>
     <li>If you want to change the route of a request, you can do so by modifying the 'request.route' to the name of the new request, and it will be picked up by the default Elder.js server.</li>
     <li>If you're looking to set user or session information stored on the 'req' prop we recommend using a hook to modify the 'request' object or 'data' objects. Change to the request object will be passed down. </li>
     <li>If you're looking to pass in details about the query string deeper into your application, you could use this hook to do so.</li>
@@ -849,6 +845,7 @@ Object {
         "customJsStack",
         "footerStack",
         "settings",
+        "next",
       ],
       "use": "<p>This hook is mainly used by plugins/hooks to offer functionality at the route level that is dependent on the route's \\"data\\" function has returning but isn't suitable to live in multiple data function across many routes due to code duplication.</p>
     <p>Examples of things we (ElderGuide.com) have done or have seen users do:</p>
@@ -1262,12 +1259,9 @@ Object {
   ],
   "markBootstrapComplete": [Function],
   "query": Object {},
+  "router": [Function],
   "routes": Object {
     "route-a": Object {
-      "$$meta": Object {
-        "addedBy": "routejs",
-        "type": "route",
-      },
       "hooks": Array [
         Object {
           "description": "test",
@@ -1291,10 +1285,6 @@ Object {
       "templateComponent": [Function],
     },
     "test-b": Object {
-      "$$meta": Object {
-        "addedBy": "routejs",
-        "type": "route",
-      },
       "hooks": Array [],
     },
   },

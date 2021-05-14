@@ -6,7 +6,6 @@ import { parseBuildPerf } from '../utils';
 import externalHelpers from '../externalHelpers';
 import { HookOptions } from './types';
 import prepareShortcodeParser from '../utils/prepareShortcodeParser';
-import Page from '../utils/Page';
 
 const hooks: Array<HookOptions> = [
   {
@@ -36,78 +35,8 @@ const hooks: Array<HookOptions> = [
     name: 'elderExpressLikeMiddleware',
     description: 'An express like middleware so requests can be served by Elder.js',
     priority: 1,
-    run: async ({
-      serverLookupObject,
-      settings,
-      query,
-      helpers,
-      data,
-      routes,
-      allRequests,
-      runHook,
-      errors,
-      shortcodes,
-      req,
-      next,
-      res,
-      request,
-    }) => {
-      if (req.path) {
-        let reqPath = req.path;
-        const prefix = get(settings, '$$internal.serverPrefix', '');
-
-        if (prefix && prefix.length > 0) {
-          if (reqPath.indexOf(prefix) !== 0) {
-            return next();
-          }
-        }
-
-        // see if we have a request object with the path as is. (could include / or not.)
-        let requestObject = serverLookupObject[reqPath];
-
-        if (!requestObject && reqPath[reqPath.length - 1] === '/') {
-          // check the path without a slash.
-          requestObject = serverLookupObject[reqPath.substring(0, reqPath.length - 1)];
-        } else if (!requestObject) {
-          // check the path with a slash.
-          reqPath += '/';
-          requestObject = serverLookupObject[reqPath];
-        }
-
-        // if we have a requestObject then we know it is for ElderGuide
-        if (requestObject) {
-          let route = routes[requestObject.route];
-          if (request && request.route) {
-            route = routes[request.route];
-          }
-          const forPage = {
-            request: { ...requestObject, ...request },
-            settings,
-            query,
-            helpers,
-            data,
-            route,
-            runHook,
-            allRequests,
-            routes,
-            errors,
-            shortcodes,
-          };
-
-          const page = new Page(forPage);
-
-          const html = await page.html();
-
-          if (html && !res.headerSent) {
-            res.setHeader('Content-Type', 'text/html');
-            res.end(html);
-          }
-        } else {
-          return next();
-        }
-      } else {
-        return next();
-      }
+    run: async ({ req, next, res, request, router }) => {
+      return router({ req, res, next, request });
     },
   },
   {
