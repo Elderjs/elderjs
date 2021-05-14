@@ -34,7 +34,7 @@
 - **Svelte Everywhere:** Use Svelte for your SSR templates and with partial hydration on the client for tiny html/bundle sizes.
 - **Straightforward Data Flow:** By simply associating a `data` function in your `route.js`, you have complete control over how you fetch, prepare, and manipulate data before sending it to your Svelte template. Anything you can do in Node.js, you can do to fetch your data. Multiple data sources, no problem.
 - **Community Plugins:** Easily extend what your Elder.js site can do by adding [prebuilt plugins](https://github.com/Elderjs/plugins) to your site.
-- **Shortcodes:** Future proof your content, whether it lives in a CMS or in static files using smart placeholders.
+- **Shortcodes:** Future proof your content, whether it lives in a CMS or in static files using smart placeholders. These shortcodes can be async!
 - **0KB JS**: Defaults to 0KB of JS if your page doesn't need JS.
 - **Partial Hydration**: Unlike most frameworks, Elder.js lets you hydrate just the parts of the client that need to be interactive allowing you to dramatically reduce your payloads while still having full control over component lazy-loading, preloading, and eager-loading.
 
@@ -48,13 +48,13 @@ We hope you find this project useful whether you're building a small personal bl
 
 ## Project Status: Stable
 
-Elder.js is stable and production ready. 
+Elder.js is stable and production ready.
 
-It is being used on ElderGuide.com and 2 other flagship SEO properties that are managed by the maintainers of this project. 
+It is being used on ElderGuide.com and 2 other flagship SEO properties that are managed by the maintainers of this project.
 
-We believe Elder.js has reached a level of maturity where we have achieved the majority of the vision we had for the project when we set out to build a static site generator. 
+We believe Elder.js has reached a level of maturity where we have achieved the majority of the vision we had for the project when we set out to build a static site generator.
 
-Our goal is to keep the hookInterface, plugin interface, and general structure of the project as static as possible. 
+Our goal is to keep the hookInterface, plugin interface, and general structure of the project as static as possible.
 
 This is a lot of words to say we’re not looking to ship a bunch of breaking changes any time soon, but will be shipping bug fixes and incremental changes that are mostly “under the hood.”
 
@@ -80,21 +80,13 @@ Here is a demo of the template: [https://elderjs.netlify.app/](https://elderjs.n
 
 ### Developing using the Template:
 
-For development, we recommend running two separate terminals. One for the server and the other for rollup.
-
-**Terminal 1: Server**
+For development, there is an embedded development server that runs in cooperation with rollup.
 
 ```bash
-npm run dev:server # `npm start` above starts a server, but doesn't rebuild your Svelte components on change.
+npm run dev # `npm start` above starts a server, but doesn't rebuild your Svelte components on change.
 ```
 
-**Terminal 2: Rollup**
-
-```bash
-npm run dev:rollup # This rebuilds your svelte components on change.
-```
-
-Once you have these two terminals open, edit a component file in `src`, save it, and reload the page to see your changes.
+To see your changes edit a file in `src`, save it, and reload the page to see your changes.
 
 ### To Build/Serve HTML Locally:
 
@@ -107,6 +99,5 @@ Let the build finish.
 ```bash
 npx sirv-cli public
 ```
-
 
 ## Full documentation here: https://elderguide.com/tech/elderjs/
