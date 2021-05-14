@@ -76,17 +76,9 @@ npm start
 open http://localhost:3000
 ```
 
+This spawns a development server, so simply edit a file in `src`, save it, and reload the page to see your changes.
+
 Here is a demo of the template: [https://elderjs.netlify.app/](https://elderjs.netlify.app/)
-
-### Developing using the Template:
-
-For development, there is an embedded development server that runs in cooperation with rollup.
-
-```bash
-npm run dev # `npm start` above starts a server, but doesn't rebuild your Svelte components on change.
-```
-
-To see your changes edit a file in `src`, save it, and reload the page to see your changes.
 
 ### To Build/Serve HTML Locally:
 
