@@ -2,7 +2,7 @@
   <img src="https://github.com/elderjs/elderjs/raw/master/elderjs.png" alt="Elder.js" width="300" />
 </div>
 
-<h1 align="center">Elder.js: SEO focused, Svelte Framework & Static Site Generator</h1>
+<h1 align="center">Elder.js: an SEO first Svelte Framework & Static Site Generator</h1>
 
 <div align="center">
   <a href="https://npmjs.org/package/@elderjs/elderjs">
