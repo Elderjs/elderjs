@@ -135,7 +135,9 @@ function prepareRouter(Elder) {
     // note: html will be undefined if a dynamic route calls skip() as it aborts page building.
     if (html && !res.headerSent) {
       res.setHeader('Content-Type', 'text/html');
-      return res.end(html);
+      res.end(html);
+      // eslint-disable-next-line consistent-return
+      return;
     }
     return next();
   }
