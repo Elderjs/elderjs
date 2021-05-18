@@ -11,26 +11,31 @@ let cache;
 
 async function externalHelpers({ settings, query, helpers }: ExternalHelperRequestOptions) {
   const srcHelpers = path.join(settings.srcDir, 'helpers/index.js');
-  if (!cache) {
-    try {
-      fs.statSync(srcHelpers);
-      userHelpers = require(srcHelpers);
+  try {
+    if (!cache) {
+      try {
+        fs.statSync(srcHelpers);
+        userHelpers = require(srcHelpers);
 
-      if (typeof userHelpers === 'function') {
-        userHelpers = await userHelpers({ settings, query, helpers });
-      }
-      cache = userHelpers;
-    } catch (err) {
-      if (err.code === 'ENOENT') {
-        if (settings.debug.automagic) {
-          console.log(
-            `debug.automagic:: We attempted to automatically add in helpers, but we couldn't find the file at ${srcHelpers}.`,
-          );
+        if (typeof userHelpers === 'function') {
+          userHelpers = await userHelpers({ settings, query, helpers });
+        }
+        cache = userHelpers;
+      } catch (err) {
+        if (err.code === 'ENOENT') {
+          if (settings.debug.automagic) {
+            console.log(
+              `debug.automagic:: We attempted to automatically add in helpers, but we couldn't find the file at ${srcHelpers}.`,
+            );
+          }
         }
       }
+    } else {
+      userHelpers = cache;
     }
-  } else {
-    userHelpers = cache;
+  } catch (e) {
+    console.error(`Error importing ${srcHelpers}`);
+    console.error(e);
   }
 
   return userHelpers;
