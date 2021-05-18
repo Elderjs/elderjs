@@ -66,6 +66,7 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
           } catch (e) {
             e.message = `Hook: "${hook.name}" threw an error: ${e.message}`;
             props.errors.push(e);
+            if (hookName === 'buildComplete') console.error(e);
           }
           if (props.perf) props.perf.end(`hook.${hookName}.${hook.name}`);
         });
