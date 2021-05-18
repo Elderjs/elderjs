@@ -126,9 +126,6 @@ async function build(initializationOptions: InitializationOptions = {}): Promise
               msg[3].errors = msg[3].errors.map((jsonErr) => JSON.parse(jsonErr));
               errors.push(msg[3]);
             }
-            if (totalRequests === requestsProcessed) {
-              markWorkersComplete({ errors, timings });
-            }
           } else if (msg[0] === 'done') {
             timings = timings.concat(msg[1]);
             workersProcessing -= 1;
@@ -168,6 +165,10 @@ async function build(initializationOptions: InitializationOptions = {}): Promise
                 }
               }, 300);
             }
+          }
+
+          if (totalRequests === requestsProcessed && workersProcessing === 0) {
+            markWorkersComplete({ errors, timings });
           }
         };
       }
