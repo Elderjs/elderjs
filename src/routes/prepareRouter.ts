@@ -52,7 +52,7 @@ export const findPrebuiltRequest = ({ req, serverLookupObject }: IFindPrebuildRe
   }
 
   if (request) {
-    request.req = { path: req.path };
+    request.req = req;
   }
 
   return request;
