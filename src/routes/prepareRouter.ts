@@ -143,19 +143,24 @@ function prepareRouter(Elder) {
   }
 
   return async ({ req, res, next, request: initialRequest }) => {
-    try {
-      // initial request may be well formed if it is modified via a hook BEFORE the router runs.
-      if (initialRequestIsWellFormed(initialRequest)) return handleRequest({ res, next, request: initialRequest });
-      if (!needsElderRequest({ req, prefix })) return next();
-      const request = findPrebuiltRequest({ req, serverLookupObject });
-      if (request) return handleRequest({ res, next, request });
-      const dynamicRequest = requestFromDynamicRoute({ req, dynamicRoutes, requestCache });
-      if (dynamicRequest) return handleRequest({ res, next, request: dynamicRequest, dynamic: true });
-      return next();
-    } catch (e) {
-      console.error(e);
-      // should fall through to 404
-      return next();
+    // if a prior middleware hook has already returned.
+    if (!res.headerSent) {
+      try {
+        // initial request may be well formed if it is modified via a hook BEFORE the router runs.
+        if (initialRequestIsWellFormed(initialRequest)) return handleRequest({ res, next, request: initialRequest });
+        if (!needsElderRequest({ req, prefix })) return next();
+        const request = findPrebuiltRequest({ req, serverLookupObject });
+        if (request) return handleRequest({ res, next, request });
+        const dynamicRequest = requestFromDynamicRoute({ req, dynamicRoutes, requestCache });
+        if (dynamicRequest) return handleRequest({ res, next, request: dynamicRequest, dynamic: true });
+        return next();
+      } catch (e) {
+        console.error(e);
+        // should fall through to 404
+        return next();
+      }
+    } else {
+      return undefined;
     }
   };
 }
