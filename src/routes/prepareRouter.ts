@@ -133,18 +133,18 @@ function prepareRouter(Elder) {
     const html = await page.html();
 
     // note: html will be undefined if a dynamic route calls skip() as it aborts page building.
-    if (html && !res.headerSent) {
+    if (html && !res.headerSent && !res.headersSent) {
       res.setHeader('Content-Type', 'text/html');
       res.end(html);
-      // eslint-disable-next-line consistent-return
-      return;
+
+      return undefined;
     }
     return next();
   }
 
   return async ({ req, res, next, request: initialRequest }) => {
     // if a prior middleware hook has already returned.
-    if (!res.headerSent) {
+    if (!res.headerSent && !res.headersSent) {
       try {
         // initial request may be well formed if it is modified via a hook BEFORE the router runs.
         if (initialRequestIsWellFormed(initialRequest)) return handleRequest({ res, next, request: initialRequest });
