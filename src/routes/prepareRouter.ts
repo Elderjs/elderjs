@@ -150,9 +150,10 @@ function prepareRouter(Elder) {
         if (initialRequestIsWellFormed(initialRequest)) return handleRequest({ res, next, request: initialRequest });
         if (!needsElderRequest({ req, prefix })) return next();
         const request = findPrebuiltRequest({ req, serverLookupObject });
-        if (request) return handleRequest({ res, next, request });
+        if (request) return handleRequest({ res, next, request: { ...request, ...initialRequest } });
         const dynamicRequest = requestFromDynamicRoute({ req, dynamicRoutes, requestCache });
-        if (dynamicRequest) return handleRequest({ res, next, request: dynamicRequest, dynamic: true });
+        if (dynamicRequest)
+          return handleRequest({ res, next, request: { ...dynamicRequest, ...initialRequest }, dynamic: true });
         return next();
       } catch (e) {
         console.error(e);
