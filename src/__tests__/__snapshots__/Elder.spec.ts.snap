@@ -590,6 +590,7 @@ Object {
       "data": [Function],
       "layout": "Layout.svelte",
       "layoutComponent": [Function],
+      "permalink": [Function],
       "template": "fakepath/Test.svelte",
       "templateComponent": [Function],
     },

@@ -2,7 +2,6 @@ import get from 'lodash.get';
 
 const wrapPermalinkFn = ({ permalinkFn, routeName, settings }) => (payload) => {
   let permalink = permalinkFn(payload);
-
   if (typeof permalink !== 'string') {
     throw new Error(
       `The permalink function for route: "${routeName}" returned ${JSON.stringify(

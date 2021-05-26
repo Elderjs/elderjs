@@ -132,8 +132,11 @@ async function plugins(elder: Elder) {
             addedBy: routeName,
           };
 
-          if (!plugin.routes[routeName].permalink) {
-            console.error(`WARN: Plugin ${routeName} does not define a permalink function on it's routes.`);
+          if (typeof plugin.routes[routeName].permalink === 'undefined') {
+            console.error(
+              `WARN: Plugin ${routeName} does not define a permalink function on it's routes. Setting default permalink to \`/${routeName}/\``,
+            );
+            plugin.routes[routeName].permalink = () => `/${routeName}/`;
           }
 
           const { serverPrefix } = elder.settings.$$internal;
@@ -244,8 +247,6 @@ async function plugins(elder: Elder) {
       }
     }
   }
-
-  console.log(pluginRoutes);
 
   return { pluginRoutes, pluginHooks, pluginShortcodes };
 }

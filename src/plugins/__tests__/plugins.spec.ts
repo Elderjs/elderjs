@@ -167,6 +167,7 @@ describe('#plugins', () => {
             data: jest.fn(),
             template: 'template/routeA.svelte',
             layout: 'layout/routeA.svelte',
+            permalink: () => '/',
           },
           routeB: {
             hooks: [], // not supported warning
@@ -205,6 +206,7 @@ describe('#plugins', () => {
         $$internal: { ssrComponents: 'test/___ELDER___/compiled' },
       },
     });
+
     expect(pluginRoutes).toEqual({
       routeA: {
         $$meta: {
@@ -216,69 +218,11 @@ describe('#plugins', () => {
         layoutComponent: expect.any(Function),
         template: 'template/routeA.svelte',
         templateComponent: expect.any(Function),
+        permalink: expect.any(Function),
       },
     });
     expect(pluginHooks).toEqual([true]);
-    expect(pluginShortcodes).toEqual([
-      {
-        $$meta: {
-          addedBy: 'elder-plugin-upload-s3',
-          type: 'plugin',
-        },
-        plugin: {
-          config: {
-            dataBucket: 'elderguide.com',
-            deployId: '11111111',
-            htmlBucket: 'elderguide.com',
-          },
-          description: 'test',
-          hooks: [
-            {
-              $$meta: {
-                addedBy: 'validations.spec.ts',
-                type: 'hooks.js',
-              },
-              description: 'just for testing',
-              hook: 'customizeHooks',
-              name: 'test hook',
-              run: expect.any(Function),
-            },
-          ],
-          name: 'test',
-          routes: {
-            routeA: {
-              data: expect.any(Function),
-              layout: 'layout/routeA.svelte',
-              layoutComponent: expect.any(Function),
-              template: 'template/routeA.svelte',
-              templateComponent: expect.any(Function),
-            },
-            routeB: {
-              data: {
-                foo: 'bar',
-              },
-              hooks: [],
-            },
-          },
-          settings: {
-            $$internal: {
-              ssrComponents: 'test/___ELDER___/compiled',
-            },
-            plugins: {
-              'elder-plugin-upload-s3': {
-                dataBucket: 'elderguide.com',
-                deployId: '11111111',
-                htmlBucket: 'elderguide.com',
-              },
-            },
-            rootDir: 'test',
-            srcDir: 'test/src',
-          },
-          shortcodes: [expect.anything()],
-        },
-        shortcode: 'svelteComponent',
-      },
-    ]);
+    expect(pluginShortcodes).toHaveLength(1);
     expect(initMock).toHaveBeenCalled();
   });
 });
