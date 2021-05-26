@@ -4,11 +4,14 @@ import fs from 'fs-extra';
 import defaultsDeep from 'lodash.defaultsdeep';
 
 import path from 'path';
+import toRegExp from 'regexparam';
+
 import { ShortcodeDefs } from '../shortcodes/types';
-import { validatePlugin, validateHook, svelteComponent, HookOptions, PluginOptions } from '..';
+import { validatePlugin, validateHook, svelteComponent, HookOptions, PluginOptions, makeRoutesjsPermalink } from '..';
 import { Elder } from '../Elder';
 import { RoutesOptions } from '../routes/types';
 import createReadOnlyProxy from '../utils/createReadOnlyProxy';
+import wrapPermalinkFn from '../utils/wrapPermalinkFn';
 
 async function plugins(elder: Elder) {
   /**
@@ -124,6 +127,36 @@ async function plugins(elder: Elder) {
         for (let ii = 0; ii < routeNames.length; ii += 1) {
           const routeName = routeNames[ii];
 
+          plugin.routes[routeName].$$meta = {
+            type: 'plugin',
+            addedBy: routeName,
+          };
+
+          if (!plugin.routes[routeName].permalink) {
+            console.error(`WARN: Plugin ${routeName} does not define a permalink function on it's routes.`);
+          }
+
+          const { serverPrefix } = elder.settings.$$internal;
+
+          // handle string based permalinks
+          if (typeof plugin.routes[routeName].permalink === 'string') {
+            const routeString = `${serverPrefix}${plugin.routes[routeName].permalink}`;
+            plugin.routes[routeName].permalink = makeRoutesjsPermalink(plugin.routes[routeName].permalink);
+
+            plugin.routes[routeName].$$meta = {
+              ...plugin.routes[routeName].$$meta,
+              routeString,
+              ...toRegExp(routeString),
+              type: plugin.routes[routeName].dynamic ? `dynamic` : 'static',
+            };
+          }
+
+          plugin.routes[routeName].permalink = wrapPermalinkFn({
+            permalinkFn: plugin.routes[routeName].permalink,
+            routeName,
+            settings: elder.settings,
+          });
+
           // don't allow plugins to add hooks via the routes definitions like users can.
           if (plugin.routes[routeName].hooks)
             console.error(
@@ -149,7 +182,7 @@ async function plugins(elder: Elder) {
               );
             }
 
-            plugin.routes[routeName].templateComponent = svelteComponent(templateName);
+            plugin.routes[routeName].templateComponent = svelteComponent(templateName, 'plugins');
           } else {
             console.error(
               Error(
@@ -175,7 +208,7 @@ async function plugins(elder: Elder) {
                 `Plugin Route: ${routeName} added by plugin ${pluginName} has an error. No SSR svelte component found ${layoutName}. This may cause unexpected outcomes. If you believe this should be working, make sure rollup has run before this file is initialized. If the issue persists, please contact the plugin author. Expected location \`${ssrComponent}\``,
               );
             }
-            plugin.routes[routeName].layoutComponent = svelteComponent(layoutName);
+            plugin.routes[routeName].layoutComponent = svelteComponent(layoutName, 'layouts');
           } else {
             plugin.routes[routeName].layout = 'Layout.svelte';
             const ssrComponent = path.resolve(elder.settings.$$internal.ssrComponents, `./layouts/Layout.js`);
@@ -187,7 +220,7 @@ async function plugins(elder: Elder) {
               // eslint-disable-next-line no-continue
               continue;
             }
-            plugin.routes[routeName].layoutComponent = svelteComponent('Layout.svelte');
+            plugin.routes[routeName].layoutComponent = svelteComponent('Layout.svelte', 'layouts');
           }
 
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -211,6 +244,8 @@ async function plugins(elder: Elder) {
       }
     }
   }
+
+  console.log(pluginRoutes);
 
   return { pluginRoutes, pluginHooks, pluginShortcodes };
 }

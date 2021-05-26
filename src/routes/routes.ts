@@ -59,12 +59,7 @@ function prepareRoutes(settings: SettingsOptions) {
       // handle string based permalinks
       if (typeof route.permalink === 'string') {
         const routeString = `${serverPrefix}${route.permalink}`;
-        route.permalink = wrapPermalinkFn({
-          // wrapPermalink adds in prefix
-          permalinkFn: makeRoutesjsPermalink(route.permalink),
-          routeName: route.name,
-          settings,
-        });
+        route.permalink = makeRoutesjsPermalink(route.permalink);
 
         route.$$meta = {
           ...route.$$meta,
