@@ -19,6 +19,18 @@ import partialHydration from '../partialHydration/partialHydration';
 import windowsPathFix from '../utils/windowsPathFix';
 import { SettingsOptions } from '../utils/types';
 
+export type RollupCacheElder = {
+  [name: string]: Set<string>;
+};
+
+let dependencyCache: RollupCacheElder = {};
+
+const cache = new Map();
+
+const production = process.env.NODE_ENV !== 'production' || !process.env.ROLLUP_WATCH;
+
+let srcWatcher;
+
 const mapIntro = `/*# sourceMappingURL=data:application/json;charset=utf-8;base64,`;
 export const encodeSourceMap = (map) => {
   if (!map || !map.toString) return '';
@@ -35,117 +47,19 @@ export const cssFilePriority = (pathStr) => {
   return 0;
 };
 
-export function logDependency(importee, importer, memoryCache) {
-  if (importee === 'svelte/internal' || importee === 'svelte') return;
-  if (importer) {
-    const parsedImporter = path.parse(importer);
-
-    // The following two expressions are used to determine if we are trying to import
-    // a svelte file from an external dependency and ensure that we add the correct path to that dependency
-    const externalDependencyImport = path.resolve(
-      parsedImporter.dir.substr(0, parsedImporter.dir.lastIndexOf('src')),
-      'node_modules',
-      importee,
-    );
-    const isExternalDependency = fs.pathExistsSync(externalDependencyImport);
-    if (!memoryCache.dependencies[importer]) memoryCache.dependencies[importer] = new Set();
-    if (importee.includes('node_modules')) {
-      memoryCache.dependencies[importer].add(importee);
-    } else if (importer.includes('node_modules')) {
-      const fullImportee = path.resolve(parsedImporter.dir, importee);
-      memoryCache.dependencies[importer].add(fullImportee);
-    } else if (importee.includes('.svelte') && isExternalDependency) {
-      memoryCache.dependencies[importer].add(externalDependencyImport);
-    } else if ((parsedImporter.ext === '.svelte' && importee.includes('.svelte')) || importee.includes('.css')) {
-      const fullImportee = path.resolve(parsedImporter.dir, importee);
-      memoryCache.dependencies[importer].add(fullImportee);
-    } else {
-      memoryCache.dependencies[importer].add(importee);
-    }
-  }
-}
-
-export const getDependencies = (file, memoryCache) => {
+export const getDependencies = (file) => {
   let dependencies = new Set([file]);
-  if (memoryCache.dependencies[file]) {
-    [...memoryCache.dependencies[file].values()]
+  if (dependencyCache[file]) {
+    [...dependencyCache[file].values()]
       .filter((d) => d !== file)
       .forEach((dependency) => {
-        dependencies = new Set([...dependencies, ...getDependencies(dependency, memoryCache)]);
+        dependencies = new Set([...dependencies, ...getDependencies(dependency)]);
       });
   }
   return [...dependencies.values()];
 };
 
-export const sortCss = (css) => {
-  return css
-    .sort((a, b) => b[1].priority - a[1].priority)
-    .reduce((out, cv) => {
-      const o = {};
-      o[cv[0]] = { styles: cv[1].code, sourceMap: cv[1].map };
-      out.push(o);
-      return out;
-    }, []);
-};
-
-export const getCssFromCache = (arr, rollupCache) => {
-  const css = [];
-  for (const id of arr) {
-    if (rollupCache.has(`css${id}`)) css.push([id, rollupCache.get(`css${id}`)]);
-  }
-  return css;
-};
-
-// eslint-disable-next-line consistent-return
-export function load(id) {
-  const extension = path.extname(id);
-  // capture imported css
-  if (extension === '.css') {
-    const code = fs.readFileSync(id, 'utf-8');
-    this.cache.set(`css${id}`, {
-      code,
-      map: '',
-      priority: 5,
-    });
-    return '';
-  }
-}
-
-export type RollupCacheElder = {
-  dependencies: {
-    [name: string]: Set<string>;
-  };
-};
-
-let cache: RollupCacheElder = {
-  dependencies: {},
-};
-
-const production = process.env.NODE_ENV === 'production' || !process.env.ROLLUP_WATCH;
-
-let srcWatcher;
-export interface IElderjsRollupConfig {
-  type: 'ssr' | 'client';
-  svelteConfig: any;
-  legacy?: boolean;
-  elderConfig: SettingsOptions;
-  startDevServer?: boolean;
-}
-
-export default function elderjsRollup({
-  elderConfig,
-  svelteConfig,
-  type = 'ssr',
-  legacy = false,
-  startDevServer = false,
-}: IElderjsRollupConfig): Partial<Plugin> {
-  const cleanCss = new CleanCSS({
-    sourceMap: !production,
-    sourceMapInlineSources: !production,
-    level: 1,
-    rebaseTo: elderConfig.$$internal.distElder,
-  });
-
+export const getCompilerOptions = ({ type, legacy }) => {
   const compilerOptions: CompileOptions = {
     hydratable: true,
     generate: 'ssr',
@@ -164,21 +78,228 @@ export default function elderjsRollup({
     compilerOptions.legacy = true;
   }
 
-  const extensions = (svelteConfig && svelteConfig.extensions) || ['.svelte'];
+  return compilerOptions;
+};
+
+export function transformFn({
+  svelteConfig,
+  elderConfig,
+  type,
+  legacy = false,
+}: {
+  svelteConfig: any;
+  elderConfig: SettingsOptions;
+  type: 'ssr' | 'client';
+  legacy: boolean;
+}) {
+  const compilerOptions = getCompilerOptions({ legacy, type });
 
   const preprocessors =
     svelteConfig && Array.isArray(svelteConfig.preprocess)
       ? [...svelteConfig.preprocess, partialHydration]
       : [partialHydration];
 
-  async function prepareCss(css = []) {
-    const sorted = sortCss(css);
-    return {
-      ...cleanCss.minify(sorted),
-      included: sorted ? sorted.map((m) => Object.keys(m)[0]) : [],
-    };
+  return async (code, id) => {
+    const extensions = (svelteConfig && svelteConfig.extensions) || ['.svelte'];
+
+    try {
+      const extension = path.extname(id);
+
+      // eslint-disable-next-line no-bitwise
+      if (!~extensions.indexOf(extension)) return null;
+
+      // look in the cache
+
+      const digest = sparkMd5.hash(code + JSON.stringify(compilerOptions));
+      if (cache.has(digest)) {
+        return cache.get(digest);
+      }
+
+      const filename = path.relative(elderConfig.rootDir, id);
+
+      const processed = await preprocess(code, preprocessors, { filename });
+
+      // @ts-ignore - these types aren't in the type files... but if we don't pass in a map things break.
+      if (processed.map) compilerOptions.sourcemap = processed.map;
+
+      const compiled = await compile(processed.code, { ...compilerOptions, filename });
+      // (compiled.warnings || []).forEach((warning) => {
+      //   if (warning.code === 'css-unused-selector') return;
+      //   this.warn(warning);
+      // });
+
+      const dependencies = getDependencies(id);
+      compiled.js.dependencies = [...dependencies, ...processed.dependencies];
+
+      if (this.addWatchFile) {
+        this.addWatchFile(id);
+        compiled.js.dependencies.map((d) => this.addWatchFile(d));
+      }
+      if (type === 'ssr') {
+        cache.set(`css${id}`, {
+          code: compiled.css.code || '',
+          map: compiled.css.map || '',
+          priority: cssFilePriority(id),
+        });
+      }
+
+      cache.set(digest, { output: compiled.js, warnings: compiled.warnings || [] });
+
+      return { output: compiled.js, warnings: compiled.warnings || [] };
+    } catch (e) {
+      console.error('> Elder.js error in transform.', e);
+      throw e;
+    }
+  };
+}
+
+export function logDependency(importee, importer) {
+  if (importee === 'svelte/internal' || importee === 'svelte') return;
+  if (importer) {
+    const parsedImporter = path.parse(importer);
+
+    // The following two expressions are used to determine if we are trying to import
+    // a svelte file from an external dependency and ensure that we add the correct path to that dependency
+    const externalDependencyImport = path.resolve(
+      parsedImporter.dir.substr(0, parsedImporter.dir.lastIndexOf('src')),
+      'node_modules',
+      importee,
+    );
+    const isExternalDependency = fs.pathExistsSync(externalDependencyImport);
+    if (!dependencyCache[importer]) dependencyCache[importer] = new Set();
+    if (importee.includes('node_modules')) {
+      dependencyCache[importer].add(importee);
+    } else if (importer.includes('node_modules')) {
+      const fullImportee = path.resolve(parsedImporter.dir, importee);
+      dependencyCache[importer].add(fullImportee);
+    } else if (importee.includes('.svelte') && isExternalDependency) {
+      dependencyCache[importer].add(externalDependencyImport);
+    } else if ((parsedImporter.ext === '.svelte' && importee.includes('.svelte')) || importee.includes('.css')) {
+      const fullImportee = path.resolve(parsedImporter.dir, importee);
+      dependencyCache[importer].add(fullImportee);
+    } else {
+      dependencyCache[importer].add(importee);
+    }
+  }
+}
+
+// allows for injection of the cache and future sharing with esbuild
+export function resolveFn(importee, importer) {
+  // build list of dependencies so we know what CSS to inject into the export.
+
+  logDependency(importee, importer);
+  // below largely adapted from the rollup svelte plugin
+  // ----------------------------------------------
+
+  if (!importer || importee[0] === '.' || importee[0] === '\0' || path.isAbsolute(importee)) return null;
+  // if this is a bare import, see if there's a valid pkg.svelte
+  const parts = importee.split('/');
+
+  let dir;
+  let pkg;
+  let name = parts.shift();
+  if (name[0] === '@') {
+    name += `/${parts.shift()}`;
   }
 
+  try {
+    const file = `.${path.sep}${['node_modules', name, 'package.json'].join(path.sep)}`;
+    const resolved = path.resolve(process.cwd(), file);
+    dir = path.dirname(resolved);
+    // eslint-disable-next-line import/no-dynamic-require
+    pkg = require(resolved);
+  } catch (err) {
+    if (err.code === 'MODULE_NOT_FOUND') {
+      if (err.message && name !== 'svelte') console.log(err);
+      return null;
+    }
+    throw err;
+  }
+
+  // use pkg.svelte
+  if (parts.length === 0 && pkg.svelte) {
+    const svelteResolve = path.resolve(dir, pkg.svelte);
+    // console.log('-----------------', svelteResolve, name);
+    logDependency(svelteResolve, name);
+    return svelteResolve;
+  }
+  return null;
+}
+
+export const sortCss = (css) => {
+  return css
+    .sort((a, b) => b[1].priority - a[1].priority)
+    .reduce((out, cv) => {
+      const o = {};
+      o[cv[0]] = { styles: cv[1].code, sourceMap: cv[1].map };
+      out.push(o);
+      return out;
+    }, []);
+};
+
+// eslint-disable-next-line consistent-return
+export function load(id) {
+  const extension = path.extname(id);
+  // capture imported css
+  if (extension === '.css') {
+    const code = fs.readFileSync(id, 'utf-8');
+    cache.set(`css${id}`, {
+      code,
+      map: '',
+      priority: 5,
+    });
+    return '';
+  }
+}
+
+export const getCssFromCache = (arr: string[] | 'all') => {
+  const css = [];
+  if (arr === 'all') {
+    for (const [key, value] of cache.entries()) {
+      if (key.indexOf('css') === 0) {
+        const id = key.substr(3);
+        css.push([id, value]);
+      }
+    }
+  } else {
+    for (const id of arr) {
+      if (cache.has(`css${id}`)) css.push([id, cache.get(`css${id}`)]);
+    }
+  }
+
+  return css;
+};
+
+export async function minifyCss(dependencies: string[] | 'all' = [], elderConfig: SettingsOptions) {
+  const css = getCssFromCache(dependencies);
+
+  const cleanCss = new CleanCSS({
+    sourceMap: true,
+    sourceMapInlineSources: true,
+    level: 1,
+    rebaseTo: elderConfig.$$internal.distElder,
+  });
+  const sorted = sortCss(css);
+  return {
+    ...cleanCss.minify(sorted),
+    included: sorted ? sorted.map((m) => Object.keys(m)[0]) : [],
+  };
+}
+export interface IElderjsRollupConfig {
+  type: 'ssr' | 'client';
+  svelteConfig: any;
+  legacy?: boolean;
+  elderConfig: SettingsOptions;
+  startDevServer?: boolean;
+}
+
+export default function elderjsRollup({
+  elderConfig,
+  svelteConfig,
+  type = 'ssr',
+  legacy = false,
+  startDevServer = false,
+}: IElderjsRollupConfig): Partial<Plugin> {
   let styleCssHash;
   let styleCssMapHash;
 
@@ -264,11 +385,11 @@ export default function elderjsRollup({
 
     watchChange(id) {
       // clean out dependency relationships on a file change.
-      const prior = this.cache.get('dependencies');
+      const prior = cache.get('dependencies');
       prior[id] = new Set();
 
-      if (!cache) cache = { dependencies: {} };
-      cache.dependencies = prior;
+      if (!dependencyCache) dependencyCache = {};
+      dependencyCache = prior;
     },
 
     /**
@@ -305,107 +426,29 @@ export default function elderjsRollup({
       }
     },
 
-    resolveId(importee, importer) {
-      // build list of dependencies so we know what CSS to inject into the export.
-
-      logDependency(importee, importer, cache);
-      // below largely adapted from the rollup svelte plugin
-      // ----------------------------------------------
-
-      if (!importer || importee[0] === '.' || importee[0] === '\0' || path.isAbsolute(importee)) return null;
-      // if this is a bare import, see if there's a valid pkg.svelte
-      const parts = importee.split('/');
-
-      let dir;
-      let pkg;
-      let name = parts.shift();
-      if (name[0] === '@') {
-        name += `/${parts.shift()}`;
-      }
-
-      try {
-        const file = `.${path.sep}${['node_modules', name, 'package.json'].join(path.sep)}`;
-        const resolved = path.resolve(process.cwd(), file);
-        dir = path.dirname(resolved);
-        // eslint-disable-next-line import/no-dynamic-require
-        pkg = require(resolved);
-      } catch (err) {
-        if (err.code === 'MODULE_NOT_FOUND') {
-          if (err.message && name !== 'svelte') console.log(err);
-          return null;
-        }
-        throw err;
-      }
-
-      // use pkg.svelte
-      if (parts.length === 0 && pkg.svelte) {
-        const svelteResolve = path.resolve(dir, pkg.svelte);
-        // console.log('-----------------', svelteResolve, name);
-        logDependency(svelteResolve, name, cache);
-        return svelteResolve;
-      }
-      return null;
-    },
+    resolveId: resolveFn,
     load,
-    async transform(code, id) {
-      try {
-        const extension = path.extname(id);
-
-        // eslint-disable-next-line no-bitwise
-        if (!~extensions.indexOf(extension)) return null;
-
-        // look in the cache
-
-        const digest = sparkMd5.hash(code + JSON.stringify(compilerOptions));
-        if (this.cache.has(digest)) {
-          return this.cache.get(digest);
-        }
-
-        const filename = path.relative(elderConfig.rootDir, id);
-
-        const processed = await preprocess(code, preprocessors, { filename });
-
-        // @ts-ignore - these types aren't in the type files... but if we don't pass in a map things break.
-        if (processed.map) compilerOptions.sourcemap = processed.map;
-
-        const compiled = await compile(processed.code, { ...compilerOptions, filename });
-        (compiled.warnings || []).forEach((warning) => {
-          if (warning.code === 'css-unused-selector') return;
-          this.warn(warning);
-        });
-
-        const dependencies = getDependencies(id, cache);
-        compiled.js.dependencies = [...dependencies, ...processed.dependencies];
-
-        if (this.addWatchFile) {
-          this.addWatchFile(id);
-          compiled.js.dependencies.map((d) => this.addWatchFile(d));
-        }
-        if (type === 'ssr') {
-          this.cache.set(`css${id}`, {
-            code: compiled.css.code || '',
-            map: compiled.css.map || '',
-            priority: cssFilePriority(id),
-          });
-        }
-
-        this.cache.set(digest, compiled.js);
-
-        return compiled.js;
-      } catch (e) {
-        console.error('> Elder.js error in rollupPlugin > transform.');
-        throw e;
-      }
+    transform: async (code, id) => {
+      const { output, warnings } = await transformFn({
+        svelteConfig,
+        elderConfig,
+        type,
+        legacy,
+      })(code, id);
+      (warnings || []).forEach((warning) => {
+        if (warning.code === 'css-unused-selector') return;
+        this.warn(warning);
+      });
+      return output;
     },
 
     // eslint-disable-next-line consistent-return
     async renderChunk(code, chunk) {
       if (chunk.isEntry) {
         if (type === 'ssr') {
-          const trackedDeps = getDependencies(chunk.facadeModuleId, cache);
+          const trackedDeps = getDependencies(chunk.facadeModuleId);
 
-          const cssEntries = getCssFromCache(trackedDeps, this.cache);
-          const cssOutput = await prepareCss(cssEntries);
+          const cssOutput = await minifyCss(trackedDeps, elderConfig);
           code += `\nmodule.exports._css = ${devalue(cssOutput.styles)};`;
           code += `\nmodule.exports._cssMap = ${devalue(encodeSourceMap(cssOutput.sourceMap))};`;
           code += `\nmodule.exports._cssIncluded = ${JSON.stringify(
@@ -430,9 +473,7 @@ export default function elderjsRollup({
       // all css is only available on the ssr version...
       // but we need to move the css to the client folder.
       if (type === 'ssr') {
-        const cssEntries = getCssFromCache([...this.getModuleIds()], this.cache);
-
-        const { styles, sourceMap } = await prepareCss(cssEntries);
+        const { styles, sourceMap } = await minifyCss([...this.getModuleIds()], elderConfig);
         if (styleCssMapHash) {
           // set the source later when we have it.
           this.setAssetSource(styleCssMapHash, sourceMap.toString());
@@ -442,7 +483,7 @@ export default function elderjsRollup({
             path.resolve(elderConfig.$$internal.distElder, sourceMapFile),
           )}`;
           this.setAssetSource(styleCssHash, `${styles}\n /*# sourceMappingURL=${sourceMapFileRel} */`);
-        } else {
+        } else if (styleCssHash) {
           this.setAssetSource(styleCssHash, styles);
         }
       }
@@ -462,9 +503,9 @@ export default function elderjsRollup({
         }
       }
 
-      startServerAndWatcher();
+      cache.set('dependencies', dependencyCache);
 
-      this.cache.set('dependencies', cache.dependencies);
+      startServerAndWatcher();
     },
   };
 }
