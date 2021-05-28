@@ -104,7 +104,7 @@ const svelteHandler = async ({ elderConfig, svelteConfig, replacements, startOrR
   });
 
   builders.client = await build({
-    entryPoints: initialEntrypoints,
+    entryPoints: initialEntrypoints.filter((i) => i.includes('src/components')),
     bundle: true,
     outdir: elderConfig.$$internal.clientComponents,
     entryNames: '[dir]/[name].[hash]',

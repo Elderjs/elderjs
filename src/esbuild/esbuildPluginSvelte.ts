@@ -165,7 +165,7 @@ function esbuildPluginSvelte({ type, svelteConfig, elderConfig, sveltePackages =
         if (type === 'ssr') {
           const s = Date.now();
           const r = await minifyCss('all', elderConfig);
-          console.log(`>>>> minifying css and adding sourcemaps > ${Date.now() - s}, ${type}ms`);
+          console.log(`>>>> minifying css and adding sourcemaps took ${Date.now() - s}ms`);
           const hash = md5(r.styles);
 
           const svelteCss = resolve(elderConfig.$$internal.distElder, `.${sep}assets${sep}svelte-${hash}.css`);
