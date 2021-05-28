@@ -2,7 +2,7 @@ import { promises as fsPromises } from 'fs';
 import { dirname, resolve, isAbsolute, sep, relative } from 'path';
 // eslint-disable-next-line import/no-unresolved
 
-import { OnLoadOptions, Plugin, OnLoadResult, PartialMessage } from 'esbuild';
+import { Plugin, PartialMessage } from 'esbuild';
 
 import del from 'del';
 import crypto from 'crypto';
@@ -10,7 +10,7 @@ import fs from 'fs-extra';
 
 // eslint-disable-next-line import/no-unresolved
 import { PreprocessorGroup } from 'svelte/types/compiler/preprocess/types';
-import { cssFilePriority, resolveFn, minifyCss, transformFn, loadCss } from '../rollup/rollupPlugin';
+import { resolveFn, minifyCss, transformFn, loadCss } from '../rollup/rollupPlugin';
 import { SettingsOptions } from '..';
 
 function md5(string) {
@@ -165,7 +165,7 @@ function esbuildPluginSvelte({ type, svelteConfig, elderConfig, sveltePackages =
         if (type === 'ssr') {
           const s = Date.now();
           const r = await minifyCss('all', elderConfig);
-          console.log(`>>>> minifying... ${Date.now() - s}, ${type}`);
+          console.log(`>>>> minifying css and adding sourcemaps > ${Date.now() - s}, ${type}ms`);
           const hash = md5(r.styles);
 
           const svelteCss = resolve(elderConfig.$$internal.distElder, `.${sep}assets${sep}svelte-${hash}.css`);

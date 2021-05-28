@@ -14,9 +14,7 @@ import elderjsRollup, {
   getDependencies,
   cssFilePriority,
   sortCss,
-  getCssFromCache,
   logDependency,
-  loadCss,
   resetDependencyCache,
   getDependencyCache,
 } from '../rollupPlugin';
