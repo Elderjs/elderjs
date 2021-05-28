@@ -11,7 +11,9 @@ import elderjsRollup, {
   sortCss,
   getCssFromCache,
   logDependency,
-  load,
+  loadCss,
+  resetDependencyCache,
+  getDependencyCache,
 } from '../rollupPlugin';
 import windowsPathFix from '../../utils/windowsPathFix';
 import normalizeSnapshot from '../../utils/normalizeSnapshot';
@@ -84,52 +86,37 @@ describe('#rollupPlugin', () => {
 
   describe('#logDependency', () => {
     it('adds a css file as a dependency when it is imported.', () => {
-      const cache = {
-        dependencies: {},
-      };
-
       const importee = path.resolve('./test/src/style.css');
       const importer = path.resolve('./test/src/routes/home/home.svelte');
       const expected = {};
       expected[importer] = new Set([importee]);
-
-      logDependency(importee, importer, cache);
-      expect(normalizeSnapshot(cache.dependencies)).toEqual(normalizeSnapshot(expected));
+      resetDependencyCache();
+      expect(normalizeSnapshot(logDependency(importee, importer))).toEqual(normalizeSnapshot(expected));
     });
     it('adds the importee as the dependency of the importer', () => {
-      const cache = {
-        dependencies: {},
-      };
-
       const importee = path.resolve('./test/src/components/AutoComplete.svelte');
       const importer = path.resolve('./test/src/components/AutoCompleteHome.svelte');
       const expected = {};
       expected[importer] = new Set([importee]);
 
-      logDependency(importee, importer, cache);
-      expect(normalizeSnapshot(cache.dependencies)).toEqual(normalizeSnapshot(expected));
+      resetDependencyCache();
+      expect(normalizeSnapshot(logDependency(importee, importer))).toEqual(normalizeSnapshot(expected));
     });
     it('Properly attributes external npm packages', () => {
-      const cache = {
-        dependencies: {},
-      };
-
+      resetDependencyCache();
       logDependency(
         path.resolve(`./src/rollup/__tests__/__fixtures__/external/src/layouts/External.svelte`),
         undefined,
-        cache,
       );
 
       logDependency(
         `svelte/internal`,
         path.resolve(`./src/rollup/__tests__/__fixtures__/external/src/layouts/External.svelte`),
-        cache,
       );
 
       logDependency(
         `test-external-svelte-library`,
         path.resolve(`./src/rollup/__tests__/__fixtures__/external/src/layouts/External.svelte`),
-        cache,
       );
 
       logDependency(
@@ -137,13 +124,11 @@ describe('#rollupPlugin', () => {
           `./src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/index.js`,
         ),
         `test-external-svelte-library`,
-        cache,
       );
 
       logDependency(
         `../components/Component.svelte`,
         path.resolve(`./src/rollup/__tests__/__fixtures__/external/src/layouts/External.svelte`),
-        cache,
       );
 
       logDependency(
@@ -151,13 +136,11 @@ describe('#rollupPlugin', () => {
         path.resolve(
           `./src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/index.js`,
         ),
-        cache,
       );
 
       logDependency(
         `svelte/internal`,
         path.resolve(`./src/rollup/__tests__/__fixtures__/external/src/components/Component.svelte`),
-        cache,
       );
 
       logDependency(
@@ -165,7 +148,6 @@ describe('#rollupPlugin', () => {
         path.resolve(
           `./src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/components/Button.svelte`,
         ),
-        cache,
       );
 
       logDependency(
@@ -173,7 +155,6 @@ describe('#rollupPlugin', () => {
         path.resolve(
           `./src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/components/Button.svelte`,
         ),
-        cache,
       );
 
       logDependency(
@@ -181,14 +162,10 @@ describe('#rollupPlugin', () => {
         path.resolve(
           `./src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/components/Icon.svelte`,
         ),
-        cache,
       );
 
       expect(
-        getDependencies(
-          path.resolve(`./src/rollup/__tests__/__fixtures__/external/src/layouts/External.svelte`),
-          cache,
-        ),
+        getDependencies(path.resolve(`./src/rollup/__tests__/__fixtures__/external/src/layouts/External.svelte`)),
       ).toEqual([
         path.resolve(`./src/rollup/__tests__/__fixtures__/external/src/layouts/External.svelte`),
         'test-external-svelte-library',
@@ -225,31 +202,25 @@ describe('#rollupPlugin', () => {
         return out;
       }, {});
 
-      expect(cache.dependencies).toEqual(rel);
+      expect(getDependencyCache()).toEqual(rel);
     });
   });
 
   describe('#getDependencies', () => {
     it('finds deep dependencies', () => {
-      const cache1 = {
-        dependencies: {},
-      };
       logDependency(
         path.resolve(`./test/src/components/AutoComplete.svelte`),
         path.resolve(`./test/src/components/AutoCompleteHome.svelte`),
-        cache1,
       );
       logDependency(
         path.resolve(`./test/src/components/AutoCompleteHome.svelte`),
         path.resolve(`./test/src/components/Deeper.svelte`),
-        cache1,
       );
       logDependency(
         path.resolve(`./test/src/components/Deeper.svelte`),
         path.resolve(`./test/src/components/Deepest.svelte`),
-        cache1,
       );
-      const deps = getDependencies(path.resolve(`./test/src/components/Deepest.svelte`), cache1);
+      const deps = getDependencies(path.resolve(`./test/src/components/Deepest.svelte`));
       expect(normalizeSnapshot(deps)).toEqual(
         normalizeSnapshot([
           path.resolve(`./test/src/components/Deepest.svelte`),
@@ -260,20 +231,16 @@ describe('#rollupPlugin', () => {
       );
     });
     it("doesn't crash on circular deps", () => {
-      const cache2 = {
-        dependencies: {},
-      };
+      resetDependencyCache();
       logDependency(
         path.resolve(`./test/src/components/Deeper.svelte`),
         path.resolve(`./test/src/components/Circular.svelte`),
-        cache2,
       );
       logDependency(
         path.resolve(`./test/src/components/Circular.svelte`),
         path.resolve(`./test/src/components/Circular.svelte`),
-        cache2,
       );
-      const deps = getDependencies(path.resolve(`./test/src/components/Circular.svelte`), cache2);
+      const deps = getDependencies(path.resolve(`./test/src/components/Circular.svelte`));
       expect(normalizeSnapshot(deps)).toEqual(
         normalizeSnapshot([
           path.resolve(`./test/src/components/Circular.svelte`),
@@ -283,30 +250,24 @@ describe('#rollupPlugin', () => {
     });
 
     it(`Finds proper deps and not additional ones`, () => {
-      const cache3 = {
-        dependencies: {},
-      };
+      resetDependencyCache();
       logDependency(
         path.resolve(`./test/src/components/AutoComplete.svelte`),
         path.resolve(`./test/src/components/AutoCompleteHome.svelte`),
-        cache3,
       );
       logDependency(
         path.resolve(`./test/src/components/AutoCompleteHome.svelte`),
         path.resolve(`./test/src/components/Deeper.svelte`),
-        cache3,
       );
       logDependency(
         path.resolve(`./test/src/components/Deeper.svelte`),
         path.resolve(`./test/src/components/Circular.svelte`),
-        cache3,
       );
       logDependency(
         path.resolve(`./test/src/components/Dep.svelte`),
         path.resolve(`./test/src/components/Single.svelte`),
-        cache3,
       );
-      const deps = getDependencies(path.resolve(`./test/src/components/Single.svelte`), cache3);
+      const deps = getDependencies(path.resolve(`./test/src/components/Single.svelte`));
       expect(normalizeSnapshot(deps)).toEqual(
         normalizeSnapshot([
           path.resolve(`./test/src/components/Single.svelte`),
@@ -316,20 +277,16 @@ describe('#rollupPlugin', () => {
     });
 
     it(`Finds no deps when there are none`, () => {
-      const cache4 = {
-        dependencies: {},
-      };
+      resetDependencyCache();
       logDependency(
         path.resolve(`./test/src/components/AutoComplete.svelte`),
         path.resolve(`./test/src/components/AutoCompleteHome.svelte`),
-        cache4,
       );
       logDependency(
         path.resolve(`./test/src/components/AutoCompleteHome.svelte`),
         path.resolve(`./test/src/components/Deeper.svelte`),
-        cache4,
       );
-      const deps = getDependencies(path.resolve(`./test/src/components/wtf.svelte`), cache4);
+      const deps = getDependencies(path.resolve(`./test/src/components/wtf.svelte`));
       expect(normalizeSnapshot(deps)).toEqual(normalizeSnapshot([path.resolve(`./test/src/components/wtf.svelte`)]));
     });
   });
@@ -389,6 +346,7 @@ describe('#rollupPlugin', () => {
   });
 
   describe('shared', () => {
+    resetDependencyCache();
     const files = normalizeSnapshot([
       path.resolve(`./test/src/components/AutoComplete.svelte`),
       path.resolve(`./test/src/components/AutoCompleteHome.svelte`),
@@ -399,10 +357,6 @@ describe('#rollupPlugin', () => {
     ]);
 
     const cssCache = new Map();
-    const rollupCache = {
-      dependencies: {},
-    };
-
     function createCss(str) {
       const normalized = windowsPathFix(str);
       cssCache.set(`css${normalized}`, {
@@ -415,7 +369,7 @@ describe('#rollupPlugin', () => {
     files.forEach((file, i, arr) => {
       createCss(file);
       if (i < arr.length - 2) {
-        logDependency(file, arr[i + 1], rollupCache);
+        logDependency(file, arr[i + 1]);
       }
     });
     it('validates the testing env is correct', () => {
@@ -487,14 +441,14 @@ describe('#rollupPlugin', () => {
         path.resolve('./test/src/components/Circular.svelte'),
       ]);
 
-      expect(normalizeSnapshot(rollupCache.dependencies)).toEqual(normalizeSnapshot(expected));
+      expect(normalizeSnapshot(getDependencyCache())).toEqual(normalizeSnapshot(expected));
     });
 
     describe('#getCssFromCache', () => {
       it('takes an array of 1 and gets items from the cache', () => {
         expect(
           normalizeSnapshot(
-            getCssFromCache([windowsPathFix(path.resolve('./test/src/components/AutoCompleteHome.svelte'))], cssCache),
+            getCssFromCache([windowsPathFix(path.resolve('./test/src/components/AutoCompleteHome.svelte'))]),
           ),
         ).toEqual(
           normalizeSnapshot([
@@ -510,7 +464,7 @@ describe('#rollupPlugin', () => {
         );
       });
       it('takes an array of several and gets items from the cache', () => {
-        expect(normalizeSnapshot(getCssFromCache(files.slice(0, 3).map(windowsPathFix), cssCache))).toEqual(
+        expect(normalizeSnapshot(getCssFromCache(files.slice(0, 3).map(windowsPathFix)))).toEqual(
           normalizeSnapshot([
             [
               path.resolve('./test/src/components/AutoComplete.svelte'),
@@ -541,7 +495,7 @@ describe('#rollupPlugin', () => {
       });
     });
     describe('#elderjsRollup', () => {
-      it('#load', () => {
+      it('#loadCss', () => {
         const rfs = fsExtra.readFileSync;
         // @ts-ignore
         fsExtra.readFileSync = jest.fn(rfs).mockImplementation(() => 'mock');
@@ -555,7 +509,7 @@ describe('#rollupPlugin', () => {
           },
         };
 
-        const loadBound = load.bind(o);
+        const loadBound = loadCss.bind(o);
         expect(loadBound(path.resolve(process.cwd(), './test.css'))).toBe('');
         expect(o.cache.set).toHaveBeenCalledTimes(1);
         expect(o.cache.values).toEqual([`css${path.resolve('./test.css')}`]);
@@ -819,19 +773,17 @@ describe('#rollupPlugin', () => {
         });
         it('Sets the dependency cache from prior build', () => {
           const t = {
-            cache: {
-              get: jest.fn(() => ({
-                '/foo/': new Set(['/bar/']),
-                '/bar/': new Set(['/baz/']),
-              })),
-            },
+            get: jest.fn(() => ({
+              '/foo/': new Set(['/bar/']),
+              '/bar/': new Set(['/baz/']),
+            })),
           };
           const ssrBound = ssrPlugin.watchChange.bind(t);
 
           ssrBound('/foo/');
 
-          expect(t.cache.get).toHaveBeenCalledTimes(1);
-          expect(t.cache.get).toHaveBeenCalledWith('dependencies');
+          expect(t.get).toHaveBeenCalledTimes(1);
+          expect(t.get).toHaveBeenCalledWith('dependencies');
         });
       });
     });

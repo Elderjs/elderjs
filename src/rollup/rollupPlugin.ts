@@ -182,6 +182,16 @@ export function logDependency(importee, importer) {
       dependencyCache[importer].add(importee);
     }
   }
+  // eslint-disable-next-line consistent-return
+  return dependencyCache;
+}
+
+export function getDependencyCache() {
+  return dependencyCache;
+}
+
+export function resetDependencyCache() {
+  dependencyCache = {};
 }
 
 // allows for injection of the cache and future sharing with esbuild
@@ -253,7 +263,7 @@ export function loadCss(id) {
   }
 }
 
-export const getCssFromCache = (arr: string[] | 'all') => {
+export const getCssFromCache = (arr: string[] | 'all'): [string, string][] => {
   const css = [];
   if (arr === 'all') {
     for (const [key, value] of cache.entries()) {
