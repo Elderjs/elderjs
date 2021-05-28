@@ -33,7 +33,7 @@ export type RouteOptions = {
   $$meta?: MetaOptions;
   name: string;
   hooks?: Array<HookOptions>;
-  dynamic: boolean;
+  dynamic?: boolean;
 };
 
 export type RoutesOptions = {
