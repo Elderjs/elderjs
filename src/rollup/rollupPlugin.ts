@@ -27,7 +27,8 @@ let dependencyCache: RollupCacheElder = {};
 
 const cache = new Map();
 
-const production = process.env.NODE_ENV !== 'production' || !process.env.ROLLUP_WATCH;
+const isDev =
+  (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'PRODUCTION') || !!process.env.ROLLUP_WATCH;
 
 let srcWatcher;
 
@@ -64,7 +65,7 @@ export const getCompilerOptions = ({ type, legacy }) => {
     hydratable: true,
     generate: 'ssr',
     css: false,
-    dev: !production,
+    dev: isDev,
     legacy: false,
     format: 'esm',
   };
@@ -238,7 +239,7 @@ export const sortCss = (css) => {
 };
 
 // eslint-disable-next-line consistent-return
-export function load(id) {
+export function loadCss(id) {
   const extension = path.extname(id);
   // capture imported css
   if (extension === '.css') {
@@ -276,7 +277,7 @@ export async function minifyCss(dependencies: string[] | 'all' = [], elderConfig
   const cleanCss = new CleanCSS({
     sourceMap: true,
     sourceMapInlineSources: true,
-    level: 1,
+    level: isDev ? 0 : 1,
     rebaseTo: elderConfig.$$internal.distElder,
   });
   const sorted = sortCss(css);
@@ -285,32 +286,16 @@ export async function minifyCss(dependencies: string[] | 'all' = [], elderConfig
     included: sorted ? sorted.map((m) => Object.keys(m)[0]) : [],
   };
 }
-export interface IElderjsRollupConfig {
-  type: 'ssr' | 'client';
-  svelteConfig: any;
-  legacy?: boolean;
-  elderConfig: SettingsOptions;
-  startDevServer?: boolean;
-}
 
-export default function elderjsRollup({
-  elderConfig,
-  svelteConfig,
-  type = 'ssr',
-  legacy = false,
-  startDevServer = false,
-}: IElderjsRollupConfig): Partial<Plugin> {
-  let styleCssHash;
-  let styleCssMapHash;
-
+export const devServer = ({ elderConfig }: { elderConfig: SettingsOptions }) => {
   /**
    * Dev server bootstrapping and restarting.
    */
   let childProcess: ChildProcess;
   let bootingServer = false;
 
-  function forkServer(count = 0) {
-    if (production) return;
+  function startOrRestartServer(count = 0) {
+    if (!isDev) return;
     if (!bootingServer) {
       bootingServer = true;
 
@@ -334,7 +319,7 @@ export default function elderjsRollup({
         childProcess.on('error', (err) => {
           console.error(err);
           if (count < 1) {
-            forkServer(count + 1);
+            startOrRestartServer(count + 1);
           }
         });
       }, 10);
@@ -345,11 +330,11 @@ export default function elderjsRollup({
     const parsed = path.parse(watchedPath);
     if (parsed.ext !== '.svelte') {
       // prevents double reload as the compiled svelte templates are output
-      forkServer();
+      startOrRestartServer();
     }
   }
 
-  function startServerAndWatcher() {
+  function startWatcher() {
     // notes: This is hard to reason about.
     // This should only after the initial client rollup as finished as it runs last. The srcWatcher should then live between reloads
     // until the watch process is killed.
@@ -357,7 +342,7 @@ export default function elderjsRollup({
     // this should watch the ./src, elder.config.js, and the client side folders... trigging a restart of the server when something changes
     // We don't want to change when a svelte file changes because it will cause a double reload when rollup outputs the rebundled file.
 
-    if (!production && type === 'client' && !srcWatcher && startDevServer) {
+    if (isDev && !srcWatcher) {
       srcWatcher = chokidar.watch(
         [
           path.resolve(process.cwd(), './src'),
@@ -373,12 +358,35 @@ export default function elderjsRollup({
         },
       );
 
-      srcWatcher.on('change', handleChange);
-      srcWatcher.on('add', handleChange);
-
-      forkServer();
+      srcWatcher.on('change', (watchedPath) => handleChange(watchedPath));
+      srcWatcher.on('add', (watchedPath) => handleChange(watchedPath));
     }
   }
+  return {
+    startWatcher,
+    childProcess,
+    startOrRestartServer,
+  };
+};
+export interface IElderjsRollupConfig {
+  type: 'ssr' | 'client';
+  svelteConfig: any;
+  legacy?: boolean;
+  elderConfig: SettingsOptions;
+  startDevServer?: boolean;
+}
+
+export default function elderjsRollup({
+  elderConfig,
+  svelteConfig,
+  type = 'ssr',
+  legacy = false,
+  startDevServer = false,
+}: IElderjsRollupConfig): Partial<Plugin> {
+  let styleCssHash;
+  let styleCssMapHash;
+
+  const { childProcess, startWatcher, startOrRestartServer } = devServer({ elderConfig });
 
   return {
     name: 'rollup-plugin-elder',
@@ -408,7 +416,7 @@ export default function elderjsRollup({
           name: 'svelte.css',
         });
 
-        if (!production) {
+        if (isDev) {
           styleCssMapHash = this.emitFile({
             type: 'asset',
             name: 'svelte.css.map',
@@ -427,19 +435,24 @@ export default function elderjsRollup({
     },
 
     resolveId: resolveFn,
-    load,
-    transform: async (code, id) => {
-      const { output, warnings } = await transformFn({
+    load: loadCss,
+    async transform(code, id) {
+      const thisTransformFn = transformFn.bind(this);
+      const r = await thisTransformFn({
         svelteConfig,
         elderConfig,
         type,
         legacy,
       })(code, id);
-      (warnings || []).forEach((warning) => {
+
+      if (!r) return;
+
+      (r.warnings || []).forEach((warning) => {
         if (warning.code === 'css-unused-selector') return;
         this.warn(warning);
       });
-      return output;
+      // eslint-disable-next-line consistent-return
+      return r.output;
     },
 
     // eslint-disable-next-line consistent-return
@@ -505,7 +518,10 @@ export default function elderjsRollup({
 
       cache.set('dependencies', dependencyCache);
 
-      startServerAndWatcher();
+      if (startDevServer && type === 'client') {
+        startWatcher();
+        startOrRestartServer();
+      }
     },
   };
 }
