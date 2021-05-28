@@ -4,6 +4,11 @@ import path from 'path';
 
 import fsExtra from 'fs-extra';
 import del from 'del';
+
+import windowsPathFix from '../../utils/windowsPathFix';
+import normalizeSnapshot from '../../utils/normalizeSnapshot';
+import getConfig from '../../utils/getConfig';
+
 import elderjsRollup, {
   encodeSourceMap,
   getDependencies,
@@ -15,9 +20,6 @@ import elderjsRollup, {
   resetDependencyCache,
   getDependencyCache,
 } from '../rollupPlugin';
-import windowsPathFix from '../../utils/windowsPathFix';
-import normalizeSnapshot from '../../utils/normalizeSnapshot';
-import getConfig from '../../utils/getConfig';
 
 jest.mock('del');
 
@@ -425,97 +427,9 @@ describe('#rollupPlugin', () => {
           ],
         ]),
       );
-
-      const expected = {};
-
-      expected[path.resolve('./test/src/components/AutoCompleteHome.svelte')] = new Set([
-        path.resolve('./test/src/components/AutoComplete.svelte'),
-      ]);
-      expected[path.resolve('./test/src/components/Circular.svelte')] = new Set([
-        path.resolve('./test/src/components/Deeper.svelte'),
-      ]);
-      expected[path.resolve('./test/src/components/Deeper.svelte')] = new Set([
-        path.resolve('./test/src/components/AutoCompleteHome.svelte'),
-      ]);
-      expected[path.resolve('./test/src/routes/Dep.svelte')] = new Set([
-        path.resolve('./test/src/components/Circular.svelte'),
-      ]);
-
-      expect(normalizeSnapshot(getDependencyCache())).toEqual(normalizeSnapshot(expected));
     });
 
-    describe('#getCssFromCache', () => {
-      it('takes an array of 1 and gets items from the cache', () => {
-        expect(
-          normalizeSnapshot(
-            getCssFromCache([windowsPathFix(path.resolve('./test/src/components/AutoCompleteHome.svelte'))]),
-          ),
-        ).toEqual(
-          normalizeSnapshot([
-            [
-              path.resolve('./test/src/components/AutoCompleteHome.svelte'),
-              {
-                code: `.content{content:"${path.resolve('./test/src/components/AutoCompleteHome.svelte')}"}`,
-                map: undefined,
-                priority: 1,
-              },
-            ],
-          ]),
-        );
-      });
-      it('takes an array of several and gets items from the cache', () => {
-        expect(normalizeSnapshot(getCssFromCache(files.slice(0, 3).map(windowsPathFix)))).toEqual(
-          normalizeSnapshot([
-            [
-              path.resolve('./test/src/components/AutoComplete.svelte'),
-              {
-                code: `.content{content:"${path.resolve('./test/src/components/AutoComplete.svelte')}"}`,
-                map: undefined,
-                priority: 1,
-              },
-            ],
-            [
-              path.resolve('./test/src/components/AutoCompleteHome.svelte'),
-              {
-                code: `.content{content:"${path.resolve('./test/src/components/AutoCompleteHome.svelte')}"}`,
-                map: undefined,
-                priority: 1,
-              },
-            ],
-            [
-              path.resolve('./test/src/components/Deeper.svelte'),
-              {
-                code: `.content{content:"${path.resolve('./test/src/components/Deeper.svelte')}"}`,
-                map: undefined,
-                priority: 1,
-              },
-            ],
-          ]),
-        );
-      });
-    });
     describe('#elderjsRollup', () => {
-      it('#loadCss', () => {
-        const rfs = fsExtra.readFileSync;
-        // @ts-ignore
-        fsExtra.readFileSync = jest.fn(rfs).mockImplementation(() => 'mock');
-
-        const o = {
-          cache: {
-            values: [],
-            set: jest.fn((id) => {
-              o.cache.values.push(id);
-            }),
-          },
-        };
-
-        const loadBound = loadCss.bind(o);
-        expect(loadBound(path.resolve(process.cwd(), './test.css'))).toBe('');
-        expect(o.cache.set).toHaveBeenCalledTimes(1);
-        expect(o.cache.values).toEqual([`css${path.resolve('./test.css')}`]);
-        fsExtra.readFileSync = rfs;
-      });
-
       const shared = {
         elderConfig,
 
@@ -554,7 +468,10 @@ describe('#rollupPlugin', () => {
 
             buildStartBound();
 
-            expect(t.values).toEqual([{ name: 'svelte.css', type: 'asset' }]);
+            expect(t.values).toEqual([
+              { name: 'svelte.css', type: 'asset' },
+              { name: 'svelte.css.map', type: 'asset' },
+            ]);
             expect(del.sync).toHaveBeenCalledTimes(2);
             expect(del.sync).toHaveBeenCalledWith(elderConfig.$$internal.ssrComponents);
             expect(del.sync).toHaveBeenCalledWith(path.join(elderConfig.$$internal.distElder, 'assets'));
@@ -573,62 +490,6 @@ describe('#rollupPlugin', () => {
             expect(del.sync).toHaveBeenCalledWith(elderConfig.$$internal.clientComponents);
             expect(del.sync).toHaveBeenCalledWith(elderConfig.$$internal.ssrComponents);
             expect(del.sync).toHaveBeenCalledWith(path.join(elderConfig.$$internal.distElder, 'assets'));
-          });
-        });
-
-        describe('#renderChunk', () => {
-          it('tests ssr functionality', async () => {
-            const t = {
-              values: [],
-              cache: cssCache,
-            };
-
-            const bound = ssrPlugin.renderChunk.bind(t);
-            const r = await bound('', { isEntry: true, facadeModuleId: files[0] });
-            expect(r.code).toContain(`.content{content`);
-            expect(r.code).toContain(`\\u002Felderjs\\u002Ftest\\u002Fsrc\\u002Fcomponents\\u002FAutoComplete.svelte`);
-            expect(r.code).toContain('AutoComplete.svelte"]');
-          });
-
-          it('tests client functionality', async () => {
-            // @ts-ignore
-            const r = await clientPlugin.renderChunk('', { isEntry: true }, {});
-            expect(r).toBeUndefined();
-          });
-        });
-
-        describe('#generateBundle', () => {
-          it('tests ssr functionality', async () => {
-            const t = {
-              names: [],
-              css: [],
-              cache: cssCache,
-              getModuleIds: jest.fn(() => files),
-              setAssetSource: jest.fn((name, css) => {
-                t.names.push(name);
-                t.css.push(css);
-              }),
-            };
-            const bound = ssrPlugin.generateBundle.bind(t);
-            const r = await bound('', { isEntry: true, facadeModuleId: files[0] });
-
-            expect(t.setAssetSource).toHaveBeenCalledTimes(1);
-            expect(t.getModuleIds).toHaveBeenCalledTimes(1);
-            expect(t.names).toEqual(['svelte.css']);
-            expect(t.css).toEqual(
-              normalizeSnapshot([
-                `.content{content:"${path.resolve(
-                  './test/src/layouts/Single.svelte',
-                )}"}.content{content:"${path.resolve('./test/src/routes/Dep.svelte')}"}.content{content:"${path.resolve(
-                  './test/src/components/AutoComplete.svelte',
-                )}"}.content{content:"${path.resolve(
-                  './test/src/components/AutoCompleteHome.svelte',
-                )}"}.content{content:"${path.resolve(
-                  './test/src/components/Deeper.svelte',
-                )}"}.content{content:"${path.resolve('./test/src/components/Circular.svelte')}"}`,
-              ]),
-            );
-            expect(r).toBeUndefined();
           });
         });
 
@@ -692,28 +553,12 @@ describe('#rollupPlugin', () => {
         describe('#transform', () => {
           it('compiles a svelte component and sets the css while adding to watch files', async () => {
             const t = {
-              names: [],
-              sets: [],
-              cache: {
-                has: jest.fn(() => false),
-                set: jest.fn((name, pay) => {
-                  t.names.push(name);
-                  t.sets.push(JSON.stringify(pay));
-                }),
-              },
               addWatchFile: jest.fn(() => ''),
             };
             const bound = ssrPlugin.transform.bind(t);
 
             const component = `<script> let foo = 1; </script><style>.container{background: yellow}</style> <div class="container">something</div>`;
             await bound(component, '/test/src/components/tester.svelte');
-
-            expect(t.cache.has).toHaveBeenCalledTimes(1);
-            expect(t.cache.set).toHaveBeenCalledTimes(2);
-            expect(t.sets[0]).toEqual(
-              '{"code":".container.svelte-1sgdt0u{background:yellow}","map":{"version":3,"file":"tester.svelte","sources":["tester.svelte"],"sourcesContent":["<script> let foo = 1; </script><style>.container{background: yellow}</style> <div class=\\"container\\">something</div>"],"names":[],"mappings":"AAAsC,yBAAU,CAAC,UAAU,CAAE,MAAM,CAAC"},"priority":1}',
-            );
-            expect(t.names).toEqual(['css/test/src/components/tester.svelte', 'f035082291f505923e6b2b9739157357']);
             expect(t.addWatchFile).toHaveBeenCalledTimes(2);
           });
         });
@@ -722,7 +567,7 @@ describe('#rollupPlugin', () => {
           const cfs = fsExtra.copyFileSync;
           const rds = fsExtra.readdirSync;
           const eds = fsExtra.ensureDirSync;
-          it('Sets the dependency cache from prior build', () => {
+          it('Creates appropriate folders.', () => {
             const t = {
               cache: {
                 set: jest.fn(() => ({})),
@@ -741,8 +586,6 @@ describe('#rollupPlugin', () => {
             expect(fsExtra.ensureDirSync).toHaveBeenCalledTimes(1);
             expect(fsExtra.copyFileSync).toHaveBeenCalledTimes(2);
             expect(fsExtra.readdirSync).toHaveBeenCalledTimes(1);
-
-            expect(t.cache.set).toHaveBeenCalledTimes(1);
           });
 
           it('tests copying assets to client', async () => {
@@ -770,20 +613,6 @@ describe('#rollupPlugin', () => {
             fsExtra.readdirSync = rds;
             fsExtra.ensureDirSync = eds;
           });
-        });
-        it('Sets the dependency cache from prior build', () => {
-          const t = {
-            get: jest.fn(() => ({
-              '/foo/': new Set(['/bar/']),
-              '/bar/': new Set(['/baz/']),
-            })),
-          };
-          const ssrBound = ssrPlugin.watchChange.bind(t);
-
-          ssrBound('/foo/');
-
-          expect(t.get).toHaveBeenCalledTimes(1);
-          expect(t.get).toHaveBeenCalledWith('dependencies');
         });
       });
     });
