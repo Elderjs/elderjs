@@ -74,115 +74,121 @@ function esbuildPluginSvelte({ type, svelteConfig, elderConfig, sveltePackages =
     name: 'esbuild-plugin-elderjs',
 
     setup(build) {
-      // clean out old css files
-      build.onStart(() => {
-        if (type === 'ssr') {
-          del.sync(elderConfig.$$internal.ssrComponents);
-          del.sync(resolve(elderConfig.$$internal.distElder, `.${sep}assets${sep}`));
-          del.sync(resolve(elderConfig.$$internal.distElder, `.${sep}svelte${sep}`));
-        }
-      });
-
-      if (sveltePackages.length > 0) {
-        const filter =
-          sveltePackages.length > 1 ? new RegExp(`(${sveltePackages.join('|')})`) : new RegExp(`${sveltePackages[0]}`);
-        build.onResolve({ filter }, ({ path, importer }) => {
-          // below largely adapted from the rollup svelte plugin
-          // ----------------------------------------------
-
-          if (!importer || path[0] === '.' || path[0] === '\0' || isAbsolute(path)) return null;
-          // if this is a bare import, see if there's a valid pkg.svelte
-          const parts = path.split('/');
-
-          let dir;
-          let pkg;
-          let name = parts.shift();
-          if (name[0] === '@') {
-            name += `/${parts.shift()}`;
+      try {
+        // clean out old css files
+        build.onStart(() => {
+          if (type === 'ssr') {
+            del.sync(elderConfig.$$internal.ssrComponents);
+            del.sync(resolve(elderConfig.$$internal.distElder, `.${sep}assets${sep}`));
+            del.sync(resolve(elderConfig.$$internal.distElder, `.${sep}svelte${sep}`));
           }
-
-          try {
-            const file = `.${sep}${['node_modules', name, 'package.json'].join(sep)}`;
-            const resolved = resolve(process.cwd(), file);
-            dir = dirname(resolved);
-            // eslint-disable-next-line import/no-dynamic-require
-            pkg = require(resolved);
-          } catch (err) {
-            if (err.code === 'MODULE_NOT_FOUND') return null;
-            throw err;
-          }
-
-          // use pkg.svelte
-          if (parts.length === 0 && pkg.svelte) {
-            return {
-              path: resolve(dir, pkg.svelte),
-              pluginName: 'esbuild-plugin-elderjs',
-            };
-          }
-          return null;
         });
-      }
 
-      build.onResolve({ filter: /\.svelte$/ }, ({ path, importer, resolveDir }) => {
-        const importee = resolve(resolveDir, path);
-        resolveFn(importee, importer);
-        return {};
-      });
+        if (sveltePackages.length > 0) {
+          const filter =
+            sveltePackages.length > 1
+              ? new RegExp(`(${sveltePackages.join('|')})`)
+              : new RegExp(`${sveltePackages[0]}`);
+          build.onResolve({ filter }, ({ path, importer }) => {
+            // below largely adapted from the rollup svelte plugin
+            // ----------------------------------------------
 
-      build.onResolve({ filter: /\.css$/ }, ({ path, importer, resolveDir }) => {
-        const importee = resolve(resolveDir, path);
-        resolveFn(importee, importer);
+            if (!importer || path[0] === '.' || path[0] === '\0' || isAbsolute(path)) return null;
+            // if this is a bare import, see if there's a valid pkg.svelte
+            const parts = path.split('/');
 
-        return { path: importee };
-      });
+            let dir;
+            let pkg;
+            let name = parts.shift();
+            if (name[0] === '@') {
+              name += `/${parts.shift()}`;
+            }
 
-      build.onLoad({ filter: /\.css$/ }, async ({ path }) => {
-        loadCss(path);
+            try {
+              const file = `.${sep}${['node_modules', name, 'package.json'].join(sep)}`;
+              const resolved = resolve(process.cwd(), file);
+              dir = dirname(resolved);
+              // eslint-disable-next-line import/no-dynamic-require
+              pkg = require(resolved);
+            } catch (err) {
+              if (err.code === 'MODULE_NOT_FOUND') return null;
+              throw err;
+            }
 
-        return {
-          contents: undefined,
-        };
-      });
-
-      build.onLoad({ filter: /\.svelte$/ }, async ({ path }) => {
-        const code = await fsPromises.readFile(path, 'utf-8');
-
-        const { output, warnings } = await transformFn({
-          svelteConfig,
-          elderConfig,
-          type,
-          legacy: false,
-        })(code, path);
-
-        const out = {
-          contents: output.code,
-          warnings: type === 'ssr' ? warnings.map((w) => convertWarning(code, w, 'warning')).filter((w) => w) : [],
-        };
-        return out;
-      });
-
-      build.onEnd(async () => {
-        if (type === 'ssr') {
-          const s = Date.now();
-          const r = await minifyCss('all', elderConfig);
-          console.log(`>>>> minifying css and adding sourcemaps took ${Date.now() - s}ms`);
-          const hash = md5(r.styles);
-
-          const svelteCss = resolve(elderConfig.$$internal.distElder, `.${sep}assets${sep}svelte-${hash}.css`);
-
-          if (process.env.NODE_ENV !== 'production' || process.env.NODE_ENV !== 'production') {
-            const sourceMapFileRel = `/${relative(
-              elderConfig.distDir,
-              resolve(elderConfig.$$internal.distElder, `${svelteCss}.map`),
-            )}`;
-            r.styles = `${r.styles}\n /*# sourceMappingURL=${sourceMapFileRel} */`;
-          }
-
-          fs.outputFileSync(svelteCss, r.styles);
-
-          fs.outputFileSync(`${svelteCss}.map`, r.sourceMap);
+            // use pkg.svelte
+            if (parts.length === 0 && pkg.svelte) {
+              return {
+                path: resolve(dir, pkg.svelte),
+                pluginName: 'esbuild-plugin-elderjs',
+              };
+            }
+            return null;
+          });
         }
-      });
+
+        build.onResolve({ filter: /\.svelte$/ }, ({ path, importer, resolveDir }) => {
+          const importee = resolve(resolveDir, path);
+          resolveFn(importee, importer);
+          return {};
+        });
+
+        build.onResolve({ filter: /\.css$/ }, ({ path, importer, resolveDir }) => {
+          const importee = resolve(resolveDir, path);
+          resolveFn(importee, importer);
+
+          return { path: importee };
+        });
+
+        build.onLoad({ filter: /\.css$/ }, async ({ path }) => {
+          loadCss(path);
+
+          return {
+            contents: undefined,
+          };
+        });
+
+        build.onLoad({ filter: /\.svelte$/ }, async ({ path }) => {
+          const code = await fsPromises.readFile(path, 'utf-8');
+
+          const { output, warnings } = await transformFn({
+            svelteConfig,
+            elderConfig,
+            type,
+            legacy: false,
+          })(code, path);
+
+          const out = {
+            contents: output.code,
+            warnings: type === 'ssr' ? warnings.map((w) => convertWarning(code, w, 'warning')).filter((w) => w) : [],
+          };
+          return out;
+        });
+
+        build.onEnd(async () => {
+          if (type === 'ssr') {
+            const s = Date.now();
+            const r = await minifyCss('all', elderConfig);
+            console.log(`>>>> minifying css and adding sourcemaps took ${Date.now() - s}ms`);
+            const hash = md5(r.styles);
+
+            const svelteCss = resolve(elderConfig.$$internal.distElder, `.${sep}assets${sep}svelte-${hash}.css`);
+
+            if (process.env.NODE_ENV !== 'production' || process.env.NODE_ENV !== 'production') {
+              const sourceMapFileRel = `/${relative(
+                elderConfig.distDir,
+                resolve(elderConfig.$$internal.distElder, `${svelteCss}.map`),
+              )}`;
+              r.styles = `${r.styles}\n /*# sourceMappingURL=${sourceMapFileRel} */`;
+            }
+
+            fs.outputFileSync(svelteCss, r.styles);
+
+            fs.outputFileSync(`${svelteCss}.map`, r.sourceMap.toString());
+          }
+        });
+      } catch (e) {
+        console.error(e);
+      }
     },
   };
 }
