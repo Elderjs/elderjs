@@ -183,7 +183,9 @@ function esbuildPluginSvelte({ type, svelteConfig, elderConfig, sveltePackages =
 
             fs.outputFileSync(svelteCss, r.styles);
 
-            fs.outputFileSync(`${svelteCss}.map`, r.sourceMap.toString());
+            if (r.sourceMap) {
+              fs.outputFileSync(`${svelteCss}.map`, r.sourceMap.toString());
+            }
           }
         });
       } catch (e) {
