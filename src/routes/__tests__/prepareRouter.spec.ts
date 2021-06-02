@@ -24,6 +24,7 @@ describe('#prepareRouter', () => {
       },
       templateComponent: () => '',
       layoutComponent: () => '',
+      dynamic: true,
     },
     {
       data: {},
@@ -40,6 +41,7 @@ describe('#prepareRouter', () => {
       },
       templateComponent: () => '',
       layoutComponent: () => '',
+      dynamic: true,
     },
   ];
   describe('#extractDynamicRouteParams', () => {
