@@ -10,6 +10,7 @@ import path from 'path';
 import { svelteComponent } from '../utils';
 import { SettingsOptions } from '../utils/types';
 import wrapPermalinkFn from '../utils/wrapPermalinkFn';
+import windowsPathFix from '../utils/windowsPathFix';
 
 const requireFile = (file: string) => {
   const dataReq = require(file);
@@ -30,7 +31,7 @@ function prepareRoutes(settings: SettingsOptions) {
   try {
     const { ssrComponents: ssrFolder, serverPrefix = '' } = settings.$$internal;
 
-    const files = glob.sync(`${settings.srcDir}/routes/*/+(*.js|*.svelte)`);
+    const files = glob.sync(`${settings.srcDir}/routes/*/+(*.js|*.svelte)`).map((p) => windowsPathFix(p));
     const routejsFiles = files.filter((f) => f.endsWith('/route.js'));
 
     const routes = {};
@@ -94,7 +95,9 @@ function prepareRoutes(settings: SettingsOptions) {
       // find svelte template or set default
       if (!route.template) {
         const defaultLocation = path.resolve(settings.srcDir, `./routes/${routeName}/${routeName}.svelte`);
-        const svelteFile = filesForThisRoute.find((f) => f.toLowerCase().endsWith(defaultLocation.toLowerCase()));
+        const svelteFile = filesForThisRoute.find((f) =>
+          f.toLowerCase().endsWith(windowsPathFix(defaultLocation.toLowerCase())),
+        );
         if (!svelteFile) {
           console.error(
             `No template for route named "${routeName}". Expected to find it at: ${path.resolve(
@@ -115,14 +118,14 @@ function prepareRoutes(settings: SettingsOptions) {
       routes[routeName] = route;
     });
 
-    const ssrComponents = glob.sync(`${ssrFolder}/**/*.js`);
+    const ssrComponents = glob.sync(`${ssrFolder}/**/*.js`).map((p) => windowsPathFix(p));
     Object.keys(routes).forEach((routeName) => {
       const ssrTemplate = ssrComponents.find((f) => {
         const suffix = routes[routeName].template
           .toLowerCase()
           .replace('.svelte', '.js')
           .replace(settings.srcDir.toLowerCase(), '');
-        return f.toLowerCase().endsWith(suffix);
+        return f.toLowerCase().endsWith(windowsPathFix(suffix));
       });
       if (!ssrTemplate) {
         console.error(
@@ -138,7 +141,7 @@ function prepareRoutes(settings: SettingsOptions) {
           .toLowerCase()
           .replace('.svelte', '.js')
           .replace(settings.srcDir.toLowerCase(), '');
-        return f.toLowerCase().endsWith(suffix);
+        return f.toLowerCase().endsWith(windowsPathFix(suffix));
       });
       if (!ssrLayout) {
         console.error(
