@@ -77,6 +77,7 @@ export const hookInterface: Array<HookInterface> = [
       'next',
       'res',
       'request',
+      'serverLookupObject',
     ],
     context:
       'Fired upon a request that originates from the express/polka middleware version of Elder.js. The hook has access to "req" and "next" common in express like middleware.',

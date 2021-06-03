@@ -104,6 +104,7 @@ Object {
         "next",
         "res",
         "request",
+        "serverLookupObject",
       ],
       "props": Array [
         "errors",
@@ -755,6 +756,7 @@ Object {
         "next",
         "res",
         "request",
+        "serverLookupObject",
       ],
       "props": Array [
         "errors",
