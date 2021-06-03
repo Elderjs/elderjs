@@ -181,7 +181,12 @@ async function plugins(elder: Elder) {
               `./${usesNodeModulesFolder ? 'node_modules/' : 'plugins/'}${pluginName}/${templateName}.js`,
             );
 
-            if (!fs.existsSync(ssrComponent)) {
+            const template = elder.settings.$$internal.findComponent(
+              templateName,
+              usesNodeModulesFolder ? 'node_modules' : 'plugins',
+            );
+
+            if (!template.ssr && !fs.existsSync(ssrComponent)) {
               console.warn(
                 `Plugin Route: ${routeName} added by plugin ${pluginName} has an error. No SSR svelte component found ${templateName}. This may cause unexpected outcomes. If you believe this should be working, make sure rollup has run before this file is initialized. If the issue persists, please contact the plugin author. Expected location \`${ssrComponent}\``,
               );
@@ -211,12 +216,20 @@ async function plugins(elder: Elder) {
               `./plugins/${pluginName}/${layoutName}.js`,
             );
 
-            if (!fs.existsSync(ssrComponent)) {
+            const layout = elder.settings.$$internal.findComponent(
+              layoutName,
+              usesNodeModulesFolder ? 'node_modules' : 'plugins',
+            );
+
+            if (!layout.ssr && !fs.existsSync(ssrComponent)) {
               console.warn(
                 `Plugin Route: ${routeName} added by plugin ${pluginName} has an error. No SSR svelte component found ${layoutName}. This may cause unexpected outcomes. If you believe this should be working, make sure rollup has run before this file is initialized. If the issue persists, please contact the plugin author. Expected location \`${ssrComponent}\``,
               );
             }
-            plugin.routes[routeName].layoutComponent = svelteComponent(layoutName, 'layouts');
+            plugin.routes[routeName].layoutComponent = svelteComponent(
+              layoutName,
+              usesNodeModulesFolder ? 'node_modules' : 'plugins',
+            );
           } else {
             plugin.routes[routeName].layout = 'Layout.svelte';
             const ssrComponent = path.resolve(elder.settings.$$internal.ssrComponents, `./layouts/Layout.js`);
