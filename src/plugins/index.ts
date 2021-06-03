@@ -13,6 +13,26 @@ import { RoutesOptions } from '../routes/types';
 import createReadOnlyProxy from '../utils/createReadOnlyProxy';
 import wrapPermalinkFn from '../utils/wrapPermalinkFn';
 
+export const pluginVersionCheck = (elderVersion: string, pluginVersion: string): boolean => {
+  const eSplit = elderVersion.split('.');
+  const eMajor = Number(eSplit[0]);
+  const eMinor = Number(eSplit[1]);
+  const ePatch = Number(eSplit[2]);
+
+  const pSplit = pluginVersion.split('.');
+  const pMajor = Number(pSplit[0]);
+  const pMinor = Number(pSplit[1]);
+  const pPatch = Number(pSplit[2]);
+
+  let enabled = false;
+
+  if (eMajor > pMajor) enabled = true;
+  if (eMajor === pMajor && eMinor > pMinor) enabled = true;
+  if (eMajor === pMajor && eMinor === pMinor && ePatch >= pPatch) enabled = true;
+
+  return enabled;
+};
+
 async function plugins(elder: Elder) {
   /**
    * Plugin initialization
@@ -69,6 +89,22 @@ async function plugins(elder: Elder) {
           config: defaultsDeep(pluginConfigFromConfig, plugin.config),
           settings: createReadOnlyProxy(elder.settings, 'Settings', 'plugin init()'),
         })) || plugin;
+    }
+
+    if (plugin.minimumElderjsVersion) {
+      if (plugin.minimumElderjsVersion.split('.').length !== 3)
+        console.error(
+          `${pluginName} has a malformed minimumElderjsVersion of ${plugin.minimumElderjsVersion}. Please tell the developer to update.`,
+        );
+      if (!pluginVersionCheck(elder.settings.version, plugin.minimumElderjsVersion)) {
+        console.error(
+          Error(
+            `Plugin ${pluginName} requires Elder.js version ${plugin.minimumElderjsVersion} and you are using ${elder.settings.version}. Disabling plugin. If you want to use this plugin, please update to the required version.`,
+          ),
+        );
+        // eslint-disable-next-line no-continue
+        continue;
+      }
     }
 
     const validatedPlugin = validatePlugin(plugin);

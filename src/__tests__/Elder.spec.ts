@@ -21,6 +21,7 @@ describe('#Elder', () => {
     $$internal: {
       clientComponents: `test${sep}public${sep}svelte`,
       ssrComponents: `test${sep}___ELDER___${sep}compiled`,
+      findComponent: () => ({ ssr: true, client: true, iife: undefined }),
     },
     debug: {
       automagic: true,

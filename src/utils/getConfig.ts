@@ -1,3 +1,4 @@
+/* eslint-disable import/no-dynamic-require */
 import { cosmiconfigSync } from 'cosmiconfig';
 import defaultsDeep from 'lodash.defaultsdeep';
 import path from 'path';
@@ -23,6 +24,10 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
   config.rootDir = rootDir;
   config.srcDir = path.resolve(rootDir, `./${config.srcDir}`);
   config.distDir = path.resolve(rootDir, `./${config.distDir}`);
+
+  // eslint-disable-next-line global-require
+  const pkgJson = require(path.resolve(__dirname, '../../package.json'));
+  config.version = pkgJson.version.includes('-') ? pkgJson.version.split('-')[0] : pkgJson.version;
 
   config.context = typeof initializationOptions.context !== 'undefined' ? initializationOptions.context : 'unknown';
   config.server = initializationOptions.context === 'server' && config.server;
