@@ -25,6 +25,7 @@ export const pluginVersionCheck = (elderVersion: string, pluginVersion: string):
   const pPatch = Number(pSplit[2]);
 
   let enabled = false;
+
   if (eMajor > pMajor) enabled = true;
   if (eMajor === pMajor && eMinor > pMinor) enabled = true;
   if (eMajor === pMajor && eMinor === pMinor && ePatch >= pPatch) enabled = true;
@@ -90,14 +91,20 @@ async function plugins(elder: Elder) {
         })) || plugin;
     }
 
-    if (plugin.minimumElderjsVersion && !pluginVersionCheck(elder.settings.version, plugin.minimumElderjsVersion)) {
-      console.error(
-        Error(
-          `Plugin ${pluginName} requires Elder.js version ${plugin.minimumElderjsVersion} and you are using ${elder.settings.version}. Disabling plugin. If you want to use this plugin, please update to the required version.`,
-        ),
-      );
-      // eslint-disable-next-line no-continue
-      continue;
+    if (plugin.minimumElderjsVersion) {
+      if (plugin.minimumElderjsVersion.split('.').length !== 3)
+        console.error(
+          `${pluginName} has a malformed minimumElderjsVersion of ${plugin.minimumElderjsVersion}. Please tell the developer to update.`,
+        );
+      if (!pluginVersionCheck(elder.settings.version, plugin.minimumElderjsVersion)) {
+        console.error(
+          Error(
+            `Plugin ${pluginName} requires Elder.js version ${plugin.minimumElderjsVersion} and you are using ${elder.settings.version}. Disabling plugin. If you want to use this plugin, please update to the required version.`,
+          ),
+        );
+        // eslint-disable-next-line no-continue
+        continue;
+      }
     }
 
     const validatedPlugin = validatePlugin(plugin);

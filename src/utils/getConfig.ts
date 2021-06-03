@@ -27,7 +27,6 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
 
   // eslint-disable-next-line global-require
   const pkgJson = require(path.resolve(__dirname, '../../package.json'));
-
   config.version = pkgJson.version.includes('-') ? pkgJson.version.split('-')[0] : pkgJson.version;
 
   config.context = typeof initializationOptions.context !== 'undefined' ? initializationOptions.context : 'unknown';
