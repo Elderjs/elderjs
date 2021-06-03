@@ -1,8 +1,32 @@
 import path from 'path';
+
 const findComponent = () => ({ ssr: true, client: true, iife: undefined });
 
 describe('#plugins', () => {
   beforeEach(() => jest.resetModules());
+
+  describe('#pluginVersionCheck', () => {
+    // eslint-disable-next-line global-require
+    const { pluginVersionCheck } = require('../index');
+    it('Returns false: Elder v1.4.13 < Required v1.4.14', () => {
+      expect(pluginVersionCheck('1.4.13', '1.4.14')).toBe(false);
+    });
+
+    it('Returns false: Elder v1.4.13 < Required v5.4.14', () => {
+      expect(pluginVersionCheck('1.4.13', '5.4.14')).toBe(false);
+    });
+
+    it('Returns true: Elder v1.4.14 > Required v1.4.13', () => {
+      expect(pluginVersionCheck('1.4.14', '1.4.13')).toBe(true);
+    });
+    it('Returns true: Elder v1.4.14 = Required v1.4.14', () => {
+      expect(pluginVersionCheck('1.4.14', '1.4.14')).toBe(true);
+    });
+    it('Returns true: Elder v2.0.0 > Required v1.4.14', () => {
+      expect(pluginVersionCheck('2.0.0', '1.4.14')).toBe(true);
+    });
+  });
+
   it('no plugins in settings', async () => {
     // eslint-disable-next-line global-require
     const plugins = require('../index').default;

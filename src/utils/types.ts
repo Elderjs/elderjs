@@ -69,6 +69,7 @@ export type InitializationOptions = {
 };
 
 export type SettingsOptions = {
+  version: string;
   prefix: string;
   distDir: string;
   srcDir: string;
@@ -151,6 +152,7 @@ export type PluginOptions = {
   hooks: Array<HookOptions>;
   config?: Object;
   shortcodes?: ShortcodeDefs;
+  minimumElderjsVersion?: string;
 };
 
 // eslint-disable-next-line no-undef
