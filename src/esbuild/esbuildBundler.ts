@@ -17,6 +17,7 @@ import esbuildPluginSvelte from './esbuildPluginSvelte';
 import { InitializationOptions, SettingsOptions } from '../utils/types';
 import { getElderConfig } from '..';
 import { devServer } from '../rollup/rollupPlugin';
+import getPluginLocations from '../utils/getPluginLocations';
 
 const production = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'PRODUCTION';
 export type TPreprocess = PreprocessorGroup | PreprocessorGroup[] | false;
@@ -64,16 +65,17 @@ export function getPackagesWithSvelte(pkg, elderConfig: SettingsOptions) {
 }
 
 const svelteHandler = async ({ elderConfig, svelteConfig, replacements, startOrRestartServer }) => {
-  const builders: { ssr?: BuildResult; client?: BuildResult } = {};
+  const builders: { ssr?: BuildResult; client?: BuildResult; plugin?: BuildResult } = {};
 
   // eslint-disable-next-line global-require
   const pkg = require(path.resolve(elderConfig.rootDir, './package.json'));
   const globPath = path.resolve(elderConfig.rootDir, `./src/**/*.svelte`);
-  const initialEntrypoints = glob.sync(globPath);
+  const initialEntryPoints = glob.sync(globPath);
   const sveltePackages = getPackagesWithSvelte(pkg, elderConfig);
+  const elderPlugins = getPluginLocations(elderConfig);
 
   builders.ssr = await build({
-    entryPoints: initialEntrypoints,
+    entryPoints: [...initialEntryPoints, ...elderPlugins.files],
     bundle: true,
     outdir: elderConfig.$$internal.ssrComponents,
     plugins: [
@@ -104,7 +106,7 @@ const svelteHandler = async ({ elderConfig, svelteConfig, replacements, startOrR
   });
 
   builders.client = await build({
-    entryPoints: initialEntrypoints.filter((i) => i.includes('src/components')),
+    entryPoints: [...initialEntryPoints.filter((i) => i.includes('src/components')), ...elderPlugins.files],
     bundle: true,
     outdir: elderConfig.$$internal.clientComponents,
     entryNames: '[dir]/[name].[hash]',
@@ -138,11 +140,48 @@ const svelteHandler = async ({ elderConfig, svelteConfig, replacements, startOrR
     },
   });
 
+  // this is broken out so that the output files don't have ".." in them.
+  const nodeModulesPlugins = elderPlugins.files.filter((f) => f.includes('node_modules'));
+
+  // if (nodeModulesPlugins.length > 0) {
+  //   builders.ssr = await build({
+  //     entryPoints: nodeModulesPlugins,
+  //     bundle: true,
+  //     outdir: elderConfig.$$internal.ssrComponents,
+  //     plugins: [
+  //       esbuildPluginSvelte({
+  //         type: 'ssr',
+  //         sveltePackages,
+  //         elderConfig,
+  //         svelteConfig,
+  //       }),
+  //     ],
+  //     watch: {
+  //       onRebuild(error) {
+  //         if (error) console.error('client watch build failed:', error);
+  //       },
+  //     },
+  //     format: 'cjs',
+  //     target: ['node12'],
+  //     platform: 'node',
+  //     sourcemap: !production,
+  //     minify: production,
+  //     outbase: '',
+  //     external: pkg.dependents ? [...Object.keys(pkg.dependents)] : [],
+  //     define: {
+  //       'process.env.componentType': "'server'",
+  //       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+  //       ...replacements,
+  //     },
+  //   });
+  // }
+
   startOrRestartServer();
 
   const restart = async () => {
-    if (builders.ssr) await builders.ssr.stop;
-    if (builders.client) await builders.client.stop;
+    if (builders.ssr) await builders.ssr.stop();
+    if (builders.client) await builders.client.stop();
+    if (builders.plugin) await builders.plugin.stop();
     return svelteHandler({
       elderConfig,
       svelteConfig,

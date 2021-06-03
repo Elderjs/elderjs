@@ -181,7 +181,12 @@ async function plugins(elder: Elder) {
               `./${usesNodeModulesFolder ? 'node_modules/' : 'plugins/'}${pluginName}/${templateName}.js`,
             );
 
-            if (!fs.existsSync(ssrComponent)) {
+            const results = elder.settings.$$internal.findComponent(
+              templateName,
+              usesNodeModulesFolder ? 'node_modules' : 'plugins',
+            );
+
+            if (!results.ssr && !fs.existsSync(ssrComponent)) {
               console.warn(
                 `Plugin Route: ${routeName} added by plugin ${pluginName} has an error. No SSR svelte component found ${templateName}. This may cause unexpected outcomes. If you believe this should be working, make sure rollup has run before this file is initialized. If the issue persists, please contact the plugin author. Expected location \`${ssrComponent}\``,
               );
