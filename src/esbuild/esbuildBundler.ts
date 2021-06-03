@@ -65,7 +65,7 @@ export function getPackagesWithSvelte(pkg, elderConfig: SettingsOptions) {
 }
 
 const svelteHandler = async ({ elderConfig, svelteConfig, replacements, startOrRestartServer }) => {
-  const builders: { ssr?: BuildResult; client?: BuildResult; plugin?: BuildResult } = {};
+  const builders: { ssr?: BuildResult; client?: BuildResult } = {};
 
   // eslint-disable-next-line global-require
   const pkg = require(path.resolve(elderConfig.rootDir, './package.json'));
@@ -140,48 +140,11 @@ const svelteHandler = async ({ elderConfig, svelteConfig, replacements, startOrR
     },
   });
 
-  // this is broken out so that the output files don't have ".." in them.
-  const nodeModulesPlugins = elderPlugins.files.filter((f) => f.includes('node_modules'));
-
-  // if (nodeModulesPlugins.length > 0) {
-  //   builders.ssr = await build({
-  //     entryPoints: nodeModulesPlugins,
-  //     bundle: true,
-  //     outdir: elderConfig.$$internal.ssrComponents,
-  //     plugins: [
-  //       esbuildPluginSvelte({
-  //         type: 'ssr',
-  //         sveltePackages,
-  //         elderConfig,
-  //         svelteConfig,
-  //       }),
-  //     ],
-  //     watch: {
-  //       onRebuild(error) {
-  //         if (error) console.error('client watch build failed:', error);
-  //       },
-  //     },
-  //     format: 'cjs',
-  //     target: ['node12'],
-  //     platform: 'node',
-  //     sourcemap: !production,
-  //     minify: production,
-  //     outbase: '',
-  //     external: pkg.dependents ? [...Object.keys(pkg.dependents)] : [],
-  //     define: {
-  //       'process.env.componentType': "'server'",
-  //       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
-  //       ...replacements,
-  //     },
-  //   });
-  // }
-
   startOrRestartServer();
 
   const restart = async () => {
     if (builders.ssr) await builders.ssr.stop();
     if (builders.client) await builders.client.stop();
-    if (builders.plugin) await builders.plugin.stop();
     return svelteHandler({
       elderConfig,
       svelteConfig,
