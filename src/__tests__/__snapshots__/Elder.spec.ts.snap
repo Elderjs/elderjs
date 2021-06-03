@@ -605,6 +605,7 @@ Object {
   "settings": Object {
     "$$internal": Object {
       "clientComponents": "test/public/svelte",
+      "findComponent": [Function],
       "ssrComponents": "test/___ELDER___/compiled",
     },
     "build": false,
@@ -1304,6 +1305,7 @@ Object {
   "settings": Object {
     "$$internal": Object {
       "clientComponents": "test/public/svelte",
+      "findComponent": [Function],
       "ssrComponents": "test/___ELDER___/compiled",
     },
     "build": false,

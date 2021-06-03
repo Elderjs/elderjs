@@ -1,4 +1,5 @@
 import path from 'path';
+const findComponent = () => ({ ssr: true, client: true, iife: undefined });
 
 describe('#plugins', () => {
   beforeEach(() => jest.resetModules());
@@ -11,7 +12,7 @@ describe('#plugins', () => {
         srcDir: 'test/src',
         rootDir: 'test',
         // @ts-ignore
-        $$internal: { ssrComponents: 'test/___ELDER___/compiled' },
+        $$internal: { ssrComponents: 'test/___ELDER___/compiled', findComponent },
       },
     });
     expect(pluginRoutes).toEqual({});
@@ -37,7 +38,7 @@ describe('#plugins', () => {
         srcDir: 'test/src',
         rootDir: 'test',
         // @ts-ignore
-        $$internal: { ssrComponents: 'test/___ELDER___/compiled' },
+        $$internal: { ssrComponents: 'test/___ELDER___/compiled', findComponent },
       },
     });
     expect(pluginRoutes).toEqual({});
@@ -72,7 +73,7 @@ describe('#plugins', () => {
         srcDir: 'test/src',
         rootDir: 'test',
         // @ts-ignore
-        $$internal: { ssrComponents: 'test/___ELDER___/compiled' },
+        $$internal: { ssrComponents: 'test/___ELDER___/compiled', findComponent },
       },
     });
     expect(pluginRoutes).toEqual({});
@@ -128,7 +129,7 @@ describe('#plugins', () => {
         srcDir: 'test/src',
         rootDir: 'test',
         // @ts-ignore
-        $$internal: { ssrComponents: 'test/___ELDER___/compiled' },
+        $$internal: { ssrComponents: 'test/___ELDER___/compiled', findComponent },
       },
     });
     expect(pluginRoutes).toEqual({});
@@ -203,7 +204,7 @@ describe('#plugins', () => {
         srcDir: 'test/src',
         rootDir: 'test',
         // @ts-ignore
-        $$internal: { ssrComponents: 'test/___ELDER___/compiled' },
+        $$internal: { ssrComponents: 'test/___ELDER___/compiled', findComponent },
       },
     });
 
