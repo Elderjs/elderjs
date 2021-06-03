@@ -333,6 +333,10 @@ class Elder {
   worker(workerRequests) {
     return workerBuild({ bootstrapComplete: this.bootstrapComplete, workerRequests });
   }
+
+  addRoute(routeObject) {
+    this.serverLookupObject[routeObject.permalink] = routeObject;
+  }
 }
 
 export { Elder, build, partialHydration };
