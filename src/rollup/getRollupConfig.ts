@@ -218,7 +218,7 @@ export default function getRollupConfig(options) {
 
   configs.push(
     createBrowserConfig({
-      input: [`${relSrcDir}/components/**/*.svelte`],
+      input: [`${relSrcDir}/components/**/*.svelte`, ...pluginGlobs],
       output: [
         {
           dir: elderConfig.$$internal.clientComponents,
