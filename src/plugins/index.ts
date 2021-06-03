@@ -26,6 +26,7 @@ async function plugins(elder: Elder) {
   const pluginNames = Object.keys(elder.settings.plugins);
 
   for (let i = 0; i < pluginNames.length; i += 1) {
+    let usesNodeModulesFolder = false;
     const pluginName = pluginNames[i];
 
     const pluginConfigFromConfig = elder.settings.plugins[pluginName];
@@ -43,6 +44,7 @@ async function plugins(elder: Elder) {
     if (!plugin) {
       const pkgPath = path.resolve(elder.settings.rootDir, './node_modules/', pluginName);
       if (fs.existsSync(pkgPath)) {
+        usesNodeModulesFolder = true;
         // eslint-disable-next-line import/no-dynamic-require
         const pluginPackageJson = require(path.resolve(pkgPath, './package.json'));
         const pluginPkgPath = path.resolve(pkgPath, pluginPackageJson.main);
@@ -176,7 +178,7 @@ async function plugins(elder: Elder) {
             const templateName = plugin.routes[routeName].template.replace('.svelte', '');
             const ssrComponent = path.resolve(
               elder.settings.$$internal.ssrComponents,
-              `./plugins/${pluginName}/${templateName}.js`,
+              `./${usesNodeModulesFolder ? 'node_modules/' : 'plugins/'}${pluginName}/${templateName}.js`,
             );
 
             if (!fs.existsSync(ssrComponent)) {
@@ -185,7 +187,10 @@ async function plugins(elder: Elder) {
               );
             }
 
-            plugin.routes[routeName].templateComponent = svelteComponent(templateName, 'plugins');
+            plugin.routes[routeName].templateComponent = svelteComponent(
+              templateName,
+              usesNodeModulesFolder ? 'node_modules' : 'plugins',
+            );
           } else {
             console.error(
               Error(
