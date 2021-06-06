@@ -24,6 +24,19 @@ describe('#partialHydration', () => {
       `<div class="ejs-component" data-ejs-component="DatePicker" data-ejs-props={JSON.stringify({ a: "c" })} data-ejs-options={JSON.stringify({ loading: "lazy" })} />`,
     );
   });
+
+  it('explicit timeout', async () => {
+    expect(
+      (
+        await partialHydration.markup({
+          content: '<DatePicker hydrate-client={{ a: "c" }} hydrate-options={{ timeout: 2000 }}/>',
+        })
+      ).code,
+    ).toEqual(
+      `<div class="ejs-component" data-ejs-component="DatePicker" data-ejs-props={JSON.stringify({ a: "c" })} data-ejs-options={JSON.stringify({ timeout: 2000 })} />`,
+    );
+  });
+
   it('eager', async () => {
     expect(
       (

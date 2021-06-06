@@ -128,7 +128,7 @@ describe('#svelteComponent', () => {
       `<script type="module">function initdatepickerSwrzsrVDCd(){import("${path.resolve(
         process.cwd(),
         `./test/components/Datepicker`,
-      )}").then((component)=>{new component.default({target: document.getElementById('datepickerSwrzsrVDCd'),props: datepickerPropsSwrzsrVDCd,hydrate: true});});}window.addEventListener('load', function (event) {var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {var objK = Object.keys(entries);var objKl = objK.length;var objKi = 0;for (; objKi < objKl; objKi++) {var entry = entries[objK[objKi]];if (entry.isIntersecting) {observer.unobserve(document.getElementById('datepickerSwrzsrVDCd'));if (document.eg_datepicker) {initdatepickerSwrzsrVDCd();} else {document.eg_datepicker = true;initdatepickerSwrzsrVDCd();}}}}, {rootMargin: '200px',threshold: 0});observerSwrzsrVDCd.observe(document.getElementById('datepickerSwrzsrVDCd'));});</script>`,
+      )}").then((component)=>{new component.default({target: document.getElementById('datepickerSwrzsrVDCd'),props: datepickerPropsSwrzsrVDCd,hydrate: true});});}requestIdleCallback(function(){var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {var objK = Object.keys(entries);var objKl = objK.length;var objKi = 0;for (; objKi < objKl; objKi++) {var entry = entries[objK[objKi]];if (entry.isIntersecting) {observer.unobserve(document.getElementById('datepickerSwrzsrVDCd'));if (document.eg_datepicker) {initdatepickerSwrzsrVDCd();} else {document.eg_datepicker = true;initdatepickerSwrzsrVDCd();}}}}, {rootMargin: '200px',threshold: 0});observerSwrzsrVDCd.observe(document.getElementById('datepickerSwrzsrVDCd'));}, {timeout: 1000});</script>`,
     );
   });
 
