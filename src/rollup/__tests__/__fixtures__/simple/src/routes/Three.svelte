@@ -1,8 +1,8 @@
+<div class="apples route">Are good for you</div>
 
 <style>
-.route {
-    background: aliceblue;
-}
-</style>
+  .route {
+    background: #f0f8ff;
+  }
 
-<div class="apples route">Are good for you</div>
+</style>

@@ -244,7 +244,7 @@ const rollupSchema = yup.object({
     .object()
     .default({})
     .notRequired()
-    .label('Replaces the key with the value when rolling up templates'),
+    .label('Replaces the key with the value when bundling up svelte templates'),
   startDevServer: yup
     .boolean()
     .notRequired()

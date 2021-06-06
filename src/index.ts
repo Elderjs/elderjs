@@ -1,5 +1,8 @@
 /* istanbul ignore file */
+
 export { default as partialHydration, preprocessSvelteContent } from './partialHydration/partialHydration';
+
+export { default as esbuildBundler } from './esbuild/esbuildBundler';
 
 export { configSchema, hookSchema, routeSchema, pluginSchema, shortcodeSchema } from './utils/validations';
 export { Elder, build } from './Elder';
