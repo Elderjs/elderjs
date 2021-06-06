@@ -13,16 +13,18 @@ const common = {
 const removeSpacesFromStack = (stack) => stack.map((s) => ({ ...s, string: s.string.replace(/\s\s+/g, '') }));
 
 describe('#hydrateComponent', () => {
-  test('#IntersectionObserver', () => {
-    expect(
-      IntersectionObserver({
-        el: 'targetElement',
-        name: 'IntersectionObserver.spec.js',
-        loaded: 'console.log("loaded");',
-        notLoaded: 'console.log("not loaded");',
-        id: 'SwrzsrVDCd',
-      }).trim(),
-    ).toEqual(`window.addEventListener('load', function (event) {
+  describe('#IntersectionObserver', () => {
+    test('timeout:0', () => {
+      expect(
+        IntersectionObserver({
+          el: 'targetElement',
+          name: 'IntersectionObserver.spec.js',
+          loaded: 'console.log("loaded");',
+          notLoaded: 'console.log("not loaded");',
+          id: 'SwrzsrVDCd',
+          timeout: 0,
+        }).trim(),
+      ).toEqual(`window.addEventListener('load', function (event) {
         var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {
           var objK = Object.keys(entries);
           var objKl = objK.length;
@@ -45,9 +47,77 @@ describe('#hydrateComponent', () => {
         });
         observerSwrzsrVDCd.observe(targetElement);
       });`);
+    });
+    test('timeout:2000', () => {
+      expect(
+        IntersectionObserver({
+          el: 'targetElement',
+          name: 'IntersectionObserver.spec.js',
+          loaded: 'console.log("loaded");',
+          notLoaded: 'console.log("not loaded");',
+          id: 'SwrzsrVDCd',
+          timeout: 2000,
+        }).trim(),
+      ).toEqual(`requestIdleCallback(function(){
+        var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {
+          var objK = Object.keys(entries);
+          var objKl = objK.length;
+          var objKi = 0;
+          for (; objKi < objKl; objKi++) {
+            var entry = entries[objK[objKi]];
+            if (entry.isIntersecting) {
+              observer.unobserve(targetElement);
+              if (document.eg_IntersectionObserver.spec.js) {
+                console.log("loaded");
+              } else {
+                document.eg_IntersectionObserver.spec.js = true;
+                console.log("not loaded");
+              }
+            }
+          }
+        }, {
+          rootMargin: '200px',
+          threshold: 0
+        });
+        observerSwrzsrVDCd.observe(targetElement);
+      }, {timeout: 2000});`);
+    });
+    test('timeout not set', () => {
+      expect(
+        IntersectionObserver({
+          el: 'targetElement',
+          name: 'IntersectionObserver.spec.js',
+          loaded: 'console.log("loaded");',
+          notLoaded: 'console.log("not loaded");',
+          id: 'SwrzsrVDCd',
+        }).trim(),
+      ).toEqual(`requestIdleCallback(function(){
+        var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {
+          var objK = Object.keys(entries);
+          var objKl = objK.length;
+          var objKi = 0;
+          for (; objKi < objKl; objKi++) {
+            var entry = entries[objK[objKi]];
+            if (entry.isIntersecting) {
+              observer.unobserve(targetElement);
+              if (document.eg_IntersectionObserver.spec.js) {
+                console.log("loaded");
+              } else {
+                document.eg_IntersectionObserver.spec.js = true;
+                console.log("not loaded");
+              }
+            }
+          }
+        }, {
+          rootMargin: '200px',
+          threshold: 0
+        });
+        observerSwrzsrVDCd.observe(targetElement);
+      }, {timeout: 1000});`);
+    });
   });
 
-  it(`tests hydrate-options={{ loading: 'lazy' }} This is the default config, uses intersection observer.`, () => {
+  it(`tests hydrate-options={{ loading: 'lazy' }} This is the default config, uses intersection observer and requestIdleCallback.`, () => {
     // eslint-disable-next-line global-require
     const { default: hydrateComponent } = require('../hydrateComponent');
     const hydrateStack = [];
@@ -55,6 +125,44 @@ describe('#hydrateComponent', () => {
     const result = hydrateComponent({
       ...common,
       hydrateOptions: { loading: 'lazy' },
+      page: { hydrateStack, headStack },
+    });
+    expect(result).toEqual(`<div class="test-component" id="testSwrzsrVDCd">componentHtml</div>`);
+    expect(removeSpacesFromStack(headStack)).toEqual([]);
+    expect(removeSpacesFromStack(hydrateStack)).toStrictEqual(
+      expect.arrayContaining(
+        removeSpacesFromStack([
+          { priority: 100, source: 'testSwrzsrVDCd', string: '<script>var testPropsSwrzsrVDCd = {a:"b"};</script>' },
+          {
+            priority: 99,
+            source: 'testSwrzsrVDCd',
+            string: '<script nomodule defer src="iife" onload="inittestSwrzsrVDCd()"></script>',
+          },
+          {
+            priority: 98,
+            source: 'testSwrzsrVDCd',
+            string:
+              "<script nomodule>function inittestSwrzsrVDCd(){new ___elderjs_test({target: document.getElementById('testSwrzsrVDCd'),props:testPropsSwrzsrVDCd,hydrate: true,});}</script>",
+          },
+          {
+            priority: 30,
+            source: 'testSwrzsrVDCd',
+            string:
+              "<script type=\"module\">function inittestSwrzsrVDCd(){import(\"mjs\").then((component)=>{new component.default({target: document.getElementById('testSwrzsrVDCd'),props: testPropsSwrzsrVDCd,hydrate: true});});}requestIdleCallback(function(){var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {var objK = Object.keys(entries);var objKl = objK.length;var objKi = 0;for (; objKi < objKl; objKi++) {var entry = entries[objK[objKi]];if (entry.isIntersecting) {observer.unobserve(document.getElementById('testSwrzsrVDCd'));if (document.eg_test) {inittestSwrzsrVDCd();} else {document.eg_test = true;inittestSwrzsrVDCd();}}}}, {rootMargin: '200px',threshold: 0});observerSwrzsrVDCd.observe(document.getElementById('testSwrzsrVDCd'));}, {timeout: 1000});</script>",
+          },
+        ]),
+      ),
+    );
+  });
+
+  it(`tests hydrate-options={{ loading: 'lazy', timeout: 0 }} This is the historical default config, uses intersection observer and window load.`, () => {
+    // eslint-disable-next-line global-require
+    const { default: hydrateComponent } = require('../hydrateComponent');
+    const hydrateStack = [];
+    const headStack = [];
+    const result = hydrateComponent({
+      ...common,
+      hydrateOptions: { loading: 'lazy', timeout: 0 },
       page: { hydrateStack, headStack },
     });
     expect(result).toEqual(`<div class="test-component" id="testSwrzsrVDCd">componentHtml</div>`);
@@ -176,7 +284,7 @@ describe('#hydrateComponent', () => {
             priority: 30,
             source: 'testSwrzsrVDCd',
             string:
-              "<script type=\"module\">function inittestSwrzsrVDCd(){import(\"mjs\").then((component)=>{new component.default({target: document.getElementById('testSwrzsrVDCd'),props: testPropsSwrzsrVDCd,hydrate: true});});}window.addEventListener('load', function (event) {var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {var objK = Object.keys(entries);var objKl = objK.length;var objKi = 0;for (; objKi < objKl; objKi++) {var entry = entries[objK[objKi]];if (entry.isIntersecting) {observer.unobserve(document.getElementById('testSwrzsrVDCd'));if (document.eg_test) {inittestSwrzsrVDCd();} else {document.eg_test = true;inittestSwrzsrVDCd();}}}}, {rootMargin: '200px',threshold: 0});observerSwrzsrVDCd.observe(document.getElementById('testSwrzsrVDCd'));});</script>",
+              "<script type=\"module\">function inittestSwrzsrVDCd(){import(\"mjs\").then((component)=>{new component.default({target: document.getElementById('testSwrzsrVDCd'),props: testPropsSwrzsrVDCd,hydrate: true});});}requestIdleCallback(function(){var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {var objK = Object.keys(entries);var objKl = objK.length;var objKi = 0;for (; objKi < objKl; objKi++) {var entry = entries[objK[objKi]];if (entry.isIntersecting) {observer.unobserve(document.getElementById('testSwrzsrVDCd'));if (document.eg_test) {inittestSwrzsrVDCd();} else {document.eg_test = true;inittestSwrzsrVDCd();}}}}, {rootMargin: '200px',threshold: 0});observerSwrzsrVDCd.observe(document.getElementById('testSwrzsrVDCd'));}, {timeout: 1000});</script>",
           },
         ]),
       ),
@@ -258,7 +366,7 @@ describe('#hydrateComponent', () => {
             priority: 30,
             source: 'testSwrzsrVDCd',
             string:
-              "<script type=\"module\">function inittestSwrzsrVDCd(){import(\"mjs\").then((component)=>{new component.default({target: document.getElementById('testSwrzsrVDCd'),props: testPropsSwrzsrVDCd,hydrate: true});});}window.addEventListener('load', function (event) {var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {var objK = Object.keys(entries);var objKl = objK.length;var objKi = 0;for (; objKi < objKl; objKi++) {var entry = entries[objK[objKi]];if (entry.isIntersecting) {observer.unobserve(document.getElementById('testSwrzsrVDCd'));if (document.eg_test) {inittestSwrzsrVDCd();} else {document.eg_test = true;inittestSwrzsrVDCd();}}}}, {rootMargin: '300px',threshold: 20});observerSwrzsrVDCd.observe(document.getElementById('testSwrzsrVDCd'));});</script>",
+              "<script type=\"module\">function inittestSwrzsrVDCd(){import(\"mjs\").then((component)=>{new component.default({target: document.getElementById('testSwrzsrVDCd'),props: testPropsSwrzsrVDCd,hydrate: true});});}requestIdleCallback(function(){var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {var objK = Object.keys(entries);var objKl = objK.length;var objKi = 0;for (; objKi < objKl; objKi++) {var entry = entries[objK[objKi]];if (entry.isIntersecting) {observer.unobserve(document.getElementById('testSwrzsrVDCd'));if (document.eg_test) {inittestSwrzsrVDCd();} else {document.eg_test = true;inittestSwrzsrVDCd();}}}}, {rootMargin: '300px',threshold: 20});observerSwrzsrVDCd.observe(document.getElementById('testSwrzsrVDCd'));}, {timeout: 1000});</script>",
           },
         ]),
       ),
@@ -286,7 +394,7 @@ describe('#hydrateComponent', () => {
             priority: 30,
             source: 'testSwrzsrVDCd',
             string:
-              "<script type=\"module\">function inittestSwrzsrVDCd(){import(\"mjs\").then((component)=>{new component.default({target: document.getElementById('testSwrzsrVDCd'),props: testPropsSwrzsrVDCd,hydrate: true});});}window.addEventListener('load', function (event) {var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {var objK = Object.keys(entries);var objKl = objK.length;var objKi = 0;for (; objKi < objKl; objKi++) {var entry = entries[objK[objKi]];if (entry.isIntersecting) {observer.unobserve(document.getElementById('testSwrzsrVDCd'));if (document.eg_test) {inittestSwrzsrVDCd();} else {document.eg_test = true;inittestSwrzsrVDCd();}}}}, {rootMargin: '200px',threshold: 0});observerSwrzsrVDCd.observe(document.getElementById('testSwrzsrVDCd'));});</script>",
+              "<script type=\"module\">function inittestSwrzsrVDCd(){import(\"mjs\").then((component)=>{new component.default({target: document.getElementById('testSwrzsrVDCd'),props: testPropsSwrzsrVDCd,hydrate: true});});}requestIdleCallback(function(){var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {var objK = Object.keys(entries);var objKl = objK.length;var objKi = 0;for (; objKi < objKl; objKi++) {var entry = entries[objK[objKi]];if (entry.isIntersecting) {observer.unobserve(document.getElementById('testSwrzsrVDCd'));if (document.eg_test) {inittestSwrzsrVDCd();} else {document.eg_test = true;inittestSwrzsrVDCd();}}}}, {rootMargin: '200px',threshold: 0});observerSwrzsrVDCd.observe(document.getElementById('testSwrzsrVDCd'));}, {timeout: 1000});</script>",
           },
         ]),
       ),
@@ -324,7 +432,7 @@ describe('#hydrateComponent', () => {
             priority: 30,
             source: 'testSwrzsrVDCd',
             string:
-              "<script type=\"module\">function inittestSwrzsrVDCd(){import(\"mjs\").then((component)=>{new component.default({target: document.getElementById('testSwrzsrVDCd'),props: {},hydrate: true});});}window.addEventListener('load', function (event) {var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {var objK = Object.keys(entries);var objKl = objK.length;var objKi = 0;for (; objKi < objKl; objKi++) {var entry = entries[objK[objKi]];if (entry.isIntersecting) {observer.unobserve(document.getElementById('testSwrzsrVDCd'));if (document.eg_test) {inittestSwrzsrVDCd();} else {document.eg_test = true;inittestSwrzsrVDCd();}}}}, {rootMargin: '200px',threshold: 0});observerSwrzsrVDCd.observe(document.getElementById('testSwrzsrVDCd'));});</script>",
+              "<script type=\"module\">function inittestSwrzsrVDCd(){import(\"mjs\").then((component)=>{new component.default({target: document.getElementById('testSwrzsrVDCd'),props: {},hydrate: true});});}requestIdleCallback(function(){var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {var objK = Object.keys(entries);var objKl = objK.length;var objKi = 0;for (; objKi < objKl; objKi++) {var entry = entries[objK[objKi]];if (entry.isIntersecting) {observer.unobserve(document.getElementById('testSwrzsrVDCd'));if (document.eg_test) {inittestSwrzsrVDCd();} else {document.eg_test = true;inittestSwrzsrVDCd();}}}}, {rootMargin: '200px',threshold: 0});observerSwrzsrVDCd.observe(document.getElementById('testSwrzsrVDCd'));}, {timeout: 1000});</script>",
           },
         ]),
       ),
@@ -387,7 +495,7 @@ describe('#hydrateComponent', () => {
           priority: 30,
           source: 'preloadSwrzsrVDCd',
           string:
-            "<script type=\"module\">function initpreloadSwrzsrVDCd(){import(\"mjs\").then((component)=>{new component.default({target: document.getElementById('preloadSwrzsrVDCd'),props: preloadPropsSwrzsrVDCd,hydrate: true});});}window.addEventListener('load', function (event) {var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {var objK = Object.keys(entries);var objKl = objK.length;var objKi = 0;for (; objKi < objKl; objKi++) {var entry = entries[objK[objKi]];if (entry.isIntersecting) {observer.unobserve(document.getElementById('preloadSwrzsrVDCd'));if (document.eg_preload) {initpreloadSwrzsrVDCd();} else {document.eg_preload = true;initpreloadSwrzsrVDCd();}}}}, {rootMargin: '200px',threshold: 0});observerSwrzsrVDCd.observe(document.getElementById('preloadSwrzsrVDCd'));});</script>",
+            "<script type=\"module\">function initpreloadSwrzsrVDCd(){import(\"mjs\").then((component)=>{new component.default({target: document.getElementById('preloadSwrzsrVDCd'),props: preloadPropsSwrzsrVDCd,hydrate: true});});}requestIdleCallback(function(){var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {var objK = Object.keys(entries);var objKl = objK.length;var objKi = 0;for (; objKi < objKl; objKi++) {var entry = entries[objK[objKi]];if (entry.isIntersecting) {observer.unobserve(document.getElementById('preloadSwrzsrVDCd'));if (document.eg_preload) {initpreloadSwrzsrVDCd();} else {document.eg_preload = true;initpreloadSwrzsrVDCd();}}}}, {rootMargin: '200px',threshold: 0});observerSwrzsrVDCd.observe(document.getElementById('preloadSwrzsrVDCd'));}, {timeout: 1000});</script>",
         },
         { priority: 100, source: 'eagerSwrzsrVDCd', string: '<script>var eagerPropsSwrzsrVDCd = {a:"b"};</script>' },
         {
@@ -423,7 +531,7 @@ describe('#hydrateComponent', () => {
           priority: 30,
           source: 'lazySwrzsrVDCd',
           string:
-            "<script type=\"module\">function initlazySwrzsrVDCd(){import(\"mjs\").then((component)=>{new component.default({target: document.getElementById('lazySwrzsrVDCd'),props: lazyPropsSwrzsrVDCd,hydrate: true});});}window.addEventListener('load', function (event) {var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {var objK = Object.keys(entries);var objKl = objK.length;var objKi = 0;for (; objKi < objKl; objKi++) {var entry = entries[objK[objKi]];if (entry.isIntersecting) {observer.unobserve(document.getElementById('lazySwrzsrVDCd'));if (document.eg_lazy) {initlazySwrzsrVDCd();} else {document.eg_lazy = true;initlazySwrzsrVDCd();}}}}, {rootMargin: '200px',threshold: 0});observerSwrzsrVDCd.observe(document.getElementById('lazySwrzsrVDCd'));});</script>",
+            "<script type=\"module\">function initlazySwrzsrVDCd(){import(\"mjs\").then((component)=>{new component.default({target: document.getElementById('lazySwrzsrVDCd'),props: lazyPropsSwrzsrVDCd,hydrate: true});});}requestIdleCallback(function(){var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {var objK = Object.keys(entries);var objKl = objK.length;var objKi = 0;for (; objKi < objKl; objKi++) {var entry = entries[objK[objKi]];if (entry.isIntersecting) {observer.unobserve(document.getElementById('lazySwrzsrVDCd'));if (document.eg_lazy) {initlazySwrzsrVDCd();} else {document.eg_lazy = true;initlazySwrzsrVDCd();}}}}, {rootMargin: '200px',threshold: 0});observerSwrzsrVDCd.observe(document.getElementById('lazySwrzsrVDCd'));}, {timeout: 1000});</script>",
         },
       ]),
     );
@@ -502,8 +610,7 @@ describe('#hydrateComponent', () => {
         {
           priority: 30,
           source: 'eagerSwrzsrVDCd',
-          string:
-            '<script type="module">function initeagerSwrzsrVDCd(){import("mjs").then((component)=>{new component.default({target: document.getElementById(\'eagerSwrzsrVDCd\'),props: eagerPropsSwrzsrVDCd,hydrate: true});});}initeagerSwrzsrVDCd();</script>',
+          string: `<script type=\"module\">function initeagerSwrzsrVDCd(){import(\"mjs\").then((component)=>{new component.default({target: document.getElementById('eagerSwrzsrVDCd'),props: eagerPropsSwrzsrVDCd,hydrate: true});});}initeagerSwrzsrVDCd();</script>`,
         },
         { priority: 100, source: 'lazySwrzsrVDCd', string: '<script>var lazyPropsSwrzsrVDCd = {a:"b"};</script>' },
         {
@@ -521,7 +628,7 @@ describe('#hydrateComponent', () => {
           priority: 30,
           source: 'lazySwrzsrVDCd',
           string:
-            "<script type=\"module\">function initlazySwrzsrVDCd(){import(\"mjs\").then((component)=>{new component.default({target: document.getElementById('lazySwrzsrVDCd'),props: lazyPropsSwrzsrVDCd,hydrate: true});});}window.addEventListener('load', function (event) {var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {var objK = Object.keys(entries);var objKl = objK.length;var objKi = 0;for (; objKi < objKl; objKi++) {var entry = entries[objK[objKi]];if (entry.isIntersecting) {observer.unobserve(document.getElementById('lazySwrzsrVDCd'));if (document.eg_lazy) {initlazySwrzsrVDCd();} else {document.eg_lazy = true;initlazySwrzsrVDCd();}}}}, {rootMargin: '200px',threshold: 0});observerSwrzsrVDCd.observe(document.getElementById('lazySwrzsrVDCd'));});</script>",
+            "<script type=\"module\">function initlazySwrzsrVDCd(){import(\"mjs\").then((component)=>{new component.default({target: document.getElementById('lazySwrzsrVDCd'),props: lazyPropsSwrzsrVDCd,hydrate: true});});}requestIdleCallback(function(){var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {var objK = Object.keys(entries);var objKl = objK.length;var objKi = 0;for (; objKi < objKl; objKi++) {var entry = entries[objK[objKi]];if (entry.isIntersecting) {observer.unobserve(document.getElementById('lazySwrzsrVDCd'));if (document.eg_lazy) {initlazySwrzsrVDCd();} else {document.eg_lazy = true;initlazySwrzsrVDCd();}}}}, {rootMargin: '200px',threshold: 0});observerSwrzsrVDCd.observe(document.getElementById('lazySwrzsrVDCd'));}, {timeout: 1000});</script>",
         },
       ]),
     );

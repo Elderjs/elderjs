@@ -159,10 +159,11 @@ export type PluginOptions = {
 export type ExcludesFalse = <T>(x: T | false) => x is T;
 
 export type HydrateOptions = {
-  loading: string;
-  preload: boolean;
-  rootMargin: string;
+  loading?: 'lazy' | 'eager' | 'none';
+  timeout?: number;
+  preload?: boolean;
   threshold: number;
+  rootMargin: string;
 };
 
 export interface ComponentPayload {

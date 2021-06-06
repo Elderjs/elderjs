@@ -7,7 +7,6 @@ test('includes all', () => {
     'svelteComponent',
     'getUniqueId',
     'validateShortcode',
-    'IntersectionObserver',
     'Page',
     'parseBuildPerf',
     'perf',

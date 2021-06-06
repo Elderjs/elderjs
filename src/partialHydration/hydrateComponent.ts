@@ -1,9 +1,20 @@
 import devalue from 'devalue';
+import { Page } from '../utils';
 import getUniqueId from '../utils/getUniqueId';
+import { HydrateOptions } from '../utils/types';
 
-export const IntersectionObserver = ({ el, name, loaded, notLoaded, id, rootMargin = '200px', threshold = 0 }) => {
+export const IntersectionObserver = ({
+  el,
+  name,
+  loaded,
+  notLoaded,
+  id,
+  rootMargin = '200px',
+  threshold = 0,
+  timeout = 1000,
+}) => {
   return `
-      window.addEventListener('load', function (event) {
+  ${timeout > 0 ? `requestIdleCallback(function(){` : `window.addEventListener('load', function (event) {`}
         var observer${id} = new IntersectionObserver(function(entries, observer) {
           var objK = Object.keys(entries);
           var objKl = objK.length;
@@ -25,9 +36,19 @@ export const IntersectionObserver = ({ el, name, loaded, notLoaded, id, rootMarg
           threshold: ${threshold}
         });
         observer${id}.observe(${el});
-      });
+      ${timeout > 0 ? `}, {timeout: ${timeout}});` : '});'}
     `;
 };
+
+export interface IHydrateComponent {
+  innerHtml: string;
+  componentName: string;
+  hydrateOptions: HydrateOptions;
+  page: Page;
+  iife: string;
+  clientSrcMjs: string;
+  props: any;
+}
 
 export default function hydrateComponent({
   innerHtml,
@@ -37,7 +58,7 @@ export default function hydrateComponent({
   iife,
   clientSrcMjs,
   props,
-}): string {
+}: IHydrateComponent): string {
   const id = getUniqueId();
   const lowerCaseComponent = componentName.toLowerCase();
   const uniqueComponentName = `${lowerCaseComponent}${id}`;
@@ -59,8 +80,8 @@ export default function hydrateComponent({
     });
   }
 
+  // should we write props to the page?
   const hasProps = Object.keys(props).length > 0;
-
   if (hasProps) {
     page.hydrateStack.push({
       source: uniqueComponentName,
@@ -118,6 +139,7 @@ export default function hydrateComponent({
                 notLoaded: `init${uniqueComponentName}();`,
                 rootMargin: hydrateOptions.rootMargin || '200px',
                 threshold: hydrateOptions.threshold || 0,
+                timeout: hydrateOptions.timeout <= 0 ? 0 : 1000,
                 id,
               })}`
         }
