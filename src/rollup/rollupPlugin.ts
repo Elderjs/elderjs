@@ -288,7 +288,7 @@ export async function minifyCss(dependencies: string[] | 'all' = [], elderConfig
     sourceMap: true,
     sourceMapInlineSources: true,
     level: isDev ? 0 : 1,
-    rebaseTo: elderConfig.$$internal.distElder,
+    rebaseTo: elderConfig.distDir,
   });
   const sorted = sortCss(css);
   return {
