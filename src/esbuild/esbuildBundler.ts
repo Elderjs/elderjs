@@ -64,7 +64,32 @@ export function getPackagesWithSvelte(pkg, elderConfig: SettingsOptions) {
   return sveltePackages;
 }
 
-const svelteHandler = async ({ elderConfig, svelteConfig, replacements, startOrRestartServer }) => {
+const getRestartHelper = (startOrRestartServer) => {
+  let state;
+  const defaultState = { ssr: false, client: false };
+  const resetState = () => {
+    state = JSON.parse(JSON.stringify(defaultState));
+  };
+
+  resetState();
+
+  return (type: 'start' | 'reset' | 'client' | 'ssr') => {
+    if (type === 'start') {
+      return startOrRestartServer();
+    }
+    if (type === 'reset') {
+      return resetState();
+    }
+
+    state[type] = true;
+    if (state.ssr && state.client) {
+      startOrRestartServer();
+      resetState();
+    }
+  };
+};
+
+const svelteHandler = async ({ elderConfig, svelteConfig, replacements, restartHelper }) => {
   const builders: { ssr?: BuildResult; client?: BuildResult } = {};
 
   // eslint-disable-next-line global-require
@@ -88,7 +113,8 @@ const svelteHandler = async ({ elderConfig, svelteConfig, replacements, startOrR
     ],
     watch: {
       onRebuild(error) {
-        if (error) console.error('client watch build failed:', error);
+        restartHelper('ssr');
+        if (error) console.error('ssr watch build failed:', error);
       },
     },
     format: 'cjs',
@@ -121,7 +147,7 @@ const svelteHandler = async ({ elderConfig, svelteConfig, replacements, startOrR
     watch: {
       onRebuild(error) {
         if (error) console.error('client watch build failed:', error);
-        startOrRestartServer();
+        restartHelper('client');
       },
     },
     format: 'esm',
@@ -140,16 +166,17 @@ const svelteHandler = async ({ elderConfig, svelteConfig, replacements, startOrR
     },
   });
 
-  startOrRestartServer();
+  restartHelper('start');
 
   const restart = async () => {
     if (builders.ssr) await builders.ssr.stop();
     if (builders.client) await builders.client.stop();
+    restartHelper('reset');
     return svelteHandler({
       elderConfig,
       svelteConfig,
       replacements,
-      startOrRestartServer,
+      restartHelper,
     });
   };
 
@@ -169,6 +196,8 @@ const esbuildBundler = async ({ initializationOptions = {}, replacements = {} }:
   const { startOrRestartServer, startWatcher, childProcess } = devServer({
     elderConfig,
   });
+
+  const restartHelper = getRestartHelper(startOrRestartServer);
 
   if (!fs.existsSync(path.resolve('./node_modules/intersection-observer/intersection-observer.js'))) {
     throw new Error(`Missing 'intersection-observer' dependency. Run 'npm i --save intersection-observer' to fix.`);
@@ -190,7 +219,7 @@ const esbuildBundler = async ({ initializationOptions = {}, replacements = {} }:
     elderConfig,
     svelteConfig,
     replacements,
-    startOrRestartServer,
+    restartHelper,
   });
 
   startWatcher();
