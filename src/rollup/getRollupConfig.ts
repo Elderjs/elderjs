@@ -216,27 +216,32 @@ export default function getRollupConfig(options) {
     }),
   );
 
-  configs.push(
-    createBrowserConfig({
-      input: [`${relSrcDir}/components/**/*.svelte`, ...pluginGlobs],
-      output: [
-        {
-          dir: elderConfig.$$internal.clientComponents,
-          sourcemap: !production ? 'inline' : false,
-          format: 'esm',
-          entryFileNames: '[name].[hash].js',
-        },
-      ],
-      multiInputConfig: multiInput({
-        relative: 'src/',
-        // transformOutputPath: (output) => `${path.basename(output)}`,
+  const components = [...glob.sync(`${relSrcDir}/components/**/*.svelte`), ...pluginGlobs];
+
+  if (components.length > 0) {
+    // keep things from crashing of there are no components
+    configs.push(
+      createBrowserConfig({
+        input: [glob.sync(`${relSrcDir}/components/**/*.svelte`), ...pluginGlobs],
+        output: [
+          {
+            dir: elderConfig.$$internal.clientComponents,
+            sourcemap: !production ? 'inline' : false,
+            format: 'esm',
+            entryFileNames: '[name].[hash].js',
+          },
+        ],
+        multiInputConfig: multiInput({
+          relative: 'src/',
+          // transformOutputPath: (output) => `${path.basename(output)}`,
+        }),
+        svelteConfig,
+        replacements,
+        elderConfig,
+        startDevServer,
       }),
-      svelteConfig,
-      replacements,
-      elderConfig,
-      startDevServer,
-    }),
-  );
+    );
+  }
 
   // legacy is only done on production or not split modes.
   if (elderConfig.legacy && production) {

@@ -83,11 +83,13 @@ export default function hydrateComponent({
   // should we write props to the page?
   const hasProps = Object.keys(props).length > 0;
   if (hasProps) {
+    page.perf.start(`page.hydrate.${componentName}`);
     page.hydrateStack.push({
       source: uniqueComponentName,
       string: `<script>var ${uniquePropsName} = ${devalue(props)};</script>`,
       priority: 100,
     });
+    page.perf.end(`page.hydrate.${componentName}`);
   }
 
   if (iife) {
