@@ -80,16 +80,20 @@ export default function hydrateComponent({
     });
   }
 
-  // should we write props to the page?
+  // // should we write props to the page?
   const hasProps = Object.keys(props).length > 0;
+  // if (hasProps) {
+  //   page.perf.start(`page.hydrate.${componentName}`);
+  //   page.hydrateStack.push({
+  //     source: uniqueComponentName,
+  //     string: `<script>var ${uniquePropsName} = ${devalue(props)};</script>`,
+  //     priority: 100,
+  //   });
+  //   page.perf.end(`page.hydrate.${componentName}`);
+  // }
+
   if (hasProps) {
-    page.perf.start(`page.hydrate.${componentName}`);
-    page.hydrateStack.push({
-      source: uniqueComponentName,
-      string: `<script>var ${uniquePropsName} = ${devalue(props)};</script>`,
-      priority: 100,
-    });
-    page.perf.end(`page.hydrate.${componentName}`);
+    page.propsToHydrate.push([uniquePropsName, props]);
   }
 
   if (iife) {
@@ -109,7 +113,7 @@ export default function hydrateComponent({
         function init${uniqueComponentName}(){
           new ___elderjs_${componentName}({
             target: document.getElementById('${uniqueComponentName}'),
-            props:  ${hasProps ? `${uniquePropsName}` : '{}'},
+            props:  ${hasProps ? `_$(${uniquePropsName})` : '{}'},
             hydrate: true,
           });
         }
@@ -126,7 +130,7 @@ export default function hydrateComponent({
           import("${clientSrcMjs}").then((component)=>{
             new component.default({ 
               target: document.getElementById('${uniqueComponentName}'),
-              props: ${hasProps ? `${uniquePropsName}` : '{}'},
+              props: ${hasProps ? `_$(${uniquePropsName})` : '{}'},
               hydrate: true
               });
           });

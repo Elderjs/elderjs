@@ -38,7 +38,6 @@
     "core-js": "^3.9.1",
     "cosmiconfig": "^7.0.0",
     "del": "^6.0.0",
-    "devalue": "^2.0.1",
     "esbuild": "^0.12.4",
     "fs-extra": "^9.1.0",
     "glob": "^7.1.6",

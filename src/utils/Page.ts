@@ -8,6 +8,7 @@ import { RoutesOptions } from '../routes/types';
 import createReadOnlyProxy from './createReadOnlyProxy';
 import outputStyles from './outputStyles';
 import mountComponentsInHtml from '../partialHydration/mountComponentsInHtml';
+import prepareProps from '../partialHydration/prepareProps';
 
 const buildPage = async (page) => {
   try {
@@ -76,6 +77,8 @@ const buildPage = async (page) => {
 
     // shortcodes can add svelte components, so we have to process the resulting html accordingly.
     page.layoutHtml = mountComponentsInHtml({ page, html: page.layoutHtml, hydrateOptions: false });
+
+    prepareProps(page);
 
     await page.runHook('stacks', page);
 
@@ -201,6 +204,8 @@ class Page {
 
   shortcodes: ShortcodeDefs;
 
+  propsToHydrate: [string, any][];
+
   constructor({
     request,
     settings,
@@ -255,6 +260,7 @@ class Page {
       this.shouldSkipRequest = true;
     };
     this.resNext = next;
+    this.propsToHydrate = [];
   }
 
   build() {
