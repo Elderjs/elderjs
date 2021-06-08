@@ -1,4 +1,3 @@
-import devalue from 'devalue';
 import { Page } from '../utils';
 import getUniqueId from '../utils/getUniqueId';
 import { HydrateOptions } from '../utils/types';
