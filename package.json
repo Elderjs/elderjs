@@ -1,6 +1,6 @@
 {
   "name": "@elderjs/elderjs",
-  "version": "1.5.0-rc9",
+  "version": "1.5.0-rc10",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
   "engineStrict": true,
@@ -31,6 +31,7 @@
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^11.2.0",
     "@rollup/plugin-replace": "^2.4.1",
+    "devalue": "^2.0.1",
     "btoa": "^1.2.1",
     "chokidar": "^3.5.1",
     "clean-css": "^5.1.1",
