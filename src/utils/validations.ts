@@ -39,9 +39,18 @@ const configSchema = yup.object({
     .label(
       "Where Elder.js should find it's expected file structure. If you are using a build step such as typescript on your project, you may need to edit this. ",
     ),
+  props: yup.object({
+    compress: yup.boolean().notRequired().default(false).label('Compress the props of hydrated components.'),
+    replacementChars: yup
+      .string()
+      .notRequired()
+      .default('$abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
+      .label('List of characters to be used when compressing props'),
+  }),
   debug: yup
     .object()
     .shape({
+      props: yup.boolean().notRequired().default(false).label('Adds debugging information for prop compression'),
       stacks: yup.boolean().notRequired().default(false).label('Outputs details of stack processing in the console.'),
       hooks: yup.boolean().notRequired().default(false).label('Output details of hook execution in the console.'),
       shortcodes: yup

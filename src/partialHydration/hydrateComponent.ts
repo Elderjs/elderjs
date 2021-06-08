@@ -112,7 +112,7 @@ export default function hydrateComponent({
         function init${uniqueComponentName}(){
           new ___elderjs_${componentName}({
             target: document.getElementById('${uniqueComponentName}'),
-            props:  ${hasProps ? `_$(${uniquePropsName})` : '{}'},
+            props:  ${hasProps ? `$!(${uniquePropsName})` : '{}'},
             hydrate: true,
           });
         }

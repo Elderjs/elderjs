@@ -1,7 +1,5 @@
 import { Page } from '../utils';
 
-const chars =
-  '¢£¤¥¦§¨©ª«¬®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$?|^%#@+-)(.:;*&¡';
 const reserved = /^(?:do|if|in|for|int|let|new|try|var|byte|case|char|else|enum|goto|long|this|void|with|await|break|catch|class|const|final|float|short|super|throw|while|yield|delete|double|export|import|native|return|switch|throws|typeof|boolean|default|extends|finally|package|private|abstract|continue|debugger|function|volatile|interface|protected|transient|implements|instanceof|synchronized)$/;
 
 const isPrimitive = (thing: any) => Object(thing) !== thing;
@@ -40,11 +38,11 @@ const walkAndCount = (thing, counts: Map<string, number>) => {
         proto !== null &&
         Object.getOwnPropertyNames(proto).sort().join('\0') !== objectProtoOwnPropertyNames
       ) {
-        throw new Error(`Cannot stringify arbitrary non-POJOs`);
+        throw new Error(`Cannot stringify objects with augmented prototypes`);
       }
 
       if (Object.getOwnPropertySymbols(thing).length > 0) {
-        throw new Error(`Cannot stringify POJOs with symbolic keys`);
+        throw new Error(`Cannot stringify objects with symbolic keys`);
       }
 
       Object.keys(thing).forEach((key) => {
@@ -55,13 +53,13 @@ const walkAndCount = (thing, counts: Map<string, number>) => {
   }
 };
 
-const getName = (num: number, counts: Map<string, number>) => {
+const getName = (num: number, counts: Map<string, number>, replacementChars: string) => {
   let name = '';
-
+  const { length } = replacementChars;
   do {
-    name = chars[num % chars.length] + name;
+    name = replacementChars[num % length] + name;
     // eslint-disable-next-line no-bitwise
-    num = ~~(num / chars.length) - 1;
+    num = ~~(num / length) - 1;
   } while (num >= 0);
 
   if (counts.has(name)) name = `${name}_`;
@@ -73,14 +71,15 @@ interface IPrepareSubsitutions {
   counts: Map<string, number>;
   substitutions: Map<string, string>;
   initialValues: Map<string, string>;
+  replacementChars: string;
 }
 
-const prepareSubstitutions = ({ counts, substitutions, initialValues }: IPrepareSubsitutions) => {
+const prepareSubstitutions = ({ counts, substitutions, initialValues, replacementChars }: IPrepareSubsitutions) => {
   Array.from(counts)
     .filter((entry) => entry[1] > 1)
     .sort((a, b) => b[1] - a[1])
     .forEach((entry, i) => {
-      const name = getName(i, counts);
+      const name = getName(i, counts, replacementChars);
       substitutions.set(entry[0], name);
       initialValues.set(name, entry[0]);
     });
@@ -101,61 +100,91 @@ const walkAndSubstitute = (thing, substitutions: Map<string, string>) => {
 };
 
 export default (page: Page) => {
-  page.perf.start('prepareProps');
-  const counts = new Map();
-  const substitutions = new Map();
-  const initialValues = new Map();
+  let decompressCode = `<script>_$ = function(_t){return _t}</script>`;
+  if (page.settings.props.compress) {
+    page.perf.start('prepareProps');
+    const counts = new Map();
+    const substitutions = new Map();
+    const initialValues = new Map();
 
-  let initialPropLength = 0;
-  let hydratedPropLength = 0;
+    let initialPropLength = 0;
+    let hydratedPropLength = 0;
 
-  // count each one.
-  let i = 0;
-  for (; i < page.propsToHydrate.length; i += 1) {
-    walkAndCount(page.propsToHydrate[i][1], counts);
-    initialPropLength += JSON.stringify(page.propsToHydrate[i][1]).length;
+    // count each one.
+    let i = 0;
+    for (; i < page.propsToHydrate.length; i += 1) {
+      walkAndCount(page.propsToHydrate[i][1], counts);
+      if (page.settings.debug.props) initialPropLength += JSON.stringify(page.propsToHydrate[i][1]).length;
+    }
+
+    prepareSubstitutions({
+      counts,
+      substitutions,
+      initialValues,
+      replacementChars: page.settings.props.replacementChars,
+    });
+
+    if (substitutions.size > 0) {
+      decompressCode = `<script>
+      var gt = function (_t) { return Object.prototype.toString.call(_t).slice(8, -1);}
+      var dic = new Map(${JSON.stringify(Array.from(initialValues))});
+      var _$ = function(_t){
+          if (dic.has(_t)) return dic.get(_t);
+          if (Array.isArray(_t)) return _t.map((t) => _$(t));
+          if (gt(_t) === "Object") {
+          return Object.keys(_t).reduce(function (out, cv){
+              var key = dic.get(cv) || cv;
+              out[key] = _$(_t[cv]);
+              return out;
+            }, {});
+          }
+          return _t;
+      };
+    </script>`;
+    }
+
+    if (page.settings.debug.props) hydratedPropLength += decompressCode.length;
+
+    let ii = 0;
+    for (; ii < page.propsToHydrate.length; ii += 1) {
+      const substitution = JSON.stringify(walkAndSubstitute(page.propsToHydrate[ii][1], substitutions));
+      if (page.settings.debug.props) hydratedPropLength += substitution.length;
+      page.hydrateStack.push({
+        source: page.propsToHydrate[ii][0],
+        string: `<script>
+      var ${page.propsToHydrate[ii][0]} = ${substitution};
+      </script>`,
+        priority: 100,
+      });
+    }
+
+    if (page.settings.debug.props) {
+      console.log('propCompression', {
+        initialPropLength,
+        hydratedPropLength,
+        reduction: 1 - hydratedPropLength / initialPropLength,
+      });
+    }
+
+    page.perf.end('prepareProps');
+  } else {
+    let dd = 0;
+    for (; dd < page.propsToHydrate.length; dd += 1) {
+      page.hydrateStack.push({
+        source: page.propsToHydrate[dd][0],
+        string: `<script>
+        var ${page.propsToHydrate[dd][0]} = ${JSON.stringify(page.propsToHydrate[dd][1])};
+        </script>`,
+        priority: 100,
+      });
+    }
   }
 
-  prepareSubstitutions({ counts, substitutions, initialValues });
+  // always add decompress code even if it is just the basic return function.
 
-  const decompressCode = `<script>
-  var gt = function (_t) { return Object.prototype.toString.call(_t).slice(8, -1);}
-  var dic = new Map(${JSON.stringify(Array.from(initialValues))});
-  var _$ = function(_t){
-      if (dic.has(_t)) return dic.get(_t);
-      if (Array.isArray(_t)) return _t.map((t) => _$(t));
-      if (gt(_t) === "Object") {
-      return Object.keys(_t).reduce(function (out, cv){
-          var key = dic.get(cv) || cv;
-          out[key] = _$(_t[cv]);
-          return out;
-        }, {});
-      }
-      return _t;
-  };
-</script>`;
-
-  hydratedPropLength += decompressCode.length;
   page.beforeHydrateStack.push({
     source: 'compressProps',
     string: decompressCode,
     priority: 100,
   });
-
-  let ii = 0;
-  for (; ii < page.propsToHydrate.length; ii += 1) {
-    const substitution = JSON.stringify(walkAndSubstitute(page.propsToHydrate[ii][1], substitutions));
-    hydratedPropLength += substitution.length;
-    page.hydrateStack.push({
-      source: page.propsToHydrate[ii][0],
-      string: `<script>
-      var ${page.propsToHydrate[ii][0]} = ${substitution};
-      </script>`,
-      priority: 100,
-    });
-  }
-
-  console.log({ initialPropLength, hydratedPropLength, reduction: 1 - hydratedPropLength / initialPropLength });
-
-  page.perf.end('prepareProps');
 };

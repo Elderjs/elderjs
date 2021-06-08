@@ -44,6 +44,12 @@ type DebugOptions = {
   build: boolean;
   automagic: boolean;
   shortcodes: boolean;
+  props: boolean;
+};
+
+type PropOptions = {
+  compress: boolean;
+  replacementChars: string;
 };
 
 export type InitializationOptions = {
@@ -57,6 +63,7 @@ export type InitializationOptions = {
   build?: BuildOptions;
   debug?: DebugOptions;
   plugins?: any;
+  props?: PropOptions;
   hooks?: {
     disable?: string[];
   };
@@ -80,6 +87,7 @@ export type SettingsOptions = {
   build: BuildOptions | false;
   debug: DebugOptions;
   plugins?: any;
+  props: PropOptions;
   hooks: {
     disable?: string[];
   };
