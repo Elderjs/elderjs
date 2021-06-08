@@ -216,9 +216,9 @@ export default function getRollupConfig(options) {
     }),
   );
 
-  const components = [...glob.sync(`${relSrcDir}/components/**/*.svelte`), ...pluginGlobs];
+  const clientComponents = [...glob.sync(`${relSrcDir}/components/**/*.svelte`), ...pluginGlobs];
 
-  if (components.length > 0) {
+  if (clientComponents.length > 0) {
     // keep things from crashing of there are no components
     configs.push(
       createBrowserConfig({
