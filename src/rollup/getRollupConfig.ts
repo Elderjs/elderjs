@@ -220,7 +220,7 @@ export default function getRollupConfig(options) {
     // keep things from crashing of there are no components
     configs.push(
       createBrowserConfig({
-        input: [glob.sync(`${relSrcDir}/components/**/*.svelte`), ...pluginGlobs],
+        input: [`${relSrcDir}/components/**/*.svelte`, ...pluginGlobs],
         output: [
           {
             dir: elderConfig.$$internal.clientComponents,
@@ -231,7 +231,6 @@ export default function getRollupConfig(options) {
         ],
         multiInputConfig: multiInput({
           relative: 'src/',
-          // transformOutputPath: (output) => `${path.basename(output)}`,
         }),
         svelteConfig,
         replacements,
