@@ -99,8 +99,10 @@ const walkAndSubstitute = (thing, substitutions: Map<string, string>) => {
   return thing;
 };
 
+const createDic = (values: [string, string][]) => values.reduce((out, cv) => ({ ...out, [cv[0]]: cv[1] }), {});
+
 export default (page: Page) => {
-  let decompressCode = `<script>_$ = function(_t){return _t}</script>`;
+  let decompressCode = `<script>$ejs = function(_t){return _t}</script>`;
   if (page.settings.props.compress) {
     page.perf.start('prepareProps');
     const counts = new Map();
@@ -126,15 +128,15 @@ export default (page: Page) => {
 
     if (substitutions.size > 0) {
       decompressCode = `<script>
-      var gt = function (_t) { return Object.prototype.toString.call(_t).slice(8, -1);}
-      var dic = new Map(${JSON.stringify(Array.from(initialValues))});
-      var _$ = function(_t){
-          if (dic.has(_t)) return dic.get(_t);
-          if (Array.isArray(_t)) return _t.map((t) => _$(t));
+      var $ejs = function(_t){
+        var gt = function (_t) { return Object.prototype.toString.call(_t).slice(8, -1);}
+        var ejs = ${JSON.stringify(createDic(Array.from(initialValues)))};
+          if (ejs[_t]) return ejs[_t];
+          if (Array.isArray(_t)) return _t.map((t) => $ejs(t));
           if (gt(_t) === "Object") {
           return Object.keys(_t).reduce(function (out, cv){
-              var key = dic.get(cv) || cv;
-              out[key] = _$(_t[cv]);
+              var key = ejs[cv] || cv;
+              out[key] = $ejs(_t[cv]);
               return out;
             }, {});
           }

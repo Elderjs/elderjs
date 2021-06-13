@@ -112,7 +112,7 @@ export default function hydrateComponent({
         function init${uniqueComponentName}(){
           new ___elderjs_${componentName}({
             target: document.getElementById('${uniqueComponentName}'),
-            props:  ${hasProps ? `$!(${uniquePropsName})` : '{}'},
+            props:  ${hasProps ? `$ejs(${uniquePropsName})` : '{}'},
             hydrate: true,
           });
         }
@@ -129,7 +129,7 @@ export default function hydrateComponent({
           import("${clientSrcMjs}").then((component)=>{
             new component.default({ 
               target: document.getElementById('${uniqueComponentName}'),
-              props: ${hasProps ? `_$(${uniquePropsName})` : '{}'},
+              props: ${hasProps ? `$ejs(${uniquePropsName})` : '{}'},
               hydrate: true
               });
           });
