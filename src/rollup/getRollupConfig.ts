@@ -162,8 +162,6 @@ export default function getRollupConfig(options) {
   const elderConfig = getElderConfig();
   const relSrcDir = elderConfig.srcDir.replace(elderConfig.rootDir, '').substr(1);
 
-  console.log(relSrcDir);
-
   console.log(`Elder.js using rollup in ${production ? 'production' : 'development'} mode.`);
 
   const configs = [];
