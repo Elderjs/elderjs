@@ -99,10 +99,17 @@ const walkAndSubstitute = (thing, substitutions: Map<string, string>) => {
   return thing;
 };
 
-const createDic = (values: [string, string][]) => values.reduce((out, cv) => ({ ...out, [cv[0]]: cv[1] }), {});
+const createDic = (values: [string, string][]) => {
+  const out = {};
+  for (let i = 0; i < values.length; i += 1) {
+    // eslint-disable-next-line prefer-destructuring
+    out[values[i][0]] = values[i][1];
+  }
+  return out;
+};
 
 export default (page: Page) => {
-  let decompressCode = `<script>$ejs = function(_t){return _t}</script>`;
+  let decompressCode = `<script>$ejs = function(_){return _t}</script>`;
   if (page.settings.props.compress) {
     page.perf.start('prepareProps');
     const counts = new Map();
@@ -128,20 +135,22 @@ export default (page: Page) => {
 
     if (substitutions.size > 0) {
       decompressCode = `<script>
-      var $ejs = function(_t){
-        var gt = function (_t) { return Object.prototype.toString.call(_t).slice(8, -1);}
+      var $ejs = function(){
+        var gt = function (_) { return Object.prototype.toString.call(_).slice(8, -1);};
         var ejs = ${JSON.stringify(createDic(Array.from(initialValues)))};
-          if (ejs[_t]) return ejs[_t];
-          if (Array.isArray(_t)) return _t.map((t) => $ejs(t));
-          if (gt(_t) === "Object") {
-          return Object.keys(_t).reduce(function (out, cv){
-              var key = ejs[cv] || cv;
-              out[key] = $ejs(_t[cv]);
-              return out;
-            }, {});
-          }
-          return _t;
-      };
+         return function(_){
+            if (ejs[_]) return ejs[_];
+            if (Array.isArray(_)) return _.map((t) => $ejs(t));
+            if (gt(_) === "Object") {
+            return Object.keys(_).reduce(function (out, cv){
+                var key = ejs[cv] || cv;
+                out[key] = $ejs(_[cv]);
+                return out;
+              }, {});
+            }
+            return _;
+        };
+      }();
     </script>`;
     }
 
