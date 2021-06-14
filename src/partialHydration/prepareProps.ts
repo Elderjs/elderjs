@@ -99,17 +99,8 @@ const walkAndSubstitute = (thing, substitutions: Map<string, string>) => {
   return thing;
 };
 
-const createDic = (values: [string, string][]) => {
-  const out = {};
-  for (let i = 0; i < values.length; i += 1) {
-    // eslint-disable-next-line prefer-destructuring
-    out[values[i][0]] = values[i][1];
-  }
-  return out;
-};
-
 export default (page: Page) => {
-  let decompressCode = `<script>$ejs = function(_t){return _t}</script>`;
+  let decompressCode = `<script>$ejs = function(_ejs){return _t}</script>`;
   if (page.settings.props.compress) {
     page.perf.start('prepareProps');
     const counts = new Map();
@@ -133,22 +124,36 @@ export default (page: Page) => {
       replacementChars: page.settings.props.replacementChars,
     });
 
+    // var dic = new Map(${JSON.stringify(Array.from(initialValues))});
+    // var _$ = function(_t){
+    //     if (dic.has(_t)) return dic.get(_t);
+    //     if (Array.isArray(_t)) return _t.map((t) => _$(t));
+    //     if (gt(_t) === "Object") {
+    //     return Object.keys(_t).reduce(function (out, cv){
+    //         var key = dic.get(cv) || cv;
+    //         out[key] = _$(_t[cv]);
+    //         return out;
+    //       }, {});
+    //     }
+    //     return _t;
+    // };
+
     if (substitutions.size > 0) {
       decompressCode = `<script>
       var $ejs = function(){
-        var gt = function (_t) { return Object.prototype.toString.call(_t).slice(8, -1);};
-        var ejs = ${JSON.stringify(createDic(Array.from(initialValues)))};
-         return function(_t){
-            if (ejs[_t]) return ejs[_t];
-            if (Array.isArray(_t)) return _t.map((t) => $ejs(t));
-            if (gt(_t) === "Object") {
-            return Object.keys(_t).reduce(function (out, cv){
-                var key = ejs[cv] || cv;
-                out[key] = $ejs(_t[cv]);
+        var gt = function (_ejs) { return Object.prototype.toString.call(_ejs).slice(8, -1);};
+        var ejs = new Map(${JSON.stringify(Array.from(initialValues))});
+         return function(_ejs){
+            if (ejs.has(_ejs)) return ejs.get(_ejs);
+            if (Array.isArray(_ejs)) return _ejs.map((t) => $ejs(t));
+            if (gt(_ejs) === "Object") {
+            return Object.keys(_ejs).reduce(function (out, cv){
+                var key = ejs.get(cv) || cv;
+                out[key] = $ejs(_ejs[cv]);
                 return out;
               }, {});
             }
-            return _t;
+            return _ejs;
         };
       }();
     </script>`;
