@@ -124,20 +124,6 @@ export default (page: Page) => {
       replacementChars: page.settings.props.replacementChars,
     });
 
-    // var dic = new Map(${JSON.stringify(Array.from(initialValues))});
-    // var _$ = function(_t){
-    //     if (dic.has(_t)) return dic.get(_t);
-    //     if (Array.isArray(_t)) return _t.map((t) => _$(t));
-    //     if (gt(_t) === "Object") {
-    //     return Object.keys(_t).reduce(function (out, cv){
-    //         var key = dic.get(cv) || cv;
-    //         out[key] = _$(_t[cv]);
-    //         return out;
-    //       }, {});
-    //     }
-    //     return _t;
-    // };
-
     if (substitutions.size > 0) {
       decompressCode = `<script>
       var $ejs = function(){
