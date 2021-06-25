@@ -1,6 +1,7 @@
 import type { RoutesOptions } from '../routes/types';
 import type { HookOptions } from '../hooks/types';
 import type { ShortcodeDefs } from '../shortcodes/types';
+import Page from './Page';
 
 type ServerOptions = {
   prefix: string;
@@ -50,6 +51,7 @@ type DebugOptions = {
 type PropOptions = {
   compress: boolean;
   replacementChars: string;
+  hydration: 'html' | 'hybrid' | 'file';
 };
 
 export type InitializationOptions = {
@@ -175,7 +177,7 @@ export type HydrateOptions = {
 };
 
 export interface ComponentPayload {
-  page: any;
+  page: Page;
   props: any;
   hydrateOptions?: HydrateOptions;
 }

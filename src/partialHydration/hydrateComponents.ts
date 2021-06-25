@@ -1,4 +1,8 @@
+import fs from 'fs-extra';
+import path from 'path';
+
 import { Page } from '../utils';
+import hydrateComponent from './hydrateComponent';
 
 const reserved = /^(?:do|if|in|for|int|let|new|try|var|byte|case|char|else|enum|goto|long|this|void|with|await|break|catch|class|const|final|float|short|super|throw|while|yield|delete|double|export|import|native|return|switch|throws|typeof|boolean|default|extends|finally|package|private|abstract|continue|debugger|function|volatile|interface|protected|transient|implements|instanceof|synchronized)$/;
 
@@ -8,7 +12,9 @@ const getType = (thing: any) => Object.prototype.toString.call(thing).slice(8, -
 
 const objectProtoOwnPropertyNames = Object.getOwnPropertyNames(Object.prototype).sort().join('\0');
 
-const walkAndCount = (thing, counts: Map<string, number>) => {
+export const howManyBytes = (str) => Buffer.from(str).length;
+
+export const walkAndCount = (thing, counts: Map<string, number>) => {
   if (typeof thing === 'function') {
     throw new Error(`Cannot stringify a function`);
   }
@@ -53,7 +59,7 @@ const walkAndCount = (thing, counts: Map<string, number>) => {
   }
 };
 
-const getName = (num: number, counts: Map<string, number>, replacementChars: string) => {
+export const getName = (num: number, counts: Map<string, number>, replacementChars: string) => {
   let name = '';
   const { length } = replacementChars;
   do {
@@ -74,7 +80,12 @@ interface IPrepareSubsitutions {
   replacementChars: string;
 }
 
-const prepareSubstitutions = ({ counts, substitutions, initialValues, replacementChars }: IPrepareSubsitutions) => {
+export const prepareSubstitutions = ({
+  counts,
+  substitutions,
+  initialValues,
+  replacementChars,
+}: IPrepareSubsitutions) => {
   Array.from(counts)
     .filter((entry) => entry[1] > 1)
     .sort((a, b) => b[1] - a[1])
@@ -85,7 +96,7 @@ const prepareSubstitutions = ({ counts, substitutions, initialValues, replacemen
     });
 };
 
-const walkAndSubstitute = (thing, substitutions: Map<string, string>) => {
+export const walkAndSubstitute = (thing, substitutions: Map<string, string>) => {
   if (substitutions.has(thing)) return substitutions.get(thing);
   if (Array.isArray(thing)) return thing.map((t) => walkAndSubstitute(t, substitutions));
   if (getType(thing) === 'Object') {
@@ -99,9 +110,23 @@ const walkAndSubstitute = (thing, substitutions: Map<string, string>) => {
   return thing;
 };
 
-export default (page: Page) => {
+const hashCode = (s) => {
+  let h = 0;
+  // eslint-disable-next-line no-bitwise
+  for (let i = 0; i < s.length; i += 1) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+  return h;
+};
+
+export default async (page: Page) => {
   let decompressCode = `<script>$ejs = function(_ejs){return _t}</script>`;
-  if (page.settings.props.compress) {
+  if (!page.settings.props.compress) {
+    for (let dd = 0; dd < page.componentsToHydrate.length; dd += 1) {
+      const component = page.componentsToHydrate[dd];
+      if (component.props) {
+        component.prepared.propsString = JSON.stringify(component.props);
+      }
+    }
+  } else {
     page.perf.start('prepareProps');
     const counts = new Map();
     const substitutions = new Map();
@@ -110,11 +135,10 @@ export default (page: Page) => {
     let initialPropLength = 0;
     let hydratedPropLength = 0;
 
-    // count each one.
-    let i = 0;
-    for (; i < page.propsToHydrate.length; i += 1) {
-      walkAndCount(page.propsToHydrate[i][1], counts);
-      if (page.settings.debug.props) initialPropLength += JSON.stringify(page.propsToHydrate[i][1]).length;
+    // collect duplicate values
+    for (let i = 0; i < page.componentsToHydrate.length; i += 1) {
+      walkAndCount(page.componentsToHydrate[i].props, counts);
+      if (page.settings.debug.props) initialPropLength += JSON.stringify(page.componentsToHydrate[i].props).length;
     }
 
     prepareSubstitutions({
@@ -147,17 +171,12 @@ export default (page: Page) => {
 
     if (page.settings.debug.props) hydratedPropLength += decompressCode.length;
 
-    let ii = 0;
-    for (; ii < page.propsToHydrate.length; ii += 1) {
-      const substitution = JSON.stringify(walkAndSubstitute(page.propsToHydrate[ii][1], substitutions));
-      if (page.settings.debug.props) hydratedPropLength += substitution.length;
-      page.hydrateStack.push({
-        source: page.propsToHydrate[ii][0],
-        string: `<script>
-      var ${page.propsToHydrate[ii][0]} = ${substitution};
-      </script>`,
-        priority: 100,
-      });
+    for (let ii = 0; ii < page.componentsToHydrate.length; ii += 1) {
+      const component = page.componentsToHydrate[ii];
+      // eslint-disable-next-line no-continue
+      if (!component.props) continue; // skip components without props
+      component.prepared.propsString = JSON.stringify(walkAndSubstitute(component.props, substitutions));
+      if (page.settings.debug.props) hydratedPropLength += component.prepared.propsString.length;
     }
 
     if (page.settings.debug.props) {
@@ -167,26 +186,85 @@ export default (page: Page) => {
         reduction: 1 - hydratedPropLength / initialPropLength,
       });
     }
-
     page.perf.end('prepareProps');
-  } else {
-    let dd = 0;
-    for (; dd < page.propsToHydrate.length; dd += 1) {
-      page.hydrateStack.push({
-        source: page.propsToHydrate[dd][0],
-        string: `<script>
-        var ${page.propsToHydrate[dd][0]} = ${JSON.stringify(page.propsToHydrate[dd][1])};
-        </script>`,
-        priority: 100,
-      });
-    }
   }
 
   // always add decompress code even if it is just the basic return function.
-
   page.beforeHydrateStack.push({
     source: 'compressProps',
     string: decompressCode,
     priority: 100,
   });
+
+  for (let p = 0; p < page.componentsToHydrate.length; p += 1) {
+    const component = page.componentsToHydrate[p];
+
+    // write a file or prepare the string for the html.
+    if (component.prepared.propsString) {
+      if (
+        page.settings.props.hydration === 'file' ||
+        (page.settings.props.hydration === 'hybrid' && howManyBytes(component.prepared.propsString) > 2000)
+      ) {
+        const propPath = path.resolve(
+          page.settings.$$internal.distElder,
+          `./props/ejs-${hashCode(component.prepared.propsString)}.js`,
+        );
+
+        if (!fs.existsSync(propPath)) {
+          if (!fs.existsSync(path.resolve(page.settings.$$internal.distElder, `./props/`))) {
+            fs.mkdirSync(path.resolve(page.settings.$$internal.distElder, `./props/`), { recursive: true });
+          }
+
+          // eslint-disable-next-line no-await-in-loop
+          await fs.writeFile(propPath, `export default ${component.prepared.propsString};`);
+        }
+        component.prepared.clientPropsUrl = `/${path.relative(page.settings.distDir, propPath)}`;
+      } else {
+        component.prepared.clientPropsString = `JSON.parse(\`${component.prepared.propsString}\`)`;
+      }
+    }
+
+    page.hydrateStack.push({
+      source: component.name,
+      priority: 30,
+      string: hydrateComponent(component),
+    });
+
+    if (component.hydrateOptions.preload) {
+      page.headStack.push({
+        source: component.name,
+        priority: 50,
+        string: `<link rel="preload" href="${component.client}" as="script">`,
+        // string: `<link rel="modulepreload" href="${clientSrcMjs}">`, <-- can be an option for Chrome if browsers don't like this.
+      });
+      if (component.prepared.clientPropsUrl) {
+        page.headStack.push({
+          source: component.name,
+          priority: 49,
+          string: `<link rel="preload" href="${component.prepared.clientPropsUrl}" as="script">`,
+          // string: `<link rel="modulepreload" href="${clientSrcMjs}">`, <-- can be an option for Chrome if browsers don't like this.
+        });
+      }
+    }
+  }
+
+  // add components to stack
 };
+
+// page.hydrateStack.push({
+//   source: component.name,
+//   string: `<script>
+// var ${component.name} = ${};
+// </script>`,
+//   priority: 100,
+// });
+
+// // should we preload?
+// if (hydrateOptions.preload) {
+//   page.headStack.push({
+//     source: componentName,
+//     priority: 50,
+//     string: `<link rel="preload" href="${clientSrcMjs}" as="script">`,
+//     // string: `<link rel="modulepreload" href="${clientSrcMjs}">`, <-- can be an option for Chrome if browsers don't like this.
+//   });
+// }

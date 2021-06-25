@@ -358,7 +358,8 @@ export const devServer = ({ elderConfig }: { elderConfig: SettingsOptions }) => 
         [
           path.resolve(process.cwd(), './src'),
           path.resolve(process.cwd(), './elder.config.js'),
-          elderConfig.$$internal.distElder,
+          `${elderConfig.$$internal.distElder}/assets`,
+          `${elderConfig.$$internal.distElder}/svelte`,
           path.join(elderConfig.$$internal.ssrComponents, 'components'),
           path.join(elderConfig.$$internal.ssrComponents, 'layouts'),
           path.join(elderConfig.$$internal.ssrComponents, 'routes'),
@@ -440,6 +441,7 @@ export default function elderjsRollup({
       if (type === 'ssr' && legacy === false) {
         del.sync(elderConfig.$$internal.ssrComponents);
         del.sync(path.resolve(elderConfig.$$internal.distElder, `.${sep}assets${sep}`));
+        del.sync(path.resolve(elderConfig.$$internal.distElder, `.${sep}props${sep}`));
       } else if (type === 'client' && legacy === false) {
         del.sync(path.resolve(elderConfig.$$internal.distElder, `.${sep}svelte${sep}`));
       }

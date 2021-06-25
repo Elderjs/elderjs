@@ -40,6 +40,13 @@ const configSchema = yup.object({
       "Where Elder.js should find it's expected file structure. If you are using a build step such as typescript on your project, you may need to edit this. ",
     ),
   props: yup.object({
+    hydration: yup
+      .string()
+      .notRequired()
+      .default('hybrid')
+      .label(
+        'How should props be handled. "hybrid": writes props under 2kb to the html, props > 2kb are an external file. "html": props are written to page html. "file" writes props to a hashed external file.',
+      ),
     compress: yup.boolean().notRequired().default(false).label('Compress the props of hydrated components.'),
     replacementChars: yup
       .string()

@@ -80,6 +80,7 @@ function esbuildPluginSvelte({ type, svelteConfig, elderConfig, sveltePackages =
           if (type === 'ssr') {
             del.sync(elderConfig.$$internal.ssrComponents);
             del.sync(resolve(elderConfig.$$internal.distElder, `.${sep}assets${sep}`));
+            del.sync(resolve(elderConfig.$$internal.distElder, `.${sep}props${sep}`));
           } else if (type === 'client') {
             del.sync(resolve(elderConfig.$$internal.distElder, `.${sep}svelte${sep}`));
           }

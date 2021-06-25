@@ -1,155 +1,83 @@
-import { Page } from '../utils';
-import getUniqueId from '../utils/getUniqueId';
-import { HydrateOptions } from '../utils/types';
+import { IComponentToHydrate } from '../utils/Page';
 
-export const IntersectionObserver = ({
-  el,
-  name,
-  loaded,
-  notLoaded,
-  id,
-  rootMargin = '200px',
-  threshold = 0,
-  timeout = 1000,
-}) => {
+export default function hydrateComponent(component: IComponentToHydrate) {
+  const hydrateInstructions = {
+    rootMargin: '200px',
+    threshold: 0,
+    timeout: 1000,
+    ...component.hydrateOptions,
+  };
+
+  if (hydrateInstructions.loading === 'eager') {
+    return `
+    <script type="module">
+    ${
+      component.prepared.clientPropsUrl
+        ? `Promise.all(import("${component.client}"), import("${component.prepared.clientPropsUrl}")).then(([component, props])=>{
+          const ${component.name}Props =  props.default;`
+        : `import("${component.client}").then((component)=>{
+          const ${component.name}Props = ${component.prepared.clientPropsString || '{}'};`
+    }
+      new component.default({ 
+        target: document.getElementById('${component.name}'),
+        props: $ejs(${component.name}Props),
+        hydrate: true
+        });
+    });
+    </script>
+    `;
+  }
+
   return `
-  ${timeout > 0 ? `requestIdleCallback(function(){` : `window.addEventListener('load', function (event) {`}
-        var observer${id} = new IntersectionObserver(function(entries, observer) {
+  <script type="module">
+    ${
+      hydrateInstructions.timeout > 0
+        ? `requestIdleCallback(async function(){`
+        : `window.addEventListener('load', async function (event) {`
+    }
+    ${
+      component.prepared.clientPropsUrl
+        ? `
+      const propsFile = await import('${component.prepared.clientPropsUrl}');
+      const ${component.name}Props = propsFile.default;
+    `
+        : `
+      const ${component.name}Props = ${component.prepared.clientPropsString};    
+    `
+    }
+
+      const init${component.name} = (props) => {
+        import("${component.client}").then((component)=>{
+          new component.default({ 
+            target: document.getElementById('${component.name}'),
+            props: $ejs(props),
+            hydrate: true
+            });
+        });
+      };
+        var observer${component.id} = new IntersectionObserver(function(entries, observer) {
           var objK = Object.keys(entries);
           var objKl = objK.length;
           var objKi = 0;
           for (; objKi < objKl; objKi++) {
             var entry = entries[objK[objKi]];
             if (entry.isIntersecting) {
-              observer.unobserve(${el});
-              if (document.eg_${name}) {
-                ${loaded}
+              observer.unobserve(document.getElementById('${component.name}'));
+              if (document.eg_${component.name}) {
+                init${component.name}(${component.name}Props);
               } else {
-                document.eg_${name} = true;
-                ${notLoaded}
+                document.eg_${component.name} = true;
+                init${component.name}(${component.name}Props);
               }
             }
           }
         }, {
-          rootMargin: '${rootMargin}',
-          threshold: ${threshold}
+          rootMargin: '${hydrateInstructions.rootMargin}',
+          threshold: ${hydrateInstructions.threshold}
         });
-        observer${id}.observe(${el});
-      ${timeout > 0 ? `}, {timeout: ${timeout}});` : '});'}
+        observer${component.id}.observe(document.getElementById('${component.name}'));
+      ${hydrateInstructions.timeout > 0 ? `}, {timeout: ${hydrateInstructions.timeout}});` : '});'}
+
+  </script>
     `;
-};
-
-export interface IHydrateComponent {
-  innerHtml: string;
-  componentName: string;
-  hydrateOptions: HydrateOptions;
-  page: Page;
-  iife: string;
-  clientSrcMjs: string;
-  props: any;
-}
-
-export default function hydrateComponent({
-  innerHtml,
-  componentName,
-  hydrateOptions,
-  page,
-  iife,
-  clientSrcMjs,
-  props,
-}: IHydrateComponent): string {
-  const id = getUniqueId();
-  const lowerCaseComponent = componentName.toLowerCase();
-  const uniqueComponentName = `${lowerCaseComponent}${id}`;
-  const uniquePropsName = `${lowerCaseComponent}Props${id}`;
-
-  // hydrateOptions.loading=none for server only rendered injected into html
-  if (!hydrateOptions || hydrateOptions.loading === 'none') {
-    // if a component isn't hydrated we don't need to wrap it in a unique div.
-    return innerHtml;
-  }
-
-  // should we preload?
-  if (hydrateOptions.preload) {
-    page.headStack.push({
-      source: componentName,
-      priority: 50,
-      string: `<link rel="preload" href="${clientSrcMjs}" as="script">`,
-      // string: `<link rel="modulepreload" href="${clientSrcMjs}">`, <-- can be an option for Chrome if browsers don't like this.
-    });
-  }
-
-  // // should we write props to the page?
-  const hasProps = Object.keys(props).length > 0;
-  // if (hasProps) {
-  //   page.perf.start(`page.hydrate.${componentName}`);
-  //   page.hydrateStack.push({
-  //     source: uniqueComponentName,
-  //     string: `<script>var ${uniquePropsName} = ${devalue(props)};</script>`,
-  //     priority: 100,
-  //   });
-  //   page.perf.end(`page.hydrate.${componentName}`);
-  // }
-
-  if (hasProps) {
-    page.propsToHydrate.push([uniquePropsName, props]);
-  }
-
-  if (iife) {
-    // iife -- working in IE. Users must import some polyfills.
-    // -----------------
-    page.hydrateStack.push({
-      source: uniqueComponentName,
-      string: `<script nomodule defer src="${iife}" onload="init${uniqueComponentName}()"></script>`,
-      priority: 99,
-    });
-
-    page.hydrateStack.push({
-      source: uniqueComponentName,
-      priority: 98,
-      string: `
-        <script nomodule>
-        function init${uniqueComponentName}(){
-          new ___elderjs_${componentName}({
-            target: document.getElementById('${uniqueComponentName}'),
-            props:  ${hasProps ? `$ejs(${uniquePropsName})` : '{}'},
-            hydrate: true,
-          });
-        }
-        </script>`,
-    });
-  }
-
-  page.hydrateStack.push({
-    source: uniqueComponentName,
-    priority: 30,
-    string: `     
-        <script type="module">
-        function init${uniqueComponentName}(){
-          import("${clientSrcMjs}").then((component)=>{
-            new component.default({ 
-              target: document.getElementById('${uniqueComponentName}'),
-              props: ${hasProps ? `$ejs(${uniquePropsName})` : '{}'},
-              hydrate: true
-              });
-          });
-        }
-        ${
-          hydrateOptions.loading === 'eager'
-            ? `init${uniqueComponentName}();`
-            : `${IntersectionObserver({
-                el: `document.getElementById('${uniqueComponentName}')`,
-                name: lowerCaseComponent,
-                loaded: `init${uniqueComponentName}();`,
-                notLoaded: `init${uniqueComponentName}();`,
-                rootMargin: hydrateOptions.rootMargin || '200px',
-                threshold: hydrateOptions.threshold || 0,
-                timeout: hydrateOptions.timeout <= 0 ? 0 : 1000,
-                id,
-              })}`
-        }
-        </script>`,
-  });
-
-  return `<div class="${componentName.toLowerCase()}-component" id="${uniqueComponentName}">${innerHtml}</div>`;
 }

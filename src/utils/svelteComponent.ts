@@ -2,6 +2,7 @@
 import { ComponentPayload } from './types';
 import mountComponentsInHtml from '../partialHydration/mountComponentsInHtml';
 import hydrateComponent from '../partialHydration/hydrateComponent';
+import getUniqueId from '../utils/getUniqueId';
 
 export const getComponentName = (str) => {
   let out = str.replace('.svelte', '').replace('.js', '');
@@ -38,15 +39,32 @@ const svelteComponent = (componentName: String, folder: String = 'components') =
       page.headStack.push({ source: cleanComponentName, priority: 50, string: head });
     }
 
-    return hydrateComponent({
+    const innerHtml = mountComponentsInHtml({
+      html: htmlOutput,
       page,
-      iife,
-      clientSrcMjs: client,
-      innerHtml: mountComponentsInHtml({ html: htmlOutput, page, hydrateOptions }),
       hydrateOptions,
-      componentName: cleanComponentName,
-      props,
     });
+
+    // hydrateOptions.loading=none for server only rendered injected into html
+    if (!hydrateOptions || hydrateOptions.loading === 'none') {
+      // if a component isn't hydrated we don't need to wrap it in a unique div.
+      return innerHtml;
+    }
+
+    const id = getUniqueId();
+    const lowerCaseComponent = componentName.toLowerCase();
+    const uniqueComponentName = `${lowerCaseComponent}${id}`;
+
+    page.componentsToHydrate.push({
+      name: uniqueComponentName,
+      hydrateOptions,
+      client,
+      props: Object.keys(props).length > 0 ? props : false,
+      prepared: {},
+      id,
+    });
+
+    return `<div class="${cleanComponentName.toLowerCase()}-component" id="${uniqueComponentName}">${innerHtml}</div>`;
   } catch (e) {
     // console.log(e);
     page.errors.push(e);
