@@ -118,7 +118,7 @@ const hashCode = (s) => {
 };
 
 export default async (page: Page) => {
-  let decompressCode = `<script>$ejs = function(_ejs){return _t}</script>`;
+  let decompressCode = `<script>$ejs = function(_ejs){return _ejs}</script>`;
   if (!page.settings.props.compress) {
     for (let dd = 0; dd < page.componentsToHydrate.length; dd += 1) {
       const component = page.componentsToHydrate[dd];

@@ -13,7 +13,7 @@ export default function hydrateComponent(component: IComponentToHydrate) {
     <script type="module">
     ${
       component.prepared.clientPropsUrl
-        ? `Promise.all(import("${component.client}"), import("${component.prepared.clientPropsUrl}")).then(([component, props])=>{
+        ? `Promise.all([import("${component.client}"), import("${component.prepared.clientPropsUrl}")]).then(([component, props])=>{
           const ${component.name}Props =  props.default;`
         : `import("${component.client}").then((component)=>{
           const ${component.name}Props = ${component.prepared.clientPropsString || '{}'};`
