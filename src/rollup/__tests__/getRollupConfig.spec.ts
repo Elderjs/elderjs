@@ -90,7 +90,6 @@ describe('#getRollupConfig', () => {
           format: 'system',
         },
         svelteConfig: {},
-        ie11: true,
         multiInputConfig: false,
       }).plugins.map((p) => p.name),
     ).toEqual(['replace', 'json', 'rollup-plugin-elder', 'node-resolve', 'commonjs', 'babel', 'terser']);

@@ -468,7 +468,7 @@ describe('#rollupPlugin', () => {
               { name: 'svelte.css', type: 'asset' },
               { name: 'svelte.css.map', type: 'asset' },
             ]);
-            expect(del.sync).toHaveBeenCalledTimes(2);
+            expect(del.sync).toHaveBeenCalledTimes(3);
             expect(del.sync).toHaveBeenCalledWith(elderConfig.$$internal.ssrComponents);
             expect(del.sync).toHaveBeenCalledWith(path.join(elderConfig.$$internal.distElder, 'assets'));
           });
@@ -482,7 +482,7 @@ describe('#rollupPlugin', () => {
             const buildStartBound = clientPlugin.buildStart.bind(t);
             buildStartBound();
             expect(t.values).toEqual([]);
-            expect(del.sync).toHaveBeenCalledTimes(3);
+            expect(del.sync).toHaveBeenCalledTimes(4);
             expect(del.sync).toHaveBeenCalledWith(elderConfig.$$internal.clientComponents);
             expect(del.sync).toHaveBeenCalledWith(elderConfig.$$internal.ssrComponents);
             expect(del.sync).toHaveBeenCalledWith(path.join(elderConfig.$$internal.distElder, 'assets'));
