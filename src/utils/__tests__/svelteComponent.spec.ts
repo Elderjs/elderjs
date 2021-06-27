@@ -1,8 +1,6 @@
 /* eslint-disable global-require */
 import path from 'path';
 
-const removeSpacesFromStack = (stack) => stack.map((s) => ({ ...s, string: s.string.replace(/\s\s+/g, '') }));
-
 const componentProps = {
   page: {
     hydrateStack: [],

@@ -1,8 +1,7 @@
 /* eslint-disable global-require */
 import { ComponentPayload } from './types';
 import mountComponentsInHtml from '../partialHydration/mountComponentsInHtml';
-import hydrateComponent from '../partialHydration/hydrateComponent';
-import getUniqueId from '../utils/getUniqueId';
+import getUniqueId from './getUniqueId';
 
 export const getComponentName = (str) => {
   let out = str.replace('.svelte', '').replace('.js', '');

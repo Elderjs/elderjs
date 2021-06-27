@@ -73,6 +73,7 @@ const getRestartHelper = (startOrRestartServer) => {
 
   resetState();
 
+  // eslint-disable-next-line consistent-return
   return (type: 'start' | 'reset' | 'client' | 'ssr') => {
     if (type === 'start') {
       return startOrRestartServer();
