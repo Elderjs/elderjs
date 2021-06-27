@@ -1,615 +1,197 @@
-describe('#hydrateComponents', () => {});
+/* eslint-disable no-return-assign */
+import hydrateComponents, { hashCode, howManyBytes } from '../hydrateComponents';
+import largeProp from '../__fixtures__/largeProp.json';
 
-// describe('#hydrateComponent', () => {
-//   describe('#IntersectionObserver', () => {
-//     test('timeout:0', () => {
-//       expect(
-//         IntersectionObserver({
-//           el: 'targetElement',
-//           name: 'IntersectionObserver.spec.js',
-//           loaded: 'console.log("loaded");',
-//           notLoaded: 'console.log("not loaded");',
-//           id: 'SwrzsrVDCd',
-//           timeout: 0,
-//         }).trim(),
-//       ).toEqual(`window.addEventListener('load', function (event) {
-//         var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {
-//           var objK = Object.keys(entries);
-//           var objKl = objK.length;
-//           var objKi = 0;
-//           for (; objKi < objKl; objKi++) {
-//             var entry = entries[objK[objKi]];
-//             if (entry.isIntersecting) {
-//               observer.unobserve(targetElement);
-//               if (document.eg_IntersectionObserver.spec.js) {
-//                 console.log("loaded");
-//               } else {
-//                 document.eg_IntersectionObserver.spec.js = true;
-//                 console.log("not loaded");
-//               }
-//             }
-//           }
-//         }, {
-//           rootMargin: '200px',
-//           threshold: 0
-//         });
-//         observerSwrzsrVDCd.observe(targetElement);
-//       });`);
-//     });
-//     test('timeout:2000', () => {
-//       expect(
-//         IntersectionObserver({
-//           el: 'targetElement',
-//           name: 'IntersectionObserver.spec.js',
-//           loaded: 'console.log("loaded");',
-//           notLoaded: 'console.log("not loaded");',
-//           id: 'SwrzsrVDCd',
-//           timeout: 2000,
-//         }).trim(),
-//       ).toEqual(`requestIdleCallback(function(){
-//         var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {
-//           var objK = Object.keys(entries);
-//           var objKl = objK.length;
-//           var objKi = 0;
-//           for (; objKi < objKl; objKi++) {
-//             var entry = entries[objK[objKi]];
-//             if (entry.isIntersecting) {
-//               observer.unobserve(targetElement);
-//               if (document.eg_IntersectionObserver.spec.js) {
-//                 console.log("loaded");
-//               } else {
-//                 document.eg_IntersectionObserver.spec.js = true;
-//                 console.log("not loaded");
-//               }
-//             }
-//           }
-//         }, {
-//           rootMargin: '200px',
-//           threshold: 0
-//         });
-//         observerSwrzsrVDCd.observe(targetElement);
-//       }, {timeout: 2000});`);
-//     });
-//     test('timeout not set', () => {
-//       expect(
-//         IntersectionObserver({
-//           el: 'targetElement',
-//           name: 'IntersectionObserver.spec.js',
-//           loaded: 'console.log("loaded");',
-//           notLoaded: 'console.log("not loaded");',
-//           id: 'SwrzsrVDCd',
-//         }).trim(),
-//       ).toEqual(`requestIdleCallback(function(){
-//         var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {
-//           var objK = Object.keys(entries);
-//           var objKl = objK.length;
-//           var objKi = 0;
-//           for (; objKi < objKl; objKi++) {
-//             var entry = entries[objK[objKi]];
-//             if (entry.isIntersecting) {
-//               observer.unobserve(targetElement);
-//               if (document.eg_IntersectionObserver.spec.js) {
-//                 console.log("loaded");
-//               } else {
-//                 document.eg_IntersectionObserver.spec.js = true;
-//                 console.log("not loaded");
-//               }
-//             }
-//           }
-//         }, {
-//           rootMargin: '200px',
-//           threshold: 0
-//         });
-//         observerSwrzsrVDCd.observe(targetElement);
-//       }, {timeout: 1000});`);
-//     });
-//   });
+let counts = {
+  mkdirSync: 0,
+  writeFile: 0,
+  existsSync: 0,
+};
+jest.mock('fs-extra', () => ({
+  mkdirSync: () => {
+    counts.existsSync += 1;
+    return true;
+  },
+  writeFile: async () => {
+    counts.writeFile += 1;
+    return false;
+  },
+  existsSync: () => {
+    counts.existsSync += 1;
+    return false;
+  },
+}));
 
-//   it(`tests hydrate-options={{ loading: 'lazy' }} This is the default config, uses intersection observer and requestIdleCallback.`, () => {
-//     // eslint-disable-next-line global-require
-//     const { default: hydrateComponent } = require('../hydrateComponent');
-//     const hydrateStack = [];
-//     const headStack = [];
-//     const result = hydrateComponent({
-//       ...common,
-//       hydrateOptions: { loading: 'lazy' },
-//       page: { hydrateStack, headStack },
-//     });
-//     expect(result).toEqual(`<div class="test-component" id="testSwrzsrVDCd">componentHtml</div>`);
-//     expect(removeSpacesFromStack(headStack)).toEqual([]);
-//     expect(removeSpacesFromStack(hydrateStack)).toStrictEqual(
-//       expect.arrayContaining(
-//         removeSpacesFromStack([
-//           { priority: 100, source: 'testSwrzsrVDCd', string: '<script>var testPropsSwrzsrVDCd = {a:"b"};</script>' },
-//           {
-//             priority: 99,
-//             source: 'testSwrzsrVDCd',
-//             string: '<script nomodule defer src="iife" onload="inittestSwrzsrVDCd()"></script>',
-//           },
-//           {
-//             priority: 98,
-//             source: 'testSwrzsrVDCd',
-//             string:
-//               "<script nomodule>function inittestSwrzsrVDCd(){new ___elderjs_test({target: document.getElementById('testSwrzsrVDCd'),props:testPropsSwrzsrVDCd,hydrate: true,});}</script>",
-//           },
-//           {
-//             priority: 30,
-//             source: 'testSwrzsrVDCd',
-//             string: `<script type="module">function inittestSwrzsrVDCd(){import("mjs").then((component)=>{new component.default({target: document.getElementById('testSwrzsrVDCd'),props: testPropsSwrzsrVDCd,hydrate: true});});}requestIdleCallback(function(){var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {var objK = Object.keys(entries);var objKl = objK.length;var objKi = 0;for (; objKi < objKl; objKi++) {var entry = entries[objK[objKi]];if (entry.isIntersecting) {observer.unobserve(document.getElementById('testSwrzsrVDCd'));if (document.eg_test) {inittestSwrzsrVDCd();} else {document.eg_test = true;inittestSwrzsrVDCd();}}}}, {rootMargin: '200px',threshold: 0});observerSwrzsrVDCd.observe(document.getElementById('testSwrzsrVDCd'));}, {timeout: 1000});</script>`,
-//           },
-//         ]),
-//       ),
-//     );
-//   });
+const defaultPage = {
+  headStack: [],
+  hydrateStack: [],
+  beforeHydrateStack: [],
 
-//   it(`tests hydrate-options={{ loading: 'lazy', timeout: 0 }} This is the historical default config, uses intersection observer and window load.`, () => {
-//     // eslint-disable-next-line global-require
-//     const { default: hydrateComponent } = require('../hydrateComponent');
-//     const hydrateStack = [];
-//     const headStack = [];
-//     const result = hydrateComponent({
-//       ...common,
-//       hydrateOptions: { loading: 'lazy', timeout: 0 },
-//       page: { hydrateStack, headStack },
-//     });
-//     expect(result).toEqual(`<div class="test-component" id="testSwrzsrVDCd">componentHtml</div>`);
-//     expect(removeSpacesFromStack(headStack)).toEqual([]);
-//     expect(removeSpacesFromStack(hydrateStack)).toStrictEqual(
-//       expect.arrayContaining(
-//         removeSpacesFromStack([
-//           { priority: 100, source: 'testSwrzsrVDCd', string: '<script>var testPropsSwrzsrVDCd = {a:"b"};</script>' },
-//           {
-//             priority: 99,
-//             source: 'testSwrzsrVDCd',
-//             string: '<script nomodule defer src="iife" onload="inittestSwrzsrVDCd()"></script>',
-//           },
-//           {
-//             priority: 98,
-//             source: 'testSwrzsrVDCd',
-//             string:
-//               "<script nomodule>function inittestSwrzsrVDCd(){new ___elderjs_test({target: document.getElementById('testSwrzsrVDCd'),props:testPropsSwrzsrVDCd,hydrate: true,});}</script>",
-//           },
-//           {
-//             priority: 30,
-//             source: 'testSwrzsrVDCd',
-//             string: `<script type="module">function inittestSwrzsrVDCd(){import("mjs").then((component)=>{new component.default({target: document.getElementById('testSwrzsrVDCd'),props: testPropsSwrzsrVDCd,hydrate: true});});}window.addEventListener('load', function (event) {var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {var objK = Object.keys(entries);var objKl = objK.length;var objKi = 0;for (; objKi < objKl; objKi++) {var entry = entries[objK[objKi]];if (entry.isIntersecting) {observer.unobserve(document.getElementById('testSwrzsrVDCd'));if (document.eg_test) {inittestSwrzsrVDCd();} else {document.eg_test = true;inittestSwrzsrVDCd();}}}}, {rootMargin: '200px',threshold: 0});observerSwrzsrVDCd.observe(document.getElementById('testSwrzsrVDCd'));});</script>`,
-//           },
-//         ]),
-//       ),
-//     );
-//   });
-//   it(`tests hydrate-options={{ loading: 'eager' }} This would cause the component to be hydrate in a blocking manner as soon as the js is rendered.`, () => {
-//     // eslint-disable-next-line global-require
-//     const { default: hydrateComponent } = require('../hydrateComponent');
-//     const hydrateStack = [];
-//     const headStack = [];
-//     const result = hydrateComponent({
-//       ...common,
-//       hydrateOptions: { loading: 'eager' },
-//       page: { hydrateStack, headStack },
-//     });
-//     expect(result).toEqual(`<div class="test-component" id="testSwrzsrVDCd">componentHtml</div>`);
-//     expect(removeSpacesFromStack(headStack)).toEqual([]);
-//     expect(removeSpacesFromStack(hydrateStack)).toStrictEqual(
-//       expect.arrayContaining(
-//         removeSpacesFromStack([
-//           { priority: 100, source: 'testSwrzsrVDCd', string: '<script>var testPropsSwrzsrVDCd = {a:"b"};</script>' },
-//           {
-//             priority: 99,
-//             source: 'testSwrzsrVDCd',
-//             string: '<script nomodule defer src="iife" onload="inittestSwrzsrVDCd()"></script>',
-//           },
-//           {
-//             priority: 98,
-//             source: 'testSwrzsrVDCd',
-//             string:
-//               "<script nomodule>function inittestSwrzsrVDCd(){new ___elderjs_test({target: document.getElementById('testSwrzsrVDCd'),props:testPropsSwrzsrVDCd,hydrate: true,});}</script>",
-//           },
-//           {
-//             priority: 30,
-//             source: 'testSwrzsrVDCd',
-//             string:
-//               '<script type="module">function inittestSwrzsrVDCd(){import("mjs").then((component)=>{new component.default({target: document.getElementById(\'testSwrzsrVDCd\'),props: testPropsSwrzsrVDCd,hydrate: true});});}inittestSwrzsrVDCd();</script>',
-//           },
-//         ]),
-//       ),
-//     );
-//   });
+  settings: {
+    distDir: '/test/',
+    $$internal: {
+      distElder: '/test/',
+    },
+    debug: {},
+    props: { compress: false, hydration: 'hybrid' },
+  },
+};
 
-//   it(`tests hydrate-options={{ loading: 'none' }} This allows arbitrary svelte components to be rendered server side but not hydrated.`, () => {
-//     // eslint-disable-next-line global-require
-//     const { default: hydrateComponent } = require('../hydrateComponent');
-//     const hydrateStack = [];
-//     const headStack = [];
-//     const result = hydrateComponent({
-//       ...common,
-//       hydrateOptions: { loading: 'none' },
-//       page: { hydrateStack, headStack },
-//     });
-//     expect(result).toEqual(`componentHtml`);
-//     expect(headStack).toEqual([]);
-//     expect(hydrateStack).toStrictEqual([]);
-//   });
+const defaultComponents = [
+  {
+    name: 'autocompleteZlwFFdKTtG',
+    hydrateOptions: { loading: 'lazy' },
+    client: '/_elderjs/svelte/components/AutoComplete/AutoComplete.QGDSG3QU.js',
+    props: { classes: 'search-form__autocomplete' },
+    prepared: {},
+    id: 'ZlwFFdKTtG',
+  },
+  {
+    name: 'zoomablemapgYtFjVCDSS',
+    hydrateOptions: { loading: 'lazy' },
+    client: '/_elderjs/svelte/components/ZoomableMap/ZoomableMap.AOMHQNYN.js',
+    props: {
+      compress: {
+        a: 'b',
+        b: 'c',
+        c: { a: 'b', b: 'c', c: { a: 'b', b: 'c', c: { apple: false } } },
+      },
+    },
+    prepared: {},
+    id: 'gYtFjVCDSS',
+  },
+  {
+    name: 'headerzbmmDtJVlq',
+    hydrateOptions: { loading: 'lazy' },
+    client: '/_elderjs/svelte/components/Header/Header.AOWJN766.js',
+    props: { permalink: '/dev/', server: true },
+    prepared: {},
+    id: 'zbmmDtJVlq',
+  },
+];
 
-//   it(`tests hydrate-options={{ preload: true }} This adds a preload to the head stack as outlined above... could be preloaded without forcing blocking.`, () => {
-//     // eslint-disable-next-line global-require
-//     const { default: hydrateComponent } = require('../hydrateComponent');
-//     const hydrateStack = [];
-//     const headStack = [];
-//     const result = hydrateComponent({
-//       ...common,
-//       hydrateOptions: { preload: true },
-//       page: { hydrateStack, headStack },
-//     });
-//     expect(result).toEqual(`<div class="test-component" id="testSwrzsrVDCd">componentHtml</div>`);
-//     expect(removeSpacesFromStack(headStack)).toStrictEqual(
-//       expect.arrayContaining([
-//         {
-//           priority: 50,
-//           source: 'test',
-//           string: '<link rel="preload" href="mjs" as="script">',
-//         },
-//       ]),
-//     );
-//     expect(removeSpacesFromStack(hydrateStack)).toStrictEqual(
-//       expect.arrayContaining(
-//         removeSpacesFromStack([
-//           { priority: 100, source: 'testSwrzsrVDCd', string: '<script>var testPropsSwrzsrVDCd = {a:"b"};</script>' },
-//           {
-//             priority: 99,
-//             source: 'testSwrzsrVDCd',
-//             string: '<script nomodule defer src="iife" onload="inittestSwrzsrVDCd()"></script>',
-//           },
-//           {
-//             priority: 98,
-//             source: 'testSwrzsrVDCd',
-//             string:
-//               "<script nomodule>function inittestSwrzsrVDCd(){new ___elderjs_test({target: document.getElementById('testSwrzsrVDCd'),props:testPropsSwrzsrVDCd,hydrate: true,});}</script>",
-//           },
-//           {
-//             priority: 30,
-//             source: 'testSwrzsrVDCd',
-//             string: `<script type="module">function inittestSwrzsrVDCd(){import("mjs").then((component)=>{new component.default({target: document.getElementById('testSwrzsrVDCd'),props: testPropsSwrzsrVDCd,hydrate: true});});}requestIdleCallback(function(){var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {var objK = Object.keys(entries);var objKl = objK.length;var objKi = 0;for (; objKi < objKl; objKi++) {var entry = entries[objK[objKi]];if (entry.isIntersecting) {observer.unobserve(document.getElementById('testSwrzsrVDCd'));if (document.eg_test) {inittestSwrzsrVDCd();} else {document.eg_test = true;inittestSwrzsrVDCd();}}}}, {rootMargin: '200px',threshold: 0});observerSwrzsrVDCd.observe(document.getElementById('testSwrzsrVDCd'));}, {timeout: 1000});</script>`,
-//           },
-//         ]),
-//       ),
-//     );
-//   });
-//   it(`tests hydrate-options={{ preload: true, loading: 'eager' }} This would preload and be blocking.`, () => {
-//     // eslint-disable-next-line global-require
-//     const { default: hydrateComponent } = require('../hydrateComponent');
-//     const hydrateStack = [];
-//     const headStack = [];
-//     const result = hydrateComponent({
-//       ...common,
-//       hydrateOptions: { preload: true, loading: 'eager' },
-//       page: { hydrateStack, headStack },
-//     });
-//     expect(result).toEqual(`<div class="test-component" id="testSwrzsrVDCd">componentHtml</div>`);
-//     expect(removeSpacesFromStack(headStack)).toStrictEqual(
-//       expect.arrayContaining([
-//         {
-//           priority: 50,
-//           source: 'test',
-//           string: '<link rel="preload" href="mjs" as="script">',
-//         },
-//       ]),
-//     );
-//     expect(removeSpacesFromStack(hydrateStack)).toStrictEqual(
-//       expect.arrayContaining(
-//         removeSpacesFromStack([
-//           { priority: 100, source: 'testSwrzsrVDCd', string: '<script>var testPropsSwrzsrVDCd = {a:"b"};</script>' },
-//           {
-//             priority: 99,
-//             source: 'testSwrzsrVDCd',
-//             string: '<script nomodule defer src="iife" onload="inittestSwrzsrVDCd()"></script>',
-//           },
-//           {
-//             priority: 98,
-//             source: 'testSwrzsrVDCd',
-//             string:
-//               "<script nomodule>function inittestSwrzsrVDCd(){new ___elderjs_test({target: document.getElementById('testSwrzsrVDCd'),props:testPropsSwrzsrVDCd,hydrate: true,});}</script>",
-//           },
-//           {
-//             priority: 30,
-//             source: 'testSwrzsrVDCd',
-//             string:
-//               '<script type="module">function inittestSwrzsrVDCd(){import("mjs").then((component)=>{new component.default({target: document.getElementById(\'testSwrzsrVDCd\'),props: testPropsSwrzsrVDCd,hydrate: true});});}inittestSwrzsrVDCd();</script>',
-//           },
-//         ]),
-//       ),
-//     );
-//   });
-//   it(`tests hydrate-options={{ rootMargin: '300px', threshold: 20 }} This would adjust the root margin of the intersection observer. Only usable with loading: 'lazy'`, () => {
-//     // eslint-disable-next-line global-require
-//     const { default: hydrateComponent } = require('../hydrateComponent');
-//     const hydrateStack = [];
-//     const headStack = [];
-//     const result = hydrateComponent({
-//       ...common,
-//       hydrateOptions: { rootMargin: '300px', threshold: 20 },
-//       page: { hydrateStack, headStack },
-//     });
-//     expect(result).toEqual(`<div class="test-component" id="testSwrzsrVDCd">componentHtml</div>`);
-//     expect(removeSpacesFromStack(headStack)).toStrictEqual(expect.arrayContaining([]));
-//     expect(removeSpacesFromStack(hydrateStack)).toStrictEqual(
-//       expect.arrayContaining(
-//         removeSpacesFromStack([
-//           { priority: 100, source: 'testSwrzsrVDCd', string: '<script>var testPropsSwrzsrVDCd = {a:"b"};</script>' },
-//           {
-//             priority: 99,
-//             source: 'testSwrzsrVDCd',
-//             string: '<script nomodule defer src="iife" onload="inittestSwrzsrVDCd()"></script>',
-//           },
-//           {
-//             priority: 98,
-//             source: 'testSwrzsrVDCd',
-//             string:
-//               "<script nomodule>function inittestSwrzsrVDCd(){new ___elderjs_test({target: document.getElementById('testSwrzsrVDCd'),props:testPropsSwrzsrVDCd,hydrate: true,});}</script>",
-//           },
-//           {
-//             priority: 30,
-//             source: 'testSwrzsrVDCd',
-//             string: `<script type="module">function inittestSwrzsrVDCd(){import("mjs").then((component)=>{new component.default({target: document.getElementById('testSwrzsrVDCd'),props: testPropsSwrzsrVDCd,hydrate: true});});}requestIdleCallback(function(){var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {var objK = Object.keys(entries);var objKl = objK.length;var objKi = 0;for (; objKi < objKl; objKi++) {var entry = entries[objK[objKi]];if (entry.isIntersecting) {observer.unobserve(document.getElementById('testSwrzsrVDCd'));if (document.eg_test) {inittestSwrzsrVDCd();} else {document.eg_test = true;inittestSwrzsrVDCd();}}}}, {rootMargin: '300px',threshold: 20});observerSwrzsrVDCd.observe(document.getElementById('testSwrzsrVDCd'));}, {timeout: 1000});</script>`,
-//           },
-//         ]),
-//       ),
-//     );
-//   });
+describe('#hydrateComponents', () => {
+  test('#hashCode', () => {
+    expect(hashCode('magicHappens')).toBe(-2086468828);
+  });
+  test('#howManyBytes', () => {
+    expect(howManyBytes('{wtf}')).toBe(5);
+  });
 
-//   it('tests with no iife', () => {
-//     // eslint-disable-next-line global-require
-//     const { default: hydrateComponent } = require('../hydrateComponent');
-//     const hydrateStack = [];
-//     const headStack = [];
-//     const result = hydrateComponent({
-//       ...common,
-//       iife: undefined,
-//       hydrateOptions: { loading: 'lazy' },
-//       page: { hydrateStack, headStack },
-//     });
-//     expect(result).toEqual(`<div class="test-component" id="testSwrzsrVDCd">componentHtml</div>`);
-//     expect(removeSpacesFromStack(headStack)).toEqual([]);
-//     expect(removeSpacesFromStack(hydrateStack)).toStrictEqual(
-//       expect.arrayContaining(
-//         removeSpacesFromStack([
-//           { priority: 100, source: 'testSwrzsrVDCd', string: '<script>var testPropsSwrzsrVDCd = {a:"b"};</script>' },
-//           {
-//             priority: 30,
-//             source: 'testSwrzsrVDCd',
-//             string: `<script type="module">function inittestSwrzsrVDCd(){import("mjs").then((component)=>{new component.default({target: document.getElementById('testSwrzsrVDCd'),props: testPropsSwrzsrVDCd,hydrate: true});});}requestIdleCallback(function(){var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {var objK = Object.keys(entries);var objKl = objK.length;var objKi = 0;for (; objKi < objKl; objKi++) {var entry = entries[objK[objKi]];if (entry.isIntersecting) {observer.unobserve(document.getElementById('testSwrzsrVDCd'));if (document.eg_test) {inittestSwrzsrVDCd();} else {document.eg_test = true;inittestSwrzsrVDCd();}}}}, {rootMargin: '200px',threshold: 0});observerSwrzsrVDCd.observe(document.getElementById('testSwrzsrVDCd'));}, {timeout: 1000});</script>`,
-//           },
-//         ]),
-//       ),
-//     );
-//   });
+  describe('#hydrateConpentsCore', () => {
+    test('hydrates a components', () => {
+      const page = JSON.parse(JSON.stringify(defaultPage));
+      page.componentsToHydrate = JSON.parse(JSON.stringify(defaultComponents));
 
-//   it('tests with no props', () => {
-//     // eslint-disable-next-line global-require
-//     const { default: hydrateComponent } = require('../hydrateComponent');
-//     const hydrateStack = [];
-//     const headStack = [];
-//     const result = hydrateComponent({
-//       ...common,
-//       hydrateOptions: { loading: 'lazy' },
-//       page: { hydrateStack, headStack },
-//       props: {},
-//     });
-//     expect(result).toEqual(`<div class="test-component" id="testSwrzsrVDCd">componentHtml</div>`);
-//     expect(removeSpacesFromStack(headStack)).toEqual([]);
-//     expect(removeSpacesFromStack(hydrateStack)).toStrictEqual(
-//       expect.arrayContaining(
-//         removeSpacesFromStack([
-//           {
-//             priority: 99,
-//             source: 'testSwrzsrVDCd',
-//             string: '<script nomodule defer src="iife" onload="inittestSwrzsrVDCd()"></script>',
-//           },
-//           {
-//             priority: 98,
-//             source: 'testSwrzsrVDCd',
-//             string:
-//               "<script nomodule>function inittestSwrzsrVDCd(){new ___elderjs_test({target: document.getElementById('testSwrzsrVDCd'),props:{},hydrate: true,});}</script>",
-//           },
-//           {
-//             priority: 30,
-//             source: 'testSwrzsrVDCd',
-//             string: `<script type="module">function inittestSwrzsrVDCd(){import("mjs").then((component)=>{new component.default({target: document.getElementById('testSwrzsrVDCd'),props: {},hydrate: true});});}requestIdleCallback(function(){var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {var objK = Object.keys(entries);var objKl = objK.length;var objKi = 0;for (; objKi < objKl; objKi++) {var entry = entries[objK[objKi]];if (entry.isIntersecting) {observer.unobserve(document.getElementById('testSwrzsrVDCd'));if (document.eg_test) {inittestSwrzsrVDCd();} else {document.eg_test = true;inittestSwrzsrVDCd();}}}}, {rootMargin: '200px',threshold: 0});observerSwrzsrVDCd.observe(document.getElementById('testSwrzsrVDCd'));}, {timeout: 1000});</script>`,
-//           },
-//         ]),
-//       ),
-//     );
-//   });
+      hydrateComponents(page);
+      expect(page.beforeHydrateStack).toHaveLength(1);
+      expect(page.hydrateStack).toHaveLength(3);
+    });
 
-//   it(`tests hydrating multiple components, preload, eager, lazy`, () => {
-//     // eslint-disable-next-line global-require
-//     const { default: hydrateComponent } = require('../hydrateComponent');
-//     const hydrateStack = [];
-//     const headStack = [];
+    test('adds default decompress code', () => {
+      const page = JSON.parse(JSON.stringify(defaultPage));
+      page.componentsToHydrate = JSON.parse(JSON.stringify(defaultComponents));
+      hydrateComponents(page);
+      expect(page.beforeHydrateStack[0].string).toEqual('<script>$ejs = function(_ejs){return _ejs}</script>');
+    });
 
-//     expect(
-//       hydrateComponent({
-//         ...common,
-//         componentName: 'preload',
-//         hydrateOptions: { preload: true },
-//         page: { hydrateStack, headStack },
-//       }),
-//     ).toEqual(`<div class="preload-component" id="preloadSwrzsrVDCd">componentHtml</div>`);
-//     expect(
-//       hydrateComponent({
-//         ...common,
-//         componentName: 'eager',
-//         hydrateOptions: { loading: 'eager' },
-//         page: { hydrateStack, headStack },
-//       }),
-//     ).toEqual(`<div class="eager-component" id="eagerSwrzsrVDCd">componentHtml</div>`);
+    test('adds custom decompress code on propCompression', async () => {
+      const page = JSON.parse(JSON.stringify(defaultPage));
+      page.componentsToHydrate = JSON.parse(JSON.stringify(defaultComponents));
+      page.settings.props.compress = true;
+      page.settings.props.replacementChars = '123';
+      page.perf = {
+        start: () => '',
+        stop: () => '',
+      };
 
-//     expect(
-//       hydrateComponent({
-//         ...common,
-//         componentName: 'lazy',
-//         hydrateOptions: { loading: 'lazy' },
-//         page: { hydrateStack, headStack },
-//       }),
-//     ).toEqual(`<div class="lazy-component" id="lazySwrzsrVDCd">componentHtml</div>`);
-//     expect(removeSpacesFromStack(headStack)).toEqual([
-//       { priority: 50, source: 'preload', string: '<link rel="preload" href="mjs" as="script">' },
-//     ]);
-//     expect(removeSpacesFromStack(hydrateStack)).toStrictEqual(
-//       removeSpacesFromStack([
-//         {
-//           priority: 100,
-//           source: 'preloadSwrzsrVDCd',
-//           string: '<script>var preloadPropsSwrzsrVDCd = {a:"b"};</script>',
-//         },
-//         {
-//           priority: 99,
-//           source: 'preloadSwrzsrVDCd',
-//           string: '<script nomodule defer src="iife" onload="initpreloadSwrzsrVDCd()"></script>',
-//         },
-//         {
-//           priority: 98,
-//           source: 'preloadSwrzsrVDCd',
-//           string:
-//             "<script nomodule>function initpreloadSwrzsrVDCd(){new ___elderjs_preload({target: document.getElementById('preloadSwrzsrVDCd'),props:preloadPropsSwrzsrVDCd,hydrate: true,});}</script>",
-//         },
-//         {
-//           priority: 30,
-//           source: 'preloadSwrzsrVDCd',
-//           string: `<script type="module">function initpreloadSwrzsrVDCd(){import("mjs").then((component)=>{new component.default({target: document.getElementById('preloadSwrzsrVDCd'),props: preloadPropsSwrzsrVDCd,hydrate: true});});}requestIdleCallback(function(){var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {var objK = Object.keys(entries);var objKl = objK.length;var objKi = 0;for (; objKi < objKl; objKi++) {var entry = entries[objK[objKi]];if (entry.isIntersecting) {observer.unobserve(document.getElementById('preloadSwrzsrVDCd'));if (document.eg_preload) {initpreloadSwrzsrVDCd();} else {document.eg_preload = true;initpreloadSwrzsrVDCd();}}}}, {rootMargin: '200px',threshold: 0});observerSwrzsrVDCd.observe(document.getElementById('preloadSwrzsrVDCd'));}, {timeout: 1000});</script>`,
-//         },
-//         { priority: 100, source: 'eagerSwrzsrVDCd', string: '<script>var eagerPropsSwrzsrVDCd = {a:"b"};</script>' },
-//         {
-//           priority: 99,
-//           source: 'eagerSwrzsrVDCd',
-//           string: '<script nomodule defer src="iife" onload="initeagerSwrzsrVDCd()"></script>',
-//         },
-//         {
-//           priority: 98,
-//           source: 'eagerSwrzsrVDCd',
-//           string:
-//             "<script nomodule>function initeagerSwrzsrVDCd(){new ___elderjs_eager({target: document.getElementById('eagerSwrzsrVDCd'),props:eagerPropsSwrzsrVDCd,hydrate: true,});}</script>",
-//         },
-//         {
-//           priority: 30,
-//           source: 'eagerSwrzsrVDCd',
-//           string:
-//             '<script type="module">function initeagerSwrzsrVDCd(){import("mjs").then((component)=>{new component.default({target: document.getElementById(\'eagerSwrzsrVDCd\'),props: eagerPropsSwrzsrVDCd,hydrate: true});});}initeagerSwrzsrVDCd();</script>',
-//         },
-//         { priority: 100, source: 'lazySwrzsrVDCd', string: '<script>var lazyPropsSwrzsrVDCd = {a:"b"};</script>' },
-//         {
-//           priority: 99,
-//           source: 'lazySwrzsrVDCd',
-//           string: '<script nomodule defer src="iife" onload="initlazySwrzsrVDCd()"></script>',
-//         },
-//         {
-//           priority: 98,
-//           source: 'lazySwrzsrVDCd',
-//           string:
-//             "<script nomodule>function initlazySwrzsrVDCd(){new ___elderjs_lazy({target: document.getElementById('lazySwrzsrVDCd'),props:lazyPropsSwrzsrVDCd,hydrate: true,});}</script>",
-//         },
-//         {
-//           priority: 30,
-//           source: 'lazySwrzsrVDCd',
-//           string: `<script type="module">function initlazySwrzsrVDCd(){import("mjs").then((component)=>{new component.default({target: document.getElementById('lazySwrzsrVDCd'),props: lazyPropsSwrzsrVDCd,hydrate: true});});}requestIdleCallback(function(){var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {var objK = Object.keys(entries);var objKl = objK.length;var objKi = 0;for (; objKi < objKl; objKi++) {var entry = entries[objK[objKi]];if (entry.isIntersecting) {observer.unobserve(document.getElementById('lazySwrzsrVDCd'));if (document.eg_lazy) {initlazySwrzsrVDCd();} else {document.eg_lazy = true;initlazySwrzsrVDCd();}}}}, {rootMargin: '200px',threshold: 0});observerSwrzsrVDCd.observe(document.getElementById('lazySwrzsrVDCd'));}, {timeout: 1000});</script>`,
-//         },
-//       ]),
-//     );
-//   });
+      await hydrateComponents(page);
+      expect(page.beforeHydrateStack[0].string).toEqual(`<script>
+      var $ejs = function(){
+        var gt = function (_ejs) { return Object.prototype.toString.call(_ejs).slice(8, -1);};
+        var ejs = new Map([["1","b"],["2","c"],["3","a"]]);
+         return function(_ejs){
+            if (ejs.has(_ejs)) return ejs.get(_ejs);
+            if (Array.isArray(_ejs)) return _ejs.map((t) => $ejs(t));
+            if (gt(_ejs) === "Object") {
+            return Object.keys(_ejs).reduce(function (out, cv){
+                var key = ejs.get(cv) || cv;
+                out[key] = $ejs(_ejs[cv]);
+                return out;
+              }, {});
+            }
+            return _ejs;
+        };
+      }();
+    </script>`);
+    });
 
-//   it(`tests hydrating multiple components, 'eager' + preload: true, eager, lazy`, () => {
-//     // eslint-disable-next-line global-require
-//     const { default: hydrateComponent } = require('../hydrateComponent');
-//     const hydrateStack = [];
-//     const headStack = [];
+    test('preloads without external prop file', async () => {
+      const page = JSON.parse(JSON.stringify(defaultPage));
+      page.componentsToHydrate = JSON.parse(JSON.stringify(defaultComponents));
+      page.componentsToHydrate[0].hydrateOptions.preload = true;
 
-//     expect(
-//       hydrateComponent({
-//         ...common,
-//         componentName: 'preload-eager',
-//         hydrateOptions: { preload: true, loading: 'eager' },
-//         page: { hydrateStack, headStack },
-//       }),
-//     ).toEqual(`<div class="preload-eager-component" id="preload-eagerSwrzsrVDCd">componentHtml</div>`);
-//     expect(
-//       hydrateComponent({
-//         ...common,
-//         componentName: 'eager',
-//         hydrateOptions: { loading: 'eager' },
-//         page: { hydrateStack, headStack },
-//       }),
-//     ).toEqual(`<div class="eager-component" id="eagerSwrzsrVDCd">componentHtml</div>`);
+      await hydrateComponents(page);
 
-//     expect(
-//       hydrateComponent({
-//         ...common,
-//         componentName: 'lazy',
-//         hydrateOptions: { loading: 'lazy' },
-//         page: { hydrateStack, headStack },
-//       }),
-//     ).toEqual(`<div class="lazy-component" id="lazySwrzsrVDCd">componentHtml</div>`);
-//     expect(removeSpacesFromStack(headStack)).toEqual([
-//       { priority: 50, source: 'preload-eager', string: '<link rel="preload" href="mjs" as="script">' },
-//     ]);
-//     expect(removeSpacesFromStack(hydrateStack)).toStrictEqual(
-//       removeSpacesFromStack([
-//         {
-//           priority: 100,
-//           source: 'preload-eagerSwrzsrVDCd',
-//           string: '<script>var preload-eagerPropsSwrzsrVDCd = {a:"b"};</script>',
-//         },
-//         {
-//           priority: 99,
-//           source: 'preload-eagerSwrzsrVDCd',
-//           string: '<script nomodule defer src="iife" onload="initpreload-eagerSwrzsrVDCd()"></script>',
-//         },
-//         {
-//           priority: 98,
-//           source: 'preload-eagerSwrzsrVDCd',
-//           string:
-//             "<script nomodule>function initpreload-eagerSwrzsrVDCd(){new ___elderjs_preload-eager({target: document.getElementById('preload-eagerSwrzsrVDCd'),props:preload-eagerPropsSwrzsrVDCd,hydrate: true,});}</script>",
-//         },
-//         {
-//           priority: 30,
-//           source: 'preload-eagerSwrzsrVDCd',
-//           string:
-//             '<script type="module">function initpreload-eagerSwrzsrVDCd(){import("mjs").then((component)=>{new component.default({target: document.getElementById(\'preload-eagerSwrzsrVDCd\'),props: preload-eagerPropsSwrzsrVDCd,hydrate: true});});}initpreload-eagerSwrzsrVDCd();</script>',
-//         },
-//         { priority: 100, source: 'eagerSwrzsrVDCd', string: '<script>var eagerPropsSwrzsrVDCd = {a:"b"};</script>' },
-//         {
-//           priority: 99,
-//           source: 'eagerSwrzsrVDCd',
-//           string: '<script nomodule defer src="iife" onload="initeagerSwrzsrVDCd()"></script>',
-//         },
-//         {
-//           priority: 98,
-//           source: 'eagerSwrzsrVDCd',
-//           string:
-//             "<script nomodule>function initeagerSwrzsrVDCd(){new ___elderjs_eager({target: document.getElementById('eagerSwrzsrVDCd'),props:eagerPropsSwrzsrVDCd,hydrate: true,});}</script>",
-//         },
-//         {
-//           priority: 30,
-//           source: 'eagerSwrzsrVDCd',
-//           string: `<script type="module">function initeagerSwrzsrVDCd(){import("mjs").then((component)=>{new component.default({target: document.getElementById('eagerSwrzsrVDCd'),props: eagerPropsSwrzsrVDCd,hydrate: true});});}initeagerSwrzsrVDCd();</script>`,
-//         },
-//         { priority: 100, source: 'lazySwrzsrVDCd', string: '<script>var lazyPropsSwrzsrVDCd = {a:"b"};</script>' },
-//         {
-//           priority: 99,
-//           source: 'lazySwrzsrVDCd',
-//           string: '<script nomodule defer src="iife" onload="initlazySwrzsrVDCd()"></script>',
-//         },
-//         {
-//           priority: 98,
-//           source: 'lazySwrzsrVDCd',
-//           string:
-//             "<script nomodule>function initlazySwrzsrVDCd(){new ___elderjs_lazy({target: document.getElementById('lazySwrzsrVDCd'),props:lazyPropsSwrzsrVDCd,hydrate: true,});}</script>",
-//         },
-//         {
-//           priority: 30,
-//           source: 'lazySwrzsrVDCd',
-//           string: `<script type="module">function initlazySwrzsrVDCd(){import("mjs").then((component)=>{new component.default({target: document.getElementById('lazySwrzsrVDCd'),props: lazyPropsSwrzsrVDCd,hydrate: true});});}requestIdleCallback(function(){var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {var objK = Object.keys(entries);var objKl = objK.length;var objKi = 0;for (; objKi < objKl; objKi++) {var entry = entries[objK[objKi]];if (entry.isIntersecting) {observer.unobserve(document.getElementById('lazySwrzsrVDCd'));if (document.eg_lazy) {initlazySwrzsrVDCd();} else {document.eg_lazy = true;initlazySwrzsrVDCd();}}}}, {rootMargin: '200px',threshold: 0});observerSwrzsrVDCd.observe(document.getElementById('lazySwrzsrVDCd'));}, {timeout: 1000});</script>`,
-//         },
-//       ]),
-//     );
-//   });
-// });
+      expect(page.headStack[0].string).toEqual(
+        `<link rel="preload" href="/_elderjs/svelte/components/AutoComplete/AutoComplete.QGDSG3QU.js" as="script">`,
+      );
+    });
+
+    test('it writes props to a file in hybrid > 2kb', async () => {
+      counts = {
+        mkdirSync: 0,
+        writeFile: 0,
+        existsSync: 0,
+      };
+      const page = JSON.parse(JSON.stringify(defaultPage));
+      page.componentsToHydrate = JSON.parse(JSON.stringify(defaultComponents));
+      page.componentsToHydrate[0].props = largeProp;
+
+      const reqHydrateComponents = require('../hydrateComponents');
+
+      await reqHydrateComponents.default(page);
+
+      expect(page.componentsToHydrate[0].prepared.clientPropsUrl).toEqual('/props/ejs-2086035908.js');
+      expect(counts).toMatchObject({ existsSync: 3, mkdirSync: 0, writeFile: 1 });
+    });
+
+    test('it writes props to a file in file mode', async () => {
+      const page = JSON.parse(JSON.stringify(defaultPage));
+      page.settings.props.hydration = 'file';
+      page.componentsToHydrate = JSON.parse(JSON.stringify(defaultComponents));
+      page.componentsToHydrate[0].props = { a: 'b' };
+
+      const reqHydrateComponents = require('../hydrateComponents');
+
+      await reqHydrateComponents.default(page);
+
+      expect(page.componentsToHydrate[0].prepared.clientPropsUrl).toEqual('/props/ejs-1363984429.js');
+    });
+
+    test('preloads with external prop file', async () => {
+      const page = JSON.parse(JSON.stringify(defaultPage));
+      page.settings.props.hydration = 'file';
+      page.componentsToHydrate = JSON.parse(JSON.stringify(defaultComponents));
+      page.componentsToHydrate[0].hydrateOptions.preload = true;
+
+      const reqHydrateComponents = require('../hydrateComponents');
+
+      await reqHydrateComponents.default(page);
+
+      expect(page.headStack).toMatchObject([
+        {
+          priority: 50,
+          source: 'autocompleteZlwFFdKTtG',
+          string:
+            '<link rel="preload" href="/_elderjs/svelte/components/AutoComplete/AutoComplete.QGDSG3QU.js" as="script">',
+        },
+        {
+          priority: 49,
+          source: 'autocompleteZlwFFdKTtG',
+          string: '<link rel="preload" href="/props/ejs--389426143.js" as="script">',
+        },
+      ]);
+    });
+  });
+});

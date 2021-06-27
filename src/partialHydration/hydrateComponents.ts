@@ -7,7 +7,7 @@ import { walkAndCount, prepareSubstitutions, walkAndSubstitute } from './propCom
 
 export const howManyBytes = (str) => Buffer.from(str).length;
 
-const hashCode = (s) => {
+export const hashCode = (s) => {
   let h = 0;
   // eslint-disable-next-line no-bitwise
   for (let i = 0; i < s.length; i += 1) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
@@ -83,7 +83,7 @@ export default async (page: Page) => {
         reduction: 1 - hydratedPropLength / initialPropLength,
       });
     }
-    page.perf.end('prepareProps');
+    page.perf.stop('prepareProps');
   }
 
   // always add decompress code even if it is just the basic return function.
@@ -115,6 +115,7 @@ export default async (page: Page) => {
           // eslint-disable-next-line no-await-in-loop
           await fs.writeFile(propPath, `export default ${component.prepared.propsString};`);
         }
+
         component.prepared.clientPropsUrl = `/${path.relative(page.settings.distDir, propPath)}`;
       } else {
         component.prepared.clientPropsString = `JSON.parse(\`${component.prepared.propsString}\`)`;
@@ -147,21 +148,3 @@ export default async (page: Page) => {
 
   // add components to stack
 };
-
-// page.hydrateStack.push({
-//   source: component.name,
-//   string: `<script>
-// var ${component.name} = ${};
-// </script>`,
-//   priority: 100,
-// });
-
-// // should we preload?
-// if (hydrateOptions.preload) {
-//   page.headStack.push({
-//     source: componentName,
-//     priority: 50,
-//     string: `<link rel="preload" href="${clientSrcMjs}" as="script">`,
-//     // string: `<link rel="modulepreload" href="${clientSrcMjs}">`, <-- can be an option for Chrome if browsers don't like this.
-//   });
-// }
