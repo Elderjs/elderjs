@@ -4,6 +4,7 @@ import path from 'path';
 import { Page } from '../utils';
 import hydrateComponent from './hydrateComponent';
 import { walkAndCount, prepareSubstitutions, walkAndSubstitute } from './propCompression';
+import windowsPathFix from '../utils/windowsPathFix';
 
 export const howManyBytes = (str) => Buffer.from(str).length;
 
@@ -116,7 +117,7 @@ export default async (page: Page) => {
           await fs.writeFile(propPath, `export default ${component.prepared.propsString};`);
         }
 
-        component.prepared.clientPropsUrl = `/${path.relative(page.settings.distDir, propPath)}`;
+        component.prepared.clientPropsUrl = windowsPathFix(`/${path.relative(page.settings.distDir, propPath)}`);
       } else {
         component.prepared.clientPropsString = `JSON.parse(\`${component.prepared.propsString}\`)`;
       }
