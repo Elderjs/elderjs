@@ -6,34 +6,35 @@ import { walkAndCount, prepareSubstitutions, walkAndSubstitute } from './propCom
 import windowsPathFix from '../utils/windowsPathFix';
 
 const defaultElderHelpers = (decompressCode) => `
-let IO;
+let IO, $$COMPONENTS={};
 const $$ejs = async (arr)=>{
   ${decompressCode}
   for (let i = 0; i < arr.length; i++) {
-    const id = arr[i][0];
-    const component = arr[i][1];
-    const props = arr[i][2] || {};
-
-    const elem = document.getElementById(id);
-
-    let propsToHydrate = props;
-    if(typeof props === 'string'){
-      const propsFile = await import(props);
-      propsToHydrate = propsFile.default;
+    $$COMPONENTS[arr[i][0]] = {
+      elem: document.getElementById(arr[i][0]),
+      component: arr[i][1],
+      props: arr[i][2] || {},
     }
 
+    if(typeof  $$COMPONENTS[arr[i][0]].props === 'string'){
+      const propsFile = await import($$COMPONENTS[arr[i][0]].props);
+      $$COMPONENTS[arr[i][0]].props = propsFile.default;
+    }
+    
     if (!IO) {
       IO = new IntersectionObserver((entries, observer) => {
         var objK = Object.keys(entries);
         var objKl = objK.length;
         var objKi = 0;
         for (; objKi < objKl; objKi++) {
-          if (entries[objK[objKi]].isIntersecting) {
-            observer.unobserve(elem);
-            import(component).then((comp)=>{
+          const entry = entries[objK[objKi]];
+          if (entry.isIntersecting) {
+            const selected = $$COMPONENTS[entry.target.id];
+            observer.unobserve(selected.elem);
+            import(selected.component).then((comp)=>{
                 new comp.default({ 
-                  target: elem,
-                  props: $ejs(propsToHydrate),
+                  target: selected.elem,
+                  props: $ejs(selected.props),
                   hydrate: true
                 });
             });
@@ -41,7 +42,7 @@ const $$ejs = async (arr)=>{
         }
       });
     }
-    IO.observe(elem);
+    IO.observe($$COMPONENTS[arr[i][0]].elem);
   }
 };
 `;
