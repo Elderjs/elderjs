@@ -4,7 +4,6 @@ import path from 'path';
 import { Page } from '../utils';
 import { walkAndCount, prepareSubstitutions, walkAndSubstitute } from './propCompression';
 import windowsPathFix from '../utils/windowsPathFix';
-import { SettingsOptions } from '../utils/types';
 
 const defaultElderHelpers = (decompressCode, prefix) => `
 let IO, $$COMPONENTS={};
