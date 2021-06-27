@@ -60,23 +60,18 @@ export const getDependencies = (file) => {
   return [...dependencies.values()];
 };
 
-export const getCompilerOptions = ({ type, legacy }) => {
+export const getCompilerOptions = ({ type }) => {
   const compilerOptions: CompileOptions = {
     hydratable: true,
     generate: 'ssr',
     css: false,
     dev: isDev,
-    legacy: false,
     format: 'esm',
   };
 
   if (type === 'client') {
     compilerOptions.generate = 'dom';
     compilerOptions.format = 'esm';
-  }
-
-  if (legacy) {
-    compilerOptions.legacy = true;
   }
 
   return compilerOptions;
@@ -86,14 +81,12 @@ export function transformFn({
   svelteConfig,
   elderConfig,
   type,
-  legacy = false,
 }: {
   svelteConfig: any;
   elderConfig: SettingsOptions;
   type: 'ssr' | 'client';
-  legacy: boolean;
 }) {
-  const compilerOptions = getCompilerOptions({ legacy, type });
+  const compilerOptions = getCompilerOptions({ type });
 
   const preprocessors =
     svelteConfig && Array.isArray(svelteConfig.preprocess)
@@ -383,7 +376,6 @@ export const devServer = ({ elderConfig }: { elderConfig: SettingsOptions }) => 
 export interface IElderjsRollupConfig {
   type: 'ssr' | 'client';
   svelteConfig: any;
-  legacy?: boolean;
   elderConfig: SettingsOptions;
   startDevServer?: boolean;
 }
@@ -392,7 +384,6 @@ export default function elderjsRollup({
   elderConfig,
   svelteConfig,
   type = 'ssr',
-  legacy = false,
   startDevServer = false,
 }: IElderjsRollupConfig): Partial<Plugin> {
   let styleCssHash;
@@ -437,12 +428,11 @@ export default function elderjsRollup({
       }
 
       // cleaning up folders that need to be deleted.
-      // this shouldn't happen on legacy as it runs last and would result in deleting needed code.
-      if (type === 'ssr' && legacy === false) {
+      if (type === 'ssr') {
         del.sync(elderConfig.$$internal.ssrComponents);
         del.sync(path.resolve(elderConfig.$$internal.distElder, `.${sep}assets${sep}`));
         del.sync(path.resolve(elderConfig.$$internal.distElder, `.${sep}props${sep}`));
-      } else if (type === 'client' && legacy === false) {
+      } else if (type === 'client') {
         del.sync(path.resolve(elderConfig.$$internal.distElder, `.${sep}svelte${sep}`));
       }
     },
@@ -455,7 +445,6 @@ export default function elderjsRollup({
         svelteConfig,
         elderConfig,
         type,
-        legacy,
       })(code, id);
 
       if (!r) return;

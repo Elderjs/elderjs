@@ -93,6 +93,7 @@ const settings = {
     build: false,
     automagic: false,
   },
+  props: {},
   hooks: {
     disable: [],
   },

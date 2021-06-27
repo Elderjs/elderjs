@@ -100,7 +100,6 @@ export type SettingsOptions = {
   $$internal: Internal;
   context?: string;
   worker?: boolean;
-  legacy: boolean;
   css: 'none' | 'file' | 'inline' | 'lazy';
 };
 
@@ -172,8 +171,8 @@ export type HydrateOptions = {
   loading?: 'lazy' | 'eager' | 'none';
   timeout?: number;
   preload?: boolean;
-  threshold: number;
-  rootMargin: string;
+  threshold?: number;
+  rootMargin?: string;
 };
 
 export interface ComponentPayload {

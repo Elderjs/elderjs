@@ -17,7 +17,7 @@ const svelteComponent = (componentName: String, folder: String = 'components') =
   props,
   hydrateOptions,
 }: ComponentPayload): string => {
-  const { ssr, client, iife } = page.settings.$$internal.findComponent(componentName, folder);
+  const { ssr, client } = page.settings.$$internal.findComponent(componentName, folder);
 
   const cleanComponentName = getComponentName(componentName);
 

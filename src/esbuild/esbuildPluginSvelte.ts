@@ -63,7 +63,6 @@ export type TPreprocess = PreprocessorGroup | PreprocessorGroup[] | false;
 export interface IEsBuildPluginSvelte {
   type: 'ssr' | 'client';
   svelteConfig: any;
-  legacy?: boolean;
   elderConfig: SettingsOptions;
   sveltePackages: string[];
   startDevServer?: boolean;
@@ -156,7 +155,6 @@ function esbuildPluginSvelte({ type, svelteConfig, elderConfig, sveltePackages =
             svelteConfig,
             elderConfig,
             type,
-            legacy: false,
           })(code, path);
 
           const out = {

@@ -430,8 +430,6 @@ describe('#rollupPlugin', () => {
     describe('#elderjsRollup', () => {
       const shared = {
         elderConfig,
-
-        legacy: false,
         svelteConfig: {},
       };
 
