@@ -124,6 +124,7 @@ const buildPage = async (page) => {
       await page.runHook('error', page);
     }
   } catch (err) {
+    console.log(err);
     page.errors.push(err);
     await page.runHook('error', page);
   }

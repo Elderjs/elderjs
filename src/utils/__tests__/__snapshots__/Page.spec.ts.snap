@@ -168,6 +168,7 @@ Object {
   "runHook": [Function],
   "settings": Object {
     "$$internal": Object {
+      "distElder": "test/_elderjs",
       "hashedComponents": Object {
         "AutoComplete": "entryAutoComplete",
         "Footer": "entryFooter",
@@ -190,6 +191,7 @@ Object {
       "performance": false,
       "stacks": false,
     },
+    "distDir": "test",
     "hooks": Object {
       "disable": Array [],
     },
@@ -285,7 +287,9 @@ Object {
     
 let IO, $$COMPONENTS={};
 const $$ejs = async (arr)=>{
-  $ejs = function(_ejs){return _ejs}
+  const $ejs = function(_ejs){return _ejs};
+  const prefix = '/_elderjs';
+
   for (let i = 0; i < arr.length; i++) {
     $$COMPONENTS[arr[i][0]] = {
       elem: document.getElementById(arr[i][0]),
@@ -294,10 +298,10 @@ const $$ejs = async (arr)=>{
     }
 
     if(typeof  $$COMPONENTS[arr[i][0]].props === 'string'){
-      const propsFile = await import($$COMPONENTS[arr[i][0]].props);
+      const propsFile = await import(prefix+'/props/'+$$COMPONENTS[arr[i][0]].props);
       $$COMPONENTS[arr[i][0]].props = propsFile.default;
     }
-    
+
     if (!IO) {
       IO = new IntersectionObserver((entries, observer) => {
         var objK = Object.keys(entries);
@@ -308,7 +312,7 @@ const $$ejs = async (arr)=>{
           if (entry.isIntersecting) {
             const selected = $$COMPONENTS[entry.target.id];
             observer.unobserve(selected.elem);
-            import(selected.component).then((comp)=>{
+            import(prefix + '/svelte/components/' + selected.component).then((comp)=>{
                 new comp.default({ 
                   target: selected.elem,
                   props: $ejs(selected.props),
@@ -548,7 +552,9 @@ const $$ejs = async (arr)=>{
     
 let IO, $$COMPONENTS={};
 const $$ejs = async (arr)=>{
-  $ejs = function(_ejs){return _ejs}
+  const $ejs = function(_ejs){return _ejs};
+  const prefix = '/_elderjs';
+
   for (let i = 0; i < arr.length; i++) {
     $$COMPONENTS[arr[i][0]] = {
       elem: document.getElementById(arr[i][0]),
@@ -557,10 +563,10 @@ const $$ejs = async (arr)=>{
     }
 
     if(typeof  $$COMPONENTS[arr[i][0]].props === 'string'){
-      const propsFile = await import($$COMPONENTS[arr[i][0]].props);
+      const propsFile = await import(prefix+'/props/'+$$COMPONENTS[arr[i][0]].props);
       $$COMPONENTS[arr[i][0]].props = propsFile.default;
     }
-    
+
     if (!IO) {
       IO = new IntersectionObserver((entries, observer) => {
         var objK = Object.keys(entries);
@@ -571,7 +577,7 @@ const $$ejs = async (arr)=>{
           if (entry.isIntersecting) {
             const selected = $$COMPONENTS[entry.target.id];
             observer.unobserve(selected.elem);
-            import(selected.component).then((comp)=>{
+            import(prefix + '/svelte/components/' + selected.component).then((comp)=>{
                 new comp.default({ 
                   target: selected.elem,
                   props: $ejs(selected.props),
@@ -783,6 +789,7 @@ const $$ejs = async (arr)=>{
                           },
                           "settings": Object {
                             "$$internal": Object {
+                              "distElder": "test/_elderjs",
                               "hashedComponents": Object {
                                 "AutoComplete": "entryAutoComplete",
                                 "Footer": "entryFooter",
@@ -805,6 +812,7 @@ const $$ejs = async (arr)=>{
                               "performance": false,
                               "stacks": false,
                             },
+                            "distDir": "test",
                             "hooks": Object {
                               "disable": Array [],
                             },
@@ -871,6 +879,7 @@ const $$ejs = async (arr)=>{
               "runHook": [Function],
               "settings": Object {
                 "$$internal": Object {
+                  "distElder": "test/_elderjs",
                   "hashedComponents": Object {
                     "AutoComplete": "entryAutoComplete",
                     "Footer": "entryFooter",
@@ -893,6 +902,7 @@ const $$ejs = async (arr)=>{
                   "performance": false,
                   "stacks": false,
                 },
+                "distDir": "test",
                 "hooks": Object {
                   "disable": Array [],
                 },
@@ -948,6 +958,7 @@ const $$ejs = async (arr)=>{
               },
               "settings": Object {
                 "$$internal": Object {
+                  "distElder": "test/_elderjs",
                   "hashedComponents": Object {
                     "AutoComplete": "entryAutoComplete",
                     "Footer": "entryFooter",
@@ -970,6 +981,7 @@ const $$ejs = async (arr)=>{
                   "performance": false,
                   "stacks": false,
                 },
+                "distDir": "test",
                 "hooks": Object {
                   "disable": Array [],
                 },
@@ -1075,7 +1087,9 @@ const $$ejs = async (arr)=>{
     
 let IO, $$COMPONENTS={};
 const $$ejs = async (arr)=>{
-  $ejs = function(_ejs){return _ejs}
+  const $ejs = function(_ejs){return _ejs};
+  const prefix = '/_elderjs';
+
   for (let i = 0; i < arr.length; i++) {
     $$COMPONENTS[arr[i][0]] = {
       elem: document.getElementById(arr[i][0]),
@@ -1084,10 +1098,10 @@ const $$ejs = async (arr)=>{
     }
 
     if(typeof  $$COMPONENTS[arr[i][0]].props === 'string'){
-      const propsFile = await import($$COMPONENTS[arr[i][0]].props);
+      const propsFile = await import(prefix+'/props/'+$$COMPONENTS[arr[i][0]].props);
       $$COMPONENTS[arr[i][0]].props = propsFile.default;
     }
-    
+
     if (!IO) {
       IO = new IntersectionObserver((entries, observer) => {
         var objK = Object.keys(entries);
@@ -1098,7 +1112,7 @@ const $$ejs = async (arr)=>{
           if (entry.isIntersecting) {
             const selected = $$COMPONENTS[entry.target.id];
             observer.unobserve(selected.elem);
-            import(selected.component).then((comp)=>{
+            import(prefix + '/svelte/components/' + selected.component).then((comp)=>{
                 new comp.default({ 
                   target: selected.elem,
                   props: $ejs(selected.props),
@@ -1299,6 +1313,7 @@ const $$ejs = async (arr)=>{
                           },
                           "settings": Object {
                             "$$internal": Object {
+                              "distElder": "test/_elderjs",
                               "hashedComponents": Object {
                                 "AutoComplete": "entryAutoComplete",
                                 "Footer": "entryFooter",
@@ -1321,6 +1336,7 @@ const $$ejs = async (arr)=>{
                               "performance": false,
                               "stacks": false,
                             },
+                            "distDir": "test",
                             "hooks": Object {
                               "disable": Array [],
                             },
@@ -1399,6 +1415,7 @@ const $$ejs = async (arr)=>{
               "runHook": [Function],
               "settings": Object {
                 "$$internal": Object {
+                  "distElder": "test/_elderjs",
                   "hashedComponents": Object {
                     "AutoComplete": "entryAutoComplete",
                     "Footer": "entryFooter",
@@ -1421,6 +1438,7 @@ const $$ejs = async (arr)=>{
                   "performance": false,
                   "stacks": false,
                 },
+                "distDir": "test",
                 "hooks": Object {
                   "disable": Array [],
                 },
@@ -1476,6 +1494,7 @@ const $$ejs = async (arr)=>{
               },
               "settings": Object {
                 "$$internal": Object {
+                  "distElder": "test/_elderjs",
                   "hashedComponents": Object {
                     "AutoComplete": "entryAutoComplete",
                     "Footer": "entryFooter",
@@ -1498,6 +1517,7 @@ const $$ejs = async (arr)=>{
                   "performance": false,
                   "stacks": false,
                 },
+                "distDir": "test",
                 "hooks": Object {
                   "disable": Array [],
                 },
@@ -1564,6 +1584,7 @@ const $$ejs = async (arr)=>{
   "runHook": [Function],
   "settings": Object {
     "$$internal": Object {
+      "distElder": "test/_elderjs",
       "hashedComponents": Object {
         "AutoComplete": "entryAutoComplete",
         "Footer": "entryFooter",
@@ -1586,6 +1607,7 @@ const $$ejs = async (arr)=>{
       "performance": false,
       "stacks": false,
     },
+    "distDir": "test",
     "hooks": Object {
       "disable": Array [],
     },
