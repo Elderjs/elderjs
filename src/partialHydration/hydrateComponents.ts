@@ -2,9 +2,49 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import { Page } from '../utils';
-import hydrateComponent from './hydrateComponent';
 import { walkAndCount, prepareSubstitutions, walkAndSubstitute } from './propCompression';
 import windowsPathFix from '../utils/windowsPathFix';
+
+const defaultElderHelpers = (decompressCode) => `
+let IO;
+const $$ejs = async (arr)=>{
+  ${decompressCode}
+  for (let i = 0; i < arr.length; i++) {
+    const id = arr[i][0];
+    const component = arr[i][1];
+    const props = arr[i][2] || {};
+
+    const elem = document.getElementById(id);
+
+    let propsToHydrate = props;
+    if(typeof props === 'string'){
+      const propsFile = await import(props);
+      propsToHydrate = propsFile.default;
+    }
+
+    if (!IO) {
+      IO = new IntersectionObserver((entries, observer) => {
+        var objK = Object.keys(entries);
+        var objKl = objK.length;
+        var objKi = 0;
+        for (; objKi < objKl; objKi++) {
+          if (entries[objK[objKi]].isIntersecting) {
+            observer.unobserve(elem);
+            import(component).then((comp)=>{
+                new comp.default({ 
+                  target: elem,
+                  props: $ejs(propsToHydrate),
+                  hydrate: true
+                });
+            });
+          }
+        }
+      });
+    }
+    IO.observe(elem);
+  }
+};
+`;
 
 export const howManyBytes = (str) => Buffer.from(str).length;
 
@@ -16,7 +56,7 @@ export const hashCode = (s) => {
 };
 
 export default async (page: Page) => {
-  let decompressCode = `<script>$ejs = function(_ejs){return _ejs}</script>`;
+  let decompressCode = `$ejs = function(_ejs){return _ejs}`;
   if (!page.settings.props.compress) {
     for (let dd = 0; dd < page.componentsToHydrate.length; dd += 1) {
       const component = page.componentsToHydrate[dd];
@@ -47,16 +87,16 @@ export default async (page: Page) => {
     });
 
     if (substitutions.size > 0) {
-      decompressCode = `<script>
-      var $ejs = function(){
-        var gt = function (_ejs) { return Object.prototype.toString.call(_ejs).slice(8, -1);};
-        var ejs = new Map(${JSON.stringify(Array.from(initialValues))});
+      decompressCode = `
+      const $ejs = function(){
+        const gt = function (_ejs) { return Object.prototype.toString.call(_ejs).slice(8, -1);};
+        const ejs = new Map(${JSON.stringify(Array.from(initialValues))});
          return function(_ejs){
             if (ejs.has(_ejs)) return ejs.get(_ejs);
             if (Array.isArray(_ejs)) return _ejs.map((t) => $ejs(t));
             if (gt(_ejs) === "Object") {
             return Object.keys(_ejs).reduce(function (out, cv){
-                var key = ejs.get(cv) || cv;
+                const key = ejs.get(cv) || cv;
                 out[key] = $ejs(_ejs[cv]);
                 return out;
               }, {});
@@ -64,7 +104,7 @@ export default async (page: Page) => {
             return _ejs;
         };
       }();
-    </script>`;
+    `;
     }
 
     if (page.settings.debug.props) hydratedPropLength += decompressCode.length;
@@ -87,12 +127,8 @@ export default async (page: Page) => {
     page.perf.stop('prepareProps');
   }
 
-  // always add decompress code even if it is just the basic return function.
-  page.beforeHydrateStack.push({
-    source: 'compressProps',
-    string: decompressCode,
-    priority: 100,
-  });
+  let eagerString = '';
+  let deferString = '';
 
   for (let p = 0; p < page.componentsToHydrate.length; p += 1) {
     const component = page.componentsToHydrate[p];
@@ -118,16 +154,26 @@ export default async (page: Page) => {
         }
 
         component.prepared.clientPropsUrl = windowsPathFix(`/${path.relative(page.settings.distDir, propPath)}`);
-      } else {
+      } else if (howManyBytes(component.prepared.propsString) > 10000) {
         component.prepared.clientPropsString = `JSON.parse(\`${component.prepared.propsString}\`)`;
+      } else {
+        component.prepared.clientPropsString = component.prepared.propsString;
       }
     }
 
-    page.hydrateStack.push({
-      source: component.name,
-      priority: 30,
-      string: hydrateComponent(component),
-    });
+    if (component.hydrateOptions.loading === 'eager') {
+      eagerString += `['${component.name}','${component.client}', ${
+        component.prepared.clientPropsUrl
+          ? `'${component.prepared.clientPropsUrl}'`
+          : component.prepared.clientPropsString
+      }],`;
+    } else {
+      deferString += `['${component.name}','${component.client}', ${
+        component.prepared.clientPropsUrl
+          ? `'${component.prepared.clientPropsUrl}'`
+          : component.prepared.clientPropsString
+      }],`;
+    }
 
     if (component.hydrateOptions.preload) {
       page.headStack.push({
@@ -146,6 +192,20 @@ export default async (page: Page) => {
       }
     }
   }
+
+  page.hydrateStack.push({
+    source: 'hydrateComponents',
+    priority: 30,
+    string: `<script type="module">
+    ${defaultElderHelpers(decompressCode)}
+    ${eagerString.length > 0 ? `$$ejs([${eagerString}])` : ''}${
+      deferString.length > 0
+        ? `
+    requestIdleCallback(function(){
+      $$ejs([${deferString}])}, {timeout: 1000});`
+        : ''
+    }</script>`,
+  });
 
   // add components to stack
 };
