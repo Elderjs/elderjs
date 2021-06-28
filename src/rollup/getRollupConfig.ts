@@ -43,7 +43,7 @@ export function createBrowserConfig({
       elderSvelte({ svelteConfig, type: 'client', elderConfig, startDevServer }),
       nodeResolve({
         browser: true,
-        dedupe: ['svelte', 'core-js'],
+        dedupe: ['svelte'],
         preferBuiltins: true,
         rootDir: process.cwd(),
       }),
