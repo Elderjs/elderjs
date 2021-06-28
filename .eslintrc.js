@@ -4,7 +4,13 @@ module.exports = {
     es2020: true,
     'jest/globals': true,
   },
-  extends: ['airbnb-base', 'plugin:jest/recommended', 'prettier/@typescript-eslint', 'plugin:prettier/recommended', 'plugin:jest/style'],
+  extends: [
+    'airbnb-base',
+    'plugin:jest/recommended',
+    'prettier/@typescript-eslint',
+    'plugin:prettier/recommended',
+    'plugin:jest/style',
+  ],
   settings: {
     'import/resolver': {
       node: {
@@ -19,7 +25,7 @@ module.exports = {
   },
   plugins: ['@typescript-eslint', 'jest', 'prettier'],
   rules: {
-    'prettier/prettier': 'error',
+    'prettier/prettier': 'warn',
     // do not require ext. when importing file
     'import/extensions': [
       'error',

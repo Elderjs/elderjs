@@ -69,7 +69,7 @@
     "eslint-plugin-prettier": "^3.1.4",
     "jest": "^26.6.3",
     "locate-character": "^2.0.5",
-    "prettier": "^2.1.2",
+    "prettier": "^2.3.2",
     "rimraf": "^3.0.2",
     "ts-jest": "^26.5.3",
     "ts-node": "^9.1.1",
