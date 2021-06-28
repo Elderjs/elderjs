@@ -113,8 +113,6 @@ export default async (page: Page) => {
 
     for (let ii = 0; ii < page.componentsToHydrate.length; ii += 1) {
       const component = page.componentsToHydrate[ii];
-      // eslint-disable-next-line no-continue
-      if (!component.props) continue; // skip components without props
       component.prepared.propsString = JSON.stringify(walkAndSubstitute(component.props, substitutions));
       if (page.settings.debug.props) hydratedPropLength += component.prepared.propsString.length;
     }
