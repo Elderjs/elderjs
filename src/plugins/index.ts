@@ -7,11 +7,12 @@ import path from 'path';
 import toRegExp from 'regexparam';
 
 import { ShortcodeDefs } from '../shortcodes/types';
-import { validatePlugin, validateHook, svelteComponent, HookOptions, PluginOptions, makeRoutesjsPermalink } from '..';
+import { validatePlugin, validateHook, svelteComponent, HookOptions, PluginOptions } from '..';
 import { Elder } from '../Elder';
 import { RoutesOptions } from '../routes/types';
 import createReadOnlyProxy from '../utils/createReadOnlyProxy';
 import wrapPermalinkFn from '../utils/wrapPermalinkFn';
+import makeDynamicPermalinkFn from '../routes/makeDynamicPermalinkFn';
 
 export const pluginVersionCheck = (elderVersion: string, pluginVersion: string): boolean => {
   const eSplit = elderVersion.split('.');
@@ -182,12 +183,12 @@ async function plugins(elder: Elder) {
           // handle string based permalinks
           if (typeof plugin.routes[routeName].permalink === 'string') {
             const routeString = `${serverPrefix}${plugin.routes[routeName].permalink}`;
-            plugin.routes[routeName].permalink = makeRoutesjsPermalink(plugin.routes[routeName].permalink);
+            plugin.routes[routeName].permalink = makeDynamicPermalinkFn(plugin.routes[routeName].permalink);
 
             plugin.routes[routeName].$$meta = {
               ...plugin.routes[routeName].$$meta,
               routeString,
-              ...toRegExp(routeString),
+              ...toRegExp.parse(routeString),
               type: plugin.routes[routeName].dynamic ? `dynamic` : 'static',
             };
           }
