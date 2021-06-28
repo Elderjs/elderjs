@@ -39,9 +39,25 @@ const configSchema = yup.object({
     .label(
       "Where Elder.js should find it's expected file structure. If you are using a build step such as typescript on your project, you may need to edit this. ",
     ),
+  props: yup.object({
+    hydration: yup
+      .string()
+      .notRequired()
+      .default('hybrid')
+      .label(
+        'How should props be handled. "hybrid": writes props under 2kb to the html, props > 2kb are an external file. "html": props are written to page html. "file" writes props to a hashed external file.',
+      ),
+    compress: yup.boolean().notRequired().default(false).label('Compress the props of hydrated components.'),
+    replacementChars: yup
+      .string()
+      .notRequired()
+      .default('$abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
+      .label('List of characters to be used when compressing props'),
+  }),
   debug: yup
     .object()
     .shape({
+      props: yup.boolean().notRequired().default(false).label('Adds debugging information for prop compression'),
       stacks: yup.boolean().notRequired().default(false).label('Outputs details of stack processing in the console.'),
       hooks: yup.boolean().notRequired().default(false).label('Output details of hook execution in the console.'),
       shortcodes: yup
@@ -105,12 +121,6 @@ const configSchema = yup.object({
     closePattern: yup.string().default('}}').label('closing pattern for identifying shortcodes in html output.'),
   }),
   plugins: yup.object().default({}).label('Used to define Elder.js plugins.'),
-  legacy: yup
-    .boolean()
-    .default(false)
-    .label(
-      'EXPERIMENTAL: This implementation will not work in all scenarios, may change in the future, or be dropped completely... but Elder.js will attempt to add an IE11/nomodule friendly iife bundle for each component on production rollup builds. Please note, currently shared stores do not work but see this issue: https://github.com/Elderjs/elderjs/issues/44#issue-709580756 and you may need to bring your own polyfills.',
-    ),
   css: yup
     .string()
     .required()
@@ -244,7 +254,7 @@ const rollupSchema = yup.object({
     .object()
     .default({})
     .notRequired()
-    .label('Replaces the key with the value when rolling up templates'),
+    .label('Replaces the key with the value when bundling up svelte templates'),
   startDevServer: yup
     .boolean()
     .notRequired()

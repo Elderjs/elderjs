@@ -11,21 +11,12 @@ import { svelteComponent } from '../utils';
 import { SettingsOptions } from '../utils/types';
 import wrapPermalinkFn from '../utils/wrapPermalinkFn';
 import windowsPathFix from '../utils/windowsPathFix';
+import makeDynamicPermalinkFn from './makeDynamicPermalinkFn';
 
 const requireFile = (file: string) => {
   const dataReq = require(file);
   return dataReq.default || dataReq;
 };
-
-export function makeRoutesjsPermalink(routeString) {
-  return function permalink({ request }) {
-    // eslint-disable-next-line no-useless-escape
-    return routeString.replace(/(\/|^)([:*][^\/]*?)(\?)?(?=\/|$)/g, (_, start, key, optional) => {
-      if ((_ = request[key.substring(1)])) return `/${_}`;
-      return optional ? '' : `/${key}`; // TODO: error?
-    });
-  };
-}
 
 function prepareRoutes(settings: SettingsOptions) {
   try {
@@ -60,12 +51,12 @@ function prepareRoutes(settings: SettingsOptions) {
       // handle string based permalinks
       if (typeof route.permalink === 'string') {
         const routeString = `${serverPrefix}${route.permalink}`;
-        route.permalink = makeRoutesjsPermalink(route.permalink);
+        route.permalink = makeDynamicPermalinkFn(route.permalink);
 
         route.$$meta = {
           ...route.$$meta,
           routeString,
-          ...toRegExp(routeString),
+          ...toRegExp.parse(routeString),
           type: route.dynamic ? `dynamic` : 'static',
         };
       }

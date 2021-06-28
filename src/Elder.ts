@@ -163,7 +163,7 @@ class Elder {
       // validate hooks
       this.hooks = [...elderJsHooks, ...pluginHooks, ...hooksJs]
         .map((hook) => validateHook(hook))
-        .filter((Boolean as any) as ExcludesFalse);
+        .filter(Boolean as any as ExcludesFalse);
 
       if (this.settings.hooks.disable && this.settings.hooks.disable.length > 0) {
         this.hooks = this.hooks.filter((h) => !this.settings.hooks.disable.includes(h.name));
@@ -201,7 +201,7 @@ class Elder {
       // validate shortcodes
       this.shortcodes = [...elderJsShortcodes, ...pluginShortcodes, ...shortcodesJs]
         .map((shortcode) => validateShortcode(shortcode))
-        .filter((Boolean as any) as ExcludesFalse);
+        .filter(Boolean as any as ExcludesFalse);
 
       /**
        *

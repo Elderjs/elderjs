@@ -14,7 +14,6 @@ Object {
   "_mutate": undefined,
   "_nodes": Array [
     "css",
-    "legacy",
     "plugins",
     "shortcodes",
     "build",
@@ -22,6 +21,7 @@ Object {
     "server",
     "hooks",
     "debug",
+    "props",
     "srcDir",
     "distDir",
     "rootDir",
@@ -178,6 +178,7 @@ Object {
         "shortcodes",
         "hooks",
         "stacks",
+        "props",
       ],
       "_options": Object {
         "abortEarly": true,
@@ -281,6 +282,33 @@ Object {
           "_deps": Array [],
           "_exclusive": Object {},
           "_label": "Outputs a detailed speed report on each pageload.",
+          "_mutate": undefined,
+          "_options": Object {
+            "abortEarly": true,
+            "recursive": true,
+          },
+          "_type": "boolean",
+          "_typeError": [Function],
+          "_whitelist": Object {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "tests": Array [],
+          "transforms": Array [
+            [Function],
+          ],
+          "type": "boolean",
+        },
+        "props": Object {
+          "_blacklist": Object {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "_conditions": Array [],
+          "_default": false,
+          "_deps": Array [],
+          "_exclusive": Object {},
+          "_label": "Adds debugging information for prop compression",
           "_mutate": undefined,
           "_options": Object {
             "abortEarly": true,
@@ -522,33 +550,6 @@ Object {
       ],
       "type": "string",
     },
-    "legacy": Object {
-      "_blacklist": Object {
-        "list": Set {},
-        "refs": Map {},
-      },
-      "_conditions": Array [],
-      "_default": false,
-      "_deps": Array [],
-      "_exclusive": Object {},
-      "_label": "EXPERIMENTAL: This implementation will not work in all scenarios, may change in the future, or be dropped completely... but Elder.js will attempt to add an IE11/nomodule friendly iife bundle for each component on production rollup builds. Please note, currently shared stores do not work but see this issue: https://github.com/Elderjs/elderjs/issues/44#issue-709580756 and you may need to bring your own polyfills.",
-      "_mutate": undefined,
-      "_options": Object {
-        "abortEarly": true,
-        "recursive": true,
-      },
-      "_type": "boolean",
-      "_typeError": [Function],
-      "_whitelist": Object {
-        "list": Set {},
-        "refs": Map {},
-      },
-      "tests": Array [],
-      "transforms": Array [
-        [Function],
-      ],
-      "type": "boolean",
-    },
     "origin": Object {
       "_blacklist": Object {
         "list": Set {},
@@ -633,6 +634,121 @@ Object {
         [Function],
       ],
       "type": "string",
+    },
+    "props": Object {
+      "_blacklist": Object {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": Array [],
+      "_defaultDefault": [Function],
+      "_deps": Array [],
+      "_excludedEdges": Array [],
+      "_exclusive": Object {},
+      "_mutate": undefined,
+      "_nodes": Array [
+        "replacementChars",
+        "compress",
+        "hydration",
+      ],
+      "_options": Object {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "object",
+      "_typeError": [Function],
+      "_whitelist": Object {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "fields": Object {
+        "compress": Object {
+          "_blacklist": Object {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "_conditions": Array [],
+          "_default": false,
+          "_deps": Array [],
+          "_exclusive": Object {},
+          "_label": "Compress the props of hydrated components.",
+          "_mutate": undefined,
+          "_options": Object {
+            "abortEarly": true,
+            "recursive": true,
+          },
+          "_type": "boolean",
+          "_typeError": [Function],
+          "_whitelist": Object {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "tests": Array [],
+          "transforms": Array [
+            [Function],
+          ],
+          "type": "boolean",
+        },
+        "hydration": Object {
+          "_blacklist": Object {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "_conditions": Array [],
+          "_default": "hybrid",
+          "_deps": Array [],
+          "_exclusive": Object {},
+          "_label": "How should props be handled. \\"hybrid\\": writes props under 2kb to the html, props > 2kb are an external file. \\"html\\": props are written to page html. \\"file\\" writes props to a hashed external file.",
+          "_mutate": undefined,
+          "_options": Object {
+            "abortEarly": true,
+            "recursive": true,
+          },
+          "_type": "string",
+          "_typeError": [Function],
+          "_whitelist": Object {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "tests": Array [],
+          "transforms": Array [
+            [Function],
+          ],
+          "type": "string",
+        },
+        "replacementChars": Object {
+          "_blacklist": Object {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "_conditions": Array [],
+          "_default": "$abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+          "_deps": Array [],
+          "_exclusive": Object {},
+          "_label": "List of characters to be used when compressing props",
+          "_mutate": undefined,
+          "_options": Object {
+            "abortEarly": true,
+            "recursive": true,
+          },
+          "_type": "string",
+          "_typeError": [Function],
+          "_whitelist": Object {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "tests": Array [],
+          "transforms": Array [
+            [Function],
+          ],
+          "type": "string",
+        },
+      },
+      "tests": Array [],
+      "transforms": Array [
+        [Function],
+      ],
+      "type": "object",
     },
     "rootDir": Object {
       "_blacklist": Object {

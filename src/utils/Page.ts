@@ -3,11 +3,12 @@ import getUniqueId from './getUniqueId';
 import perf from './perf';
 import prepareProcessStack from './prepareProcessStack';
 import { ShortcodeDefs } from '../shortcodes/types';
-import { QueryOptions, Stack, RequestOptions, SettingsOptions } from './types';
+import { QueryOptions, Stack, RequestOptions, SettingsOptions, HydrateOptions } from './types';
 import { RoutesOptions } from '../routes/types';
 import createReadOnlyProxy from './createReadOnlyProxy';
 import outputStyles from './outputStyles';
 import mountComponentsInHtml from '../partialHydration/mountComponentsInHtml';
+import hydrateComponents from '../partialHydration/hydrateComponents';
 
 const buildPage = async (page) => {
   try {
@@ -77,6 +78,8 @@ const buildPage = async (page) => {
     // shortcodes can add svelte components, so we have to process the resulting html accordingly.
     page.layoutHtml = mountComponentsInHtml({ page, html: page.layoutHtml, hydrateOptions: false });
 
+    await hydrateComponents(page);
+
     await page.runHook('stacks', page);
 
     // prepare for head hook
@@ -121,6 +124,7 @@ const buildPage = async (page) => {
       await page.runHook('error', page);
     }
   } catch (err) {
+    console.log(err);
     page.errors.push(err);
     await page.runHook('error', page);
   }
@@ -130,6 +134,19 @@ const buildPage = async (page) => {
 interface SvelteCss {
   cssMap: String;
   css: String;
+}
+
+export interface IComponentToHydrate {
+  name: string;
+  hydrateOptions: HydrateOptions;
+  client: any;
+  props: false | any;
+  id: string;
+  prepared?: {
+    clientPropsString?: string;
+    clientPropsUrl?: string;
+    propsString?: string;
+  };
 }
 
 class Page {
@@ -201,6 +218,8 @@ class Page {
 
   shortcodes: ShortcodeDefs;
 
+  componentsToHydrate: IComponentToHydrate[];
+
   constructor({
     request,
     settings,
@@ -255,6 +274,7 @@ class Page {
       this.shouldSkipRequest = true;
     };
     this.resNext = next;
+    this.componentsToHydrate = [];
   }
 
   build() {

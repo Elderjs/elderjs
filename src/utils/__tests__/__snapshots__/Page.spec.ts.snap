@@ -29,6 +29,7 @@ Object {
   "beforeHydrateStack": Array [],
   "bodyAttributesStack": Array [],
   "bodyAttributesString": "",
+  "componentsToHydrate": Array [],
   "cssStack": Array [],
   "cssString": "",
   "customJsStack": Array [],
@@ -167,6 +168,7 @@ Object {
   "runHook": [Function],
   "settings": Object {
     "$$internal": Object {
+      "distElder": "test/_elderjs",
       "hashedComponents": Object {
         "AutoComplete": "entryAutoComplete",
         "Footer": "entryFooter",
@@ -189,6 +191,7 @@ Object {
       "performance": false,
       "stacks": false,
     },
+    "distDir": "test",
     "hooks": Object {
       "disable": Array [],
     },
@@ -210,6 +213,7 @@ Object {
         "htmlBucket": "elderguide.com",
       },
     },
+    "props": Object {},
     "server": false,
     "typescript": false,
     "worker": true,
@@ -250,23 +254,20 @@ Object {
   "beforeHydrateStack": Array [],
   "bodyAttributesStack": Array [],
   "bodyAttributesString": "",
+  "componentsToHydrate": Array [],
   "cssStack": Array [],
   "cssString": "cssStack",
-  "customJsStack": Array [
-    "customJsStack",
-  ],
+  "customJsStack": Array [],
   "data": Object {
     "worldPopulation": 7805564950,
   },
   "errors": Array [],
-  "footerStack": Array [
-    "footerStack",
-  ],
+  "footerStack": Array [],
   "footerString": "
     beforeHydrateStack
     hydrateStack
-    customJsStack
-    footerStack
+    
+    
     ",
   "head": "headStack",
   "headStack": Array [],
@@ -279,7 +280,55 @@ Object {
   "htmlAttributesString": "",
   "htmlString": "",
   "hydrateStack": Array [
-    "hydrateStack",
+    Object {
+      "priority": 30,
+      "source": "hydrateComponents",
+      "string": "<script type=\\"module\\">
+    
+let IO, $$COMPONENTS={};
+const $$ejs = async (arr)=>{
+  const $ejs = function(_ejs){return _ejs};
+  const prefix = '/_elderjs';
+
+  for (let i = 0; i < arr.length; i++) {
+    $$COMPONENTS[arr[i][0]] = {
+      elem: document.getElementById(arr[i][0]),
+      component: arr[i][1],
+      props: $ejs(arr[i][2]) || {},
+    };
+
+    if(typeof  $$COMPONENTS[arr[i][0]].props === 'string'){
+      const propsFile = await import(prefix+'/props/'+$$COMPONENTS[arr[i][0]].props);
+      $$COMPONENTS[arr[i][0]].props = $ejs(propsFile.default);
+    };
+
+    if (!IO) {
+      IO = new IntersectionObserver((entries, observer) => {
+        var objK = Object.keys(entries);
+        var objKl = objK.length;
+        var objKi = 0;
+        for (; objKi < objKl; objKi++) {
+          const entry = entries[objK[objKi]];
+          if (entry.isIntersecting) {
+            const selected = $$COMPONENTS[entry.target.id];
+            observer.unobserve(selected.elem);
+            import(prefix + '/svelte/components/' + selected.component).then((comp)=>{
+                new comp.default({ 
+                  target: selected.elem,
+                  props: selected.props,
+                  hydrate: true
+                });
+            });
+          }
+        }
+      });
+    };
+    IO.observe($$COMPONENTS[arr[i][0]].elem);
+  }
+};
+
+    </script>",
+    },
   ],
   "layoutHtml": "<div class=\\"container\\"></div>",
   "moduleJsStack": Array [],
@@ -470,23 +519,20 @@ Object {
               "beforeHydrateStack": Array [],
               "bodyAttributesStack": Array [],
               "bodyAttributesString": "",
+              "componentsToHydrate": Array [],
               "cssStack": Array [],
               "cssString": "cssStack",
-              "customJsStack": Array [
-                "customJsStack",
-              ],
+              "customJsStack": Array [],
               "data": Object {
                 "worldPopulation": 7805564950,
               },
               "errors": Array [],
-              "footerStack": Array [
-                "footerStack",
-              ],
+              "footerStack": Array [],
               "footerString": "
     beforeHydrateStack
     hydrateStack
-    customJsStack
-    footerStack
+    
+    
     ",
               "head": "headStack",
               "headStack": Array [],
@@ -499,7 +545,55 @@ Object {
               "htmlAttributesString": "",
               "htmlString": "",
               "hydrateStack": Array [
-                "hydrateStack",
+                Object {
+                  "priority": 30,
+                  "source": "hydrateComponents",
+                  "string": "<script type=\\"module\\">
+    
+let IO, $$COMPONENTS={};
+const $$ejs = async (arr)=>{
+  const $ejs = function(_ejs){return _ejs};
+  const prefix = '/_elderjs';
+
+  for (let i = 0; i < arr.length; i++) {
+    $$COMPONENTS[arr[i][0]] = {
+      elem: document.getElementById(arr[i][0]),
+      component: arr[i][1],
+      props: $ejs(arr[i][2]) || {},
+    };
+
+    if(typeof  $$COMPONENTS[arr[i][0]].props === 'string'){
+      const propsFile = await import(prefix+'/props/'+$$COMPONENTS[arr[i][0]].props);
+      $$COMPONENTS[arr[i][0]].props = $ejs(propsFile.default);
+    };
+
+    if (!IO) {
+      IO = new IntersectionObserver((entries, observer) => {
+        var objK = Object.keys(entries);
+        var objKl = objK.length;
+        var objKi = 0;
+        for (; objKi < objKl; objKi++) {
+          const entry = entries[objK[objKi]];
+          if (entry.isIntersecting) {
+            const selected = $$COMPONENTS[entry.target.id];
+            observer.unobserve(selected.elem);
+            import(prefix + '/svelte/components/' + selected.component).then((comp)=>{
+                new comp.default({ 
+                  target: selected.elem,
+                  props: selected.props,
+                  hydrate: true
+                });
+            });
+          }
+        }
+      });
+    };
+    IO.observe($$COMPONENTS[arr[i][0]].elem);
+  }
+};
+
+    </script>",
+                },
               ],
               "layoutHtml": "<div class=\\"container\\"></div>",
               "moduleJsStack": Array [],
@@ -695,6 +789,7 @@ Object {
                           },
                           "settings": Object {
                             "$$internal": Object {
+                              "distElder": "test/_elderjs",
                               "hashedComponents": Object {
                                 "AutoComplete": "entryAutoComplete",
                                 "Footer": "entryFooter",
@@ -717,6 +812,7 @@ Object {
                               "performance": false,
                               "stacks": false,
                             },
+                            "distDir": "test",
                             "hooks": Object {
                               "disable": Array [],
                             },
@@ -738,6 +834,7 @@ Object {
                                 "htmlBucket": "elderguide.com",
                               },
                             },
+                            "props": Object {},
                             "server": false,
                             "typescript": false,
                             "worker": true,
@@ -782,6 +879,7 @@ Object {
               "runHook": [Function],
               "settings": Object {
                 "$$internal": Object {
+                  "distElder": "test/_elderjs",
                   "hashedComponents": Object {
                     "AutoComplete": "entryAutoComplete",
                     "Footer": "entryFooter",
@@ -804,6 +902,7 @@ Object {
                   "performance": false,
                   "stacks": false,
                 },
+                "distDir": "test",
                 "hooks": Object {
                   "disable": Array [],
                 },
@@ -825,6 +924,7 @@ Object {
                     "htmlBucket": "elderguide.com",
                   },
                 },
+                "props": Object {},
                 "server": false,
                 "typescript": false,
                 "worker": true,
@@ -858,6 +958,7 @@ Object {
               },
               "settings": Object {
                 "$$internal": Object {
+                  "distElder": "test/_elderjs",
                   "hashedComponents": Object {
                     "AutoComplete": "entryAutoComplete",
                     "Footer": "entryFooter",
@@ -880,6 +981,7 @@ Object {
                   "performance": false,
                   "stacks": false,
                 },
+                "distDir": "test",
                 "hooks": Object {
                   "disable": Array [],
                 },
@@ -901,6 +1003,7 @@ Object {
                     "htmlBucket": "elderguide.com",
                   },
                 },
+                "props": Object {},
                 "server": false,
                 "typescript": false,
                 "worker": true,
@@ -951,23 +1054,20 @@ Object {
               "beforeHydrateStack": Array [],
               "bodyAttributesStack": Array [],
               "bodyAttributesString": "",
+              "componentsToHydrate": Array [],
               "cssStack": Array [],
               "cssString": "cssStack",
-              "customJsStack": Array [
-                "customJsStack",
-              ],
+              "customJsStack": Array [],
               "data": Object {
                 "worldPopulation": 7805564950,
               },
               "errors": Array [],
-              "footerStack": Array [
-                "footerStack",
-              ],
+              "footerStack": Array [],
               "footerString": "
     beforeHydrateStack
     hydrateStack
-    customJsStack
-    footerStack
+    
+    
     ",
               "head": "headStack",
               "headStack": Array [],
@@ -980,7 +1080,55 @@ Object {
               "htmlAttributesString": "",
               "htmlString": "",
               "hydrateStack": Array [
-                "hydrateStack",
+                Object {
+                  "priority": 30,
+                  "source": "hydrateComponents",
+                  "string": "<script type=\\"module\\">
+    
+let IO, $$COMPONENTS={};
+const $$ejs = async (arr)=>{
+  const $ejs = function(_ejs){return _ejs};
+  const prefix = '/_elderjs';
+
+  for (let i = 0; i < arr.length; i++) {
+    $$COMPONENTS[arr[i][0]] = {
+      elem: document.getElementById(arr[i][0]),
+      component: arr[i][1],
+      props: $ejs(arr[i][2]) || {},
+    };
+
+    if(typeof  $$COMPONENTS[arr[i][0]].props === 'string'){
+      const propsFile = await import(prefix+'/props/'+$$COMPONENTS[arr[i][0]].props);
+      $$COMPONENTS[arr[i][0]].props = $ejs(propsFile.default);
+    };
+
+    if (!IO) {
+      IO = new IntersectionObserver((entries, observer) => {
+        var objK = Object.keys(entries);
+        var objKl = objK.length;
+        var objKi = 0;
+        for (; objKi < objKl; objKi++) {
+          const entry = entries[objK[objKi]];
+          if (entry.isIntersecting) {
+            const selected = $$COMPONENTS[entry.target.id];
+            observer.unobserve(selected.elem);
+            import(prefix + '/svelte/components/' + selected.component).then((comp)=>{
+                new comp.default({ 
+                  target: selected.elem,
+                  props: selected.props,
+                  hydrate: true
+                });
+            });
+          }
+        }
+      });
+    };
+    IO.observe($$COMPONENTS[arr[i][0]].elem);
+  }
+};
+
+    </script>",
+                },
               ],
               "layoutHtml": "<div class=\\"container\\"></div>",
               "moduleJsStack": Array [],
@@ -1165,6 +1313,7 @@ Object {
                           },
                           "settings": Object {
                             "$$internal": Object {
+                              "distElder": "test/_elderjs",
                               "hashedComponents": Object {
                                 "AutoComplete": "entryAutoComplete",
                                 "Footer": "entryFooter",
@@ -1187,6 +1336,7 @@ Object {
                               "performance": false,
                               "stacks": false,
                             },
+                            "distDir": "test",
                             "hooks": Object {
                               "disable": Array [],
                             },
@@ -1208,6 +1358,7 @@ Object {
                                 "htmlBucket": "elderguide.com",
                               },
                             },
+                            "props": Object {},
                             "server": false,
                             "typescript": false,
                             "worker": true,
@@ -1264,6 +1415,7 @@ Object {
               "runHook": [Function],
               "settings": Object {
                 "$$internal": Object {
+                  "distElder": "test/_elderjs",
                   "hashedComponents": Object {
                     "AutoComplete": "entryAutoComplete",
                     "Footer": "entryFooter",
@@ -1286,6 +1438,7 @@ Object {
                   "performance": false,
                   "stacks": false,
                 },
+                "distDir": "test",
                 "hooks": Object {
                   "disable": Array [],
                 },
@@ -1307,6 +1460,7 @@ Object {
                     "htmlBucket": "elderguide.com",
                   },
                 },
+                "props": Object {},
                 "server": false,
                 "typescript": false,
                 "worker": true,
@@ -1340,6 +1494,7 @@ Object {
               },
               "settings": Object {
                 "$$internal": Object {
+                  "distElder": "test/_elderjs",
                   "hashedComponents": Object {
                     "AutoComplete": "entryAutoComplete",
                     "Footer": "entryFooter",
@@ -1362,6 +1517,7 @@ Object {
                   "performance": false,
                   "stacks": false,
                 },
+                "distDir": "test",
                 "hooks": Object {
                   "disable": Array [],
                 },
@@ -1383,6 +1539,7 @@ Object {
                     "htmlBucket": "elderguide.com",
                   },
                 },
+                "props": Object {},
                 "server": false,
                 "typescript": false,
                 "worker": true,
@@ -1427,6 +1584,7 @@ Object {
   "runHook": [Function],
   "settings": Object {
     "$$internal": Object {
+      "distElder": "test/_elderjs",
       "hashedComponents": Object {
         "AutoComplete": "entryAutoComplete",
         "Footer": "entryFooter",
@@ -1449,6 +1607,7 @@ Object {
       "performance": false,
       "stacks": false,
     },
+    "distDir": "test",
     "hooks": Object {
       "disable": Array [],
     },
@@ -1470,6 +1629,7 @@ Object {
         "htmlBucket": "elderguide.com",
       },
     },
+    "props": Object {},
     "server": false,
     "typescript": false,
     "worker": true,

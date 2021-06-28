@@ -24,7 +24,6 @@ describe('#validations', () => {
 
   const defaultConfig = {
     css: 'file',
-    legacy: false,
     build: {
       numberOfWorkers: -1,
       shuffleRequests: false,
@@ -39,6 +38,7 @@ describe('#validations', () => {
       performance: false,
       stacks: false,
       shortcodes: false,
+      props: false,
     },
     hooks: {
       disable: [],
@@ -47,6 +47,11 @@ describe('#validations', () => {
     lang: 'en',
     plugins: {},
     prefix: '',
+    props: {
+      compress: false,
+      hydration: 'hybrid',
+      replacementChars: '$abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+    },
     server: {
       prefix: '',
     },

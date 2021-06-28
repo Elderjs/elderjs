@@ -90,7 +90,6 @@ describe('#getRollupConfig', () => {
           format: 'system',
         },
         svelteConfig: {},
-        ie11: true,
         multiInputConfig: false,
       }).plugins.map((p) => p.name),
     ).toEqual(['replace', 'json', 'rollup-plugin-elder', 'node-resolve', 'commonjs', 'babel', 'terser']);
@@ -175,7 +174,6 @@ describe('#getRollupConfig', () => {
       srcDir: './src',
       rootDir: './',
       plugins: {},
-      legacy: false,
     }));
     jest.mock('fs-extra', () => ({
       existsSync: jest.fn().mockImplementationOnce(() => false),
@@ -213,7 +211,6 @@ describe('#getRollupConfig', () => {
         pluginA: {},
         pluginB: {},
       },
-      legacy: false,
     }));
 
     jest.mock('del');
@@ -234,65 +231,5 @@ describe('#getRollupConfig', () => {
     // would be nice to mock getPluginPaths if it's extracted to separate file
     const configs = fixRelativePath(require('../getRollupConfig').default({ svelteConfig }));
     expect(configs).toHaveLength(3);
-  });
-
-  it('getRollupConfig as a whole works - legacy: true', () => {
-    jest.mock('../../utils/validations.ts', () => ({
-      getDefaultRollup: () => ({
-        replacements: {},
-        dev: { splitComponents: false },
-        svelteConfig: {},
-      }),
-    }));
-    jest.mock('../../utils/getPluginLocations', () => () => ({
-      paths: ['/src/plugins/elderjs-plugin-reload/'],
-      files: [
-        '/src/plugins/elderjs-plugin-reload/SimplePlugin.svelte',
-        '/src/plugins/elderjs-plugin-reload/Test.svelte',
-      ],
-    }));
-    // getElderConfig() mock
-    jest.mock('../../utils/getConfig', () => () => ({
-      $$internal: {
-        clientComponents: 'test/public/svelte',
-        ssrComponents: 'test/___ELDER___/compiled',
-      },
-      distDir: './dist',
-      srcDir: './src',
-      rootDir: './',
-      plugins: {
-        pluginA: {},
-        pluginB: {},
-      },
-      legacy: true,
-    }));
-
-    jest.mock('fs-extra', () => ({
-      existsSync: jest.fn().mockImplementation(() => true),
-    }));
-    jest.mock('glob', () => ({
-      sync: jest
-        .fn()
-        .mockImplementationOnce(() => ['pluginAComponent1.svelte', 'pluginAComponent2.svelte', 'AnythingCanBeHere']) // getPluginPaths
-        .mockImplementationOnce(() => ['pluginBComponent1.svelte', 'pluginBComponent2.svelte', 'AnythingCanBeHere']) // getPluginPaths
-        .mockImplementationOnce(() => ['NestedSrcComponent.svelte']) // nested
-        .mockImplementationOnce(() => ['SrcComponent.svlete', 'SrcComponent2.svelte']) // src
-        .mockImplementationOnce(() => ['LegacyPluginAComponent3.svelte', 'LegacyPluginAComponent4.svelte']) // legacy pluginA components
-        .mockImplementationOnce(() => ['LegacyPluginBComponent3.svelte']), // legacy pluginB components
-    }));
-
-    const svelteConfig = {
-      preprocess: [
-        {
-          style: ({ content }) => {
-            return content.toUpperCase();
-          },
-        },
-      ],
-    };
-
-    // would be nice to mock getPluginPaths if it's extracted to separate file
-    const configs = fixRelativePath(require('../getRollupConfig').default({ svelteConfig }));
-    expect(configs).toHaveLength(10);
   });
 });

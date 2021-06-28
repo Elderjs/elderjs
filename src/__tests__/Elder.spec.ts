@@ -50,18 +50,20 @@ describe('#Elder', () => {
 
   jest.mock(`..${sep}workerBuild`);
 
-  jest.mock(`..${sep}utils${sep}prepareRunHook`, () => (page) =>
-    async function processHook(hook) {
-      if (hook === 'bootstrap' && page.hooks && page.hooks.length) {
-        for (const pluginHook of page.hooks) {
-          if (pluginHook.$$meta.type === 'plugin') {
-            // eslint-disable-next-line
+  jest.mock(
+    `..${sep}utils${sep}prepareRunHook`,
+    () => (page) =>
+      async function processHook(hook) {
+        if (hook === 'bootstrap' && page.hooks && page.hooks.length) {
+          for (const pluginHook of page.hooks) {
+            if (pluginHook.$$meta.type === 'plugin') {
+              // eslint-disable-next-line
             await pluginHook.run({});
+            }
           }
         }
-      }
-      return null;
-    },
+        return null;
+      },
   );
   beforeEach(() => jest.resetModules());
 

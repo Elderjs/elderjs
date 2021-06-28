@@ -1,7 +1,6 @@
 import asyncForEach from './asyncForEach';
 import capitalizeFirstLetter from './capitalizeFirstLetter';
 import getUniqueId from './getUniqueId';
-import IntersectionObserver from './IntersectionObserver';
 import Page from './Page';
 import parseBuildPerf from '../build/parseBuildPerf';
 import perf from './perf';
@@ -24,7 +23,6 @@ export {
   svelteComponent,
   getUniqueId,
   validateShortcode,
-  IntersectionObserver,
   Page,
   parseBuildPerf,
   perf,

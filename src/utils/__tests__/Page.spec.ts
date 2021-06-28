@@ -70,6 +70,7 @@ const request = {
 };
 
 const settings = {
+  distDir: 'test',
   server: false,
   build: {
     shuffleRequests: false,
@@ -93,6 +94,7 @@ const settings = {
     build: false,
     automagic: false,
   },
+  props: {},
   hooks: {
     disable: [],
   },
@@ -105,6 +107,7 @@ const settings = {
   },
   typescript: false,
   $$internal: {
+    distElder: 'test/_elderjs',
     hashedComponents: {
       AutoComplete: 'entryAutoComplete',
       Footer: 'entryFooter',

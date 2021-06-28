@@ -1,6 +1,7 @@
 import type { RoutesOptions } from '../routes/types';
 import type { HookOptions } from '../hooks/types';
 import type { ShortcodeDefs } from '../shortcodes/types';
+import Page from './Page';
 
 type ServerOptions = {
   prefix: string;
@@ -44,6 +45,13 @@ type DebugOptions = {
   build: boolean;
   automagic: boolean;
   shortcodes: boolean;
+  props: boolean;
+};
+
+type PropOptions = {
+  compress: boolean;
+  replacementChars: string;
+  hydration: 'html' | 'hybrid' | 'file';
 };
 
 export type InitializationOptions = {
@@ -57,6 +65,7 @@ export type InitializationOptions = {
   build?: BuildOptions;
   debug?: DebugOptions;
   plugins?: any;
+  props?: PropOptions;
   hooks?: {
     disable?: string[];
   };
@@ -80,6 +89,7 @@ export type SettingsOptions = {
   build: BuildOptions | false;
   debug: DebugOptions;
   plugins?: any;
+  props: PropOptions;
   hooks: {
     disable?: string[];
   };
@@ -90,7 +100,6 @@ export type SettingsOptions = {
   $$internal: Internal;
   context?: string;
   worker?: boolean;
-  legacy: boolean;
   css: 'none' | 'file' | 'inline' | 'lazy';
 };
 
@@ -159,14 +168,14 @@ export type PluginOptions = {
 export type ExcludesFalse = <T>(x: T | false) => x is T;
 
 export type HydrateOptions = {
-  loading: string;
-  preload: boolean;
-  rootMargin: string;
-  threshold: number;
+  loading?: 'lazy' | 'eager' | 'none';
+  preload?: boolean;
+  threshold?: number;
+  rootMargin?: string;
 };
 
 export interface ComponentPayload {
-  page: any;
+  page: Page;
   props: any;
   hydrateOptions?: HydrateOptions;
 }

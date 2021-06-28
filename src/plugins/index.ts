@@ -7,11 +7,12 @@ import path from 'path';
 import toRegExp from 'regexparam';
 
 import { ShortcodeDefs } from '../shortcodes/types';
-import { validatePlugin, validateHook, svelteComponent, HookOptions, PluginOptions, makeRoutesjsPermalink } from '..';
+import { validatePlugin, validateHook, svelteComponent, HookOptions, PluginOptions } from '..';
 import { Elder } from '../Elder';
 import { RoutesOptions } from '../routes/types';
 import createReadOnlyProxy from '../utils/createReadOnlyProxy';
 import wrapPermalinkFn from '../utils/wrapPermalinkFn';
+import makeDynamicPermalinkFn from '../routes/makeDynamicPermalinkFn';
 
 export const pluginVersionCheck = (elderVersion: string, pluginVersion: string): boolean => {
   const eSplit = elderVersion.split('.');
@@ -118,39 +119,37 @@ async function plugins(elder: Elder) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { init, ...sanitizedPlugin } = plugin;
 
-      pluginHooksArray = pluginHooksArray.map(
-        (hook): HookOptions => {
-          return {
-            ...hook,
-            $$meta: {
-              type: 'plugin',
-              addedBy: pluginName,
-            },
-            run: async (payload: any = {}) => {
-              // pass the plugin definition into the closure of every hook.
-              let pluginDefinition = sanitizedPlugin;
+      pluginHooksArray = pluginHooksArray.map((hook): HookOptions => {
+        return {
+          ...hook,
+          $$meta: {
+            type: 'plugin',
+            addedBy: pluginName,
+          },
+          run: async (payload: any = {}) => {
+            // pass the plugin definition into the closure of every hook.
+            let pluginDefinition = sanitizedPlugin;
 
-              // eslint-disable-next-line no-param-reassign
-              payload.plugin = pluginDefinition;
+            // eslint-disable-next-line no-param-reassign
+            payload.plugin = pluginDefinition;
 
-              const pluginResp = await hook.run(payload);
-              if (pluginResp) {
-                if (pluginResp.plugin) {
-                  const { plugin: newPluginDef, ...rest } = pluginResp;
-                  // while objects are pass by reference, the pattern we encourage is to return the mutation of state.
-                  // if users followed this pattern for plugins, we may not be mutating the plugin definition, so this is added.
-                  pluginDefinition = newPluginDef;
-                  return rest;
-                }
-                return pluginResp;
+            const pluginResp = await hook.run(payload);
+            if (pluginResp) {
+              if (pluginResp.plugin) {
+                const { plugin: newPluginDef, ...rest } = pluginResp;
+                // while objects are pass by reference, the pattern we encourage is to return the mutation of state.
+                // if users followed this pattern for plugins, we may not be mutating the plugin definition, so this is added.
+                pluginDefinition = newPluginDef;
+                return rest;
               }
+              return pluginResp;
+            }
 
-              // make sure something is returned
-              return {};
-            },
-          };
-        },
-      );
+            // make sure something is returned
+            return {};
+          },
+        };
+      });
 
       pluginHooksArray.forEach((hook) => {
         const validatedHook = validateHook(hook);
@@ -182,12 +181,12 @@ async function plugins(elder: Elder) {
           // handle string based permalinks
           if (typeof plugin.routes[routeName].permalink === 'string') {
             const routeString = `${serverPrefix}${plugin.routes[routeName].permalink}`;
-            plugin.routes[routeName].permalink = makeRoutesjsPermalink(plugin.routes[routeName].permalink);
+            plugin.routes[routeName].permalink = makeDynamicPermalinkFn(plugin.routes[routeName].permalink);
 
             plugin.routes[routeName].$$meta = {
               ...plugin.routes[routeName].$$meta,
               routeString,
-              ...toRegExp(routeString),
+              ...toRegExp.parse(routeString),
               type: plugin.routes[routeName].dynamic ? `dynamic` : 'static',
             };
           }

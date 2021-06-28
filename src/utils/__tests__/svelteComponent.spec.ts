@@ -1,20 +1,18 @@
 /* eslint-disable global-require */
 import path from 'path';
 
-const removeSpacesFromStack = (stack) => stack.map((s) => ({ ...s, string: s.string.replace(/\s\s+/g, '') }));
-
 const componentProps = {
   page: {
     hydrateStack: [],
     errors: [],
     cssStack: [],
     headStack: [],
+    componentsToHydrate: [],
 
     helpers: {
       permalinks: jest.fn(),
     },
     settings: {
-      legacy: true, // TODO: make tests for legacy: false
       distDir: 'test/public',
       rootDir: 'test',
       srcDir: 'test/src',
@@ -85,8 +83,7 @@ describe('#svelteComponent', () => {
         render: () => ({
           head: '<head>',
           css: { code: '<old>' },
-          html:
-            '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "lazy" }"></div></div>',
+          html: '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "lazy" }"></div></div>',
         }),
         _css: ['<css>', '<css2>'],
       }),
@@ -112,24 +109,13 @@ describe('#svelteComponent', () => {
       `<div class="svelte-datepicker"><div class="datepicker-component" id="datepickerSwrzsrVDCd"><div>DATEPICKER</div></div></div>`,
     );
 
-    const hydrateStack = removeSpacesFromStack(componentProps.page.hydrateStack);
-
-    expect(hydrateStack[0].string).toContain('<script>var datepickerPropsSwrzsrVDCd = {a:"b"};</script>');
-    expect(hydrateStack[1].string).toContain(
-      `<script nomodule defer src="${path.resolve(
-        process.cwd(),
-        `./test/components/Datepicker`,
-      )}" onload="initdatepickerSwrzsrVDCd()"></script>`,
-    );
-    expect(hydrateStack[2].string).toContain(
-      `<script nomodule>function initdatepickerSwrzsrVDCd(){new ___elderjs_Datepicker({target: document.getElementById('datepickerSwrzsrVDCd'),props:datepickerPropsSwrzsrVDCd,hydrate: true,});}</script>`,
-    );
-    expect(hydrateStack[3].string).toContain(
-      `<script type="module">function initdatepickerSwrzsrVDCd(){import("${path.resolve(
-        process.cwd(),
-        `./test/components/Datepicker`,
-      )}").then((component)=>{new component.default({target: document.getElementById('datepickerSwrzsrVDCd'),props: datepickerPropsSwrzsrVDCd,hydrate: true});});}window.addEventListener('load', function (event) {var observerSwrzsrVDCd = new IntersectionObserver(function(entries, observer) {var objK = Object.keys(entries);var objKl = objK.length;var objKi = 0;for (; objKi < objKl; objKi++) {var entry = entries[objK[objKi]];if (entry.isIntersecting) {observer.unobserve(document.getElementById('datepickerSwrzsrVDCd'));if (document.eg_datepicker) {initdatepickerSwrzsrVDCd();} else {document.eg_datepicker = true;initdatepickerSwrzsrVDCd();}}}}, {rootMargin: '200px',threshold: 0});observerSwrzsrVDCd.observe(document.getElementById('datepickerSwrzsrVDCd'));});</script>`,
-    );
+    expect(componentProps.page.componentsToHydrate[0]).toMatchObject({
+      hydrateOptions: { loading: 'lazy' },
+      id: 'SwrzsrVDCd',
+      name: 'datepickerSwrzsrVDCd',
+      prepared: {},
+      props: { a: 'b' },
+    });
   });
 
   it('svelteComponent respects css settings: inline', () => {
@@ -139,8 +125,7 @@ describe('#svelteComponent', () => {
         render: () => ({
           head: '<head>',
           css: { code: '<old>' },
-          html:
-            '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "lazy" }"></div></div>',
+          html: '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "lazy" }"></div></div>',
         }),
         _css: ['<css>', '<css2>'],
         _cssMap: ['<cssmap>', '<cssmap2>'],
@@ -170,11 +155,11 @@ describe('#svelteComponent', () => {
         cssStack: [],
         headStack: [],
         svelteCss: [],
+        componentsToHydrate: [],
         helpers: {
           permalinks: jest.fn(),
         },
         settings: {
-          legacy: false,
           css: 'inline',
           distDir: 'test/public',
           rootDir: 'test',
@@ -203,6 +188,13 @@ describe('#svelteComponent', () => {
       `<div class="svelte-datepicker"><div class="datepicker-component" id="datepickerSwrzsrVDCd"><div>DATEPICKER</div></div></div>`,
     );
     expect(props.page.svelteCss).toEqual([{ css: ['<css>', '<css2>'], cssMap: ['<cssmap>', '<cssmap2>'] }]);
+    expect(props.page.componentsToHydrate[0]).toMatchObject({
+      hydrateOptions: { loading: 'lazy' },
+      id: 'SwrzsrVDCd',
+      name: 'datepickerSwrzsrVDCd',
+      prepared: {},
+      props: { a: 'b' },
+    });
   });
 
   it('svelteComponent respects css settings: file', () => {
@@ -212,8 +204,7 @@ describe('#svelteComponent', () => {
         render: () => ({
           head: '<head>',
           css: { code: '<old>' },
-          html:
-            '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "lazy" }"></div></div>',
+          html: '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "lazy" }"></div></div>',
         }),
         _css: ['<css>', '<css2>'],
         _cssMap: ['<cssmap>', '<cssmap2>'],
@@ -243,11 +234,11 @@ describe('#svelteComponent', () => {
         cssStack: [],
         headStack: [],
         svelteCss: [],
+        componentsToHydrate: [],
         helpers: {
           permalinks: jest.fn(),
         },
         settings: {
-          legacy: false,
           css: 'file',
           distDir: 'test/public',
           rootDir: 'test',
