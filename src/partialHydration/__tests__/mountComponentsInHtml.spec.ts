@@ -10,8 +10,10 @@ const page = {
 
 describe('#mountComponentsInHtml', () => {
   let hydrated = [];
-  const mockHydrate = (name) => ({ props, hydrateOptions }) =>
-    hydrated.push(`${JSON.stringify({ name, props, hydrateOptions })}`);
+  const mockHydrate =
+    (name) =>
+    ({ props, hydrateOptions }) =>
+      hydrated.push(`${JSON.stringify({ name, props, hydrateOptions })}`);
 
   jest.mock('../../utils/svelteComponent.ts', () => mockHydrate);
   beforeAll(() => {});

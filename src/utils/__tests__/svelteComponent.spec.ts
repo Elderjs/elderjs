@@ -83,8 +83,7 @@ describe('#svelteComponent', () => {
         render: () => ({
           head: '<head>',
           css: { code: '<old>' },
-          html:
-            '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "lazy" }"></div></div>',
+          html: '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "lazy" }"></div></div>',
         }),
         _css: ['<css>', '<css2>'],
       }),
@@ -126,8 +125,7 @@ describe('#svelteComponent', () => {
         render: () => ({
           head: '<head>',
           css: { code: '<old>' },
-          html:
-            '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "lazy" }"></div></div>',
+          html: '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "lazy" }"></div></div>',
         }),
         _css: ['<css>', '<css2>'],
         _cssMap: ['<cssmap>', '<cssmap2>'],
@@ -206,8 +204,7 @@ describe('#svelteComponent', () => {
         render: () => ({
           head: '<head>',
           css: { code: '<old>' },
-          html:
-            '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "lazy" }"></div></div>',
+          html: '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "lazy" }"></div></div>',
         }),
         _css: ['<css>', '<css2>'],
         _cssMap: ['<cssmap>', '<cssmap2>'],

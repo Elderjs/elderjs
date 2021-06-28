@@ -189,11 +189,10 @@ describe('#rollupPlugin', () => {
         './src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/index.js': new Set([
           './src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/test-external-svelte-library/src/components/Button.svelte',
         ]),
-        './src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/components/Button.svelte': new Set(
-          [
+        './src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/components/Button.svelte':
+          new Set([
             './src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/components/Icon.svelte',
-          ],
-        ),
+          ]),
       };
 
       const cleanPath = (str) => (str[0] === '.' ? path.resolve(str) : str);

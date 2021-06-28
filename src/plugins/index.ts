@@ -119,39 +119,37 @@ async function plugins(elder: Elder) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { init, ...sanitizedPlugin } = plugin;
 
-      pluginHooksArray = pluginHooksArray.map(
-        (hook): HookOptions => {
-          return {
-            ...hook,
-            $$meta: {
-              type: 'plugin',
-              addedBy: pluginName,
-            },
-            run: async (payload: any = {}) => {
-              // pass the plugin definition into the closure of every hook.
-              let pluginDefinition = sanitizedPlugin;
+      pluginHooksArray = pluginHooksArray.map((hook): HookOptions => {
+        return {
+          ...hook,
+          $$meta: {
+            type: 'plugin',
+            addedBy: pluginName,
+          },
+          run: async (payload: any = {}) => {
+            // pass the plugin definition into the closure of every hook.
+            let pluginDefinition = sanitizedPlugin;
 
-              // eslint-disable-next-line no-param-reassign
-              payload.plugin = pluginDefinition;
+            // eslint-disable-next-line no-param-reassign
+            payload.plugin = pluginDefinition;
 
-              const pluginResp = await hook.run(payload);
-              if (pluginResp) {
-                if (pluginResp.plugin) {
-                  const { plugin: newPluginDef, ...rest } = pluginResp;
-                  // while objects are pass by reference, the pattern we encourage is to return the mutation of state.
-                  // if users followed this pattern for plugins, we may not be mutating the plugin definition, so this is added.
-                  pluginDefinition = newPluginDef;
-                  return rest;
-                }
-                return pluginResp;
+            const pluginResp = await hook.run(payload);
+            if (pluginResp) {
+              if (pluginResp.plugin) {
+                const { plugin: newPluginDef, ...rest } = pluginResp;
+                // while objects are pass by reference, the pattern we encourage is to return the mutation of state.
+                // if users followed this pattern for plugins, we may not be mutating the plugin definition, so this is added.
+                pluginDefinition = newPluginDef;
+                return rest;
               }
+              return pluginResp;
+            }
 
-              // make sure something is returned
-              return {};
-            },
-          };
-        },
-      );
+            // make sure something is returned
+            return {};
+          },
+        };
+      });
 
       pluginHooksArray.forEach((hook) => {
         const validatedHook = validateHook(hook);

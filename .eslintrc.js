@@ -25,7 +25,7 @@ module.exports = {
   },
   plugins: ['@typescript-eslint', 'jest', 'prettier'],
   rules: {
-    'prettier/prettier': 'warn',
+    'prettier/prettier': 'error',
     // do not require ext. when importing file
     'import/extensions': [
       'error',
