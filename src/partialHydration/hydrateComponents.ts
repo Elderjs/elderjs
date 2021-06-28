@@ -172,7 +172,6 @@ export default async (page: Page) => {
           : component.prepared.clientPropsString
       }],`;
     } else {
-      console.log(component.client, page.settings.$$internal.distElder);
       deferString += `['${component.name}','${component.client.replace(`${relPrefix}/svelte/components/`, '')}', ${
         component.prepared.clientPropsUrl
           ? `'${component.prepared.clientPropsUrl.replace(`${relPrefix}/props/`, '')}'`
