@@ -16,12 +16,12 @@ const $$ejs = async (arr)=>{
       elem: document.getElementById(arr[i][0]),
       component: arr[i][1],
       props: arr[i][2] || {},
-    }
+    };
 
     if(typeof  $$COMPONENTS[arr[i][0]].props === 'string'){
       const propsFile = await import(prefix+'/props/'+$$COMPONENTS[arr[i][0]].props);
       $$COMPONENTS[arr[i][0]].props = propsFile.default;
-    }
+    };
 
     if (!IO) {
       IO = new IntersectionObserver((entries, observer) => {
