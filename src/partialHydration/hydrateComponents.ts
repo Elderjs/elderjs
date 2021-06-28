@@ -15,12 +15,12 @@ const $$ejs = async (arr)=>{
     $$COMPONENTS[arr[i][0]] = {
       elem: document.getElementById(arr[i][0]),
       component: arr[i][1],
-      props: arr[i][2] || {},
+      props: $ejs(arr[i][2]) || {},
     };
 
     if(typeof  $$COMPONENTS[arr[i][0]].props === 'string'){
       const propsFile = await import(prefix+'/props/'+$$COMPONENTS[arr[i][0]].props);
-      $$COMPONENTS[arr[i][0]].props = propsFile.default;
+      $$COMPONENTS[arr[i][0]].props = $ejs(propsFile.default);
     };
 
     if (!IO) {
@@ -36,7 +36,7 @@ const $$ejs = async (arr)=>{
             import(prefix + '/svelte/components/' + selected.component).then((comp)=>{
                 new comp.default({ 
                   target: selected.elem,
-                  props: $ejs(selected.props),
+                  props: selected.props,
                   hydrate: true
                 });
             });
