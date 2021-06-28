@@ -43,7 +43,7 @@ const $$ejs = async (arr)=>{
           }
         }
       });
-    }
+    };
     IO.observe($$COMPONENTS[arr[i][0]].elem);
   }
 };
