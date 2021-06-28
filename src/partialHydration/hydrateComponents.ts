@@ -64,9 +64,7 @@ export default async (page: Page) => {
   if (!page.settings.props.compress) {
     for (let dd = 0; dd < page.componentsToHydrate.length; dd += 1) {
       const component = page.componentsToHydrate[dd];
-      if (component.props) {
-        component.prepared.propsString = JSON.stringify(component.props);
-      }
+      component.prepared.propsString = component.props ? JSON.stringify(component.props) : '{}';
     }
   } else {
     page.perf.start('prepareProps');
