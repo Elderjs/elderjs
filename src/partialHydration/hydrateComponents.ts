@@ -134,6 +134,7 @@ export default async (page: Page) => {
     const component = page.componentsToHydrate[p];
 
     // write a file or prepare the string for the html.
+
     if (component.prepared.propsString) {
       if (
         page.settings.props.hydration === 'file' ||
@@ -155,7 +156,7 @@ export default async (page: Page) => {
 
         component.prepared.clientPropsUrl = windowsPathFix(`/${path.relative(page.settings.distDir, propPath)}`);
       } else if (howManyBytes(component.prepared.propsString) > 10000) {
-        component.prepared.clientPropsString = `JSON.parse(\`${component.prepared.propsString}\`)`;
+        component.prepared.clientPropsString = component.prepared.propsString;
       } else {
         component.prepared.clientPropsString = component.prepared.propsString;
       }
