@@ -90,6 +90,7 @@ const getRestartHelper = (startOrRestartServer) => {
   };
 };
 
+// eslint-disable-next-line consistent-return
 const svelteHandler = async ({ elderConfig, svelteConfig, replacements, restartHelper }) => {
   try {
     const builders: { ssr?: BuildResult; client?: BuildResult } = {};
