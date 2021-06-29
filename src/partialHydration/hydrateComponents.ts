@@ -58,7 +58,7 @@ export const hashCode = (s) => {
   return h;
 };
 
-export default async (page: Page) => {
+export default (page: Page) => {
   const relPrefix = windowsPathFix(`/${path.relative(page.settings.distDir, page.settings.$$internal.distElder)}`);
   let decompressCode = `const $ejs = function(_ejs){return _ejs};`;
   if (!page.settings.props.compress) {
@@ -151,11 +151,12 @@ export default async (page: Page) => {
           }
 
           // eslint-disable-next-line no-await-in-loop
-          await fs.writeFile(propPath, `export default ${component.prepared.propsString};`);
+          fs.writeFileSync(propPath, `export default ${component.prepared.propsString};`);
         }
 
         component.prepared.clientPropsUrl = windowsPathFix(`/${path.relative(page.settings.distDir, propPath)}`);
       } else if (howManyBytes(component.prepared.propsString) > 10000) {
+        // TODO: further test JSON.parse
         component.prepared.clientPropsString = component.prepared.propsString;
       } else {
         component.prepared.clientPropsString = component.prepared.propsString;
