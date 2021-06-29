@@ -28,7 +28,7 @@ let dependencyCache: RollupCacheElder = {};
 const cache = new Map();
 
 const isDev =
-  (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'PRODUCTION') || !!process.env.ROLLUP_WATCH;
+  process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'PRODUCTION' && !!process.env.ROLLUP_WATCH;
 
 let srcWatcher;
 
