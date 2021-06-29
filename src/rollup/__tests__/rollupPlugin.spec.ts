@@ -463,10 +463,7 @@ describe('#rollupPlugin', () => {
 
             buildStartBound();
 
-            expect(t.values).toEqual([
-              { name: 'svelte.css', type: 'asset' },
-              { name: 'svelte.css.map', type: 'asset' },
-            ]);
+            expect(t.values).toEqual([{ name: 'svelte.css', type: 'asset' }]);
             expect(del.sync).toHaveBeenCalledTimes(3);
             expect(del.sync).toHaveBeenCalledWith(elderConfig.$$internal.ssrComponents);
             expect(del.sync).toHaveBeenCalledWith(path.join(elderConfig.$$internal.distElder, 'assets'));

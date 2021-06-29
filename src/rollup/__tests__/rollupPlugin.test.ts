@@ -47,12 +47,12 @@ describe('#rollupPlugin', () => {
 
     const { output: out } = await bundle.generate({ output });
 
-    expect(out).toHaveLength(6);
+    expect(out).toHaveLength(5);
 
     // properly prioritizes css dependencies with components, routes, layouts in order
     const one = out.find((c) => c.facadeModuleId.endsWith('One.svelte'));
     expect(one.code).toContain(
-      '.layout.svelte-1pyy034{background:purple}.route.svelte-plwlu6{background:#f0f8ff}.component.svelte-5m4l82{display:flex;flex-direction:column;font-size:14px}@media(min-width: 768px){.component.svelte-5m4l82{flex-direction:row}}',
+      '.layout.svelte-1pyy034{background:purple}.route.svelte-plwlu6{background:#f0f8ff}.component.svelte-5m4l82{display:flex;flex-direction:column;font-size:14px}@media(min-width:768px){.component.svelte-5m4l82{flex-direction:row}}',
     );
 
     const two = out.find((c) => c.facadeModuleId.endsWith('Two.svelte'));
@@ -63,7 +63,7 @@ describe('#rollupPlugin', () => {
 
     const css = out.find((c) => c.name === 'svelte.css');
     expect(css.source).toContain(
-      `.layout.svelte-1pyy034{background:purple}.route.svelte-plwlu6{background:#f0f8ff}.component.svelte-5m4l82{display:flex;flex-direction:column;font-size:14px}@media(min-width: 768px){.component.svelte-5m4l82{flex-direction:row}}`,
+      `.layout.svelte-1pyy034{background:purple}.route.svelte-plwlu6{background:#f0f8ff}.component.svelte-5m4l82{display:flex;flex-direction:column;font-size:14px}@media(min-width:768px){.component.svelte-5m4l82{flex-direction:row}}`,
     );
   });
 
@@ -104,10 +104,10 @@ describe('#rollupPlugin', () => {
 
     expect(
       css.source.includes(
-        `.icon.svelte-1kfpccr{background-color:#fff;border-radius:10px;width:10px;height:10px;color:#000}.button.svelte-11xgp0c{padding:10px 20px;background-color:#f50;color:#fff;font-weight:bold}.layout.svelte-1e9whng{content:'we did it.'}.component.svelte-1be6npj{background:orange}`,
+        `.icon.svelte-1kfpccr{background-color:#fff;border-radius:10px;width:10px;height:10px;color:#000}.button.svelte-11xgp0c{padding:10px 20px;background-color:#f50;color:#fff;font-weight:700}.layout.svelte-1e9whng{content:'we did it.'}.component.svelte-1be6npj{background:orange}`,
       ) ||
         css.source.includes(
-          `.button.svelte-11xgp0c{padding:10px 20px;background-color:#f50;color:#fff;font-weight:bold}.icon.svelte-1kfpccr{background-color:#fff;border-radius:10px;width:10px;height:10px;color:#000}.layout.svelte-1e9whng{content:'we did it.'}.component.svelte-1be6npj{background:orange}`,
+          `.button.svelte-11xgp0c{padding:10px 20px;background-color:#f50;color:#fff;font-weight:700}.icon.svelte-1kfpccr{background-color:#fff;border-radius:10px;width:10px;height:10px;color:#000}.layout.svelte-1e9whng{content:'we did it.'}.component.svelte-1be6npj{background:orange}`,
         ),
     ).toBe(true);
 

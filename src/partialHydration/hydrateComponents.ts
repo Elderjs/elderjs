@@ -157,6 +157,7 @@ export default (page: Page) => {
         component.prepared.clientPropsUrl = windowsPathFix(`/${path.relative(page.settings.distDir, propPath)}`);
       } else if (howManyBytes(component.prepared.propsString) > 10000) {
         // TODO: further test JSON.parse
+        // https://stackoverflow.com/a/40558081/3577474
         component.prepared.clientPropsString = component.prepared.propsString;
       } else {
         component.prepared.clientPropsString = component.prepared.propsString;
