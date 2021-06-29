@@ -16,6 +16,10 @@ jest.mock('fs-extra', () => ({
     counts.writeFile += 1;
     return false;
   },
+  writeFileSync: async () => {
+    counts.writeFile += 1;
+    return false;
+  },
   existsSync: () => {
     counts.existsSync += 1;
     return false;
