@@ -291,7 +291,13 @@ export async function minifyCss(dependencies: string[] | 'all' = [], elderConfig
   };
 }
 
-export const devServer = ({ elderConfig }: { elderConfig: SettingsOptions }) => {
+export const devServer = ({
+  elderConfig,
+  forceStart = false,
+}: {
+  elderConfig: SettingsOptions;
+  forceStart: boolean;
+}) => {
   /**
    * Dev server bootstrapping and restarting.
    */
@@ -299,7 +305,7 @@ export const devServer = ({ elderConfig }: { elderConfig: SettingsOptions }) => 
   let bootingServer = false;
 
   function startOrRestartServer(count = 0) {
-    if (!isDev) return;
+    if (!isDev && !forceStart) return;
     if (!bootingServer) {
       bootingServer = true;
 
@@ -389,7 +395,7 @@ export default function elderjsRollup({
   let styleCssHash;
   let styleCssMapHash;
 
-  const { childProcess, startWatcher, startOrRestartServer } = devServer({ elderConfig });
+  const { childProcess, startWatcher, startOrRestartServer } = devServer({ elderConfig, forceStart: false });
 
   return {
     name: 'rollup-plugin-elder',
