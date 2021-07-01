@@ -196,19 +196,21 @@ export default (page: Page) => {
     }
   }
 
-  page.hydrateStack.push({
-    source: 'hydrateComponents',
-    priority: 30,
-    string: `<script type="module">
-    ${defaultElderHelpers(decompressCode, relPrefix)}
-    ${eagerString.length > 0 ? `$$ejs([${eagerString}])` : ''}${
-      deferString.length > 0
-        ? `
-    requestIdleCallback(function(){
-      $$ejs([${deferString}])}, {timeout: 1000});`
-        : ''
-    }</script>`,
-  });
+  if(page.componentsToHydrate.length > 0) {
+    page.hydrateStack.push({
+      source: 'hydrateComponents',
+      priority: 30,
+      string: `<script type="module">
+      ${defaultElderHelpers(decompressCode, relPrefix)}
+      ${eagerString.length > 0 ? `$$ejs([${eagerString}])` : ''}${
+        deferString.length > 0
+          ? `
+      requestIdleCallback(function(){
+        $$ejs([${deferString}])}, {timeout: 1000});`
+          : ''
+      }</script>`,
+    });
+  }
 
   // add components to stack
 };
