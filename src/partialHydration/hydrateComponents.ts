@@ -6,40 +6,30 @@ import { walkAndCount, prepareSubstitutions, walkAndSubstitute } from './propCom
 import windowsPathFix from '../utils/windowsPathFix';
 
 const defaultElderHelpers = (decompressCode, prefix) => `
-let IO, $$COMPONENTS={};
-const $$ejs = (arr)=>{
+const $$ejs = (par)=>{
   ${decompressCode}
   const prefix = '${prefix}';
-
-  for (let i = 0; i < arr.length; i++) {
-    $$COMPONENTS[arr[i][0]] = {
-      component: arr[i][1],
-      props: $ejs(arr[i][2]) || {},
-    };
-
-    if(typeof  $$COMPONENTS[arr[i][0]].props === 'string'){
-      $$COMPONENTS[arr[i][0]].props = import(prefix+'/props/'+$$COMPONENTS[arr[i][0]].props);
-    };
-
-    if (!IO) {
-      IO = new IntersectionObserver((entries, observer) => {
-        entires.forEach(entry => {
-          if (entry.isIntersecting) {
-            const selected = $$COMPONENTS[entry.target.id];
-            observer.unobserve(entry.target);
-            import(prefix + '/svelte/components/' + selected.component).then(async (comp)=>{
-                new comp.default({ 
-                  target: entry.target,
-                  props: selected.props && typeof selected.props.then == "function" ? $ejs(await (selected.props).default) : selected.props,
-                  hydrate: true
-                });
+  const IO = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const selected = par[entry.target.id];
+        observer.unobserve(entry.target);
+        import(prefix + '/svelte/components/' + selected.component).then(async (comp)=>{
+            new comp.default({ 
+              target: entry.target,
+              props: $ejs(selected.promise ? (await selected.promise).default : selected.props),
+              hydrate: true
             });
-          }
         });
-      });
+      }
+    });
+  });
+  Object.entries(par).forEach(([k,v]) => {
+    if(typeof v.props === 'string'){
+      par[k].promise = import(prefix+'/props/'+v.props)
     };
-    IO.observe(document.getElementById(arr[i][0]));
-  }
+    IO.observe(document.getElementById(k));
+  });
 };
 `;
 
@@ -159,17 +149,17 @@ export default (page: Page) => {
     }
 
     if (component.hydrateOptions.loading === 'eager') {
-      eagerString += `['${component.name}','${component.client.replace(`${relPrefix}/svelte/components/`, '')}', ${
+      eagerString += `'${component.name}' : { 'component' : '${component.client.replace(`${relPrefix}/svelte/components/`, '')}', 'props' : ${
         component.prepared.clientPropsUrl
           ? `'${component.prepared.clientPropsUrl.replace(`${relPrefix}/props/`, '')}'`
           : component.prepared.clientPropsString
-      }],`;
+      }},`;
     } else {
-      deferString += `['${component.name}','${component.client.replace(`${relPrefix}/svelte/components/`, '')}', ${
+      deferString += `'${component.name}' : { 'component' : '${component.client.replace(`${relPrefix}/svelte/components/`, '')}', 'props' : ${
         component.prepared.clientPropsUrl
           ? `'${component.prepared.clientPropsUrl.replace(`${relPrefix}/props/`, '')}'`
           : component.prepared.clientPropsString
-      }],`;
+      }},`;
     }
 
     if (component.hydrateOptions.preload) {
