@@ -25,11 +25,7 @@ const $$ejs = async (arr)=>{
 
     if (!IO) {
       IO = new IntersectionObserver((entries, observer) => {
-        var objK = Object.keys(entries);
-        var objKl = objK.length;
-        var objKi = 0;
-        for (; objKi < objKl; objKi++) {
-          const entry = entries[objK[objKi]];
+        entires.forEach(entry => {
           if (entry.isIntersecting) {
             const selected = $$COMPONENTS[entry.target.id];
             observer.unobserve(selected.elem);
@@ -41,7 +37,7 @@ const $$ejs = async (arr)=>{
                 });
             });
           }
-        }
+        });
       });
     };
     IO.observe($$COMPONENTS[arr[i][0]].elem);
