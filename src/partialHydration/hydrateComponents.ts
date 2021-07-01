@@ -13,7 +13,6 @@ const $$ejs = (arr)=>{
 
   for (let i = 0; i < arr.length; i++) {
     $$COMPONENTS[arr[i][0]] = {
-      elem: document.getElementById(arr[i][0]),
       component: arr[i][1],
       props: $ejs(arr[i][2]) || {},
     };
@@ -27,10 +26,10 @@ const $$ejs = (arr)=>{
         entires.forEach(entry => {
           if (entry.isIntersecting) {
             const selected = $$COMPONENTS[entry.target.id];
-            observer.unobserve(selected.elem);
+            observer.unobserve(entry.target);
             import(prefix + '/svelte/components/' + selected.component).then(async (comp)=>{
                 new comp.default({ 
-                  target: selected.elem,
+                  target: entry.target,
                   props: selected.props && typeof selected.props.then == "function" ? $ejs(await (selected.props).default) : selected.props,
                   hydrate: true
                 });
@@ -39,7 +38,7 @@ const $$ejs = (arr)=>{
         });
       });
     };
-    IO.observe($$COMPONENTS[arr[i][0]].elem);
+    IO.observe(document.getElementById(arr[i][0]));
   }
 };
 `;
