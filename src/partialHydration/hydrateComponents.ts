@@ -7,7 +7,7 @@ import windowsPathFix from '../utils/windowsPathFix';
 
 const defaultElderHelpers = (decompressCode, prefix) => `
 let IO, $$COMPONENTS={};
-const $$ejs = async (arr)=>{
+const $$ejs = (arr)=>{
   ${decompressCode}
   const prefix = '${prefix}';
 
@@ -19,8 +19,7 @@ const $$ejs = async (arr)=>{
     };
 
     if(typeof  $$COMPONENTS[arr[i][0]].props === 'string'){
-      const propsFile = await import(prefix+'/props/'+$$COMPONENTS[arr[i][0]].props);
-      $$COMPONENTS[arr[i][0]].props = $ejs(propsFile.default);
+      $$COMPONENTS[arr[i][0]].props = import(prefix+'/props/'+$$COMPONENTS[arr[i][0]].props);
     };
 
     if (!IO) {
@@ -29,10 +28,10 @@ const $$ejs = async (arr)=>{
           if (entry.isIntersecting) {
             const selected = $$COMPONENTS[entry.target.id];
             observer.unobserve(selected.elem);
-            import(prefix + '/svelte/components/' + selected.component).then((comp)=>{
+            import(prefix + '/svelte/components/' + selected.component).then(async (comp)=>{
                 new comp.default({ 
                   target: selected.elem,
-                  props: selected.props,
+                  props: selected.props && typeof selected.props.then == "function" ? $ejs(await (selected.props).default) : selected.props,
                   hydrate: true
                 });
             });
