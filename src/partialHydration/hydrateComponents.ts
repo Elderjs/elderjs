@@ -149,13 +149,19 @@ export default (page: Page) => {
     }
 
     if (component.hydrateOptions.loading === 'eager') {
-      eagerString += `'${component.name}' : { 'component' : '${component.client.replace(`${relPrefix}/svelte/components/`, '')}', 'props' : ${
+      eagerString += `'${component.name}' : { 'component' : '${component.client.replace(
+        `${relPrefix}/svelte/components/`,
+        '',
+      )}', 'props' : ${
         component.prepared.clientPropsUrl
           ? `'${component.prepared.clientPropsUrl.replace(`${relPrefix}/props/`, '')}'`
           : component.prepared.clientPropsString
       }},`;
     } else {
-      deferString += `'${component.name}' : { 'component' : '${component.client.replace(`${relPrefix}/svelte/components/`, '')}', 'props' : ${
+      deferString += `'${component.name}' : { 'component' : '${component.client.replace(
+        `${relPrefix}/svelte/components/`,
+        '',
+      )}', 'props' : ${
         component.prepared.clientPropsUrl
           ? `'${component.prepared.clientPropsUrl.replace(`${relPrefix}/props/`, '')}'`
           : component.prepared.clientPropsString
