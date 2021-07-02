@@ -196,7 +196,7 @@ export default (page: Page) => {
     }
   }
 
-  if(page.componentsToHydrate.length > 0) {
+  if (page.componentsToHydrate.length > 0) {
     page.hydrateStack.push({
       source: 'hydrateComponents',
       priority: 30,
