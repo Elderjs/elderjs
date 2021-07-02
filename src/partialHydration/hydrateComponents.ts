@@ -6,21 +6,24 @@ import { walkAndCount, prepareSubstitutions, walkAndSubstitute } from './propCom
 import windowsPathFix from '../utils/windowsPathFix';
 
 const defaultElderHelpers = (decompressCode, prefix) => `
-const $$ejs = (par)=>{
+const $$ejs = (par,eager)=>{
   ${decompressCode}
   const prefix = '${prefix}';
+  const initComponent = (component,target, props, prom) => {
+    import(prefix + '/svelte/components/' + component).then(async (comp)=>{
+      new comp.default({ 
+        target: target,
+        props: $ejs(prom ? (await prom).default : props),
+        hydrate: true
+      });
+    });
+  }
   const IO = new IntersectionObserver((entries, observer) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        const selected = par[entry.target.id];
         observer.unobserve(entry.target);
-        import(prefix + '/svelte/components/' + selected.component).then(async (comp)=>{
-            new comp.default({ 
-              target: entry.target,
-              props: $ejs(selected.promise ? (await selected.promise).default : selected.props),
-              hydrate: true
-            });
-        });
+        const selected = par[entry.target.id];
+        initComponent(selected.component,entry.target,selected.props,selected.promise)
       }
     });
   });
@@ -28,7 +31,12 @@ const $$ejs = (par)=>{
     if(typeof v.props === 'string'){
       par[k].promise = import(prefix+'/props/'+v.props)
     };
-    IO.observe(document.getElementById(k));
+    const el = document.getElementById(k);
+    if (!eager) {
+        IO.observe(el);
+    } else {
+        initComponent(v.component,el,v.props,v.promise);
+    }
   });
 };
 `;
@@ -185,18 +193,18 @@ export default (page: Page) => {
       }
     }
   }
-
+  
   if (page.componentsToHydrate.length > 0) {
     page.hydrateStack.push({
       source: 'hydrateComponents',
       priority: 30,
       string: `<script type="module">
       ${defaultElderHelpers(decompressCode, relPrefix)}
-      ${eagerString.length > 0 ? `$$ejs([${eagerString}])` : ''}${
+      ${eagerString.length > 0 ? `$$ejs({${eagerString}},true)` : ''}${
         deferString.length > 0
           ? `
       requestIdleCallback(function(){
-        $$ejs([${deferString}])}, {timeout: 1000});`
+        $$ejs({${deferString}})}, {timeout: 1000});`
           : ''
       }</script>`,
     });
