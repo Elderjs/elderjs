@@ -352,7 +352,7 @@ export const devServer = ({
     // this should watch the ./src, elder.config.js, and the client side folders... trigging a restart of the server when something changes
     // We don't want to change when a svelte file changes because it will cause a double reload when rollup outputs the rebundled file.
 
-    if (isDev && !srcWatcher) {
+    if ((isDev || forceStart) && !srcWatcher) {
       srcWatcher = chokidar.watch(
         [
           path.resolve(process.cwd(), './src'),
