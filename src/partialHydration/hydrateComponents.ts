@@ -9,11 +9,12 @@ const defaultElderHelpers = (decompressCode, prefix, generateLazy) => `
 const $$ejs = (par,eager)=>{
   ${decompressCode}
   const prefix = '${prefix}';
-  const initComponent = (component,target, props, prom) => {
-    import(prefix + '/svelte/components/' + component).then(async (comp)=>{
+  const initComponent = (component,target, props) => {
+    const propProm = ((typeof props === 'string') ? import(prefix+'/props/'+ props).then(r => r.default) : new Promise((resolve) => resolve(props))).then( props => $ejs(props) );
+    Promise.all([propProm,import(prefix + '/svelte/components/' + component)]).then(([props,comp])=>{
       new comp.default({ 
         target: target,
-        props: $ejs(prom ? (await prom).default : props),
+        props: props,
         hydrate: true
       });
     });
@@ -25,21 +26,18 @@ const $$ejs = (par,eager)=>{
       if (entry.isIntersecting) {
         observer.unobserve(entry.target);
         const selected = par[entry.target.id];
-        initComponent(selected.component,entry.target,selected.props,selected.promise)
+        initComponent(selected.component,entry.target,selected.props)
       }
     });
   });`
       : ''
   }
   Object.entries(par).forEach(([k,v]) => {
-    if(typeof v.props === 'string'){
-      par[k].promise = import(prefix+'/props/'+v.props)
-    };
     const el = document.getElementById(k);
     if (${generateLazy ? '!eager' : 'false'}) {
         IO.observe(el);
     } else {
-        initComponent(v.component,el,v.props,v.promise);
+        initComponent(v.component,el,v.props);
     }
   });
 };
