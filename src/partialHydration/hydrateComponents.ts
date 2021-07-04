@@ -5,7 +5,7 @@ import { Page } from '../utils';
 import { walkAndCount, prepareSubstitutions, walkAndSubstitute } from './propCompression';
 import windowsPathFix from '../utils/windowsPathFix';
 
-const defaultElderHelpers = (decompressCode, prefix) => `
+const defaultElderHelpers = (decompressCode, prefix, generateLazy) => `
 const $$ejs = (par,eager)=>{
   ${decompressCode}
   const prefix = '${prefix}';
@@ -18,7 +18,9 @@ const $$ejs = (par,eager)=>{
       });
     });
   }
-  const IO = new IntersectionObserver((entries, observer) => {
+  ${
+    generateLazy
+      ? `const IO = new IntersectionObserver((entries, observer) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         observer.unobserve(entry.target);
@@ -26,13 +28,15 @@ const $$ejs = (par,eager)=>{
         initComponent(selected.component,entry.target,selected.props,selected.promise)
       }
     });
-  });
+  });`
+      : ''
+  }
   Object.entries(par).forEach(([k,v]) => {
     if(typeof v.props === 'string'){
       par[k].promise = import(prefix+'/props/'+v.props)
     };
     const el = document.getElementById(k);
-    if (!eager) {
+    if (${generateLazy ? '!eager' : 'false'}) {
         IO.observe(el);
     } else {
         initComponent(v.component,el,v.props,v.promise);
@@ -193,13 +197,13 @@ export default (page: Page) => {
       }
     }
   }
-  
+
   if (page.componentsToHydrate.length > 0) {
     page.hydrateStack.push({
       source: 'hydrateComponents',
       priority: 30,
       string: `<script type="module">
-      ${defaultElderHelpers(decompressCode, relPrefix)}
+      ${defaultElderHelpers(decompressCode, relPrefix, deferString.length > 0)}
       ${eagerString.length > 0 ? `$$ejs({${eagerString}},true)` : ''}${
         deferString.length > 0
           ? `
