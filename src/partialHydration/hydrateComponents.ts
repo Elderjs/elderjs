@@ -9,11 +9,12 @@ const defaultElderHelpers = (decompressCode, prefix, generateLazy) => `
 const $$ejs = (par,eager)=>{
   ${decompressCode}
   const prefix = '${prefix}';
-  const initComponent = (component,target, props, prom) => {
-    import(prefix + '/svelte/components/' + component).then(async (comp)=>{
+  const initComponent = (target, component) => {
+    const decompressedProps = component.propProm.then(p => $ejs(p.default));
+    Promise.all([component.compProm,decompressedProps]).then(([comp,props])=>{
       new comp.default({ 
         target: target,
-        props: $ejs(prom ? (await prom).default : props),
+        props: props,
         hydrate: true
       });
     });
@@ -25,21 +26,22 @@ const $$ejs = (par,eager)=>{
       if (entry.isIntersecting) {
         observer.unobserve(entry.target);
         const selected = par[entry.target.id];
-        initComponent(selected.component,entry.target,selected.props,selected.promise)
+        initComponent(entry.target,selected)
       }
     });
   });`
       : ''
   }
-  Object.entries(par).forEach(([k,v]) => {
-    if(typeof v.props === 'string'){
-      par[k].promise = import(prefix+'/props/'+v.props)
-    };
+  Object.keys(par).forEach((k) => {
+
+    par[k].propProm = ((typeof par[k].props === 'string') ? import(prefix+'/props/'+ par[k].props) : new Promise((resolve) => resolve({ default : par[k].props })))
+    par[k].compProm = import(prefix + '/svelte/components/' + par[k].component)
+
     const el = document.getElementById(k);
     if (${generateLazy ? '!eager' : 'false'}) {
         IO.observe(el);
     } else {
-        initComponent(v.component,el,v.props,v.promise);
+        initComponent(el,par[k]);
     }
   });
 };
