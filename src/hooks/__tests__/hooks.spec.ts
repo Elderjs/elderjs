@@ -76,20 +76,6 @@ describe('#hooks', () => {
     const hook = hooks.find((h) => h.name === 'elderAddMetaViewportToHead');
     expect(normalizeSnapshot(await hook.run({ headStack: [] }))).toMatchSnapshot();
   });
-  it('elderAddDefaultIntersectionObserver', async () => {
-    const hook = hooks.find((h) => h.name === 'elderAddDefaultIntersectionObserver');
-    expect(normalizeSnapshot(await hook.run({ beforeHydrateStack: [] }))).toMatchSnapshot();
-  });
-  it('elderAddDefaultIntersectionObserver with prefix', async () => {
-    const hook = hooks.find((h) => h.name === 'elderAddDefaultIntersectionObserver');
-    const settings = {
-      $$internal: {
-        serverPrefix: '/dev',
-      },
-    };
-    const result = await hook.run({ beforeHydrateStack: [], settings });
-    expect(result.beforeHydrateStack[0].string).toContain('/dev/_elderjs/static/intersection-observer.js');
-  });
   it('elderCompileHtml', async () => {
     const hook = hooks.find((h) => h.name === 'elderCompileHtml');
     expect(

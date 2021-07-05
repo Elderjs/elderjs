@@ -1,36 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`#hooks elderAddDefaultIntersectionObserver 1`] = `
-Object {
-  "beforeHydrateStack": Array [
-    Object {
-      "priority": 100,
-      "source": "elderAddDefaultIntersectionObserver",
-      "string": "<script type=\\"text/javascript\\">
-            var requestIdleCallback = window.requestIdleCallback ||
-            function (cb) {
-              var s = Date.now();
-              return setTimeout(function () {
-                cb({
-                  didTimeout: false,
-                  timeRemaining: function () {
-                    return Math.max(0, 50 - (Date.now() - s));
-                  },
-                });
-              }, 1);
-            };
-            if (!('IntersectionObserver' in window)) {
-                var script = document.createElement(\\"script\\");
-                script.src = \\"/_elderjs/static/intersection-observer.js\\";
-                document.getElementsByTagName('head')[0].appendChild(script);
-            };
-      </script>
-      ",
-    },
-  ],
-}
-`;
-
 exports[`#hooks elderAddExternalHelpers 1`] = `
 Object {
   "helpers": Object {
@@ -105,13 +74,6 @@ Array [
     "description": "Adds the css found in the svelte files to the head if 'css' in your 'elder.config.js' file is set to 'file'.",
     "hook": "stacks",
     "name": "elderAddCssFileToHead",
-    "priority": 100,
-    "run": [Function],
-  },
-  Object {
-    "description": "Sets up the default polyfill for the intersection observer and request idle callback.",
-    "hook": "stacks",
-    "name": "elderAddDefaultIntersectionObserver",
     "priority": 100,
     "run": [Function],
   },
