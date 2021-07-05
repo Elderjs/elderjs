@@ -150,45 +150,6 @@ const hooks: Array<HookOptions> = [
     },
   },
   {
-    hook: 'stacks',
-    name: 'elderAddDefaultIntersectionObserver',
-    description: 'Sets up the default polyfill for the intersection observer and request idle callback.',
-    priority: 100,
-    run: async ({ beforeHydrateStack, settings }) => {
-      const prefix = get(settings, '$$internal.serverPrefix', '');
-
-      return {
-        beforeHydrateStack: [
-          {
-            source: 'elderAddDefaultIntersectionObserver',
-            string: `<script type="text/javascript">
-            var requestIdleCallback = window.requestIdleCallback ||
-            function (cb) {
-              var s = Date.now();
-              return setTimeout(function () {
-                cb({
-                  didTimeout: false,
-                  timeRemaining: function () {
-                    return Math.max(0, 50 - (Date.now() - s));
-                  },
-                });
-              }, 1);
-            };
-            if (!('IntersectionObserver' in window)) {
-                var script = document.createElement("script");
-                script.src = "${prefix}/_elderjs/static/intersection-observer.js";
-                document.getElementsByTagName('head')[0].appendChild(script);
-            };
-      </script>
-      `,
-            priority: 100,
-          },
-          ...beforeHydrateStack,
-        ],
-      };
-    },
-  },
-  {
     hook: 'compileHtml',
     name: 'elderCompileHtml',
     description: 'Creates an HTML string out of the Svelte layout and stacks.',

@@ -219,6 +219,12 @@ export default (page: Page) => {
       source: 'hydrateComponents',
       priority: 30,
       string: `<script type="module">
+            const requestIdleCallback = window.requestIdleCallback || ( cb => window.setTimeout(cb,1) );
+            if (!('IntersectionObserver' in window)) {
+                const script = document.createElement("script");
+                script.src = "${page.settings.$$internal.serverPrefix}/_elderjs/static/intersection-observer.js";
+                document.getElementsByTagName('head')[0].appendChild(script);
+            };
       ${defaultElderHelpers(decompressCode, relPrefix, deferString.length > 0)}
       ${eagerString.length > 0 ? `$$ejs({${eagerString}},true)` : ''}${
         deferString.length > 0
