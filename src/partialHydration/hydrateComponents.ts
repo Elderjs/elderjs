@@ -197,6 +197,21 @@ export default (page: Page) => {
           // string: `<link rel="modulepreload" href="${clientSrcMjs}">`, <-- can be an option for Chrome if browsers don't like this.
         });
       }
+    } else if (!component.hydrateOptions.noPrefetch) {
+      page.headStack.push({
+        source: component.name,
+        priority: 50,
+        string: `<link rel="prefetch" href="${component.client}" as="script">`,
+        // string: `<link rel="modulepreload" href="${clientSrcMjs}">`, <-- can be an option for Chrome if browsers don't like this.
+      });
+      if (component.prepared.clientPropsUrl) {
+        page.headStack.push({
+          source: component.name,
+          priority: 49,
+          string: `<link rel="prefetch" href="${component.prepared.clientPropsUrl}" as="script">`,
+          // string: `<link rel="modulepreload" href="${clientSrcMjs}">`, <-- can be an option for Chrome if browsers don't like this.
+        });
+      }
     }
   }
 

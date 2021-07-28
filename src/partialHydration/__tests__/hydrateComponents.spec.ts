@@ -173,6 +173,62 @@ describe('#hydrateComponents', () => {
           source: 'autocompleteZlwFFdKTtG',
           string: '<link rel="preload" href="/props/ejs--389426143.js" as="script">',
         },
+        {
+          priority: 50,
+          source: 'zoomablemapgYtFjVCDSS',
+          string:
+            '<link rel="prefetch" href="/_elderjs/svelte/components/ZoomableMap/ZoomableMap.AOMHQNYN.js" as="script">',
+        },
+        {
+          priority: 49,
+          source: 'zoomablemapgYtFjVCDSS',
+          string: '<link rel="prefetch" href="/props/ejs-1585068398.js" as="script">',
+        },
+        {
+          priority: 50,
+          source: 'headerzbmmDtJVlq',
+          string: '<link rel="prefetch" href="/_elderjs/svelte/components/Header/Header.AOWJN766.js" as="script">',
+        },
+        {
+          priority: 49,
+          source: 'headerzbmmDtJVlq',
+          string: '<link rel="prefetch" href="/props/ejs--453144257.js" as="script">',
+        },
+      ]);
+    });
+
+    test('prefetch override with external prop file', async () => {
+      const page = JSON.parse(JSON.stringify(defaultPage));
+      page.settings.props.hydration = 'file';
+      page.componentsToHydrate = JSON.parse(JSON.stringify(defaultComponents));
+      page.componentsToHydrate[0].hydrateOptions.noPrefetch = true;
+
+      const reqHydrateComponents = require('../hydrateComponents');
+
+      await reqHydrateComponents.default(page);
+
+      expect(page.headStack).toMatchObject([
+        {
+          priority: 50,
+          source: 'zoomablemapgYtFjVCDSS',
+          string:
+            '<link rel="prefetch" href="/_elderjs/svelte/components/ZoomableMap/ZoomableMap.AOMHQNYN.js" as="script">',
+        },
+        {
+          priority: 49,
+          source: 'zoomablemapgYtFjVCDSS',
+          string: '<link rel="prefetch" href="/props/ejs-1585068398.js" as="script">',
+        },
+        {
+          priority: 50,
+          source: 'headerzbmmDtJVlq',
+          string: '<link rel="prefetch" href="/_elderjs/svelte/components/Header/Header.AOWJN766.js" as="script">',
+        },
+        {
+          priority: 49,
+          source: 'headerzbmmDtJVlq',
+          string: '<link rel="prefetch" href="/props/ejs--453144257.js" as="script">',
+        },
       ]);
     });
   });
