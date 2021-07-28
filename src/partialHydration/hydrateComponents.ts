@@ -10,7 +10,7 @@ const $$ejs = (par,eager)=>{
   ${decompressCode}
   const prefix = '${prefix}';
   const initComponent = (target, component) => {
-    const decompressedProps = component.propProm.then(p => $ejs(p.default));
+    const decompressedProps = component.propProm.then(p => $ejs(p.json()));
     Promise.all([component.compProm,decompressedProps]).then(([comp,props])=>{
       new comp.default({ 
         target: target,
@@ -34,7 +34,7 @@ const $$ejs = (par,eager)=>{
   }
   Object.keys(par).forEach((k) => {
 
-    par[k].propProm = ((typeof par[k].props === 'string') ? import(prefix+'/props/'+ par[k].props) : new Promise((resolve) => resolve({ default : par[k].props })))
+    par[k].propProm = ((typeof par[k].props === 'string') ? fetch(prefix+'/props/'+ par[k].props) : new Promise((resolve) => resolve({ json : () => par[k].props })))
     par[k].compProm = import(prefix + '/svelte/components/' + par[k].component)
 
     const el = document.getElementById(k);
@@ -140,7 +140,7 @@ export default (page: Page) => {
       ) {
         const propPath = path.resolve(
           page.settings.$$internal.distElder,
-          `./props/ejs-${hashCode(component.prepared.propsString)}.js`,
+          `./props/ejs-${hashCode(component.prepared.propsString)}.json`,
         );
 
         if (!fs.existsSync(propPath)) {
@@ -149,7 +149,7 @@ export default (page: Page) => {
           }
 
           // eslint-disable-next-line no-await-in-loop
-          fs.writeFileSync(propPath, `export default ${component.prepared.propsString};`);
+          fs.writeFileSync(propPath, component.prepared.propsString);
         }
 
         component.prepared.clientPropsUrl = windowsPathFix(`/${path.relative(page.settings.distDir, propPath)}`);
@@ -193,7 +193,7 @@ export default (page: Page) => {
         page.headStack.push({
           source: component.name,
           priority: 49,
-          string: `<link rel="preload" href="${component.prepared.clientPropsUrl}" as="script">`,
+          string: `<link rel="preload" href="${component.prepared.clientPropsUrl}" as="fetch">`,
           // string: `<link rel="modulepreload" href="${clientSrcMjs}">`, <-- can be an option for Chrome if browsers don't like this.
         });
       }
@@ -208,7 +208,7 @@ export default (page: Page) => {
         page.headStack.push({
           source: component.name,
           priority: 49,
-          string: `<link rel="prefetch" href="${component.prepared.clientPropsUrl}" as="script">`,
+          string: `<link rel="prefetch" href="${component.prepared.clientPropsUrl}" as="fetch">`,
           // string: `<link rel="modulepreload" href="${clientSrcMjs}">`, <-- can be an option for Chrome if browsers don't like this.
         });
       }
