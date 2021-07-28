@@ -10,8 +10,11 @@ const $$ejs = (par,eager)=>{
   ${decompressCode}
   const prefix = '${prefix}';
   const initComponent = (target, component) => {
-    const decompressedProps = component.propProm.then(p => $ejs(p.json()));
-    Promise.all([component.compProm,decompressedProps]).then(([comp,props])=>{
+    
+    const propProm = ((typeof component.props === 'string') ? fetch(prefix+'/props/'+ component.props).then(p => $ejs(p.json())) : new Promise((resolve) => resolve($ejs(component.props))));
+    const compProm = import(prefix + '/svelte/components/' + component.component);
+
+    Promise.all([compProm,propProm]).then(([comp,props])=>{
       new comp.default({ 
         target: target,
         props: props,
@@ -22,21 +25,17 @@ const $$ejs = (par,eager)=>{
   ${
     generateLazy
       ? `const IO = new IntersectionObserver((entries, observer) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        observer.unobserve(entry.target);
-        const selected = par[entry.target.id];
-        initComponent(entry.target,selected)
-      }
-    });
-  });`
+              entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                  observer.unobserve(entry.target);
+                  const selected = par[entry.target.id];
+                  initComponent(entry.target,selected);
+                }
+              });
+          }, { rootMargin: "200px",threshold: 0});`
       : ''
   }
-  Object.keys(par).forEach((k) => {
-
-    par[k].propProm = ((typeof par[k].props === 'string') ? fetch(prefix+'/props/'+ par[k].props) : new Promise((resolve) => resolve({ json : () => par[k].props })))
-    par[k].compProm = import(prefix + '/svelte/components/' + par[k].component)
-
+  Object.keys(par).forEach(k => {
     const el = document.getElementById(k);
     if (${generateLazy ? '!eager' : 'false'}) {
         IO.observe(el);
