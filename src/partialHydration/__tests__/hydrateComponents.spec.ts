@@ -134,7 +134,7 @@ describe('#hydrateComponents', () => {
 
       await reqHydrateComponents.default(page);
 
-      expect(page.componentsToHydrate[0].prepared.clientPropsUrl).toEqual('/props/ejs-2086035908.js');
+      expect(page.componentsToHydrate[0].prepared.clientPropsUrl).toEqual('/props/ejs-2086035908.json');
       expect(counts).toMatchObject({ existsSync: 3, mkdirSync: 0, writeFile: 1 });
     });
 
@@ -148,7 +148,7 @@ describe('#hydrateComponents', () => {
 
       await reqHydrateComponents.default(page);
 
-      expect(page.componentsToHydrate[0].prepared.clientPropsUrl).toEqual('/props/ejs-1363984429.js');
+      expect(page.componentsToHydrate[0].prepared.clientPropsUrl).toEqual('/props/ejs-1363984429.json');
     });
 
     test('preloads with external prop file', async () => {
@@ -171,7 +171,63 @@ describe('#hydrateComponents', () => {
         {
           priority: 49,
           source: 'autocompleteZlwFFdKTtG',
-          string: '<link rel="preload" href="/props/ejs--389426143.js" as="script">',
+          string: '<link rel="preload" href="/props/ejs--389426143.json" as="fetch">',
+        },
+        {
+          priority: 50,
+          source: 'zoomablemapgYtFjVCDSS',
+          string:
+            '<link rel="prefetch" href="/_elderjs/svelte/components/ZoomableMap/ZoomableMap.AOMHQNYN.js" as="script">',
+        },
+        {
+          priority: 49,
+          source: 'zoomablemapgYtFjVCDSS',
+          string: '<link rel="prefetch" href="/props/ejs-1585068398.json" as="fetch">',
+        },
+        {
+          priority: 50,
+          source: 'headerzbmmDtJVlq',
+          string: '<link rel="prefetch" href="/_elderjs/svelte/components/Header/Header.AOWJN766.js" as="script">',
+        },
+        {
+          priority: 49,
+          source: 'headerzbmmDtJVlq',
+          string: '<link rel="prefetch" href="/props/ejs--453144257.json" as="fetch">',
+        },
+      ]);
+    });
+
+    test('prefetch override with external prop file', async () => {
+      const page = JSON.parse(JSON.stringify(defaultPage));
+      page.settings.props.hydration = 'file';
+      page.componentsToHydrate = JSON.parse(JSON.stringify(defaultComponents));
+      page.componentsToHydrate[0].hydrateOptions.noPrefetch = true;
+
+      const reqHydrateComponents = require('../hydrateComponents');
+
+      await reqHydrateComponents.default(page);
+
+      expect(page.headStack).toMatchObject([
+        {
+          priority: 50,
+          source: 'zoomablemapgYtFjVCDSS',
+          string:
+            '<link rel="prefetch" href="/_elderjs/svelte/components/ZoomableMap/ZoomableMap.AOMHQNYN.js" as="script">',
+        },
+        {
+          priority: 49,
+          source: 'zoomablemapgYtFjVCDSS',
+          string: '<link rel="prefetch" href="/props/ejs-1585068398.json" as="fetch">',
+        },
+        {
+          priority: 50,
+          source: 'headerzbmmDtJVlq',
+          string: '<link rel="prefetch" href="/_elderjs/svelte/components/Header/Header.AOWJN766.js" as="script">',
+        },
+        {
+          priority: 49,
+          source: 'headerzbmmDtJVlq',
+          string: '<link rel="prefetch" href="/props/ejs--453144257.json" as="fetch">',
         },
       ]);
     });

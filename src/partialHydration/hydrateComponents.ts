@@ -5,47 +5,44 @@ import { Page } from '../utils';
 import { walkAndCount, prepareSubstitutions, walkAndSubstitute } from './propCompression';
 import windowsPathFix from '../utils/windowsPathFix';
 
-const defaultElderHelpers = (decompressCode, prefix) => `
-let IO, $$COMPONENTS={};
-const $$ejs = async (arr)=>{
+const defaultElderHelpers = (decompressCode, prefix, generateLazy) => `
+const $$ejs = (par,eager)=>{
   ${decompressCode}
   const prefix = '${prefix}';
+  const initComponent = (target, component) => {
+    
+    const propProm = ((typeof component.props === 'string') ? fetch(prefix+'/props/'+ component.props).then(p => $ejs(p.json())) : new Promise((resolve) => resolve($ejs(component.props))));
+    const compProm = import(prefix + '/svelte/components/' + component.component);
 
-  for (let i = 0; i < arr.length; i++) {
-    $$COMPONENTS[arr[i][0]] = {
-      elem: document.getElementById(arr[i][0]),
-      component: arr[i][1],
-      props: $ejs(arr[i][2]) || {},
-    };
-
-    if(typeof  $$COMPONENTS[arr[i][0]].props === 'string'){
-      const propsFile = await import(prefix+'/props/'+$$COMPONENTS[arr[i][0]].props);
-      $$COMPONENTS[arr[i][0]].props = $ejs(propsFile.default);
-    };
-
-    if (!IO) {
-      IO = new IntersectionObserver((entries, observer) => {
-        var objK = Object.keys(entries);
-        var objKl = objK.length;
-        var objKi = 0;
-        for (; objKi < objKl; objKi++) {
-          const entry = entries[objK[objKi]];
-          if (entry.isIntersecting) {
-            const selected = $$COMPONENTS[entry.target.id];
-            observer.unobserve(selected.elem);
-            import(prefix + '/svelte/components/' + selected.component).then((comp)=>{
-                new comp.default({ 
-                  target: selected.elem,
-                  props: selected.props,
-                  hydrate: true
-                });
-            });
-          }
-        }
+    Promise.all([compProm,propProm]).then(([comp,props])=>{
+      new comp.default({ 
+        target: target,
+        props: props,
+        hydrate: true
       });
-    };
-    IO.observe($$COMPONENTS[arr[i][0]].elem);
+    });
   }
+  ${
+    generateLazy
+      ? `const IO = new IntersectionObserver((entries, observer) => {
+              entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                  observer.unobserve(entry.target);
+                  const selected = par[entry.target.id];
+                  initComponent(entry.target,selected);
+                }
+              });
+          }, { rootMargin: "200px",threshold: 0});`
+      : ''
+  }
+  Object.keys(par).forEach(k => {
+    const el = document.getElementById(k);
+    if (${generateLazy ? '!eager' : 'false'}) {
+        IO.observe(el);
+    } else {
+        initComponent(el,par[k]);
+    }
+  });
 };
 `;
 
@@ -142,7 +139,7 @@ export default (page: Page) => {
       ) {
         const propPath = path.resolve(
           page.settings.$$internal.distElder,
-          `./props/ejs-${hashCode(component.prepared.propsString)}.js`,
+          `./props/ejs-${hashCode(component.prepared.propsString)}.json`,
         );
 
         if (!fs.existsSync(propPath)) {
@@ -151,7 +148,7 @@ export default (page: Page) => {
           }
 
           // eslint-disable-next-line no-await-in-loop
-          fs.writeFileSync(propPath, `export default ${component.prepared.propsString};`);
+          fs.writeFileSync(propPath, component.prepared.propsString);
         }
 
         component.prepared.clientPropsUrl = windowsPathFix(`/${path.relative(page.settings.distDir, propPath)}`);
@@ -165,17 +162,23 @@ export default (page: Page) => {
     }
 
     if (component.hydrateOptions.loading === 'eager') {
-      eagerString += `['${component.name}','${component.client.replace(`${relPrefix}/svelte/components/`, '')}', ${
+      eagerString += `'${component.name}' : { 'component' : '${component.client.replace(
+        `${relPrefix}/svelte/components/`,
+        '',
+      )}', 'props' : ${
         component.prepared.clientPropsUrl
           ? `'${component.prepared.clientPropsUrl.replace(`${relPrefix}/props/`, '')}'`
           : component.prepared.clientPropsString
-      }],`;
+      }},`;
     } else {
-      deferString += `['${component.name}','${component.client.replace(`${relPrefix}/svelte/components/`, '')}', ${
+      deferString += `'${component.name}' : { 'component' : '${component.client.replace(
+        `${relPrefix}/svelte/components/`,
+        '',
+      )}', 'props' : ${
         component.prepared.clientPropsUrl
           ? `'${component.prepared.clientPropsUrl.replace(`${relPrefix}/props/`, '')}'`
           : component.prepared.clientPropsString
-      }],`;
+      }},`;
     }
 
     if (component.hydrateOptions.preload) {
@@ -189,7 +192,22 @@ export default (page: Page) => {
         page.headStack.push({
           source: component.name,
           priority: 49,
-          string: `<link rel="preload" href="${component.prepared.clientPropsUrl}" as="script">`,
+          string: `<link rel="preload" href="${component.prepared.clientPropsUrl}" as="fetch">`,
+          // string: `<link rel="modulepreload" href="${clientSrcMjs}">`, <-- can be an option for Chrome if browsers don't like this.
+        });
+      }
+    } else if (!component.hydrateOptions.noPrefetch) {
+      page.headStack.push({
+        source: component.name,
+        priority: 50,
+        string: `<link rel="prefetch" href="${component.client}" as="script">`,
+        // string: `<link rel="modulepreload" href="${clientSrcMjs}">`, <-- can be an option for Chrome if browsers don't like this.
+      });
+      if (component.prepared.clientPropsUrl) {
+        page.headStack.push({
+          source: component.name,
+          priority: 49,
+          string: `<link rel="prefetch" href="${component.prepared.clientPropsUrl}" as="fetch">`,
           // string: `<link rel="modulepreload" href="${clientSrcMjs}">`, <-- can be an option for Chrome if browsers don't like this.
         });
       }
@@ -201,12 +219,12 @@ export default (page: Page) => {
       source: 'hydrateComponents',
       priority: 30,
       string: `<script type="module">
-      ${defaultElderHelpers(decompressCode, relPrefix)}
-      ${eagerString.length > 0 ? `$$ejs([${eagerString}])` : ''}${
+      ${defaultElderHelpers(decompressCode, relPrefix, deferString.length > 0)}
+      ${eagerString.length > 0 ? `$$ejs({${eagerString}},true)` : ''}${
         deferString.length > 0
           ? `
       requestIdleCallback(function(){
-        $$ejs([${deferString}])}, {timeout: 1000});`
+        $$ejs({${deferString}})}, {timeout: 1000});`
           : ''
       }</script>`,
     });

@@ -170,6 +170,7 @@ export type ExcludesFalse = <T>(x: T | false) => x is T;
 export type HydrateOptions = {
   loading?: 'lazy' | 'eager' | 'none';
   preload?: boolean;
+  noPrefetch?: boolean;
   threshold?: number;
   rootMargin?: string;
 };
