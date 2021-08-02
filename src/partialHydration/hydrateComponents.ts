@@ -21,7 +21,7 @@ const $$ejs = (par,eager)=>{
         hydrate: true
       });
     });
-  }
+  };
   ${
     generateLazy
       ? `const IO = new IntersectionObserver((entries, observer) => {
