@@ -6,14 +6,11 @@ import multiInput from 'rollup-plugin-multi-input';
 import replace from '@rollup/plugin-replace';
 import json from '@rollup/plugin-json';
 import glob from 'glob';
-import path from 'path';
-import fs from 'fs-extra';
 import defaultsDeep from 'lodash.defaultsdeep';
 import { getElderConfig } from '../index';
 import { getDefaultRollup } from '../utils/validations';
 import getPluginLocations from '../utils/getPluginLocations';
 import elderSvelte from './rollupPlugin';
-import normalizePrefix from '../utils/normalizePrefix';
 
 const production = process.env.NODE_ENV === 'production' || !process.env.ROLLUP_WATCH;
 
@@ -135,27 +132,6 @@ export default function getRollupConfig(options) {
   console.log(`Elder.js using rollup in ${production ? 'production' : 'development'} mode.`);
 
   const configs = [];
-
-  // Add ElderJs Peer deps to public if they exist.
-  [
-    ['./node_modules/intersection-observer/intersection-observer.js', './_elderjs/static/intersection-observer.js'],
-  ].forEach((dep) => {
-    if (!fs.existsSync(path.resolve(elderConfig.rootDir, dep[0]))) {
-      throw new Error(`Elder.js peer dependency not found at ${dep[0]}`);
-    }
-    const prefix = normalizePrefix(elderConfig.prefix);
-    configs.push({
-      input: dep[0],
-      output: [
-        {
-          file: path.resolve(prefix ? path.join(elderConfig.distDir, prefix) : elderConfig.distDir, dep[1]),
-          format: 'iife',
-          name: dep[1],
-          plugins: [terser()],
-        },
-      ],
-    });
-  });
 
   const { paths: pluginPaths } = getPluginLocations(elderConfig);
   const pluginGlobs = pluginPaths.map((plugin) => `${plugin}*.svelte`);

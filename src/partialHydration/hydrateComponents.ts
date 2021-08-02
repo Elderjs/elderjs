@@ -24,20 +24,20 @@ const $$ejs = (par,eager)=>{
   };
   ${
     generateLazy
-      ? `const IO = new IntersectionObserver((entries, observer) => {
-              entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                  observer.unobserve(entry.target);
-                  const selected = par[entry.target.id];
-                  initComponent(entry.target,selected);
-                }
-              });
-          }, { rootMargin: "200px",threshold: 0});`
+      ? `const IO = ('IntersectionObserver' in window) ? new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        observer.unobserve(entry.target);
+        const selected = par[entry.target.id];
+        initComponent(entry.target,selected)
+      }
+    });
+  }, { rootMargin: "200px",threshold: 0}) : undefined;`
       : ''
   }
   Object.keys(par).forEach(k => {
     const el = document.getElementById(k);
-    if (${generateLazy ? '!eager' : 'false'}) {
+    if (${generateLazy ? '!eager && IO' : 'false'}) {
         IO.observe(el);
     } else {
         initComponent(el,par[k]);
@@ -219,6 +219,7 @@ export default (page: Page) => {
       source: 'hydrateComponents',
       priority: 30,
       string: `<script type="module">
+            const requestIdleCallback = window.requestIdleCallback || ( cb => window.setTimeout(cb,1) );
       ${defaultElderHelpers(decompressCode, relPrefix, deferString.length > 0)}
       ${eagerString.length > 0 ? `$$ejs({${eagerString}},true)` : ''}${
         deferString.length > 0

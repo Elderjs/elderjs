@@ -217,7 +217,7 @@ export const hookInterface: Array<HookInterface> = [
           <ul>
             <li><strong>headStack:</strong> Internally all content used in <svelte:head></svelte:head> are added to the head stack. If you were looking to add ld+json to the page, you could do it here. If you're looking to write &lt;title&gt; tags, we recommend doing it within Svelte templates unless you are writing a plugin in which case you may want to also look at the 'head' hook.</li>
             <li><strong>cssStack:</strong> The 'cssStack' represents all of the css strings added by hooks and plugins. Plugins can add css here (our in the head stack if you need to add CSS before the Elder.js CSS file), but we recommend users add them directly in Svelte files. Note: Do not wrap strings added to the stack in &lt;style&gt;&lt;/style&gt;.</li>
-            <li><strong>beforeHydrateStack:</strong> default this stack includes a polyfill for intersection observer. This stack is not run unless there are Svelte components to be hydrated. </li>
+            <li><strong>beforeHydrateStack:</strong> Polyfills for hydration could be added here. This stack is not run unless there are Svelte components to be hydrated. </li>
             <li><strong>hydrateStack:</strong> the hydrateStack contains strings which represent all of the root svelte components which will be hydrated.</li>
             <li><strong>customJsStack:</strong> Used to add custom JS to the site. This is done after the Svelte components are written to the page. </li>
             <li><strong>footerStack:</strong> the footerStack which is an array of html or html friendly strings that will be written to the footer. This is generally the ideal place for plugins to add Analytics scripts as it fires after all other JS.</li>

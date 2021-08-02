@@ -6,12 +6,6 @@ import getConfig from '../../utils/getConfig';
 
 // TODO: test replace
 
-const fixRelativePath = (arr) => {
-  // eslint-disable-next-line no-param-reassign
-  arr[0].output[0].file = arr[0].output[0].file.replace(process.cwd(), '');
-  return arr;
-};
-
 jest.mock('fs-extra', () => {
   return {
     ensureDirSync: () => {},
@@ -158,31 +152,6 @@ describe('#getRollupConfig', () => {
     ).toEqual(['replace', 'json', 'rollup-plugin-elder', 'node-resolve', 'commonjs', 'terser']);
   });
 
-  it('getRollupConfig - throws error if intersection-observer doesnt exist', () => {
-    jest.mock('../../utils/validations.ts', () => ({
-      getDefaultRollup: () => ({}),
-    }));
-
-    jest.mock('del');
-    // getElderConfig() mock
-    jest.mock('../../utils/getConfig', () => () => ({
-      $$internal: {
-        clientComponents: 'test/public/svelte',
-        ssrComponents: 'test/___ELDER___/compiled',
-      },
-      distDir: './dist',
-      srcDir: './src',
-      rootDir: './',
-      plugins: {},
-    }));
-    jest.mock('fs-extra', () => ({
-      existsSync: jest.fn().mockImplementationOnce(() => false),
-    }));
-    expect(() => require('../getRollupConfig').default()).toThrow(
-      `Elder.js peer dependency not found at ./node_modules/intersection-observer/intersection-observer.js`,
-    );
-  });
-
   it('getRollupConfig as a whole works - default options', () => {
     jest.mock('../../utils/validations.ts', () => ({
       getDefaultRollup: () => ({
@@ -229,7 +198,7 @@ describe('#getRollupConfig', () => {
     };
 
     // would be nice to mock getPluginPaths if it's extracted to separate file
-    const configs = fixRelativePath(require('../getRollupConfig').default({ svelteConfig }));
-    expect(configs).toHaveLength(3);
+    const configs = require('../getRollupConfig').default({ svelteConfig });
+    expect(configs).toHaveLength(2);
   });
 });

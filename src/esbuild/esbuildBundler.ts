@@ -5,7 +5,7 @@
 // reload can also be called after esbuild finishes the rebuild.
 // the file watcher should restart the entire esbuild process when a new svelte file is seen. This includes clearing caches.
 
-import { build, BuildResult, buildSync } from 'esbuild';
+import { build, BuildResult } from 'esbuild';
 import glob from 'glob';
 import path from 'path';
 
@@ -206,21 +206,6 @@ const esbuildBundler = async ({ initializationOptions = {}, replacements = {} }:
     });
 
     const restartHelper = getRestartHelper(startOrRestartServer);
-
-    if (!fs.existsSync(path.resolve('./node_modules/intersection-observer/intersection-observer.js'))) {
-      throw new Error(`Missing 'intersection-observer' dependency. Run 'npm i --save intersection-observer' to fix.`);
-    }
-
-    buildSync({
-      format: 'iife',
-      minify: true,
-      watch: false,
-      outfile: path.resolve(
-        elderConfig.prefix ? path.join(elderConfig.distDir, elderConfig.prefix) : elderConfig.distDir,
-        `./static/intersection-observer.js`,
-      ),
-      entryPoints: [path.resolve('./node_modules/intersection-observer/intersection-observer.js')],
-    });
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const restartEsbuild = await svelteHandler({

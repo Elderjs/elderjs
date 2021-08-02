@@ -20,9 +20,6 @@
   "files": [
     "build/**/*"
   ],
-  "peerDependencies": {
-    "intersection-observer": "^0.12.0"
-  },
   "dependencies": {
     "@babel/core": "^7.13.10",
     "@elderjs/shortcodes": "^1.0.7",
