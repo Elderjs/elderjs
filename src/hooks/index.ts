@@ -1,7 +1,6 @@
 /* eslint-disable consistent-return */
 import path from 'path';
 import fs from 'fs-extra';
-import get from 'lodash.get';
 import { parseBuildPerf } from '../utils';
 import externalHelpers from '../externalHelpers';
 import { HookOptions } from './types';

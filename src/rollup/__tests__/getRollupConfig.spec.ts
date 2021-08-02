@@ -6,12 +6,6 @@ import getConfig from '../../utils/getConfig';
 
 // TODO: test replace
 
-const fixRelativePath = (arr) => {
-  // eslint-disable-next-line no-param-reassign
-  arr[0].output[0].file = arr[0].output[0].file.replace(process.cwd(), '');
-  return arr;
-};
-
 jest.mock('fs-extra', () => {
   return {
     ensureDirSync: () => {},
@@ -204,7 +198,7 @@ describe('#getRollupConfig', () => {
     };
 
     // would be nice to mock getPluginPaths if it's extracted to separate file
-    const configs = fixRelativePath(require('../getRollupConfig').default({ svelteConfig }));
-    expect(configs).toHaveLength(3);
+    const configs = require('../getRollupConfig').default({ svelteConfig });
+    expect(configs).toHaveLength(2);
   });
 });

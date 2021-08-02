@@ -5,7 +5,7 @@
 // reload can also be called after esbuild finishes the rebuild.
 // the file watcher should restart the entire esbuild process when a new svelte file is seen. This includes clearing caches.
 
-import { build, BuildResult, buildSync } from 'esbuild';
+import { build, BuildResult } from 'esbuild';
 import glob from 'glob';
 import path from 'path';
 

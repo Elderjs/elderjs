@@ -6,14 +6,11 @@ import multiInput from 'rollup-plugin-multi-input';
 import replace from '@rollup/plugin-replace';
 import json from '@rollup/plugin-json';
 import glob from 'glob';
-import path from 'path';
-import fs from 'fs-extra';
 import defaultsDeep from 'lodash.defaultsdeep';
 import { getElderConfig } from '../index';
 import { getDefaultRollup } from '../utils/validations';
 import getPluginLocations from '../utils/getPluginLocations';
 import elderSvelte from './rollupPlugin';
-import normalizePrefix from '../utils/normalizePrefix';
 
 const production = process.env.NODE_ENV === 'production' || !process.env.ROLLUP_WATCH;
 
