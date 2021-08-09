@@ -72,9 +72,9 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
     }
   }
 
-  if (config.origin === '') {
+  if (config.origin === '' || config.origin === 'https://example.com') {
     console.error(
-      `WARN: Remember to put a valid "origin" in your elder.config.js. This should be a fully qualified domain. This is frequently used by plugins and leaving it blank can cause SEO headaches.`,
+      `WARN: Remember to put a valid "origin" in your elder.config.js. The URL of your site's root, without a trailing slash. This is frequently used by plugins and leaving it blank can cause SEO headaches.`,
     );
   }
 
