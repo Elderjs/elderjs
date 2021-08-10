@@ -230,9 +230,7 @@ const hookSchema = yup
     description: yup.string().required().label('A description of what the function does.'),
     priority: yup
       .number()
-      .positive()
       .integer()
-      .max(100)
       .optional()
       .default(50)
       .label('The priority level a hook should run at. The highest priority is 100 and 1 is the lowest priority.'),

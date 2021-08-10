@@ -154,7 +154,11 @@ async function plugins(elder: Elder) {
       pluginHooksArray.forEach((hook) => {
         const validatedHook = validateHook(hook);
         if (validatedHook) {
-          pluginHooks.push(validatedHook);
+          if (validatedHook.priority >= 0 && validatedHook.priority <= 100) {
+            pluginHooks.push(validatedHook);
+          } else {
+            console.log(`${pluginName}.${hook.name} has an invalid priority. Plugin hooks must be >= 0 or <= 100`);
+          }
         }
       });
 
