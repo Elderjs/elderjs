@@ -559,7 +559,7 @@ Object {
       "_default": "",
       "_deps": Array [],
       "_exclusive": Object {},
-      "_label": "The domain your site is hosted on. https://yourdomain.com.",
+      "_label": "The URL of your site's root, without a trailing slash. https://yourdomain.com.",
       "_mutate": undefined,
       "_options": Object {
         "abortEarly": true,
@@ -1188,8 +1188,6 @@ Object {
       "_deps": Array [],
       "_exclusive": Object {
         "integer": false,
-        "max": true,
-        "min": true,
       },
       "_label": "The priority level a hook should run at. The highest priority is 100 and 1 is the lowest priority.",
       "_mutate": undefined,
@@ -1204,8 +1202,6 @@ Object {
         "refs": Map {},
       },
       "tests": Array [
-        [Function],
-        [Function],
         [Function],
       ],
       "transforms": Array [
