@@ -1,6 +1,6 @@
 {
   "name": "@elderjs/elderjs",
-  "version": "1.5.10",
+  "version": "1.6.0",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
   "engineStrict": true,
@@ -22,7 +22,7 @@
   ],
   "dependencies": {
     "@babel/core": "^7.13.10",
-    "@elderjs/shortcodes": "^1.0.7",
+    "@elderjs/shortcodes": "^2.0.2",
     "@rollup/plugin-commonjs": "^17.1.0",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^11.2.0",
