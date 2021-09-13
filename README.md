@@ -67,7 +67,7 @@ The quickest way to get started is to get started with the [Elder.js template](h
 ```sh
 npx degit Elderjs/template elderjs-app
 
-cd
+cd elderjs-app
 
 npm install # or "yarn"
 
