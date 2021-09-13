@@ -165,7 +165,7 @@ describe('#plugins', () => {
   it('plugin has routes, hooks and shortcodes', async () => {
     jest.mock(path.resolve(`./src/utils/validations`), () => ({
       validatePlugin: (i) => i,
-      validateHook: () => true,
+      validateHook: () => ({ priority: 50 }),
       validateShortcode: (i) => i,
     }));
     jest.mock('fs-extra', () => ({
@@ -180,11 +180,8 @@ describe('#plugins', () => {
             hook: 'customizeHooks',
             name: 'test hook',
             description: 'just for testing',
+            priority: 50,
             run: jest.fn(),
-            $$meta: {
-              type: 'hooks.js',
-              addedBy: 'validations.spec.ts',
-            },
           },
         ],
         routes: {
@@ -195,7 +192,6 @@ describe('#plugins', () => {
             permalink: () => '/',
           },
           routeB: {
-            hooks: [], // not supported warning
             data: { foo: 'bar' },
             // no template defined
           },
@@ -203,6 +199,7 @@ describe('#plugins', () => {
         shortcodes: [
           {
             shortcode: 'svelteComponent',
+            run: () => {},
           },
         ],
         config: {},
@@ -246,7 +243,7 @@ describe('#plugins', () => {
         permalink: expect.any(Function),
       },
     });
-    expect(pluginHooks).toEqual([true]);
+    expect(pluginHooks).toEqual([{ priority: 50 }]);
     expect(pluginShortcodes).toHaveLength(1);
     expect(initMock).toHaveBeenCalled();
   });

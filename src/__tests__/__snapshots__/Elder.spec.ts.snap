@@ -1200,36 +1200,6 @@ Object {
     },
     Object {
       "$$meta": Object {
-        "addedBy": "elder-plugin-upload-s3",
-        "type": "plugin",
-      },
-      "description": "just for testing",
-      "hook": "customizeHooks",
-      "name": "test hook",
-      "run": [Function],
-    },
-    Object {
-      "$$meta": Object {
-        "addedBy": "elder-plugin-upload-s3",
-        "type": "plugin",
-      },
-      "description": "just for testing",
-      "hook": "bootstrap",
-      "name": "test hook 2",
-      "run": [Function],
-    },
-    Object {
-      "$$meta": Object {
-        "addedBy": "elder-plugin-upload-s3",
-        "type": "plugin",
-      },
-      "description": "just for testing",
-      "hook": "bootstrap",
-      "name": "test hook 3",
-      "run": [Function],
-    },
-    Object {
-      "$$meta": Object {
         "addedBy": "hooks.js",
         "type": "hooks.js",
       },

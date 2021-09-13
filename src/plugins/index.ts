@@ -151,6 +151,8 @@ async function plugins(elder: Elder) {
         };
       });
 
+      console.log('pluginHooksArray', pluginHooksArray);
+
       pluginHooksArray.forEach((hook) => {
         const validatedHook = validateHook(hook);
         if (validatedHook) {
