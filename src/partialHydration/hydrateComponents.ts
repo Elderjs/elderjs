@@ -11,7 +11,7 @@ const $$ejs = (par,eager)=>{
   const prefix = '${prefix}';
   const initComponent = (target, component) => {
     
-    const propProm = ((typeof component.props === 'string') ? fetch(prefix+'/props/'+ component.props).then(p => $ejs(p.json())) : new Promise((resolve) => resolve($ejs(component.props))));
+    const propProm = ((typeof component.props === 'string') ? fetch(prefix+'/props/'+ component.props).then(p => p.json()).then(r => $ejs(r)) : new Promise((resolve) => resolve($ejs(component.props))));
     const compProm = import(prefix + '/svelte/components/' + component.component);
 
     Promise.all([compProm,propProm]).then(([comp,props])=>{
