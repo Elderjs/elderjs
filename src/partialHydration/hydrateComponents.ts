@@ -10,7 +10,6 @@ const $$ejs = (par,eager)=>{
   ${decompressCode}
   const prefix = '${prefix}';
   const initComponent = (target, component) => {
-    
     const propProm = ((typeof component.props === 'string') ? fetch(prefix+'/props/'+ component.props).then(p => p.json()).then(r => $ejs(r)) : new Promise((resolve) => resolve($ejs(component.props))));
     const compProm = import(prefix + '/svelte/components/' + component.component);
 
@@ -110,7 +109,7 @@ export default (page: Page) => {
 
     for (let ii = 0; ii < page.componentsToHydrate.length; ii += 1) {
       const component = page.componentsToHydrate[ii];
-      component.prepared.propsString = JSON.stringify(walkAndSubstitute(component.props, substitutions));
+      component.prepared.propsString = JSON.stringify(walkAndSubstitute(component.props || {}, substitutions));
       if (page.settings.debug.props) hydratedPropLength += component.prepared.propsString.length;
     }
 
