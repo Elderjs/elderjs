@@ -97,7 +97,7 @@ const svelteHandler = async ({ elderConfig, svelteConfig, replacements, restartH
 
     // eslint-disable-next-line global-require
     const pkg = require(path.resolve(elderConfig.rootDir, './package.json'));
-    const globPath = path.resolve(elderConfig.rootDir, `./src/**/*.svelte`);
+    const globPath = path.resolve(elderConfig.rootDir, elderConfig.srcDir, `/**/*.svelte`);
     const initialEntryPoints = glob.sync(globPath);
     const sveltePackages = getPackagesWithSvelte(pkg, elderConfig);
     const elderPlugins = getPluginLocations(elderConfig);
@@ -161,7 +161,7 @@ const svelteHandler = async ({ elderConfig, svelteConfig, replacements, restartH
       splitting: true,
       chunkNames: 'chunks/[name].[hash]',
       logLevel: 'error',
-      outbase: 'src',
+      outbase: elderConfig.srcDir,
       define: {
         'process.env.componentType': "'browser'",
         'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
