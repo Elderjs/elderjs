@@ -98,6 +98,11 @@ const configSchema = yup.object({
       .notRequired()
       .default('')
       .label(`If Elder.js should serve all pages with a prefix. (deprecated)`),
+    cacheRequests: yup
+      .boolean()
+      .notRequired()
+      .default(true)
+      .label(`If Elder.js should cache requests when using dynamic routing.`),
   }),
   prefix: yup
     .string()

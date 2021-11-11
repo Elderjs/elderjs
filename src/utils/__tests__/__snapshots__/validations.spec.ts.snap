@@ -789,6 +789,7 @@ Object {
       "_exclusive": Object {},
       "_mutate": undefined,
       "_nodes": Array [
+        "cacheRequests",
         "prefix",
       ],
       "_options": Object {
@@ -802,6 +803,33 @@ Object {
         "refs": Map {},
       },
       "fields": Object {
+        "cacheRequests": Object {
+          "_blacklist": Object {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "_conditions": Array [],
+          "_default": true,
+          "_deps": Array [],
+          "_exclusive": Object {},
+          "_label": "If Elder.js should cache requests when using dynamic routing.",
+          "_mutate": undefined,
+          "_options": Object {
+            "abortEarly": true,
+            "recursive": true,
+          },
+          "_type": "boolean",
+          "_typeError": [Function],
+          "_whitelist": Object {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "tests": Array [],
+          "transforms": Array [
+            [Function],
+          ],
+          "type": "boolean",
+        },
         "prefix": Object {
           "_blacklist": Object {
             "list": Set {},

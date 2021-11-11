@@ -74,7 +74,7 @@ export const initialRequestIsWellFormed = (request: RequestOptions) =>
 interface IRequestFromDynamicRoute {
   req: Req;
   dynamicRoutes: RouteOptions[];
-  requestCache: Map<string, RequestOptions>;
+  requestCache: Map<string, RequestOptions> | undefined;
 }
 
 export function requestFromDynamicRoute({
@@ -82,7 +82,7 @@ export function requestFromDynamicRoute({
   dynamicRoutes,
   requestCache,
 }: IRequestFromDynamicRoute): RequestOptions | false {
-  if (requestCache.has(req.path)) {
+  if (requestCache?.has(req.path)) {
     const request = requestCache.get(req.path);
     request.req = req;
     return request;
@@ -96,7 +96,7 @@ export function requestFromDynamicRoute({
       type: 'server',
       ...params,
     };
-    requestCache.set(req.path, request);
+    requestCache?.set(req.path, request);
     request.req = { ...req };
     return request;
   }
@@ -105,7 +105,7 @@ export function requestFromDynamicRoute({
 
 function prepareRouter(Elder) {
   const { routes, serverLookupObject, settings, ...elder } = Elder;
-  const requestCache = new Map();
+  const requestCache = settings.server.cacheRequests ? new Map() : undefined;
 
   // sort the routes in order of specificity
   const dynamicRoutes: RouteOptions[] = routeSort(
