@@ -1,5 +1,8 @@
-const defaultHydrationOptions = {
+import { HydrateOptions } from '../utils/types';
+
+const defaultHydrationOptions: HydrateOptions = {
   loading: 'lazy',
+  element: 'div',
 };
 
 export function escapeHtml(text: string): string {
@@ -22,19 +25,21 @@ export function inlinePreprocessedSvelteComponent({
   props = {},
   options = '',
 }: InputParamsInlinePreprocessedSvelteComponent): string {
-  const hydrationOptions = options.length > 0 ? options : JSON.stringify(defaultHydrationOptions);
+  const hydrationOptions =
+    options.length > 0 ? { ...defaultHydrationOptions, ...JSON.parse(options) } : defaultHydrationOptions;
+  const hydrationOptionsString = JSON.stringify(hydrationOptions);
 
   const replacementAttrs = {
     class: '"ejs-component"',
     'data-ejs-component': `"${name}"`,
     'data-ejs-props': `{JSON.stringify(${props})}`,
-    'data-ejs-options': `{JSON.stringify(${hydrationOptions})}`,
+    'data-ejs-options': `{JSON.stringify(${hydrationOptionsString})}`,
   };
   const replacementAttrsString = Object.entries(replacementAttrs).reduce(
     (out, [key, value]) => `${out} ${key}=${value}`,
     '',
   );
-  return `<div${replacementAttrsString} />`;
+  return `<${hydrationOptions.element}${replacementAttrsString} />`;
 }
 
 type InputParamsInlineSvelteComponent = {
@@ -42,6 +47,7 @@ type InputParamsInlineSvelteComponent = {
   props?: any;
   options?: {
     loading?: string; // todo: enum, can't get it working: 'lazy', 'eager', 'none'
+    element?: string; // default: 'div'
   };
 };
 
@@ -50,7 +56,8 @@ export function inlineSvelteComponent({
   props = {},
   options = {},
 }: InputParamsInlineSvelteComponent): string {
-  const hydrationOptions = Object.keys(options).length > 0 ? options : defaultHydrationOptions;
+  const hydrationOptions =
+    Object.keys(options).length > 0 ? { ...defaultHydrationOptions, ...options } : defaultHydrationOptions;
 
   const replacementAttrs = {
     class: '"ejs-component"',
@@ -63,5 +70,5 @@ export function inlineSvelteComponent({
     '',
   );
 
-  return `<div${replacementAttrsString}></div>`;
+  return `<${hydrationOptions.element}${replacementAttrsString}></${hydrationOptions.element}>`;
 }

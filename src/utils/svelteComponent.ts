@@ -61,7 +61,11 @@ const svelteComponent =
         id,
       });
 
-      return `<div class="${cleanComponentName.toLowerCase()}-component" id="${uniqueComponentName}">${innerHtml}</div>`;
+      return `<${
+        hydrateOptions.element
+      } class="${cleanComponentName.toLowerCase()}-component" id="${uniqueComponentName}">${innerHtml}</${
+        hydrateOptions.element
+      }>`;
     } catch (e) {
       // console.log(e);
       page.errors.push(e);
