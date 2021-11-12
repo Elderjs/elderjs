@@ -82,7 +82,7 @@ export function requestFromDynamicRoute({
   dynamicRoutes,
   requestCache,
 }: IRequestFromDynamicRoute): RequestOptions | false {
-  if (requestCache?.has(req.path)) {
+  if (requestCache && requestCache.has(req.path)) {
     const request = requestCache.get(req.path);
     request.req = req;
     return request;
@@ -96,7 +96,9 @@ export function requestFromDynamicRoute({
       type: 'server',
       ...params,
     };
-    requestCache?.set(req.path, request);
+    if (requestCache) {
+      requestCache?.set(req.path, request);
+    }
     request.req = { ...req };
     return request;
   }
