@@ -97,7 +97,7 @@ export function requestFromDynamicRoute({
       ...params,
     };
     if (requestCache) {
-      requestCache?.set(req.path, request);
+      requestCache.set(req.path, request);
     }
     request.req = { ...req };
     return request;
