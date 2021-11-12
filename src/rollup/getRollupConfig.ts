@@ -26,6 +26,7 @@ export function createBrowserConfig({
   const toReplace = {
     'process.env.componentType': "'browser'",
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+    preventAssignment: true,
     ...replacements,
   };
 
