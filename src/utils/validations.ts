@@ -103,7 +103,7 @@ const configSchema = yup.object({
       .notRequired()
       .default(true)
       .label(
-        `If Elder.js should cache requests when using dynamic routing. It may be useful to turn off the cache when combining Elder.js with another caching solution.`,
+        `If Elder.js should cache requests when using dynamic routing. It may be useful to turn off the cache when combining Elder.js with another caching solution to reduce the resources consumed by the server.`,
       ),
   }),
   prefix: yup
