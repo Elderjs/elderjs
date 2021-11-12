@@ -812,7 +812,7 @@ Object {
           "_default": true,
           "_deps": Array [],
           "_exclusive": Object {},
-          "_label": "If Elder.js should cache requests when using dynamic routing.",
+          "_label": "If Elder.js should cache requests when using dynamic routing. It may be useful to turn off the cache when combining Elder.js with another caching solution to reduce the resources consumed by the server.",
           "_mutate": undefined,
           "_options": Object {
             "abortEarly": true,
