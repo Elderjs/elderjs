@@ -5,6 +5,7 @@ import Page from './Page';
 
 type ServerOptions = {
   prefix: string;
+  cacheRequests?: boolean;
 };
 
 type BuildOptions = {

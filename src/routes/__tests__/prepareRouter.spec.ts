@@ -157,6 +157,22 @@ describe('#prepareRouter', () => {
       );
       expect(requestCache.has('/dev/reports/hereitis/')).toBeTruthy();
     });
+    it('Parses a dynamic route into a request properly and skips the cache', () => {
+      expect(
+        requestFromDynamicRoute({
+          req: { path: '/dev/reports/without-cache/' },
+          requestCache: undefined,
+          dynamicRoutes,
+        }),
+      ).toEqual({
+        permalink: '',
+        report: 'without-cache',
+        req: { path: '/dev/reports/without-cache/', query: undefined, search: undefined },
+        route: 'reports',
+        type: 'server',
+      });
+      expect(requestCache.has('/dev/reports/without-cache/')).toBeFalsy();
+    });
     it('correctly adds in different search and query params', () => {
       expect(
         requestFromDynamicRoute({
