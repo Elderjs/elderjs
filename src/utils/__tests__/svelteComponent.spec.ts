@@ -83,7 +83,7 @@ describe('#svelteComponent', () => {
         render: () => ({
           head: '<head>',
           css: { code: '<old>' },
-          html: '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "lazy" }"></div></div>',
+          html: '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "lazy", "element": "div" }"></div></div>',
         }),
         _css: ['<css>', '<css2>'],
       }),
@@ -110,7 +110,7 @@ describe('#svelteComponent', () => {
     );
 
     expect(componentProps.page.componentsToHydrate[0]).toMatchObject({
-      hydrateOptions: { loading: 'lazy' },
+      hydrateOptions: { loading: 'lazy', element: 'div' },
       id: 'SwrzsrVDCd',
       name: 'datepickerSwrzsrVDCd',
       prepared: {},
@@ -125,7 +125,7 @@ describe('#svelteComponent', () => {
         render: () => ({
           head: '<head>',
           css: { code: '<old>' },
-          html: '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "lazy" }"></div></div>',
+          html: '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "lazy", "element": "div" }"></div></div>',
         }),
         _css: ['<css>', '<css2>'],
         _cssMap: ['<cssmap>', '<cssmap2>'],
@@ -189,7 +189,7 @@ describe('#svelteComponent', () => {
     );
     expect(props.page.svelteCss).toEqual([{ css: ['<css>', '<css2>'], cssMap: ['<cssmap>', '<cssmap2>'] }]);
     expect(props.page.componentsToHydrate[0]).toMatchObject({
-      hydrateOptions: { loading: 'lazy' },
+      hydrateOptions: { loading: 'lazy', element: 'div' },
       id: 'SwrzsrVDCd',
       name: 'datepickerSwrzsrVDCd',
       prepared: {},
@@ -204,7 +204,7 @@ describe('#svelteComponent', () => {
         render: () => ({
           head: '<head>',
           css: { code: '<old>' },
-          html: '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "lazy" }"></div></div>',
+          html: '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "lazy", "element": "div" }"></div></div>',
         }),
         _css: ['<css>', '<css2>'],
         _cssMap: ['<cssmap>', '<cssmap2>'],

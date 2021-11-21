@@ -9,7 +9,7 @@ describe('#partialHydration', () => {
         })
       ).code,
     ).toEqual(
-      `<div class="ejs-component" data-ejs-component="DatePicker" data-ejs-props={JSON.stringify({ a: "b" })} data-ejs-options={JSON.stringify({"loading":"lazy"})} />`,
+      `<div class="ejs-component" data-ejs-component="DatePicker" data-ejs-props={JSON.stringify({ a: "b" })} data-ejs-options={JSON.stringify({"loading":"lazy","element":"div"})} />`,
     );
   });
 
@@ -17,11 +17,11 @@ describe('#partialHydration', () => {
     expect(
       (
         await partialHydration.markup({
-          content: '<DatePicker hydrate-client={{ a: "c" }} hydrate-options={{ loading: "lazy" }}/>',
+          content: '<DatePicker hydrate-client={{ a: "c" }} hydrate-options={{ "loading": "lazy" }}/>',
         })
       ).code,
     ).toEqual(
-      `<div class="ejs-component" data-ejs-component="DatePicker" data-ejs-props={JSON.stringify({ a: "c" })} data-ejs-options={JSON.stringify({ loading: "lazy" })} />`,
+      `<div class="ejs-component" data-ejs-component="DatePicker" data-ejs-props={JSON.stringify({ a: "c" })} data-ejs-options={JSON.stringify({"loading":"lazy","element":"div"})} />`,
     );
   });
 
@@ -29,11 +29,11 @@ describe('#partialHydration', () => {
     expect(
       (
         await partialHydration.markup({
-          content: '<DatePicker hydrate-client={{ a: "c" }} hydrate-options={{ timeout: 2000 }}/>',
+          content: '<DatePicker hydrate-client={{ a: "c" }} hydrate-options={{ "timeout": 2000 }}/>',
         })
       ).code,
     ).toEqual(
-      `<div class="ejs-component" data-ejs-component="DatePicker" data-ejs-props={JSON.stringify({ a: "c" })} data-ejs-options={JSON.stringify({ timeout: 2000 })} />`,
+      `<div class="ejs-component" data-ejs-component="DatePicker" data-ejs-props={JSON.stringify({ a: "c" })} data-ejs-options={JSON.stringify({"loading":"lazy","element":"div","timeout":2000})} />`,
     );
   });
 
@@ -41,11 +41,11 @@ describe('#partialHydration', () => {
     expect(
       (
         await partialHydration.markup({
-          content: '<DatePicker hydrate-client={{ a: "b" }} hydrate-options={{ loading: "eager" }} />',
+          content: '<DatePicker hydrate-client={{ a: "b" }} hydrate-options={{ "loading": "eager" }} />',
         })
       ).code,
     ).toEqual(
-      `<div class="ejs-component" data-ejs-component="DatePicker" data-ejs-props={JSON.stringify({ a: "b" })} data-ejs-options={JSON.stringify({ loading: "eager" })} />`,
+      `<div class="ejs-component" data-ejs-component="DatePicker" data-ejs-props={JSON.stringify({ a: "b" })} data-ejs-options={JSON.stringify({"loading":"eager","element":"div"})} />`,
     );
   });
   it('eager, root margin, threshold', async () => {
@@ -53,11 +53,11 @@ describe('#partialHydration', () => {
       (
         await partialHydration.markup({
           content:
-            '<DatePicker hydrate-client={{ a: "b" }} hydrate-options={{ loading: "eager", rootMargin: "500px", threshold: 0 }} />',
+            '<DatePicker hydrate-client={{ a: "b" }} hydrate-options={{ "loading": "eager", "rootMargin": "500px", "threshold": 0 }} />',
         })
       ).code,
     ).toEqual(
-      `<div class="ejs-component" data-ejs-component="DatePicker" data-ejs-props={JSON.stringify({ a: "b" })} data-ejs-options={JSON.stringify({ loading: "eager", rootMargin: "500px", threshold: 0 })} />`,
+      `<div class="ejs-component" data-ejs-component="DatePicker" data-ejs-props={JSON.stringify({ a: "b" })} data-ejs-options={JSON.stringify({"loading":"eager","element":"div","rootMargin":"500px","threshold":0})} />`,
     );
   });
   it('open string', async () => {
@@ -102,11 +102,11 @@ describe('#partialHydration', () => {
     expect(
       (
         await partialHydration.markup({
-          content: `<Clock hydrate-client={{}} hydrate-options={{ loading: 'eager', preload: true }} /><Block hydrate-client={{}} hydrate-options={{ loading: 'lazy' }} /><Alock hydrate-client={{}} hydrate-options={{ loading: 'lazy' }} />`,
+          content: `<Clock hydrate-client={{}} hydrate-options={{ "loading": "eager", "preload": true }} /><Block hydrate-client={{}} hydrate-options={{ "loading": "lazy" }} /><Alock hydrate-client={{}} hydrate-options={{ "loading": "lazy" }} />`,
         })
       ).code,
     ).toEqual(
-      `<div class="ejs-component" data-ejs-component="Clock" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({ loading: 'eager', preload: true })} /><div class="ejs-component" data-ejs-component="Block" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({ loading: 'lazy' })} /><div class="ejs-component" data-ejs-component="Alock" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({ loading: 'lazy' })} />`,
+      `<div class="ejs-component" data-ejs-component="Clock" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({"loading":"eager","element":"div","preload":true})} /><div class="ejs-component" data-ejs-component="Block" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({"loading":"lazy","element":"div"})} /><div class="ejs-component" data-ejs-component="Alock" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({"loading":"lazy","element":"div"})} />`,
     );
   });
 });

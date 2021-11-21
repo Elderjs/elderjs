@@ -8,7 +8,7 @@ test('#escapeHtml', () => {
 });
 
 test('#inlinePreprocessedSvelteComponent', () => {
-  const options = 'loading=lazy';
+  const options = '{"loading":"lazy"}';
   expect(
     inlinePreprocessedSvelteComponent({
       name: 'Home',
@@ -18,10 +18,10 @@ test('#inlinePreprocessedSvelteComponent', () => {
       options,
     }),
   ).toEqual(
-    `<div class="ejs-component" data-ejs-component="Home" data-ejs-props={JSON.stringify([object Object])} data-ejs-options={JSON.stringify(${options})} />`,
+    `<div class="ejs-component" data-ejs-component="Home" data-ejs-props={JSON.stringify([object Object])} data-ejs-options={JSON.stringify({"loading":"lazy","element":"div"})} />`,
   );
   expect(inlinePreprocessedSvelteComponent({})).toEqual(
-    `<div class="ejs-component" data-ejs-component="" data-ejs-props={JSON.stringify([object Object])} data-ejs-options={JSON.stringify({"loading":"lazy"})} />`,
+    `<div class="ejs-component" data-ejs-component="" data-ejs-props={JSON.stringify([object Object])} data-ejs-options={JSON.stringify({"loading":"lazy","element":"div"})} />`,
   );
 });
 
@@ -38,9 +38,9 @@ test('#inlineSvelteComponent', () => {
       options,
     }),
   ).toEqual(
-    `<div class="ejs-component" data-ejs-component="Home" data-ejs-props="{&quot;welcomeText&quot;:&quot;Hello World&quot;}" data-ejs-options="{&quot;loading&quot;:&quot;lazy&quot;}"></div>`,
+    `<div class="ejs-component" data-ejs-component="Home" data-ejs-props="{&quot;welcomeText&quot;:&quot;Hello World&quot;}" data-ejs-options="{&quot;loading&quot;:&quot;lazy&quot;,&quot;element&quot;:&quot;div&quot;}"></div>`,
   );
   expect(inlineSvelteComponent({})).toEqual(
-    `<div class="ejs-component" data-ejs-component="" data-ejs-props="{}" data-ejs-options="{&quot;loading&quot;:&quot;lazy&quot;}"></div>`,
+    `<div class="ejs-component" data-ejs-component="" data-ejs-props="{}" data-ejs-options="{&quot;loading&quot;:&quot;lazy&quot;,&quot;element&quot;:&quot;div&quot;}"></div>`,
   );
 });
