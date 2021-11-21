@@ -14,23 +14,23 @@ export default function mountComponentsInHtml({ page, html, hydrateOptions }): s
   let outputHtml = html;
   // sometimes svelte adds a class to our inlining.
   const matches = outputHtml.matchAll(
-    /<.+? class="ejs-component[^]*?" data-ejs-component="([A-Za-z]+)" data-ejs-props="({[^]*?})" data-ejs-options="({[^]*?})"><\/.+?>/gim,
+    /<(\S+) class="ejs-component[^]*?" data-ejs-component="([A-Za-z]+)" data-ejs-props="({[^]*?})" data-ejs-options="({[^]*?})"><\/\1>/gim,
   );
 
   for (const match of matches) {
-    const hydrateComponentName = match[1];
+    const hydrateComponentName = match[2];
     let hydrateComponentProps;
     let hydrateComponentOptions;
 
     try {
-      hydrateComponentProps = JSON.parse(replaceSpecialCharacters(match[2]));
-    } catch (e) {
-      throw new Error(`Failed to JSON.parse props for ${hydrateComponentName} ${match[2]}`);
-    }
-    try {
-      hydrateComponentOptions = JSON.parse(replaceSpecialCharacters(match[3]));
+      hydrateComponentProps = JSON.parse(replaceSpecialCharacters(match[3]));
     } catch (e) {
       throw new Error(`Failed to JSON.parse props for ${hydrateComponentName} ${match[3]}`);
+    }
+    try {
+      hydrateComponentOptions = JSON.parse(replaceSpecialCharacters(match[4]));
+    } catch (e) {
+      throw new Error(`Failed to JSON.parse props for ${hydrateComponentName} ${match[4]}`);
     }
 
     if (hydrateOptions) {
@@ -52,7 +52,7 @@ export default function mountComponentsInHtml({ page, html, hydrateOptions }): s
       hydrateOptions: hydrateComponentOptions,
     });
 
-    outputHtml = outputHtml.replace(match[0], hydratedHtml);
+    outputHtml = outputHtml.replace(match[1], hydratedHtml);
   }
 
   return outputHtml;
