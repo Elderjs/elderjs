@@ -52,7 +52,7 @@ export default function mountComponentsInHtml({ page, html, hydrateOptions }): s
       hydrateOptions: hydrateComponentOptions,
     });
 
-    outputHtml = outputHtml.replace(match[1], hydratedHtml);
+    outputHtml = outputHtml.replace(match[0], hydratedHtml);
   }
 
   return outputHtml;
