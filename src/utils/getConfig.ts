@@ -70,6 +70,7 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
         config.$$internal.publicCssFile = `_elderjs/assets/${cssFiles[0]}`;
       } else {
         config.$$internal.publicCssFile = `${serverPrefix}/_elderjs/assets/${cssFiles[0]}`;
+      }
     } else {
       console.error(`CSS file not found in ${assetPath}`);
     }
