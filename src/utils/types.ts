@@ -174,6 +174,7 @@ export type HydrateOptions = {
   noPrefetch?: boolean;
   threshold?: number;
   rootMargin?: string;
+  element?: string;
 };
 
 export interface ComponentPayload {
