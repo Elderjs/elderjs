@@ -13,10 +13,10 @@
     "node": ">= 12.0.0"
   },
   "scripts": {
-    "build": "rimraf ./build && tsc",
+    "build": "rimraf ./build && tsc && mkdirp ./build/esm && cp ./src/esm/index.mjs ./build/esm && cp ./src/esm/package.json ./build/esm",
     "dev": "tsc -w",
     "prepare": "npm run build",
-    "test": "jest",
+    "test": "jest && node ./src/esm/__tests__/index.mjs",
     "test:watch": "jest --watch",
     "test:coverage": "jest --collect-coverage",
     "eslint": "eslint --ext .ts .",
