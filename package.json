@@ -1,9 +1,13 @@
 {
   "name": "@elderjs/elderjs",
   "version": "1.6.5",
-  "type": "module",
+  "type": "commonjs",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
+  "exports": {
+    "require": "./build/index.js",
+    "import": "./build/esm/index.js"
+  },
   "engineStrict": true,
   "engines": {
     "node": ">= 12.0.0"
