@@ -258,7 +258,7 @@ async function build(initializationOptions: InitializationOptions = {}): Promise
         throw new Error(`Build did not complete successfully.`);
       }
     } else {
-      process.on('message', async (msg) => {
+      process.on('message', async (msg: any) => {
         if (msg.cmd === 'start') {
           const wElder = new Elder({ ...initializationOptions, context: 'build', worker: true });
 

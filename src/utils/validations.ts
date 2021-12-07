@@ -4,6 +4,7 @@ import type { ShortcodeDef } from '../shortcodes/types';
 import type { RouteOptions } from '../routes/types';
 import type { HookOptions } from '../hooks/types';
 import hookInterface from '../hooks/hookInterface';
+import BaseSchema from 'yup/lib/schema'
 
 /**
  * Important note:
@@ -23,7 +24,7 @@ const shortcodeSchema = yup.object({
     .label(`A sync/async function that returns the html, css, js, and head to be added to the html.`),
 });
 
-const configSchema = yup.object({
+const configSchema:BaseSchema = yup.object({
   origin: yup
     .string()
     .notRequired()
@@ -224,13 +225,13 @@ const pluginSchema = yup.object({
   shortcodes: yup.array().notRequired().default([]).label('Array of shortcodes'),
 });
 
-const hookSchema = yup
+const hookSchema:BaseSchema = yup
   .object({
     hook: yup
       .string()
       .required()
       .test('valid-hook', 'This is not a supported hook.', (value) =>
-        hookInterface.find((supportedHook) => supportedHook.hook === value),
+        !!hookInterface.find((supportedHook) => supportedHook.hook === value),
       )
       .label('The hook the defined "run" function should be executed on.'),
     name: yup.string().required().label('A user friendly name of the function to be run.'),
@@ -272,11 +273,11 @@ const rollupSchema = yup.object({
 });
 
 function getDefaultRollup(): RollupSettings {
-  return rollupSchema.cast();
+  return rollupSchema.cast({});
 }
 
 function getDefaultConfig(): SettingsOptions {
-  return configSchema.cast();
+  return configSchema.cast(undefined);
 }
 
 function validateRoute(route, routeName: string): RouteOptions | false {
@@ -315,7 +316,7 @@ function validateHook(hook): HookOptions | false {
   try {
     hookSchema.validateSync(hook);
     const validated = hookSchema.cast(hook);
-    return validated;
+    return validated as HookOptions;
   } catch (err) {
     if (hook && hook.$$meta && hook.$$meta.type === 'plugin') {
       console.error(
@@ -334,7 +335,7 @@ function validateShortcode(shortcode): ShortcodeDef | false {
   try {
     shortcodeSchema.validateSync(shortcode);
     const validated = shortcodeSchema.cast(shortcode);
-    return validated;
+    return validated as ShortcodeDef;
   } catch (err) {
     if (shortcode && shortcode.$$meta && shortcode.$$meta.type === 'plugin') {
       console.error(
