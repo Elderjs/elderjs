@@ -47,7 +47,7 @@
     "lodash.kebabcase": "^4.1.1",
     "nanoid": "^3.1.30",
     "regexparam": "^2.0.0",
-    "rollup": "^2.60.2",
+    "rollup": "^2.61.0",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-multi-input": "^1.3.1",
     "rollup-plugin-terser": "^7.0.2",
@@ -59,7 +59,7 @@
   "devDependencies": {
     "@types/fs-extra": "^9.0.13",
     "@types/jest": "^27.0.3",
-    "@types/node": "^16.11.11",
+    "@types/node": "^16.11.12",
     "@typescript-eslint/eslint-plugin": "^5.6.0",
     "@typescript-eslint/parser": "^5.6.0",
     "cz-conventional-changelog": "^3.3.0",
@@ -74,9 +74,9 @@
     "mkdirp": "^1.0.4",
     "prettier": "^2.5.1",
     "rimraf": "^3.0.2",
-    "ts-jest": "^27.1.0",
+    "ts-jest": "^27.1.1",
     "ts-node": "^10.4.0",
-    "typescript": "^4.5.2"
+    "typescript": "^4.5.3"
   },
   "description": "Elder.js is an opinionated static site generator and web framework built with SEO in mind.",
   "repository": {
