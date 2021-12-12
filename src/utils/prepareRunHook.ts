@@ -4,7 +4,9 @@ import createReadOnlyProxy from './createReadOnlyProxy';
 // TODO: How do we get types to the user when they are writing plugins, etc?
 function prepareRunHook({ hooks, allSupportedHooks, settings }) {
   return async function processHook(hookName, props: any = {}) {
-    if (props.perf) props.perf.start(`hook.${hookName}`);
+    if (props.perf) {
+      props.perf.start(`hook.${hookName}`);
+    }
 
     // do we have a contract for the hook
     const hookDefinition = allSupportedHooks.find((h) => h.hook === hookName);
@@ -85,7 +87,9 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
         });
       }
 
-      if (settings && settings.debug && settings.debug.hooks) console.log(`${hookName} finished`);
+      if (settings && settings.debug && settings.debug.hooks) {
+        console.log(`${hookName} finished`);
+      }
 
       if (props.perf) props.perf.end(`hook.${hookName}`);
       return hookOutput;
@@ -95,6 +99,7 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
     }
 
     if (props.perf) props.perf.end(`hook.${hookName}`);
+
     return props;
   };
 }

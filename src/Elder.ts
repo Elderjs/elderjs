@@ -36,6 +36,7 @@ import workerBuild from './workerBuild';
 import { inlineSvelteComponent } from './partialHydration/inlineSvelteComponent';
 import elderJsShortcodes from './shortcodes';
 import prepareRouter from './routes/prepareRouter';
+import perf, { IPerf } from './utils/perf';
 
 class Elder {
   bootstrapComplete: Promise<any>;
@@ -70,6 +71,10 @@ class Elder {
 
   shortcodes: ShortcodeDefs;
 
+  perf: IPerf;
+
+  uid: string;
+
   router: (any) => any;
 
   constructor(initializationOptions: InitializationOptions = {}) {
@@ -96,7 +101,11 @@ class Elder {
       this.server = prepareServer({ bootstrapComplete: this.bootstrapComplete });
     }
 
+    this.uid = 'bootstrap';
+    this.perf = perf(this);
+
     // plugins are run first as they have routes, hooks, and shortcodes.
+
     plugins(this).then(async ({ pluginRoutes, pluginHooks, pluginShortcodes }) => {
       /**
        * Finalize Routes
@@ -104,6 +113,8 @@ class Elder {
        * Add in plugin routes
        * Validate them
        */
+
+      this.perf.start(`startup.routes`);
 
       // add meta to routes and collect hooks from routes
       const userRoutesJsFile = routes(this.settings);
@@ -122,6 +133,7 @@ class Elder {
       });
 
       this.routes = validatedRoutes;
+      this.perf.end(`startup.routes`);
 
       /**
        * Finalize hooks
@@ -129,6 +141,7 @@ class Elder {
        * Validate Hooks
        * Filter out hooks that are disabled.
        */
+      this.perf.start(`startup.hooks`);
 
       let hooksJs: Array<HookOptions> = [];
       const hookSrcPath = path.resolve(this.settings.srcDir, './hooks.js');
@@ -169,11 +182,15 @@ class Elder {
         this.hooks = this.hooks.filter((h) => !this.settings.hooks.disable.includes(h.name));
       }
 
+      this.perf.end(`startup.hooks`);
+
       /**
        * Finalize Shortcodes
        * Import User Shortcodes.js
        * Validate Shortcodes
        */
+
+      this.perf.start(`startup.shortcodes`);
 
       let shortcodesJs: ShortcodeDefs = [];
       const shortcodeSrcPath = path.resolve(this.settings.srcDir, './shortcodes.js');
@@ -202,6 +219,8 @@ class Elder {
       this.shortcodes = [...elderJsShortcodes, ...pluginShortcodes, ...shortcodesJs]
         .map((shortcode) => validateShortcode(shortcode))
         .filter(Boolean as any as ExcludesFalse);
+
+      this.perf.end(`startup.shortcodes`);
 
       /**
        *
@@ -234,6 +253,7 @@ class Elder {
       this.runHook('customizeHooks', this).then(async () => {
         // we now have any customizations to the hookInterface.
         // we need to rebuild runHook with these customizations.
+
         this.runHook = prepareRunHook({
           hooks: this.hooks,
           allSupportedHooks: hookInterface,
@@ -244,6 +264,7 @@ class Elder {
 
         // collect all of our requests
         await asyncForEach(Object.keys(this.routes), async (routeName) => {
+          this.perf.start(`startup.${routeName}.all`);
           const route = this.routes[routeName];
           let allRequestsForRoute = [];
           if (typeof route.all === 'function') {
@@ -270,10 +291,12 @@ class Elder {
             return out;
           }, []);
           this.allRequests = this.allRequests.concat(allRequestsForRoute);
+          this.perf.end(`startup.${routeName}.all`);
         });
 
         await this.runHook('allRequests', this);
 
+        this.perf.start(`startup.buildPermalinks`);
         await asyncForEach(this.allRequests, async (request) => {
           if (!this.routes[request.route] || !this.routes[request.route].permalink) {
             if (!request.route) {
@@ -318,8 +341,20 @@ class Elder {
             }
           }
         }
+        this.perf.end(`startup.buildPermalinks`);
 
+        this.perf.start(`startup.prepareRouter`);
         this.router = prepareRouter(this);
+        this.perf.end(`startup.prepareRouter`);
+
+        if (this.settings.debug.performance) {
+          const display = [...this.perf.timings]
+            .sort((a, b) => a.duration - b.duration)
+            .map((t) => ({ ...t, ms: t.duration }));
+
+          console.log('Startup Timing');
+          console.table(display, ['name', 'ms']);
+        }
 
         this.markBootstrapComplete(this);
       });
