@@ -28,21 +28,21 @@ function parseBuildPerf(timings: Array<Timing[]>): any {
         if (!out[root]) out[root] = {};
         if (typeof out[root] === 'number') {
           out[root] = {
-            avg: out[root],
+            total: out[root],
           };
         }
 
         if (!out[root][subkey]) out[root][subkey] = {};
         if (typeof out[root][subkey] === 'number') {
           out[root][subkey] = {
-            avg: out[root][subkey],
+            total: out[root][subkey],
           };
         }
 
         if (!out[root][subkey][detail]) out[root][subkey][detail] = {};
         if (typeof out[root][subkey][detail] === 'number') {
           out[root][subkey][detail] = {
-            avg: out[root][subkey][detail],
+            total: out[root][subkey][detail],
           };
         }
 
@@ -51,14 +51,14 @@ function parseBuildPerf(timings: Array<Timing[]>): any {
         if (!out[root]) out[root] = {};
         if (typeof out[root] === 'number') {
           out[root] = {
-            avg: out[root],
+            total: out[root],
           };
         }
 
         if (!out[root][subkey]) out[root][subkey] = {};
         if (typeof out[root][subkey] === 'number') {
           out[root][subkey] = {
-            avg: out[root][subkey],
+            total: out[root][subkey],
           };
         }
         out[root][subkey][detail] = Math.round((sum / count) * 1000) / 1000;
@@ -66,7 +66,7 @@ function parseBuildPerf(timings: Array<Timing[]>): any {
         if (!out[root]) out[root] = {};
         if (typeof out[root] === 'number') {
           out[root] = {
-            avg: out[root],
+            total: out[root],
           };
         }
         out[root][subkey] = Math.round((sum / count) * 1000) / 1000;

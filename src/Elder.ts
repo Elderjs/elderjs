@@ -9,6 +9,8 @@ import internalHooks from './hooks';
 import build from './build/build';
 import partialHydration from './partialHydration/partialHydration';
 
+import parseBuildPerf from './build/parseBuildPerf';
+
 import {
   prepareRunHook,
   prepareServer,
@@ -248,6 +250,7 @@ class Elder {
         hooks: hooksMinusPlugins,
         allSupportedHooks: hookInterface,
         settings: this.settings,
+        prefix: 'startup',
       });
 
       this.runHook('customizeHooks', this).then(async () => {
@@ -258,13 +261,15 @@ class Elder {
           hooks: this.hooks,
           allSupportedHooks: hookInterface,
           settings: this.settings,
+          prefix: 'startup',
         });
 
         await this.runHook('bootstrap', this);
 
         // collect all of our requests
+        this.perf.start(`startup.allFunction`);
         await asyncForEach(Object.keys(this.routes), async (routeName) => {
-          this.perf.start(`startup.${routeName}.all`);
+          this.perf.start(`startup.allFunction.${routeName}`);
           const route = this.routes[routeName];
           let allRequestsForRoute = [];
           if (typeof route.all === 'function') {
@@ -291,8 +296,9 @@ class Elder {
             return out;
           }, []);
           this.allRequests = this.allRequests.concat(allRequestsForRoute);
-          this.perf.end(`startup.${routeName}.all`);
+          this.perf.end(`startup.allFunction.${routeName}`);
         });
+        this.perf.end(`startup.allFunction`);
 
         await this.runHook('allRequests', this);
 
@@ -348,12 +354,12 @@ class Elder {
         this.perf.end(`startup.prepareRouter`);
 
         if (this.settings.debug.performance) {
-          const display = [...this.perf.timings]
-            .sort((a, b) => a.duration - b.duration)
-            .map((t) => ({ ...t, ms: t.duration }));
-
-          console.log('Startup Timing');
-          console.table(display, ['name', 'ms']);
+          const buildTimings = parseBuildPerf([this.perf.timings]);
+          console.log('===========================');
+          console.log('======= Startup Perf ======');
+          console.log('===========================');
+          console.log(buildTimings.startup);
+          console.log('===========================');
         }
 
         this.markBootstrapComplete(this);

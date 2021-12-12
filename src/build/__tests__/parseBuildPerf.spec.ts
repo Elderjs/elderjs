@@ -12,7 +12,7 @@ test('#parseBuildPerf', async () => {
       ],
     ]),
     // FIXME: rounding error?
-  ).toEqual({ '1': { avg: 100, '1': { '1': { '1': 1 } } } });
+  ).toEqual({ '1': { total: 100, '1': { '1': { '1': 1 } } } });
   expect(
     parseBuildPerf([
       [
@@ -20,7 +20,7 @@ test('#parseBuildPerf', async () => {
         { name: '1.1.1.1', duration: 1 },
       ],
     ]),
-  ).toEqual({ '1': { '1': { avg: 10, '1': { '1': 1 } } } });
+  ).toEqual({ '1': { '1': { total: 10, '1': { '1': 1 } } } });
   expect(parseBuildPerf([[{ name: '1.1.1', duration: 1 }]])).toEqual({ '1': { '1': { '1': 1 } } });
   expect(parseBuildPerf([[{ name: 'foo', duration: -5 }]])).toEqual({ foo: -50 });
   expect(parseBuildPerf([[{ name: 'bar', duration: 0 }], [{ name: 'foo', duration: -5 }]])).toEqual({
@@ -37,7 +37,7 @@ test('#parseBuildPerf', async () => {
     ]),
   ).toEqual({
     foo: { bar: 0 },
-    bar: { foo: -7.5, avg: -150 },
+    bar: { foo: -7.5, total: -150 },
   });
   expect(
     parseBuildPerf([
@@ -50,8 +50,8 @@ test('#parseBuildPerf', async () => {
       // [{ name: 'bar', duration: 55 }],
     ]),
   ).toEqual({
-    foo: { bar: { '1': 15 }, avg: 300 },
-    bar: { foo: { '1': 55 }, avg: 550 },
+    foo: { bar: { '1': 15 }, total: 300 },
+    bar: { foo: { '1': 55 }, total: 550 },
   });
   expect(
     parseBuildPerf([
@@ -120,11 +120,11 @@ test('#parseBuildPerf', async () => {
     ]),
   ).toEqual({
     task: {
-      avg: 57050,
+      total: 57050,
       a: {
-        avg: 7520,
+        total: 7520,
         '1': {
-          avg: 7520,
+          total: 7520,
           '1': 7207,
         },
       },

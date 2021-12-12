@@ -84,7 +84,7 @@ async function plugins(elder: Elder) {
     }
 
     if (typeof plugin.init === 'function' || (plugin.init && typeof plugin.init.then === 'function')) {
-      elder.perf.start(`startup.plugins.${plugin.name}.init`);
+      elder.perf.start(`startup.plugins.${plugin.name}`);
       plugin =
         // eslint-disable-next-line no-await-in-loop
         (await plugin.init({
@@ -92,7 +92,7 @@ async function plugins(elder: Elder) {
           config: defaultsDeep(pluginConfigFromConfig, plugin.config),
           settings: createReadOnlyProxy(elder.settings, 'Settings', 'plugin init()'),
         })) || plugin;
-      elder.perf.end(`startup.plugins.${plugin.name}.init`);
+      elder.perf.end(`startup.plugins.${plugin.name}`);
     }
 
     if (plugin.minimumElderjsVersion) {
