@@ -66,7 +66,7 @@ function parseBuildPerf(timings: Array<Timing[]>): any {
         if (!out[root]) out[root] = {};
         if (typeof out[root] === 'number') {
           out[root] = {
-            total: out[root],
+            // total: out[root],
           };
         }
         out[root][subkey] = Math.round((sum / count) * 1000) / 1000;

@@ -105,6 +105,7 @@ class Elder {
 
     this.uid = 'startup';
     perf(this);
+    this.perf.start('startup');
 
     // plugins are run first as they have routes, hooks, and shortcodes.
 
@@ -353,13 +354,16 @@ class Elder {
         this.router = prepareRouter(this);
         this.perf.end(`startup.prepareRouter`);
 
+        this.perf.end('startup');
+
         if (this.settings.debug.performance) {
           const buildTimings = parseBuildPerf([this.perf.timings]);
-          console.log('===========================');
-          console.log('======= Startup Perf ======');
-          console.log('===========================');
+
+          console.log('=====================================');
+          console.log(`======= Startup Time: ${Math.round(this.perf.timings.slice(-1)[0].duration * 10) / 10}ms`);
+          console.log('=====================================');
           console.log(buildTimings.startup);
-          console.log('===========================');
+          console.log('=====================================');
         }
 
         this.markBootstrapComplete(this);

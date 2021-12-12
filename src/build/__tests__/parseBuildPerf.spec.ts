@@ -37,7 +37,7 @@ test('#parseBuildPerf', async () => {
     ]),
   ).toEqual({
     foo: { bar: 0 },
-    bar: { foo: -7.5, total: -150 },
+    bar: { foo: -7.5 },
   });
   expect(
     parseBuildPerf([
@@ -120,7 +120,6 @@ test('#parseBuildPerf', async () => {
     ]),
   ).toEqual({
     task: {
-      total: 57050,
       a: {
         total: 7520,
         '1': {
