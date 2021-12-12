@@ -101,8 +101,8 @@ class Elder {
       this.server = prepareServer({ bootstrapComplete: this.bootstrapComplete });
     }
 
-    this.uid = 'bootstrap';
-    this.perf = perf(this);
+    this.uid = 'startup';
+    perf(this);
 
     // plugins are run first as they have routes, hooks, and shortcodes.
 

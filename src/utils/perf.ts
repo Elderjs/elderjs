@@ -15,7 +15,7 @@ export interface IPerf {
  * This allows you to pass in a page.perf.start('name') and then page.perf.end('name') and the result is stored in a timings array.
  *
  */
-const perf = (page: Page | Elder): IPerf => {
+const perf = (page: Page | Elder): any => {
   if (page.settings.debug.performance) {
     let obs = new PerformanceObserver((items) => {
       items.getEntries().forEach((entry) => {
@@ -27,7 +27,7 @@ const perf = (page: Page | Elder): IPerf => {
     });
 
     // eslint-disable-next-line no-param-reassign
-    const out = {
+    page.perf = {
       timings: [],
       /**
        * Marks the performance timeline with {label}-start.
@@ -53,19 +53,16 @@ const perf = (page: Page | Elder): IPerf => {
     };
 
     obs.observe({ entryTypes: ['measure'] });
-
-    return out;
+  } else {
+    const placeholder = () => {};
+    // eslint-disable-next-line no-param-reassign
+    page.perf = {
+      timings: [],
+      start: placeholder,
+      end: placeholder,
+      stop: placeholder,
+    };
   }
-  const placeholder = () => {};
-  // eslint-disable-next-line no-param-reassign
-  const out = {
-    timings: [],
-    start: placeholder,
-    end: placeholder,
-    stop: placeholder,
-  };
-
-  return out;
 };
 
 export default perf;

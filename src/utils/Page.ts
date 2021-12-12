@@ -239,7 +239,8 @@ class Page {
     this.uid = getUniqueId();
     this.request = request;
     this.settings = settings;
-    this.perf = perf(this);
+    perf(this);
+
     this.perf.start('page');
     this.perf.start('constructor');
     this.runHook = runHook;

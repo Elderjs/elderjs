@@ -558,6 +558,12 @@ Object {
     },
   ],
   "markBootstrapComplete": [Function],
+  "perf": Object {
+    "end": [Function],
+    "start": [Function],
+    "stop": [Function],
+    "timings": Array [],
+  },
   "query": Object {},
   "router": [Function],
   "routes": Object {
@@ -632,6 +638,7 @@ Object {
       "shortcode": "svelteComponent",
     },
   ],
+  "uid": "startup",
 }
 `;
 
@@ -1210,6 +1217,12 @@ Object {
     },
   ],
   "markBootstrapComplete": [Function],
+  "perf": Object {
+    "end": [Function],
+    "start": [Function],
+    "stop": [Function],
+    "timings": Array [],
+  },
   "query": Object {},
   "router": [Function],
   "routes": Object {
@@ -1291,5 +1304,6 @@ Object {
       "shortcode": "svelteComponent",
     },
   ],
+  "uid": "startup",
 }
 `;

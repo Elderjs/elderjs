@@ -2,6 +2,12 @@
 import Page from '../Page';
 import normalizeSnapshot from '../normalizeSnapshot';
 
+const perf = {
+  start: () => {},
+  end: () => {},
+  timings: [],
+};
+
 jest.mock('../getUniqueId', () => () => 'xxxxxxxxxx');
 jest.mock('../prepareProcessStack', () => (page) => (stackName) => {
   const data = {
