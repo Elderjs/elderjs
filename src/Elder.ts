@@ -362,7 +362,7 @@ class Elder {
           console.log('=====================================');
           console.log(`======= Startup Time: ${Math.round(this.perf.timings.slice(-1)[0].duration * 10) / 10}ms`);
           console.log('=====================================');
-          console.log(buildTimings.startup);
+          console.log(buildTimings);
           console.log('=====================================');
         }
 

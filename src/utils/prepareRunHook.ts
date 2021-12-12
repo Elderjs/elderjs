@@ -2,10 +2,10 @@
 import createReadOnlyProxy from './createReadOnlyProxy';
 
 // TODO: How do we get types to the user when they are writing plugins, etc?
-function prepareRunHook({ hooks, allSupportedHooks, settings, prefix = 'hook' }) {
+function prepareRunHook({ hooks, allSupportedHooks, settings }) {
   return async function processHook(hookName, props: any = {}) {
     if (props.perf) {
-      props.perf.start(`${prefix ? `${prefix}.` : ''}hook.${hookName}`);
+      props.perf.start(`hook.${hookName}`);
     }
 
     // do we have a contract for the hook
@@ -44,7 +44,7 @@ function prepareRunHook({ hooks, allSupportedHooks, settings, prefix = 'hook' })
       // loop through the hooks, updating the output and the props in order
       await hookList.reduce((p, hook) => {
         return p.then(async () => {
-          if (props.perf) props.perf.start(`${prefix ? `${prefix}.` : ''}hook.${hookName}.${hook.name}`);
+          if (props.perf) props.perf.start(`hook.${hookName}.${hook.name}`);
           try {
             let hookResponse = await hook.run(hookProps);
 
@@ -70,7 +70,7 @@ function prepareRunHook({ hooks, allSupportedHooks, settings, prefix = 'hook' })
             props.errors.push(e);
             if (hookName === 'buildComplete') console.error(e);
           }
-          if (props.perf) props.perf.end(`${prefix ? `${prefix}.` : ''}hook.${hookName}.${hook.name}`);
+          if (props.perf) props.perf.end(`hook.${hookName}.${hook.name}`);
         });
       }, Promise.resolve());
 
@@ -91,14 +91,14 @@ function prepareRunHook({ hooks, allSupportedHooks, settings, prefix = 'hook' })
         console.log(`${hookName} finished`);
       }
 
-      if (props.perf) props.perf.end(`${prefix ? `${prefix}.` : ''}hook.${hookName}`);
+      if (props.perf) props.perf.end(`hook.${hookName}`);
       return hookOutput;
     }
     if (settings && settings.debug && settings.debug.hooks) {
       console.log(`${hookName} finished without executing any functions`);
     }
 
-    if (props.perf) props.perf.end(`${prefix ? `${prefix}.` : ''}hook.${hookName}`);
+    if (props.perf) props.perf.end(`hook.${hookName}`);
 
     return props;
   };
