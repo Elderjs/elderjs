@@ -117,7 +117,7 @@ class Elder {
        * Validate them
        */
 
-      this.perf.start(`startup.routes`);
+      this.perf.start(`startup.collectValidateRoutes`);
 
       // add meta to routes and collect hooks from routes
       const userRoutesJsFile = routes(this.settings);
@@ -136,7 +136,7 @@ class Elder {
       });
 
       this.routes = validatedRoutes;
-      this.perf.end(`startup.routes`);
+      this.perf.end(`startup.collectValidateRoutes`);
 
       /**
        * Finalize hooks
@@ -144,7 +144,7 @@ class Elder {
        * Validate Hooks
        * Filter out hooks that are disabled.
        */
-      this.perf.start(`startup.hooks`);
+      this.perf.start(`startup.collectValidateHooks`);
 
       let hooksJs: Array<HookOptions> = [];
       const hookSrcPath = path.resolve(this.settings.srcDir, './hooks.js');
@@ -185,7 +185,7 @@ class Elder {
         this.hooks = this.hooks.filter((h) => !this.settings.hooks.disable.includes(h.name));
       }
 
-      this.perf.end(`startup.hooks`);
+      this.perf.end(`startup.collectValidateHooks`);
 
       /**
        * Finalize Shortcodes
@@ -193,7 +193,7 @@ class Elder {
        * Validate Shortcodes
        */
 
-      this.perf.start(`startup.shortcodes`);
+      this.perf.start(`startup.collectValidateShortcodes`);
 
       let shortcodesJs: ShortcodeDefs = [];
       const shortcodeSrcPath = path.resolve(this.settings.srcDir, './shortcodes.js');
@@ -223,7 +223,7 @@ class Elder {
         .map((shortcode) => validateShortcode(shortcode))
         .filter(Boolean as any as ExcludesFalse);
 
-      this.perf.end(`startup.shortcodes`);
+      this.perf.end(`startup.collectValidateShortcodes`);
 
       /**
        *
@@ -268,9 +268,9 @@ class Elder {
         await this.runHook('bootstrap', this);
 
         // collect all of our requests
-        this.perf.start(`startup.allFunction`);
+        this.perf.start(`startup.allFunctions`);
         await asyncForEach(Object.keys(this.routes), async (routeName) => {
-          this.perf.start(`startup.allFunction.${routeName}`);
+          this.perf.start(`startup.allFunctions.${routeName}`);
           const route = this.routes[routeName];
           let allRequestsForRoute = [];
           if (typeof route.all === 'function') {
@@ -297,13 +297,13 @@ class Elder {
             return out;
           }, []);
           this.allRequests = this.allRequests.concat(allRequestsForRoute);
-          this.perf.end(`startup.allFunction.${routeName}`);
+          this.perf.end(`startup.allFunctions.${routeName}`);
         });
-        this.perf.end(`startup.allFunction`);
+        this.perf.end(`startup.allFunctions`);
 
         await this.runHook('allRequests', this);
 
-        this.perf.start(`startup.buildPermalinks`);
+        this.perf.start(`startup.createValidatePermalinks`);
         await asyncForEach(this.allRequests, async (request) => {
           if (!this.routes[request.route] || !this.routes[request.route].permalink) {
             if (!request.route) {
@@ -348,7 +348,7 @@ class Elder {
             }
           }
         }
-        this.perf.end(`startup.buildPermalinks`);
+        this.perf.end(`startup.createValidatePermalinks`);
 
         this.perf.start(`startup.prepareRouter`);
         this.router = prepareRouter(this);
