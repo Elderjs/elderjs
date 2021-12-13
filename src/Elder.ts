@@ -251,7 +251,6 @@ class Elder {
         hooks: hooksMinusPlugins,
         allSupportedHooks: hookInterface,
         settings: this.settings,
-        prefix: 'startup',
       });
 
       this.runHook('customizeHooks', this).then(async () => {
@@ -262,7 +261,6 @@ class Elder {
           hooks: this.hooks,
           allSupportedHooks: hookInterface,
           settings: this.settings,
-          prefix: 'startup',
         });
 
         await this.runHook('bootstrap', this);
