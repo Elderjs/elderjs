@@ -11,7 +11,7 @@ const hooks: Array<HookOptions> = [
     hook: 'bootstrap',
     name: 'elderAddExternalHelpers',
     description: 'Adds external helpers to helpers object',
-    priority: 1,
+    priority: 50,
     run: async ({ helpers, query, settings }) => {
       let additionalHelpers = {};
       try {
