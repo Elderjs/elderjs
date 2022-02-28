@@ -155,7 +155,7 @@ const svelteHandler = async ({ elderConfig, svelteConfig, replacements, restartH
       },
       format: 'esm',
       target: ['es2020'],
-      platform: 'node',
+      platform: 'browser',
       sourcemap: !production,
       minify: true,
       splitting: true,
