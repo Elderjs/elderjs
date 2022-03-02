@@ -94,4 +94,14 @@ describe('#mountComponentsInHtml', () => {
       '{"name":"Alock","props":{},"hydrateOptions":{"loading":"lazy"}}',
     ]);
   });
+
+  it('Performance test (#235)', () => {
+    const mountComponentsInHtml = require('../mountComponentsInHtml');
+    const comp = '<p><div class="ejs-component" data-ejs-component="Sicker" data-ejs-props="{ &quot;a&quot;: &quot;b&quot; }" data-ejs-options="{ &quot;loading&quot;: &quot;lazy&quot; }"></div></p>\n';
+    mountComponentsInHtml.default({
+      page,
+      html: comp.repeat(1000),
+      hydrateOptions: undefined,
+    });
+  });
 });
