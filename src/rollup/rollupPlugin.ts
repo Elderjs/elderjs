@@ -105,7 +105,15 @@ export function transformFn({
       // look in the cache
 
       const digest = sparkMd5.hash(code + JSON.stringify(compilerOptions));
+
       if (cache.has(digest)) {
+        if (type === 'ssr') {
+          // we should return the cache... but we also must update the css cache for this file or it will be stale.
+          const css = cache.get(`css${digest}`);
+          if (css) {
+            cache.set(`css${id}`, css);
+          }
+        }
         return cache.get(digest);
       }
 
@@ -130,11 +138,16 @@ export function transformFn({
         compiled.js.dependencies.map((d) => this.addWatchFile(d));
       }
       if (type === 'ssr') {
-        cache.set(`css${id}`, {
+        const css = {
           code: compiled.css.code || '',
           map: compiled.css.map || '',
           priority: cssFilePriority(id),
-        });
+        };
+
+        cache.set(`css${id}`, css);
+
+        // create CSS digest so we can grab it again in the future when we see this same digest.
+        cache.set(`css${digest}`, css);
       }
 
       cache.set(digest, { output: compiled.js, warnings: compiled.warnings || [] });
