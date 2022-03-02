@@ -370,11 +370,11 @@ export const devServer = ({
         [
           path.resolve(process.cwd(), './src'),
           path.resolve(process.cwd(), './elder.config.js'),
-          `${elderConfig.$$internal.distElder}/assets`,
-          `${elderConfig.$$internal.distElder}/svelte`,
-          path.join(elderConfig.$$internal.ssrComponents, 'components'),
-          path.join(elderConfig.$$internal.ssrComponents, 'layouts'),
-          path.join(elderConfig.$$internal.ssrComponents, 'routes'),
+          path.join(elderConfig.$$internal.distElder, 'assets', sep),
+          path.join(elderConfig.$$internal.distElder, 'svelte', sep),
+          path.join(elderConfig.$$internal.ssrComponents, 'components', sep),
+          path.join(elderConfig.$$internal.ssrComponents, 'layouts', sep),
+          path.join(elderConfig.$$internal.ssrComponents, 'routes', sep),
         ],
         {
           ignored: '*.svelte',
