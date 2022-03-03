@@ -83,7 +83,7 @@ describe('#svelteComponent', () => {
         render: () => ({
           head: '<head>',
           css: { code: '<old>' },
-          html: '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "lazy", "element": "div" }"></div></div>',
+          html: '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ &quot;a&quot;: &quot;b&quot; }" data-ejs-options="{ &quot;loading&quot;: &quot;lazy&quot;, &quot;element&quot;: &quot;div&quot; }"></div></div>',
         }),
         _css: ['<css>', '<css2>'],
       }),
@@ -125,7 +125,7 @@ describe('#svelteComponent', () => {
         render: () => ({
           head: '<head>',
           css: { code: '<old>' },
-          html: '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "lazy", "element": "div" }"></div></div>',
+          html: '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ &quot;a&quot;: &quot;b&quot; }" data-ejs-options="{ &quot;loading&quot;: &quot;lazy&quot;, &quot;element&quot;: &quot;div&quot; }"></div></div>',
         }),
         _css: ['<css>', '<css2>'],
         _cssMap: ['<cssmap>', '<cssmap2>'],
@@ -204,7 +204,7 @@ describe('#svelteComponent', () => {
         render: () => ({
           head: '<head>',
           css: { code: '<old>' },
-          html: '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "lazy", "element": "div" }"></div></div>',
+          html: '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ &quot;a&quot;: &quot;b&quot; }" data-ejs-options="{ &quot;loading&quot;: &quot;lazy&quot;, &quot;element&quot;: &quot;div&quot; }"></div></div>',
         }),
         _css: ['<css>', '<css2>'],
         _cssMap: ['<cssmap>', '<cssmap2>'],

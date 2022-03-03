@@ -35,7 +35,7 @@ describe('#mountComponentsInHtml', () => {
 
     mountComponentsInHtml.default({
       page,
-      html: `<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "lazy" }"></div></div>`,
+      html: `<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ &quot;a&quot;: &quot;b&quot; }" data-ejs-options="{ &quot;loading&quot;: &quot;lazy&quot; }"></div></div>`,
       hydrateOptions: undefined,
     });
     expect(hydrated).toEqual(['{"name":"Datepicker","props":{"a":"b"},"hydrateOptions":{"loading":"lazy"}}']);
@@ -48,7 +48,7 @@ describe('#mountComponentsInHtml', () => {
 
     mountComponentsInHtml.default({
       page,
-      html: `<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Picker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "lazy" }"></div><div class="ejs-component" data-ejs-component="Picker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "eager" }"></div></div>`,
+      html: `<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Picker" data-ejs-props="{ &quot;a&quot;: &quot;b&quot; }" data-ejs-options="{ &quot;loading&quot;: &quot;lazy&quot; }"></div><div class="ejs-component" data-ejs-component="Picker" data-ejs-props="{ &quot;a&quot;: &quot;b&quot; }" data-ejs-options="{ &quot;loading&quot;: &quot;eager&quot; }"></div></div>`,
       hydrateOptions: undefined,
     });
     expect(hydrated).toEqual([
@@ -64,7 +64,7 @@ describe('#mountComponentsInHtml', () => {
 
     mountComponentsInHtml.default({
       page,
-      html: `<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Sicker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "lazy" }"></div><div class="ejs-component" data-ejs-component="Picker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "eager" }"></div><div class="ejs-component" data-ejs-component="Ricker" data-ejs-props="{ "a": "b" }" data-ejs-options="{ "loading": "lazy" }"></div>`,
+      html: `<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Sicker" data-ejs-props="{ &quot;a&quot;: &quot;b&quot; }" data-ejs-options="{ &quot;loading&quot;: &quot;lazy&quot; }"></div><div class="ejs-component" data-ejs-component="Picker" data-ejs-props="{ &quot;a&quot;: &quot;b&quot; }" data-ejs-options="{ &quot;loading&quot;: &quot;eager&quot; }"></div><div class="ejs-component" data-ejs-component="Ricker" data-ejs-props="{ &quot;a&quot;: &quot;b&quot; }" data-ejs-options="{ &quot;loading&quot;: &quot;lazy&quot; }"></div>`,
       hydrateOptions: undefined,
     });
     expect(hydrated).toEqual([
@@ -93,5 +93,15 @@ describe('#mountComponentsInHtml', () => {
       '{"name":"Block","props":{},"hydrateOptions":{"loading":"lazy"}}',
       '{"name":"Alock","props":{},"hydrateOptions":{"loading":"lazy"}}',
     ]);
+  });
+
+  it('Performance test (#235)', () => {
+    const mountComponentsInHtml = require('../mountComponentsInHtml');
+    const comp = '<p><div class="ejs-component" data-ejs-component="Sicker" data-ejs-props="{ &quot;a&quot;: &quot;b&quot; }" data-ejs-options="{ &quot;loading&quot;: &quot;lazy&quot; }"></div></p>\n';
+    mountComponentsInHtml.default({
+      page,
+      html: comp.repeat(1000),
+      hydrateOptions: undefined,
+    });
   });
 });
