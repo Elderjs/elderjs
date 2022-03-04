@@ -9,7 +9,7 @@ describe('#partialHydration', () => {
         })
       ).code,
     ).toMatchInlineSnapshot(
-      `"{#if ({}).loading === 'none'}<DatePicker {...({ a: \\"b\\" })}  />{#else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({ a: \\"b\\" })} data-ejs-options={JSON.stringify({})}><DatePicker  /></div>{/if}"`,
+      `"{#if ({}).loading === 'none'}<DatePicker {...({ a: \\"b\\" })}  />{:else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({ a: \\"b\\" })} data-ejs-options={JSON.stringify({})} ><DatePicker {...({ a: \\"b\\" })} /></div>{/if}"`,
     );
   });
 
@@ -21,7 +21,7 @@ describe('#partialHydration', () => {
         })
       ).code,
     ).toMatchInlineSnapshot(
-      `"{#if ({ \\"loading\\": \\"lazy\\" }).loading === 'none'}<DatePicker {...({ a: \\"c\\" })}  />{#else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({ a: \\"c\\" })} data-ejs-options={JSON.stringify({ \\"loading\\": \\"lazy\\" })}><DatePicker  /></div>{/if}"`,
+      `"{#if ({ \\"loading\\": \\"lazy\\" }).loading === 'none'}<DatePicker {...({ a: \\"c\\" })}  />{:else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({ a: \\"c\\" })} data-ejs-options={JSON.stringify({ \\"loading\\": \\"lazy\\" })} ><DatePicker {...({ a: \\"c\\" })} /></div>{/if}"`,
     );
   });
 
@@ -33,7 +33,7 @@ describe('#partialHydration', () => {
         })
       ).code,
     ).toMatchInlineSnapshot(
-      `"{#if ({ \\"timeout\\": 2000 }).loading === 'none'}<DatePicker {...({ a: \\"c\\" })}  />{#else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({ a: \\"c\\" })} data-ejs-options={JSON.stringify({ \\"timeout\\": 2000 })}><DatePicker  /></div>{/if}"`,
+      `"{#if ({ \\"timeout\\": 2000 }).loading === 'none'}<DatePicker {...({ a: \\"c\\" })}  />{:else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({ a: \\"c\\" })} data-ejs-options={JSON.stringify({ \\"timeout\\": 2000 })} ><DatePicker {...({ a: \\"c\\" })} /></div>{/if}"`,
     );
   });
 
@@ -45,7 +45,7 @@ describe('#partialHydration', () => {
         })
       ).code,
     ).toMatchInlineSnapshot(
-      `"{#if ({ \\"loading\\": \\"eager\\" }).loading === 'none'}<DatePicker {...({ a: \\"b\\" })}  />{#else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({ a: \\"b\\" })} data-ejs-options={JSON.stringify({ \\"loading\\": \\"eager\\" })}><DatePicker  /></div>{/if}"`,
+      `"{#if ({ \\"loading\\": \\"eager\\" }).loading === 'none'}<DatePicker {...({ a: \\"b\\" })}  />{:else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({ a: \\"b\\" })} data-ejs-options={JSON.stringify({ \\"loading\\": \\"eager\\" })} ><DatePicker {...({ a: \\"b\\" })} /></div>{/if}"`,
     );
   });
   it('eager, root margin, threshold', async () => {
@@ -57,7 +57,7 @@ describe('#partialHydration', () => {
         })
       ).code,
     ).toMatchInlineSnapshot(
-      `"{#if ({ \\"loading\\": \\"eager\\", \\"rootMargin\\": \\"500px\\", \\"threshold\\": 0 }).loading === 'none'}<DatePicker {...({ a: \\"b\\" })}  />{#else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({ a: \\"b\\" })} data-ejs-options={JSON.stringify({ \\"loading\\": \\"eager\\", \\"rootMargin\\": \\"500px\\", \\"threshold\\": 0 })}><DatePicker  /></div>{/if}"`,
+      `"{#if ({ \\"loading\\": \\"eager\\", \\"rootMargin\\": \\"500px\\", \\"threshold\\": 0 }).loading === 'none'}<DatePicker {...({ a: \\"b\\" })}  />{:else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({ a: \\"b\\" })} data-ejs-options={JSON.stringify({ \\"loading\\": \\"eager\\", \\"rootMargin\\": \\"500px\\", \\"threshold\\": 0 })} ><DatePicker {...({ a: \\"b\\" })} /></div>{/if}"`,
     );
   });
   it('open string', async () => {
@@ -104,7 +104,7 @@ describe('#partialHydration', () => {
         })
       ).code,
     ).toMatchInlineSnapshot(
-      `"{#if ({ \\"loading\\": \\"eager\\", \\"preload\\": true }).loading === 'none'}<Clock {...({})}  />{#else}<div class=\\"ejs-component\\" data-ejs-component=\\"Clock\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({ \\"loading\\": \\"eager\\", \\"preload\\": true })}><Clock  /></div>{/if}{#if ({ \\"loading\\": \\"lazy\\" }).loading === 'none'}<Block {...({})}  />{#else}<div class=\\"ejs-component\\" data-ejs-component=\\"Block\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({ \\"loading\\": \\"lazy\\" })}><Block  /></div>{/if}{#if ({ \\"loading\\": \\"lazy\\" }).loading === 'none'}<Alock {...({})}  />{#else}<div class=\\"ejs-component\\" data-ejs-component=\\"Alock\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({ \\"loading\\": \\"lazy\\" })}><Alock  /></div>{/if}"`,
+      `"{#if ({ \\"loading\\": \\"eager\\", \\"preload\\": true }).loading === 'none'}<Clock {...({})}  />{:else}<div class=\\"ejs-component\\" data-ejs-component=\\"Clock\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({ \\"loading\\": \\"eager\\", \\"preload\\": true })} ><Clock {...({})} /></div>{/if}{#if ({ \\"loading\\": \\"lazy\\" }).loading === 'none'}<Block {...({})}  />{:else}<div class=\\"ejs-component\\" data-ejs-component=\\"Block\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({ \\"loading\\": \\"lazy\\" })} ><Block {...({})} /></div>{/if}{#if ({ \\"loading\\": \\"lazy\\" }).loading === 'none'}<Alock {...({})}  />{:else}<div class=\\"ejs-component\\" data-ejs-component=\\"Alock\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({ \\"loading\\": \\"lazy\\" })} ><Alock {...({})} /></div>{/if}"`,
     );
   });
 
@@ -116,7 +116,7 @@ describe('#partialHydration', () => {
         })
       ).code,
     ).toMatchInlineSnapshot(
-      `"{#if (foo).loading === 'none'}<DatePicker {...({})}  />{#else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify(foo)}><DatePicker  /></div>{/if}"`,
+      `"{#if (foo).loading === 'none'}<DatePicker {...({})}  />{:else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify(foo)} ><DatePicker {...({})} /></div>{/if}"`,
     );
   });
 
@@ -128,7 +128,7 @@ describe('#partialHydration', () => {
         })
       ).code,
     ).toMatchInlineSnapshot(
-      `"{#if ({}).loading === 'none'}<DatePicker {...({})}    foo={bar}/>{#else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({})}><DatePicker    foo={bar}/></div>{/if}"`,
+      `"{#if ({}).loading === 'none'}<DatePicker {...({})}    foo={bar}/>{:else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({})} ><DatePicker {...({})}   foo={bar}/></div>{/if}"`,
     );
   });
 
@@ -152,7 +152,7 @@ describe('#partialHydration', () => {
         })
       ).code,
     ).toMatchInlineSnapshot(
-      `"{#if ({}).loading === 'none'}<DatePicker {...({})}   {foo}/>{#else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({})}><DatePicker   {foo}/></div>{/if}"`,
+      `"{#if ({}).loading === 'none'}<DatePicker {...({})}   {foo}/>{:else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({})} ><DatePicker {...({})}  {foo}/></div>{/if}"`,
     );
   });
 
@@ -164,7 +164,7 @@ describe('#partialHydration', () => {
         })
       ).code,
     ).toMatchInlineSnapshot(
-      `"{#if ({}).loading === 'none'}<DatePicker {...({})}   {...foo}/>{#else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({})}><DatePicker   {...foo}/></div>{/if}"`,
+      `"{#if ({}).loading === 'none'}<DatePicker {...({})}   {...foo}/>{:else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({})} ><DatePicker {...({})}  {...foo}/></div>{/if}"`,
     );
   });
 
@@ -176,7 +176,7 @@ describe('#partialHydration', () => {
         })
       ).code,
     ).toMatchInlineSnapshot(
-      `"{#if ({}).loading === 'none'}<DatePicker {...({})}  style:--foo=\\"bar\\" />{#else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({})}><DatePicker   --foo=\\"bar\\" /></div>{/if}"`,
+      `"{#if ({}).loading === 'none'}<DatePicker {...({})}   --foo=\\"bar\\" />{:else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({})}  style:--foo=\\"bar\\"><DatePicker {...({})} /></div>{/if}"`,
     );
   });
 
@@ -188,7 +188,7 @@ describe('#partialHydration', () => {
         })
       ).code,
     ).toMatchInlineSnapshot(
-      `"{#if ({}).loading === 'none'}<DatePicker {...({})}  style:--foo={bar} />{#else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({})}><DatePicker   --foo={bar} /></div>{/if}"`,
+      `"{#if ({}).loading === 'none'}<DatePicker {...({})}   --foo={bar} />{:else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({})}  style:--foo={bar}><DatePicker {...({})} /></div>{/if}"`,
     );
   });
 });

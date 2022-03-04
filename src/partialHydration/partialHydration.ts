@@ -33,10 +33,12 @@ const createReplacementString = (content, tag) => {
     }
   }
   
-  return `{#if (${options}).loading === 'none'}<${tag.name} {...(${clientProps})} ${styleProps} ${serverProps}/>` +
-    `{#else}<div class="ejs-component" data-ejs-component="${tag.name}" ` + 
-    `data-ejs-props={JSON.stringify(${clientProps})} data-ejs-options={JSON.stringify(${options})}>` +
-    `<${tag.name} ${stylePropsRaw} ${serverProps}/></div>{/if}`
+  return `{#if (${options}).loading === 'none'}<${tag.name} {...(${clientProps})} ${stylePropsRaw} ${serverProps}/>` +
+    `{:else}<div class="ejs-component" data-ejs-component="${tag.name}" ` + 
+    `data-ejs-props={JSON.stringify(${clientProps})} ` +
+    `data-ejs-options={JSON.stringify(${options})} ` +
+    `${styleProps}>` +
+    `<${tag.name} {...(${clientProps})} ${serverProps}/></div>{/if}`
 };
 
 export const preprocessSvelteContent = (content) => {
