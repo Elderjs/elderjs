@@ -11,14 +11,19 @@ export const getComponentName = (str) => {
   return out;
 };
 
+interface svelteComponentCompileOptions extends ComponentPayload {
+  openTagOnly?: boolean;
+  otherAttributes?: string;
+}
+
 const svelteComponent =
   (componentName: String, folder: String = 'components') =>
-  ({ page, props, hydrateOptions, openTagOnly = false, otherAttributes = '' }: ComponentPayload): string => {
+  ({ page, props, hydrateOptions, openTagOnly = false, otherAttributes = '' }: svelteComponentCompileOptions): string => {
     const { ssr, client } = page.settings.$$internal.findComponent(componentName, folder);
 
     const cleanComponentName = getComponentName(componentName);
 
-    const generateWrapper = (innerHtml) => {
+    const generateWrapper = (innerHtml = '') => {
       const id = getUniqueId();
       const lowerCaseComponent = componentName.toLowerCase();
       const uniqueComponentName = `${lowerCaseComponent}${id}`;
