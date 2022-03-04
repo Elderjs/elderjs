@@ -5,7 +5,7 @@ export default function mountComponentsInHtml({ page, html, hydrateOptions }): s
   let outputHtml = html;
   // sometimes svelte adds a class to our inlining.
   const matches = outputHtml.matchAll(
-    /<([^<>\s]+) class="ejs-component[^"]*?" data-ejs-component="([A-Za-z]+)" data-ejs-props="({[^"]*?})" data-ejs-options="({[^"]*?})"([^>]*)>(<\/\1>)?/gim,
+    /<([^<>\s]+) class="ejs-component[^"]*?" data-ejs-component="([A-Za-z]+)" data-ejs-props="([^"]*)" data-ejs-options="([^"]*)"([^>]*)>(<\/\1>)?/gim,
   );
 
   for (const match of matches) {
