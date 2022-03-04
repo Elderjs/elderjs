@@ -7,7 +7,7 @@ type Node = {
 
 type TagNode = Node & {
   name: string;
-  attrs: Array<AttrNode>;
+  attrs: Array<AttrNode|ExpressionNode>;
   selfClosed: boolean;
   start: number;
   end: number;
@@ -20,8 +20,12 @@ type AttrNode = Node & {
 
 type AttrValueNode = Node & {
   value?: string;
-  exp?: any;
   raw?: string;
+}
+
+type ExpressionNode = Node & {
+  exp: any;
+  spread: boolean;
 }
 
 export function escapeHtml(text: string): string {
@@ -43,7 +47,23 @@ export const unescapeHtml = (str) =>
     .replace(/\\"/gim, '"')
     .replace(/&amp;/gim, '&');
 
-export function parseAttrValue(content: string, index: number): AttrValueNode {
+export function parseExpression(content: string, index: number): ExpressionNode {
+  const rx = /{\s*(\.\.\.)?/y;
+  rx.lastIndex = index;
+  const [prefix,, hasSpread] = rx.exec(content);
+  const exp = parseExpressionAt(content, index + prefix.length);
+  const rxEnd = /\s*}/y;
+  rxEnd.lastIndex = exp.end;
+  rxEnd.exec(content);
+  return {
+    start: index,
+    end: rxEnd.lastIndex,
+    exp,
+    spread: Boolean(hasSpread)
+  };
+}
+
+export function parseAttrValue(content: string, index: number): AttrValueNode | ExpressionNode {
   let raw;
   let rx;
   if (content[index] === "'") {
@@ -55,15 +75,7 @@ export function parseAttrValue(content: string, index: number): AttrValueNode {
     rx.lastIndex = index;
     raw = content.match(rx)[1];
   } else if (content[index] === "{") {
-    const node = parseExpressionAt(content, index + 1);
-    const rxEnd = /\s*}/y;
-    rxEnd.lastIndex = node.end;
-    content.match(rxEnd);
-    return {
-      start: index,
-      end: rxEnd.lastIndex,
-      exp: node
-    };
+    return parseExpression(content, index);
   } else {
     rx = /[^\s"'=<>\/\x7f-\x9f]+/y;
     rx.lastIndex = index;
@@ -98,13 +110,20 @@ export function parseTag(content: string, index: number): TagNode {
   };
 }
 
-export function parseAttrs(content: string, index: number): Array<AttrNode> {
-  const rx = /\s+([\w-:]+)(\s*=\s*)?/y;
+export function parseAttrs(content: string, index: number): Array<AttrNode|ExpressionNode> {
+  const rx = /(\s+)(?:([\w-:]+)(\s*=\s*)?|{)/y;
   rx.lastIndex = index;
   const result = [];
   let match;
   while ((match = rx.exec(content))) {
-    const [, name, hasValue] = match;
+    const [, prefix, name, hasValue] = match;
+    if (!name) {
+      // expression
+      const node = parseExpression(content, match.index + prefix.length);
+      result.push(node);
+      rx.lastIndex = node.end;
+      continue;
+    }
     const value = hasValue ? parseAttrValue(content, rx.lastIndex) : null;
     result.push({
       start: match.index,

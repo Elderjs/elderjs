@@ -70,6 +70,7 @@ Object {
           "start": 41,
           "type": "Identifier",
         },
+        "spread": false,
         "start": 40,
       },
     },

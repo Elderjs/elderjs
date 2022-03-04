@@ -8,8 +8,8 @@ describe('#partialHydration', () => {
           content: '<DatePicker hydrate-client={{ a: "b" }} />',
         })
       ).code,
-    ).toEqual(
-      `<div class="ejs-component" data-ejs-component="DatePicker" data-ejs-props={JSON.stringify({ a: "b" })} data-ejs-options={JSON.stringify({"loading":"lazy","element":"div"})} />`,
+    ).toMatchInlineSnapshot(
+      `"{#if ({}).loading === 'none'}<DatePicker {...({ a: \\"b\\" })}  />{#else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({ a: \\"b\\" })} data-ejs-options={JSON.stringify({})}><DatePicker  /></div>{/if}"`,
     );
   });
 
@@ -20,8 +20,8 @@ describe('#partialHydration', () => {
           content: '<DatePicker hydrate-client={{ a: "c" }} hydrate-options={{ "loading": "lazy" }}/>',
         })
       ).code,
-    ).toEqual(
-      `<div class="ejs-component" data-ejs-component="DatePicker" data-ejs-props={JSON.stringify({ a: "c" })} data-ejs-options={JSON.stringify({"loading":"lazy","element":"div"})} />`,
+    ).toMatchInlineSnapshot(
+      `"{#if ({ \\"loading\\": \\"lazy\\" }).loading === 'none'}<DatePicker {...({ a: \\"c\\" })}  />{#else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({ a: \\"c\\" })} data-ejs-options={JSON.stringify({ \\"loading\\": \\"lazy\\" })}><DatePicker  /></div>{/if}"`,
     );
   });
 
@@ -32,8 +32,8 @@ describe('#partialHydration', () => {
           content: '<DatePicker hydrate-client={{ a: "c" }} hydrate-options={{ "timeout": 2000 }}/>',
         })
       ).code,
-    ).toEqual(
-      `<div class="ejs-component" data-ejs-component="DatePicker" data-ejs-props={JSON.stringify({ a: "c" })} data-ejs-options={JSON.stringify({"loading":"lazy","element":"div","timeout":2000})} />`,
+    ).toMatchInlineSnapshot(
+      `"{#if ({ \\"timeout\\": 2000 }).loading === 'none'}<DatePicker {...({ a: \\"c\\" })}  />{#else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({ a: \\"c\\" })} data-ejs-options={JSON.stringify({ \\"timeout\\": 2000 })}><DatePicker  /></div>{/if}"`,
     );
   });
 
@@ -44,8 +44,8 @@ describe('#partialHydration', () => {
           content: '<DatePicker hydrate-client={{ a: "b" }} hydrate-options={{ "loading": "eager" }} />',
         })
       ).code,
-    ).toEqual(
-      `<div class="ejs-component" data-ejs-component="DatePicker" data-ejs-props={JSON.stringify({ a: "b" })} data-ejs-options={JSON.stringify({"loading":"eager","element":"div"})} />`,
+    ).toMatchInlineSnapshot(
+      `"{#if ({ \\"loading\\": \\"eager\\" }).loading === 'none'}<DatePicker {...({ a: \\"b\\" })}  />{#else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({ a: \\"b\\" })} data-ejs-options={JSON.stringify({ \\"loading\\": \\"eager\\" })}><DatePicker  /></div>{/if}"`,
     );
   });
   it('eager, root margin, threshold', async () => {
@@ -56,18 +56,16 @@ describe('#partialHydration', () => {
             '<DatePicker hydrate-client={{ a: "b" }} hydrate-options={{ "loading": "eager", "rootMargin": "500px", "threshold": 0 }} />',
         })
       ).code,
-    ).toEqual(
-      `<div class="ejs-component" data-ejs-component="DatePicker" data-ejs-props={JSON.stringify({ a: "b" })} data-ejs-options={JSON.stringify({"loading":"eager","element":"div","rootMargin":"500px","threshold":0})} />`,
+    ).toMatchInlineSnapshot(
+      `"{#if ({ \\"loading\\": \\"eager\\", \\"rootMargin\\": \\"500px\\", \\"threshold\\": 0 }).loading === 'none'}<DatePicker {...({ a: \\"b\\" })}  />{#else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({ a: \\"b\\" })} data-ejs-options={JSON.stringify({ \\"loading\\": \\"eager\\", \\"rootMargin\\": \\"500px\\", \\"threshold\\": 0 })}><DatePicker  /></div>{/if}"`,
     );
   });
   it('open string', async () => {
-    expect(
-      (
-        await partialHydration.markup({
-          content: '<DatePicker hydrate-client="string />',
-        })
-      ).code,
-    ).toEqual(`<DatePicker hydrate-client="string />`);
+    await expect(async () => {
+      await partialHydration.markup({
+        content: '<DatePicker hydrate-client="string />',
+      });
+    }).rejects.toThrow();
   });
   it('text within component', async () => {
     await expect(async () => {
@@ -105,8 +103,92 @@ describe('#partialHydration', () => {
           content: `<Clock hydrate-client={{}} hydrate-options={{ "loading": "eager", "preload": true }} /><Block hydrate-client={{}} hydrate-options={{ "loading": "lazy" }} /><Alock hydrate-client={{}} hydrate-options={{ "loading": "lazy" }} />`,
         })
       ).code,
-    ).toEqual(
-      `<div class="ejs-component" data-ejs-component="Clock" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({"loading":"eager","element":"div","preload":true})} /><div class="ejs-component" data-ejs-component="Block" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({"loading":"lazy","element":"div"})} /><div class="ejs-component" data-ejs-component="Alock" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({"loading":"lazy","element":"div"})} />`,
+    ).toMatchInlineSnapshot(
+      `"{#if ({ \\"loading\\": \\"eager\\", \\"preload\\": true }).loading === 'none'}<Clock {...({})}  />{#else}<div class=\\"ejs-component\\" data-ejs-component=\\"Clock\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({ \\"loading\\": \\"eager\\", \\"preload\\": true })}><Clock  /></div>{/if}{#if ({ \\"loading\\": \\"lazy\\" }).loading === 'none'}<Block {...({})}  />{#else}<div class=\\"ejs-component\\" data-ejs-component=\\"Block\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({ \\"loading\\": \\"lazy\\" })}><Block  /></div>{/if}{#if ({ \\"loading\\": \\"lazy\\" }).loading === 'none'}<Alock {...({})}  />{#else}<div class=\\"ejs-component\\" data-ejs-component=\\"Alock\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({ \\"loading\\": \\"lazy\\" })}><Alock  /></div>{/if}"`,
+    );
+  });
+
+  it('options as identifier', async () => {
+    expect(
+      (
+        await partialHydration.markup({
+          content: '<DatePicker hydrate-client hydrate-options={foo} />',
+        })
+      ).code,
+    ).toMatchInlineSnapshot(
+      `"{#if (foo).loading === 'none'}<DatePicker {...({})}  />{#else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify(foo)}><DatePicker  /></div>{/if}"`,
+    );
+  });
+
+  it('ssr props', async () => {
+    expect(
+      (
+        await partialHydration.markup({
+          content: '<DatePicker hydrate-client foo={bar} />',
+        })
+      ).code,
+    ).toMatchInlineSnapshot(
+      `"{#if ({}).loading === 'none'}<DatePicker {...({})}    foo={bar}/>{#else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({})}><DatePicker    foo={bar}/></div>{/if}"`,
+    );
+  });
+
+  it.skip('ssr props expression in string', async () => {
+    expect(
+      (
+        await partialHydration.markup({
+          content: '<DatePicker hydrate-client foo="123/{"bar"}/456" />',
+        })
+      ).code,
+    ).toMatchInlineSnapshot(
+      `"{#if ({}).loading === 'none'}<DatePicker {...({})}    foo={bar}/>{#else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({})}><DatePicker    foo={bar}/></div>{/if}"`,
+    );
+  });
+
+  it('ssr props no name', async () => {
+    expect(
+      (
+        await partialHydration.markup({
+          content: '<DatePicker hydrate-client {foo} />',
+        })
+      ).code,
+    ).toMatchInlineSnapshot(
+      `"{#if ({}).loading === 'none'}<DatePicker {...({})}   {foo}/>{#else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({})}><DatePicker   {foo}/></div>{/if}"`,
+    );
+  });
+
+  it('ssr props spread', async () => {
+    expect(
+      (
+        await partialHydration.markup({
+          content: '<DatePicker hydrate-client {...foo} />',
+        })
+      ).code,
+    ).toMatchInlineSnapshot(
+      `"{#if ({}).loading === 'none'}<DatePicker {...({})}   {...foo}/>{#else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({})}><DatePicker   {...foo}/></div>{/if}"`,
+    );
+  });
+
+  it('style props', async () => {
+    expect(
+      (
+        await partialHydration.markup({
+          content: '<DatePicker hydrate-client --foo="bar" />',
+        })
+      ).code,
+    ).toMatchInlineSnapshot(
+      `"{#if ({}).loading === 'none'}<DatePicker {...({})}  style:--foo=\\"bar\\" />{#else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({})}><DatePicker   --foo=\\"bar\\" /></div>{/if}"`,
+    );
+  });
+
+  it('style props with expression', async () => {
+    expect(
+      (
+        await partialHydration.markup({
+          content: '<DatePicker hydrate-client --foo={bar} />',
+        })
+      ).code,
+    ).toMatchInlineSnapshot(
+      `"{#if ({}).loading === 'none'}<DatePicker {...({})}  style:--foo={bar} />{#else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({})}><DatePicker   --foo={bar} /></div>{/if}"`,
     );
   });
 });
