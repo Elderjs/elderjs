@@ -1,18 +1,10 @@
 import { HydrateOptions } from '../utils/types';
+import { escapeHtml } from '../utils/htmlParser';
 
 const defaultHydrationOptions: HydrateOptions = {
   loading: 'lazy',
   element: 'div',
 };
-
-export function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
 
 type InputParamsInlinePreprocessedSvelteComponent = {
   name?: string;

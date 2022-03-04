@@ -18,16 +18,6 @@ describe('#mountComponentsInHtml', () => {
   jest.mock('../../utils/svelteComponent.ts', () => mockHydrate);
   beforeAll(() => {});
 
-  it('#replaceSpecialCharacters', () => {
-    // eslint-disable-next-line global-require
-    const { replaceSpecialCharacters } = require('../mountComponentsInHtml');
-    expect(replaceSpecialCharacters('{&quot;nh_count&quot;:15966,&quot;classes&quot;:&quot;mt-3&quot;}')).toEqual(
-      '{"nh_count":15966,"classes":"mt-3"}',
-    );
-    expect(replaceSpecialCharacters('&quot;&lt;&gt;&#39;&quot;\\n\\\\n\\"&amp;')).toEqual('"<>\'"\\n\\n"&');
-    expect(replaceSpecialCharacters('abcd 1234 <&""&>')).toEqual('abcd 1234 <&""&>');
-  });
-
   it('mounts a single component in HTML correctly', () => {
     hydrated = [];
     // eslint-disable-next-line global-require

@@ -1,11 +1,4 @@
-import { inlinePreprocessedSvelteComponent, escapeHtml, inlineSvelteComponent } from '../inlineSvelteComponent';
-
-test('#escapeHtml', () => {
-  expect(escapeHtml('')).toEqual('');
-  expect(escapeHtml(`<html>'Tom'&amp;"Jerry"</html>`)).toEqual(
-    '&lt;html&gt;&#039;Tom&#039;&amp;amp;&quot;Jerry&quot;&lt;/html&gt;',
-  );
-});
+import { inlinePreprocessedSvelteComponent, inlineSvelteComponent } from '../inlineSvelteComponent';
 
 test('#inlinePreprocessedSvelteComponent', () => {
   const options = '{"loading":"lazy"}';

@@ -1,0 +1,82 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`#parseTag basic self closed tag 1`] = `
+Object {
+  "attrs": Array [
+    Object {
+      "end": 16,
+      "name": "class",
+      "start": 4,
+      "value": Object {
+        "end": 16,
+        "raw": "foo",
+        "start": 11,
+        "value": "foo",
+      },
+    },
+  ],
+  "end": 18,
+  "name": "div",
+  "selfClosed": true,
+  "start": 0,
+}
+`;
+
+exports[`#parseTag basic tag 1`] = `
+Object {
+  "attrs": Array [
+    Object {
+      "end": 16,
+      "name": "class",
+      "start": 4,
+      "value": Object {
+        "end": 16,
+        "raw": "foo",
+        "start": 11,
+        "value": "foo",
+      },
+    },
+  ],
+  "end": 17,
+  "name": "div",
+  "selfClosed": false,
+  "start": 0,
+}
+`;
+
+exports[`#parseTag svelte value 1`] = `
+Object {
+  "attrs": Array [
+    Object {
+      "end": 24,
+      "name": "class",
+      "start": 12,
+      "value": Object {
+        "end": 24,
+        "raw": "foo",
+        "start": 19,
+        "value": "foo",
+      },
+    },
+    Object {
+      "end": 47,
+      "name": "hydrate-client",
+      "start": 24,
+      "value": Object {
+        "end": 47,
+        "exp": Node {
+          "end": 46,
+          "name": "props",
+          "start": 41,
+          "type": "Identifier",
+        },
+        "start": 40,
+      },
+    },
+  ],
+  "end": 48,
+  "name": "MyComponent",
+  "selfClosed": false,
+  "start": 0,
+}
+`;

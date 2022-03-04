@@ -1,14 +1,5 @@
 import svelteComponent from '../utils/svelteComponent';
-
-export const replaceSpecialCharacters = (str) =>
-  str
-    .replace(/\\\\n/gim, '\\n')
-    .replace(/&quot;/gim, '"')
-    .replace(/&lt;/gim, '<')
-    .replace(/&gt;/gim, '>')
-    .replace(/&#39;/gim, "'")
-    .replace(/\\"/gim, '"')
-    .replace(/&amp;/gim, '&');
+import { unescapeHtml as replaceSpecialCharacters } from '../utils/htmlParser';
 
 export default function mountComponentsInHtml({ page, html, hydrateOptions }): string {
   let outputHtml = html;
