@@ -33,6 +33,7 @@ const createReplacementString = (content, tag) => {
     }
   }
   
+  // FIXME: use hydrateOptions.element instead of 'div'
   return `{#if (${options}).loading === 'none'}<${tag.name} {...(${clientProps})} ${stylePropsRaw} ${serverProps}/>` +
     `{:else}<div class="ejs-component" data-ejs-component="${tag.name}" ` + 
     `data-ejs-props={JSON.stringify(${clientProps})} ` +

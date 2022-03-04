@@ -13,10 +13,35 @@ export const getComponentName = (str) => {
 
 const svelteComponent =
   (componentName: String, folder: String = 'components') =>
-  ({ page, props, hydrateOptions }: ComponentPayload): string => {
+  ({ page, props, hydrateOptions, openTagOnly = false, otherAttributes = '' }: ComponentPayload): string => {
     const { ssr, client } = page.settings.$$internal.findComponent(componentName, folder);
 
     const cleanComponentName = getComponentName(componentName);
+
+    const generateWrapper = (innerHtml) => {
+      const id = getUniqueId();
+      const lowerCaseComponent = componentName.toLowerCase();
+      const uniqueComponentName = `${lowerCaseComponent}${id}`;
+
+      page.componentsToHydrate.push({
+        name: uniqueComponentName,
+        hydrateOptions,
+        client,
+        props: Object.keys(props).length > 0 ? props : false,
+        prepared: {},
+        id,
+      });
+      const openTag = `<${
+        hydrateOptions.element
+      } class="${cleanComponentName.toLowerCase()}-component" id="${uniqueComponentName}"${otherAttributes}>`;
+
+      if (openTagOnly) return openTag;
+
+      return `${openTag}${innerHtml}</${
+        hydrateOptions.element
+      }>`;
+    }
+    if (openTagOnly) return generateWrapper();
 
     // eslint-disable-next-line import/no-dynamic-require
     const ssrReq = require(ssr);
@@ -48,24 +73,7 @@ const svelteComponent =
         return innerHtml;
       }
 
-      const id = getUniqueId();
-      const lowerCaseComponent = componentName.toLowerCase();
-      const uniqueComponentName = `${lowerCaseComponent}${id}`;
-
-      page.componentsToHydrate.push({
-        name: uniqueComponentName,
-        hydrateOptions,
-        client,
-        props: Object.keys(props).length > 0 ? props : false,
-        prepared: {},
-        id,
-      });
-
-      return `<${
-        hydrateOptions.element
-      } class="${cleanComponentName.toLowerCase()}-component" id="${uniqueComponentName}">${innerHtml}</${
-        hydrateOptions.element
-      }>`;
+      return generateWrapper(innerHtml);
     } catch (e) {
       // console.log(e);
       page.errors.push(e);
