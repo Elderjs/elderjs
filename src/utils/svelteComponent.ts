@@ -37,13 +37,13 @@ const svelteComponent =
         id,
       });
       const openTag = `<${
-        hydrateOptions.element
+        hydrateOptions.element || "div"
       } class="${cleanComponentName.toLowerCase()}-component" id="${uniqueComponentName}"${otherAttributes}>`;
 
       if (openTagOnly) return openTag;
 
       return `${openTag}${innerHtml}</${
-        hydrateOptions.element
+        hydrateOptions.element || "div"
       }>`;
     }
     if (openTagOnly) return generateWrapper();
