@@ -12,9 +12,11 @@ const extractHydrateOptions = (htmlString) => {
   return '';
 };
 
+const stringifyExpression = s => s ? `{JSON.stringify(${s})}` : '"{}"';
+
 const createReplacementString = (content, tag) => {
-  let options = '{}';
-  let clientProps = '{}';
+  let options = '';
+  let clientProps = '';
   let styleProps = '';
   let stylePropsRaw = '';
   let serverProps = '';
@@ -32,14 +34,19 @@ const createReplacementString = (content, tag) => {
       serverProps += ` ${content.slice(attr.start, attr.end)}`;
     }
   }
-  
+  const spreadClientProps = clientProps ? ` {...(${clientProps})}` : '';
+  // FIXME: it should be possible to merge three attributes into one
   // FIXME: use hydrateOptions.element instead of 'div'
-  return `{#if (${options}).loading === 'none'}<${tag.name} {...(${clientProps})} ${stylePropsRaw} ${serverProps}/>` +
-    `{:else}<div class="ejs-component" data-ejs-component="${tag.name}" ` + 
-    `data-ejs-props={JSON.stringify(${clientProps})} ` +
-    `data-ejs-options={JSON.stringify(${options})} ` +
+  const wrapper = `<div class="ejs-component" data-ejs-component="${tag.name}"` + 
+    ` data-ejs-props=${stringifyExpression(clientProps)}` +
+    ` data-ejs-options=${stringifyExpression(options)}` +
     `${styleProps}>` +
-    `<${tag.name} {...(${clientProps})} ${serverProps}/></div>{/if}`
+    `<${tag.name}${spreadClientProps}${serverProps}/></div>`;
+  if (!options) {
+    return wrapper;
+  }
+  return `{#if (${options}).loading === 'none'}<${tag.name}${spreadClientProps}${stylePropsRaw}${serverProps}/>` +
+    `{:else}${wrapper}{/if}`
 };
 
 export const preprocessSvelteContent = (content) => {

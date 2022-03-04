@@ -6,7 +6,7 @@ Object {
     Object {
       "end": 16,
       "name": "class",
-      "start": 4,
+      "start": 5,
       "value": Object {
         "end": 16,
         "raw": "foo",
@@ -28,7 +28,7 @@ Object {
     Object {
       "end": 16,
       "name": "class",
-      "start": 4,
+      "start": 5,
       "value": Object {
         "end": 16,
         "raw": "foo",
@@ -50,7 +50,7 @@ Object {
     Object {
       "end": 24,
       "name": "class",
-      "start": 12,
+      "start": 13,
       "value": Object {
         "end": 24,
         "raw": "foo",
@@ -61,7 +61,7 @@ Object {
     Object {
       "end": 47,
       "name": "hydrate-client",
-      "start": 24,
+      "start": 25,
       "value": Object {
         "end": 47,
         "exp": Node {

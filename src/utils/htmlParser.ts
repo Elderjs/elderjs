@@ -126,7 +126,7 @@ export function parseAttrs(content: string, index: number): Array<AttrNode|Expre
     }
     const value = hasValue ? parseAttrValue(content, rx.lastIndex) : null;
     result.push({
-      start: match.index,
+      start: match.index + prefix.length,
       end: value ? value.end : rx.lastIndex,
       name,
       value
