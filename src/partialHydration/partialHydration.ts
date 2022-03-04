@@ -12,7 +12,7 @@ const extractHydrateOptions = (htmlString) => {
   return '';
 };
 
-const stringifyExpression = s => s ? `{JSON.stringify(${s})}` : '"{}"';
+const stringifyExpression = s => s ? `{JSON.stringify(${s})}` : '""';
 
 const createReplacementString = (content, tag) => {
   let options = '';
@@ -60,7 +60,8 @@ export const preprocessSvelteContent = (content) => {
     if (!tag.selfClosed) {
       throw new Error("Hydratable component must be a self-closing tag");
     }
-    s.overwrite(tag.start, tag.end, createReplacementString(content, tag));
+    const repl = createReplacementString(content, tag);
+    s.overwrite(tag.start, tag.end, repl);
     dirty = true;
   }
 

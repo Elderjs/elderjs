@@ -9,7 +9,7 @@ describe('#partialHydration', () => {
         })
       ).code,
     ).toMatchInlineSnapshot(
-      `"<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({ a: \\"b\\" })} data-ejs-options=\\"{}\\"><DatePicker {...({ a: \\"b\\" })}/></div>"`,
+      `"<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props={JSON.stringify({ a: \\"b\\" })} data-ejs-options=\\"\\"><DatePicker {...({ a: \\"b\\" })}/></div>"`,
     );
   });
 
@@ -116,7 +116,7 @@ describe('#partialHydration', () => {
         })
       ).code,
     ).toMatchInlineSnapshot(
-      `"{#if (foo).loading === 'none'}<DatePicker/>{:else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props=\\"{}\\" data-ejs-options={JSON.stringify(foo)}><DatePicker/></div>{/if}"`,
+      `"{#if (foo).loading === 'none'}<DatePicker/>{:else}<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props=\\"\\" data-ejs-options={JSON.stringify(foo)}><DatePicker/></div>{/if}"`,
     );
   });
 
@@ -128,7 +128,7 @@ describe('#partialHydration', () => {
         })
       ).code,
     ).toMatchInlineSnapshot(
-      `"<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props=\\"{}\\" data-ejs-options=\\"{}\\"><DatePicker foo={bar}/></div>"`,
+      `"<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props=\\"\\" data-ejs-options=\\"\\"><DatePicker foo={bar}/></div>"`,
     );
   });
 
@@ -152,7 +152,7 @@ describe('#partialHydration', () => {
         })
       ).code,
     ).toMatchInlineSnapshot(
-      `"<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props=\\"{}\\" data-ejs-options=\\"{}\\"><DatePicker {foo}/></div>"`,
+      `"<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props=\\"\\" data-ejs-options=\\"\\"><DatePicker {foo}/></div>"`,
     );
   });
 
@@ -164,7 +164,7 @@ describe('#partialHydration', () => {
         })
       ).code,
     ).toMatchInlineSnapshot(
-      `"<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props=\\"{}\\" data-ejs-options=\\"{}\\"><DatePicker {...foo}/></div>"`,
+      `"<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props=\\"\\" data-ejs-options=\\"\\"><DatePicker {...foo}/></div>"`,
     );
   });
 
@@ -176,7 +176,7 @@ describe('#partialHydration', () => {
         })
       ).code,
     ).toMatchInlineSnapshot(
-      `"<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props=\\"{}\\" data-ejs-options=\\"{}\\" style:--foo=\\"bar\\"><DatePicker/></div>"`,
+      `"<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props=\\"\\" data-ejs-options=\\"\\" style:--foo=\\"bar\\"><DatePicker/></div>"`,
     );
   });
 
@@ -188,7 +188,7 @@ describe('#partialHydration', () => {
         })
       ).code,
     ).toMatchInlineSnapshot(
-      `"<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props=\\"{}\\" data-ejs-options=\\"{}\\" style:--foo={bar}><DatePicker/></div>"`,
+      `"<div class=\\"ejs-component\\" data-ejs-component=\\"DatePicker\\" data-ejs-props=\\"\\" data-ejs-options=\\"\\" style:--foo={bar}><DatePicker/></div>"`,
     );
   });
 });

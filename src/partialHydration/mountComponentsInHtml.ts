@@ -14,12 +14,12 @@ export default function mountComponentsInHtml({ page, html, hydrateOptions }): s
     let hydrateComponentOptions;
 
     try {
-      hydrateComponentProps = JSON.parse(replaceSpecialCharacters(match[3]));
+      hydrateComponentProps = match[3] ? JSON.parse(replaceSpecialCharacters(match[3])) : {};
     } catch (e) {
       throw new Error(`Failed to JSON.parse props for ${hydrateComponentName} ${match[3]}`);
     }
     try {
-      hydrateComponentOptions = JSON.parse(replaceSpecialCharacters(match[4]));
+      hydrateComponentOptions = match[4] ? JSON.parse(replaceSpecialCharacters(match[4])) : {};
     } catch (e) {
       throw new Error(`Failed to JSON.parse props for ${hydrateComponentName} ${match[4]}`);
     }

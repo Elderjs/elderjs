@@ -45,7 +45,8 @@ export const unescapeHtml = (str) =>
     .replace(/&gt;/gim, '>')
     .replace(/&#0?39;/gim, "'")
     .replace(/\\"/gim, '"')
-    .replace(/&amp;/gim, '&');
+    .replace(/&amp;/gim, '&')
+    .replace(/&lbrace;/gim, '{');
 
 export function parseExpression(content: string, index: number): ExpressionNode {
   const rx = /{\s*(\.\.\.)?/y;
