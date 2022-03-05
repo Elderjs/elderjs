@@ -1,9 +1,7 @@
 /* eslint-disable no-param-reassign */
-import {escapeHtml, unescapeHtml, parseTag} from '../htmlParser';
+import { escapeHtml, unescapeHtml, parseTag } from '../htmlParser';
 
-const cases = [
-  ['&amp;&#039;&quot;', `&'"`]
-];
+const cases = [['&amp;&#039;&quot;', `&'"`]];
 
 describe('escapeHtml/unescapeHtml', () => {
   for (const [left, right] of cases) {
@@ -12,7 +10,7 @@ describe('escapeHtml/unescapeHtml', () => {
       expect(unescapeHtml(left)).toEqual(right);
     });
   }
-})
+});
 
 test('#escapeHtml', () => {
   expect(escapeHtml('')).toEqual('');

@@ -18,7 +18,13 @@ interface svelteComponentCompileOptions extends ComponentPayload {
 
 const svelteComponent =
   (componentName: String, folder: String = 'components') =>
-  ({ page, props, hydrateOptions, openTagOnly = false, otherAttributes = '' }: svelteComponentCompileOptions): string => {
+  ({
+    page,
+    props,
+    hydrateOptions,
+    openTagOnly = false,
+    otherAttributes = '',
+  }: svelteComponentCompileOptions): string => {
     const { ssr, client } = page.settings.$$internal.findComponent(componentName, folder);
 
     const cleanComponentName = getComponentName(componentName);
@@ -37,15 +43,13 @@ const svelteComponent =
         id,
       });
       const openTag = `<${
-        hydrateOptions.element || "div"
+        hydrateOptions.element || 'div'
       } class="${cleanComponentName.toLowerCase()}-component" id="${uniqueComponentName}"${otherAttributes}>`;
 
       if (openTagOnly) return openTag;
 
-      return `${openTag}${innerHtml}</${
-        hydrateOptions.element || "div"
-      }>`;
-    }
+      return `${openTag}${innerHtml}</${hydrateOptions.element || 'div'}>`;
+    };
     if (openTagOnly) return generateWrapper();
 
     // eslint-disable-next-line import/no-dynamic-require

@@ -1,32 +1,32 @@
-import {parseExpressionAt} from "acorn";
+import { parseExpressionAt } from 'acorn';
 
 type Node = {
   start: number;
   end: number;
-}
-
-type TagNode = Node & {
-  name: string;
-  attrs: Array<AttrNode|ExpressionNode>;
-  selfClosed: boolean;
-  start: number;
-  end: number;
-}
-
-type AttrNode = Node & {
-  name: string;
-  value?: AttrValueNode;
-}
+};
 
 type AttrValueNode = Node & {
   value?: string;
   raw?: string;
-}
+};
+
+type AttrNode = Node & {
+  name: string;
+  value?: AttrValueNode;
+};
 
 type ExpressionNode = Node & {
   exp: any;
   spread: boolean;
-}
+};
+
+type TagNode = Node & {
+  name: string;
+  attrs: Array<AttrNode | ExpressionNode>;
+  selfClosed: boolean;
+  start: number;
+  end: number;
+};
 
 export function escapeHtml(text: string): string {
   return text
@@ -51,7 +51,7 @@ export const unescapeHtml = (str) =>
 export function parseExpression(content: string, index: number): ExpressionNode {
   const rx = /{\s*(\.\.\.)?/y;
   rx.lastIndex = index;
-  const [prefix,, hasSpread] = rx.exec(content);
+  const [prefix, , hasSpread] = rx.exec(content);
   const exp = parseExpressionAt(content, index + prefix.length);
   const rxEnd = /\s*}/y;
   rxEnd.lastIndex = exp.end;
@@ -60,7 +60,7 @@ export function parseExpression(content: string, index: number): ExpressionNode 
     start: index,
     end: rxEnd.lastIndex,
     exp,
-    spread: Boolean(hasSpread)
+    spread: Boolean(hasSpread),
   };
 }
 
@@ -70,24 +70,53 @@ export function parseAttrValue(content: string, index: number): AttrValueNode | 
   if (content[index] === "'") {
     rx = /'([^']*)'/y;
     rx.lastIndex = index;
-    raw = content.match(rx)[1];
+    [, raw] = content.match(rx);
   } else if (content[index] === '"') {
     rx = /"([^"]*)"/y;
     rx.lastIndex = index;
-    raw = content.match(rx)[1];
-  } else if (content[index] === "{") {
+    [, raw] = content.match(rx);
+  } else if (content[index] === '{') {
     return parseExpression(content, index);
   } else {
-    rx = /[^\s"'=<>\/\x7f-\x9f]+/y;
+    rx = /[^\s"'=<>/\x7f-\x9f]+/y;
     rx.lastIndex = index;
-    raw = content.match(rx)[0];
+    [raw] = content.match(rx);
   }
   return {
     value: unescapeHtml(raw),
     raw,
     start: index,
-    end: rx.lastIndex
+    end: rx.lastIndex,
   };
+}
+
+export function parseAttrs(content: string, index: number): Array<AttrNode | ExpressionNode> {
+  const rx = /(\s+)(?:([\w-:]+)(\s*=\s*)?|{)/y;
+  rx.lastIndex = index;
+  const result = [];
+  let match = rx.exec(content);
+  while (match) {
+    const [, prefix, name, hasValue] = match;
+    if (!name) {
+      // expression
+      const node = parseExpression(content, match.index + prefix.length);
+      result.push(node);
+      rx.lastIndex = node.end;
+    } else {
+      const value = hasValue ? parseAttrValue(content, rx.lastIndex) : null;
+      result.push({
+        start: match.index + prefix.length,
+        end: value ? value.end : rx.lastIndex,
+        name,
+        value,
+      });
+      if (value) {
+        rx.lastIndex = value.end;
+      }
+    }
+    match = rx.exec(content);
+  }
+  return result;
 }
 
 export function parseTag(content: string, index: number): TagNode {
@@ -107,35 +136,6 @@ export function parseTag(content: string, index: number): TagNode {
     attrs,
     selfClosed: Boolean(matchEnd[1]),
     start: index,
-    end: rxEnd.lastIndex
+    end: rxEnd.lastIndex,
   };
 }
-
-export function parseAttrs(content: string, index: number): Array<AttrNode|ExpressionNode> {
-  const rx = /(\s+)(?:([\w-:]+)(\s*=\s*)?|{)/y;
-  rx.lastIndex = index;
-  const result = [];
-  let match;
-  while ((match = rx.exec(content))) {
-    const [, prefix, name, hasValue] = match;
-    if (!name) {
-      // expression
-      const node = parseExpression(content, match.index + prefix.length);
-      result.push(node);
-      rx.lastIndex = node.end;
-      continue;
-    }
-    const value = hasValue ? parseAttrValue(content, rx.lastIndex) : null;
-    result.push({
-      start: match.index + prefix.length,
-      end: value ? value.end : rx.lastIndex,
-      name,
-      value
-    });
-    if (value) {
-      rx.lastIndex = value.end;
-    }
-  }
-  return result;
-}
-

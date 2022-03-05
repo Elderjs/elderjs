@@ -1,18 +1,7 @@
 import MagicString from 'magic-string';
 import { parseTag } from '../utils/htmlParser';
-import { inlinePreprocessedSvelteComponent } from './inlineSvelteComponent';
 
-const extractHydrateOptions = (htmlString) => {
-  const hydrateOptionsPattern = /hydrate-options={([^]*?})}/gim;
-
-  const optionsMatch = hydrateOptionsPattern.exec(htmlString);
-  if (optionsMatch) {
-    return optionsMatch[1];
-  }
-  return '';
-};
-
-const stringifyExpression = s => s ? `{JSON.stringify(${s})}` : '""';
+const stringifyExpression = (s) => (s ? `{JSON.stringify(${s})}` : '""');
 
 const createReplacementString = (content, tag) => {
   let options = '';
@@ -37,7 +26,8 @@ const createReplacementString = (content, tag) => {
   const spreadClientProps = clientProps ? ` {...(${clientProps})}` : '';
   // FIXME: it should be possible to merge three attributes into one
   // FIXME: use hydrateOptions.element instead of 'div'
-  const wrapper = `<div class="ejs-component" data-ejs-component="${tag.name}"` + 
+  const wrapper =
+    `<div class="ejs-component" data-ejs-component="${tag.name}"` +
     ` data-ejs-props=${stringifyExpression(clientProps)}` +
     ` data-ejs-options=${stringifyExpression(options)}` +
     `${styleProps}>` +
@@ -45,8 +35,10 @@ const createReplacementString = (content, tag) => {
   if (!options) {
     return wrapper;
   }
-  return `{#if (${options}).loading === 'none'}<${tag.name}${spreadClientProps}${stylePropsRaw}${serverProps}/>` +
+  return (
+    `{#if (${options}).loading === 'none'}<${tag.name}${spreadClientProps}${stylePropsRaw}${serverProps}/>` +
     `{:else}${wrapper}{/if}`
+  );
 };
 
 export const preprocessSvelteContent = (content) => {
@@ -58,7 +50,7 @@ export const preprocessSvelteContent = (content) => {
   for (const match of content.matchAll(hydrateableComponentPattern)) {
     const tag = parseTag(content, match.index);
     if (!tag.selfClosed) {
-      throw new Error("Hydratable component must be a self-closing tag");
+      throw new Error('Hydratable component must be a self-closing tag');
     }
     const repl = createReplacementString(content, tag);
     s.overwrite(tag.start, tag.end, repl);

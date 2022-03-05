@@ -42,7 +42,7 @@ export default function mountComponentsInHtml({ page, html, hydrateOptions }): s
       props: hydrateComponentProps,
       hydrateOptions: hydrateComponentOptions,
       otherAttributes: match[5],
-      openTagOnly: !match[6]
+      openTagOnly: !match[6],
     });
 
     outputHtml = outputHtml.replace(match[0], hydratedHtml);
