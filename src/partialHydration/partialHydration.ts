@@ -50,24 +50,16 @@ export const preprocessSvelteContent = (content) => {
   for (const match of content.matchAll(hydrateableComponentPattern)) {
     const tag = parseTag(content, match.index);
     if (!tag.selfClosed) {
-      throw new Error('Hydratable component must be a self-closing tag');
+      throw new Error(
+        `Elder.js only supports self-closing syntax on hydrated components. This means <Foo /> not <Foo></Foo> or <Foo>Something</Foo>. Offending component: ${content.slice(
+          tag.start,
+          tag.end,
+        )}. Slots and child components aren't supported during hydration as it would result in huge HTML payloads. If you need this functionality try wrapping the offending component in a parent component without slots or child components and hydrate the parent component.`,
+      );
     }
     const repl = createReplacementString(content, tag);
     s.overwrite(tag.start, tag.end, repl);
     dirty = true;
-  }
-
-  const wrappingComponentPattern = /<([a-zA-Z]+)[^>]+hydrate-client={([^]*?})}[^/>]*>[^>]*<\/([a-zA-Z]+)>/gim;
-  // <Map hydrate-client={{}} ></Map>
-  // <Map hydrate-client={{}}></Map>
-  // <Map hydrate-client={{}}>Foo</Map>
-
-  const wrappedComponents = [...content.matchAll(wrappingComponentPattern)];
-
-  if (wrappedComponents && wrappedComponents.length > 0) {
-    throw new Error(
-      `Elder.js only supports self-closing syntax on hydrated components. This means <Foo /> not <Foo></Foo> or <Foo>Something</Foo>. Offending component: ${wrappedComponents[0][0]}. Slots and child components aren't supported during hydration as it would result in huge HTML payloads. If you need this functionality try wrapping the offending component in a parent component without slots or child components and hydrate the parent component.`,
-    );
   }
   return dirty ? s.toString() : content;
 };
