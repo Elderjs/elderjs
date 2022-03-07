@@ -2,6 +2,11 @@ import path from 'path';
 
 const findComponent = () => ({ ssr: true, client: true, iife: undefined });
 
+const perf = {
+  start: () => {},
+  end: () => {},
+};
+
 describe('#plugins', () => {
   beforeEach(() => jest.resetModules());
 
@@ -31,6 +36,7 @@ describe('#plugins', () => {
     // eslint-disable-next-line global-require
     const plugins = require('../index').default;
     const { pluginRoutes, pluginHooks, pluginShortcodes } = await plugins({
+      perf,
       settings: {
         plugins: {},
         srcDir: 'test/src',
@@ -51,6 +57,7 @@ describe('#plugins', () => {
     // eslint-disable-next-line global-require
     const plugins = require('../index').default;
     const { pluginRoutes, pluginHooks, pluginShortcodes } = await plugins({
+      perf,
       settings: {
         plugins: {
           'elder-plugin-upload-s3': {
@@ -86,6 +93,7 @@ describe('#plugins', () => {
     // eslint-disable-next-line global-require
     const plugins = require('../index').default;
     const { pluginRoutes, pluginHooks, pluginShortcodes } = await plugins({
+      perf,
       settings: {
         plugins: {
           'elder-plugin-upload-s3': {
@@ -142,6 +150,7 @@ describe('#plugins', () => {
     // eslint-disable-next-line global-require
     const plugins = require('../index').default;
     const { pluginRoutes, pluginHooks, pluginShortcodes } = await plugins({
+      perf,
       settings: {
         plugins: {
           'elder-plugin-upload-s3': {
@@ -214,6 +223,7 @@ describe('#plugins', () => {
     // eslint-disable-next-line global-require
     const plugins = require('../index').default;
     const { pluginRoutes, pluginHooks, pluginShortcodes } = await plugins({
+      perf,
       settings: {
         plugins: {
           'elder-plugin-upload-s3': {

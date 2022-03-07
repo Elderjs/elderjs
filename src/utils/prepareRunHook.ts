@@ -13,8 +13,10 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
     }
 
     const hookProps = hookDefinition.props.reduce((out, cv) => {
+      if (cv === 'perf') return out; // perf added and  prefixed below
+
       if (Object.hasOwnProperty.call(props, cv)) {
-        if (!hookDefinition.mutable.includes(cv)) {
+        if (!hookDefinition.mutable.includes(cv) && cv !== 'perf') {
           out[cv] = createReadOnlyProxy(props[cv], cv, hookName);
         } else {
           out[cv] = props[cv];
@@ -44,7 +46,10 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
         return p.then(async () => {
           if (props.perf) props.perf.start(`hook.${hookName}.${hook.name}`);
           try {
-            let hookResponse = await hook.run(hookProps);
+            let hookResponse = await hook.run({
+              ...hookProps,
+              perf: props.perf.prefix(`hook.${hookName}.${hook.name}`),
+            });
 
             if (!hookResponse) hookResponse = {};
 

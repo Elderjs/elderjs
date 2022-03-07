@@ -36,6 +36,7 @@ import workerBuild from './workerBuild';
 import { inlineSvelteComponent } from './partialHydration/inlineSvelteComponent';
 import elderJsShortcodes from './shortcodes';
 import prepareRouter from './routes/prepareRouter';
+import perf, { displayPerfTimings } from './utils/perf';
 
 class Elder {
   bootstrapComplete: Promise<any>;
@@ -70,6 +71,10 @@ class Elder {
 
   shortcodes: ShortcodeDefs;
 
+  perf: any;
+
+  uid: string;
+
   router: (any) => any;
 
   constructor(initializationOptions: InitializationOptions = {}) {
@@ -77,6 +82,7 @@ class Elder {
     this.bootstrapComplete = new Promise((resolve) => {
       this.markBootstrapComplete = resolve;
     });
+    this.uid = 'startup';
 
     // merge the given config with the project and defaults;
     this.settings = getConfig(initializationOptions);
@@ -96,8 +102,13 @@ class Elder {
       this.server = prepareServer({ bootstrapComplete: this.bootstrapComplete });
     }
 
+    perf(this, true);
+
+    this.perf.start('startup');
+
     // plugins are run first as they have routes, hooks, and shortcodes.
     plugins(this).then(async ({ pluginRoutes, pluginHooks, pluginShortcodes }) => {
+      this.perf.start('startup.validations');
       /**
        * Finalize Routes
        * Add in user routes
@@ -203,6 +214,8 @@ class Elder {
         .map((shortcode) => validateShortcode(shortcode))
         .filter(Boolean as any as ExcludesFalse);
 
+      this.perf.end('startup.validations');
+
       /**
        *
        * Almost ready for customize hooks and bootstrap
@@ -243,16 +256,21 @@ class Elder {
         await this.runHook('bootstrap', this);
 
         // collect all of our requests
+        this.perf.start('startup.routes');
         await asyncForEach(Object.keys(this.routes), async (routeName) => {
+          this.perf.start(`startup.routes.${routeName}`);
           const route = this.routes[routeName];
           let allRequestsForRoute = [];
           if (typeof route.all === 'function') {
+            this.perf.start(`startup.routes.${routeName}`);
             allRequestsForRoute = await route.all({
               settings: createReadOnlyProxy(this.settings, 'settings', `${routeName} all function`),
               query: createReadOnlyProxy(this.query, 'query', `${routeName} all function`),
               helpers: createReadOnlyProxy(this.helpers, 'helpers', `${routeName} all function`),
               data: createReadOnlyProxy(this.data, 'data', `${routeName} all function`),
+              perf: this.perf.prefix(`startup.routes.${routeName}.all`),
             });
+            this.perf.end(`startup.routes.${routeName}`);
           } else if (Array.isArray(route.all)) {
             allRequestsForRoute = route.all;
           }
@@ -270,10 +288,14 @@ class Elder {
             return out;
           }, []);
           this.allRequests = this.allRequests.concat(allRequestsForRoute);
+          this.perf.end(`startup.routes.${routeName}`);
         });
+
+        this.perf.end(`startup.routes`);
 
         await this.runHook('allRequests', this);
 
+        this.perf.start(`startup.setPermalinks`);
         await asyncForEach(this.allRequests, async (request) => {
           if (!this.routes[request.route] || !this.routes[request.route].permalink) {
             if (!request.route) {
@@ -303,6 +325,9 @@ class Elder {
             this.serverLookupObject[request.permalink] = request;
           }
         });
+        this.perf.end(`startup.setPermalinks`);
+
+        this.perf.start(`startup.validatePermalinks`);
 
         if (this.allRequests.length !== new Set(this.allRequests.map((r) => r.permalink)).size) {
           // useful error logging for when there are duplicate permalinks.
@@ -318,10 +343,26 @@ class Elder {
             }
           }
         }
+        this.perf.end(`startup.validatePermalinks`);
 
+        this.perf.start(`startup.prepareRouter`);
         this.router = prepareRouter(this);
+        this.perf.end(`startup.prepareRouter`);
 
         this.markBootstrapComplete(this);
+
+        this.perf.end('startup');
+        this.perf.stop();
+
+        const t = this.perf.timings.slice(-1)[0] && Math.round(this.perf.timings.slice(-1)[0].duration * 10) / 10;
+        if (t && t > 0) {
+          console.log(
+            `Elder.js Startup: ${t}ms. ${t > 5000 ? `For details set debug.performance: true in elder.config.js` : ''}`,
+          );
+          if (this.settings.debug.performance) {
+            displayPerfTimings([...this.perf.timings]);
+          }
+        }
       });
     });
   }

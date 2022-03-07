@@ -27,7 +27,7 @@ const buildPage = async (page) => {
         settings: createReadOnlyProxy(page.settings, 'settings', `${page.request.route}: data function`),
         request: createReadOnlyProxy(page.request, 'request', `${page.request.route}: data function`),
         errors: page.errors,
-        perf: page.perf,
+        perf: page.perf.prefix('data'),
         allRequests: createReadOnlyProxy(page.allRequests, 'allRequests', `${page.request.route}: data function`),
         next: page.next,
       });

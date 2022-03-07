@@ -58,7 +58,7 @@ describe('#Elder', () => {
           for (const pluginHook of page.hooks) {
             if (pluginHook.$$meta.type === 'plugin') {
               // eslint-disable-next-line
-            await pluginHook.run({});
+              await pluginHook.run({});
             }
           }
         }
@@ -111,6 +111,7 @@ describe('#Elder', () => {
     const elder = await new Elder({ context: 'server', worker: false });
     await elder.bootstrap();
     await elder.worker([]);
+    delete elder.perf.timings;
     expect(normalizeSnapshot(elder)).toMatchSnapshot();
   });
 
@@ -200,6 +201,8 @@ describe('#Elder', () => {
     const { Elder } = require(`..${sep}index`);
     const elder = await new Elder({ context: 'server', worker: false });
     await elder.bootstrap();
+
+    delete elder.perf.timings;
     expect(normalizeSnapshot(elder)).toMatchSnapshot();
   });
 });

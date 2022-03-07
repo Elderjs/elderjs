@@ -5,6 +5,7 @@ import { parseBuildPerf } from '../utils';
 import externalHelpers from '../externalHelpers';
 import { HookOptions } from './types';
 import prepareShortcodeParser from '../utils/prepareShortcodeParser';
+import { displayPerfTimings } from '../utils/perf';
 
 const hooks: Array<HookOptions> = [
   {
@@ -212,10 +213,7 @@ const hooks: Array<HookOptions> = [
       if (!settings.build && process.env.NODE_ENV !== 'production') {
         if (settings.debug.performance) {
           console.log(`${Math.round(timings.slice(-1)[0].duration * 10) / 10}ms: \t ${request.permalink}`);
-          const outTimings = [...timings];
-          const display = outTimings.sort((a, b) => a.duration - b.duration).map((t) => ({ ...t, ms: t.duration }));
-
-          console.table(display, ['name', 'ms']);
+          displayPerfTimings([...timings]);
         } else {
           console.log(request.permalink);
         }

@@ -58,7 +58,7 @@ describe('#prepareRunHook', () => {
     },
     magicNumber: 42,
   };
-  const perf = { start: jest.fn(), end: jest.fn() };
+  const perf = { start: jest.fn(), end: jest.fn(), prefix: () => {} };
   let prepareRunHookFn = prepareRunHook({ hooks: [hooks[0], hooks[1]], allSupportedHooks, settings });
 
   it('throws for unknown hook', async () => {

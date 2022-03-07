@@ -1,10 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`#perf works in performance 1`] = `
+exports[`#perf works in performance and mocks 1`] = `
 Object {
   "htmlString": "",
   "perf": Object {
     "end": [Function],
+    "prefix": [Function],
     "start": [Function],
     "stop": [Function],
     "timings": Array [
