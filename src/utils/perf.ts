@@ -33,7 +33,6 @@ const perf = (page: Page | Elder, force = false) => {
        * @param {String} label
        */
       start: (label: string) => {
-        console.log(`${label}-start-${page.uid}`);
         performance.mark(`${label}-start-${page.uid}`);
       },
       /**
@@ -65,7 +64,6 @@ const perf = (page: Page | Elder, force = false) => {
 
   // eslint-disable-next-line no-param-reassign
   page.perf.prefix = (pre) => {
-    console.log('prefix', pre);
     return { start: (name) => page.perf.start(`${pre}.${name}`), end: (name) => page.perf.end(`${pre}.${name}`) };
   };
 };

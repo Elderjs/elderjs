@@ -1,6 +1,6 @@
 {
   "name": "@elderjs/elderjs",
-  "version": "1.6.10",
+  "version": "1.6.11",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
   "engineStrict": true,
