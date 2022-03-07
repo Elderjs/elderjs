@@ -6,7 +6,7 @@ import type { HookInterface } from './types';
 export const hookInterface: Array<HookInterface> = [
   {
     hook: 'customizeHooks',
-    props: ['hookInterface', 'errors'],
+    props: ['perf', 'hookInterface', 'errors'],
     mutable: ['hookInterface', 'errors'],
     context: 'Used to modify what hooks can mutate which properties all hooks.',
     use: `<p>This hook receives the hookInterface.ts file which defines all hook interactions. You can customize all 'props' and 'mutable' of
@@ -17,7 +17,7 @@ export const hookInterface: Array<HookInterface> = [
   },
   {
     hook: 'bootstrap',
-    props: ['helpers', 'data', 'settings', 'routes', 'hooks', 'query', 'errors'],
+    props: ['perf', 'helpers', 'data', 'settings', 'routes', 'hooks', 'query', 'errors'],
     mutable: ['errors', 'helpers', 'data', 'settings', 'query'],
     context: 'Routes, plugins, and hooks have been collected and validated.',
     use: `<ul>
@@ -31,7 +31,7 @@ export const hookInterface: Array<HookInterface> = [
   },
   {
     hook: 'allRequests',
-    props: ['helpers', 'data', 'settings', 'allRequests', 'routes', 'query', 'errors'],
+    props: ['perf', 'helpers', 'data', 'settings', 'allRequests', 'routes', 'query', 'errors'],
     mutable: ['errors', 'allRequests'],
     context: `allRequests which represents all of the request objects have been collected from route and plugins. This makes the 'allRequests' array mutable.`,
     use: `<p>The main use here is to allow users to adjust the requests that Elder.js is aware of.</p><ul>
@@ -49,6 +49,7 @@ export const hookInterface: Array<HookInterface> = [
   {
     hook: 'middleware',
     props: [
+      'perf',
       'errors',
       'query',
       'helpers',
@@ -96,7 +97,7 @@ export const hookInterface: Array<HookInterface> = [
 
   {
     hook: 'request',
-    props: ['helpers', 'data', 'settings', 'request', 'allRequests', 'query', 'errors', 'routes', 'route'],
+    props: ['perf', 'helpers', 'data', 'settings', 'request', 'allRequests', 'query', 'errors', 'routes', 'route'],
     mutable: ['errors', 'helpers', 'data', 'settings', 'request', 'route'],
     context: `This is executed at the beginning the request object being processed.`,
     use: `<p>This hook gives access to the entire state of a request lifecycle before it starts.</p>
@@ -115,6 +116,7 @@ export const hookInterface: Array<HookInterface> = [
   {
     hook: 'data',
     props: [
+      'perf',
       'data',
       'request',
       'errors',
@@ -160,6 +162,7 @@ export const hookInterface: Array<HookInterface> = [
   {
     hook: 'shortcodes',
     props: [
+      'perf',
       'helpers',
       'data',
       'settings',
@@ -185,6 +188,7 @@ export const hookInterface: Array<HookInterface> = [
   {
     hook: 'stacks',
     props: [
+      'perf',
       'helpers',
       'data',
       'settings',
@@ -230,7 +234,7 @@ export const hookInterface: Array<HookInterface> = [
 
   {
     hook: 'head',
-    props: ['helpers', 'data', 'settings', 'request', 'headString', 'query', 'errors'],
+    props: ['perf', 'helpers', 'data', 'settings', 'request', 'headString', 'query', 'errors'],
     mutable: ['errors', 'headString'],
     context: 'Executed just before writing the <head> tag to the page.',
     use: `<p>This hook's headSting represents everything that will be written to &lt;head&gt; tag.</p>
@@ -243,6 +247,7 @@ export const hookInterface: Array<HookInterface> = [
   {
     hook: 'compileHtml',
     props: [
+      'perf',
       'helpers',
       'data',
       'settings',
@@ -264,7 +269,7 @@ export const hookInterface: Array<HookInterface> = [
 
   {
     hook: 'html',
-    props: ['helpers', 'data', 'settings', 'request', 'htmlString', 'query', 'errors'],
+    props: ['perf', 'helpers', 'data', 'settings', 'request', 'htmlString', 'query', 'errors'],
     mutable: ['errors', 'htmlString'],
     context: 'Executed when all of the html has been compiled.',
     use: `<p>This hook receives the full html of the document. With great power comes great responsibility.</p>
@@ -280,7 +285,7 @@ export const hookInterface: Array<HookInterface> = [
 
   {
     hook: 'requestComplete',
-    props: ['request', 'htmlString', 'query', 'settings', 'errors', 'timings', 'data'],
+    props: ['perf', 'request', 'htmlString', 'query', 'settings', 'errors', 'timings', 'data'],
     mutable: ['errors'],
     context: 'This hook marks the end of the request lifecycle.',
     use: `<p>This hook is triggered on an individual 'request object' completing whether Elder.js is being used in the "build" or a "server" mode.</p>
@@ -297,7 +302,7 @@ export const hookInterface: Array<HookInterface> = [
   },
   {
     hook: 'error',
-    props: ['helpers', 'data', 'settings', 'request', 'query', 'errors'],
+    props: ['perf', 'helpers', 'data', 'settings', 'request', 'query', 'errors'],
     mutable: [],
     context: 'Executed only if the script has encountered errors and they are pushed to the errors array.',
     use: `<p>As the script encounters errors, they are collected and presented on this hook at the end of a request and the end of an entire build.</p>`,
@@ -308,7 +313,7 @@ export const hookInterface: Array<HookInterface> = [
 
   {
     hook: 'buildComplete',
-    props: ['helpers', 'data', 'settings', 'timings', 'query', 'errors', 'routes', 'allRequests'],
+    props: ['perf', 'helpers', 'data', 'settings', 'timings', 'query', 'errors', 'routes', 'allRequests'],
     mutable: [],
     context: 'Executed after a build is complete',
     use: `<p>Contains whether the build was successful. If not it contains errors for the entire build. Also includes

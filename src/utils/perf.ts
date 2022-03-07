@@ -1,4 +1,5 @@
 import { performance, PerformanceObserver } from 'perf_hooks';
+import { Elder } from '..';
 import Page from './Page';
 /**
  * A little helper around perf_hooks.
@@ -7,8 +8,13 @@ import Page from './Page';
  * This allows you to pass in a page.perf.start('name') and then page.perf.end('name') and the result is stored in a timings array.
  *
  */
-const perf = (page: Page) => {
-  if (page.settings.debug.performance) {
+
+export type TPerfTiming = { name: string; duration: number };
+
+export type TPerfTimings = TPerfTiming[];
+
+const perf = (page: Page | Elder, force = false) => {
+  if (page.settings.debug.performance || force) {
     let obs = new PerformanceObserver((items) => {
       items.getEntries().forEach((entry) => {
         if (entry.name.includes(page.uid)) {
@@ -58,3 +64,12 @@ const perf = (page: Page) => {
 };
 
 export default perf;
+
+export const displayPerfTimings = (timings: TPerfTimings) => {
+  const display = timings.sort((a, b) => a.duration - b.duration).map((t) => ({ ...t, ms: t.duration }));
+  console.table(display, ['name', 'ms']);
+};
+
+export const prefixPerf = (perfObj, prefix) => {
+  return { start: (name) => perfObj.start(`${prefix}.${name}`), end: (name) => perfObj.end(`${prefix}.${name}`) };
+};
