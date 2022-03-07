@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign */
 import createReadOnlyProxy from './createReadOnlyProxy';
-import { prefixPerf } from './perf';
 
 // TODO: How do we get types to the user when they are writing plugins, etc?
 function prepareRunHook({ hooks, allSupportedHooks, settings }) {
@@ -17,7 +16,7 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
       if (cv === 'perf') return out; // perf added and  prefixed below
 
       if (Object.hasOwnProperty.call(props, cv)) {
-        if (!hookDefinition.mutable.includes(cv)) {
+        if (!hookDefinition.mutable.includes(cv) && cv !== 'perf') {
           out[cv] = createReadOnlyProxy(props[cv], cv, hookName);
         } else {
           out[cv] = props[cv];
@@ -49,7 +48,7 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
           try {
             let hookResponse = await hook.run({
               ...hookProps,
-              perf: prefixPerf(props.perf, `hook.${hookName}.${hook.name}`),
+              perf: props.perf.prefix(`hook.${hookName}.${hook.name}`),
             });
 
             if (!hookResponse) hookResponse = {};

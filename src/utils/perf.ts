@@ -33,6 +33,7 @@ const perf = (page: Page | Elder, force = false) => {
        * @param {String} label
        */
       start: (label: string) => {
+        console.log(`${label}-start-${page.uid}`);
         performance.mark(`${label}-start-${page.uid}`);
       },
       /**
@@ -61,6 +62,12 @@ const perf = (page: Page | Elder, force = false) => {
       stop: placeholder,
     };
   }
+
+  // eslint-disable-next-line no-param-reassign
+  page.perf.prefix = (pre) => {
+    console.log('prefix', pre);
+    return { start: (name) => page.perf.start(`${pre}.${name}`), end: (name) => page.perf.end(`${pre}.${name}`) };
+  };
 };
 
 export default perf;
@@ -68,8 +75,4 @@ export default perf;
 export const displayPerfTimings = (timings: TPerfTimings) => {
   const display = timings.sort((a, b) => a.duration - b.duration).map((t) => ({ ...t, ms: t.duration }));
   console.table(display, ['name', 'ms']);
-};
-
-export const prefixPerf = (perfObj, prefix) => {
-  return { start: (name) => perfObj.start(`${prefix}.${name}`), end: (name) => perfObj.end(`${prefix}.${name}`) };
 };

@@ -29,6 +29,7 @@ jest.mock('../perf', () => (page) => {
     start: jest.fn(),
     end: jest.fn(),
     stop: jest.fn(),
+    prefix: jest.fn(),
   };
 });
 
@@ -208,6 +209,10 @@ describe('#Page', () => {
     errors: [],
     runHook,
     shortcodes: [],
+    perf: {
+      start: () => {},
+      stop: () => {},
+    },
   };
 
   it('initialize and build', async () => {

@@ -17,7 +17,7 @@ class PerformanceObserverMock {
 }
 
 describe('#perf', () => {
-  it('works in performance', () => {
+  it('works in performance and mocks', () => {
     function MockPage() {
       this.uid = 'xxxxxxxx';
       this.htmlString = '';
@@ -45,6 +45,12 @@ describe('#perf', () => {
 
     mockPage.perf.start('test');
     mockPage.perf.end('test');
+
+    const prefixed = mockPage.perf.prefix('prefix');
+
+    prefixed.start('prefix');
+    prefixed.end('prefix');
+
     mockPage.perf.stop();
 
     expect(normalizeSnapshot(mockPage)).toMatchSnapshot();
@@ -53,8 +59,12 @@ describe('#perf', () => {
       'mark test-start-xxxxxxxx',
       'mark test-end-xxxxxxxx',
       'measure test-xxxxxxxx',
+      'mark prefix.prefix-start-xxxxxxxx',
+      'mark prefix.prefix-end-xxxxxxxx',
+      'measure prefix.prefix-xxxxxxxx',
     ]);
   });
+
   it('works in non performance', () => {
     function MockPage() {
       this.uid = 'xxxxxxxx';

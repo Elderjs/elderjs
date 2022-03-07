@@ -36,7 +36,7 @@ import workerBuild from './workerBuild';
 import { inlineSvelteComponent } from './partialHydration/inlineSvelteComponent';
 import elderJsShortcodes from './shortcodes';
 import prepareRouter from './routes/prepareRouter';
-import perf, { displayPerfTimings, prefixPerf } from './utils/perf';
+import perf, { displayPerfTimings } from './utils/perf';
 
 class Elder {
   bootstrapComplete: Promise<any>;
@@ -268,7 +268,7 @@ class Elder {
               query: createReadOnlyProxy(this.query, 'query', `${routeName} all function`),
               helpers: createReadOnlyProxy(this.helpers, 'helpers', `${routeName} all function`),
               data: createReadOnlyProxy(this.data, 'data', `${routeName} all function`),
-              perf: prefixPerf(this.perf, `startup.routes.${routeName}.all`),
+              perf: this.perf.prefix(`startup.routes.${routeName}.all`),
             });
             this.perf.end(`startup.routes.${routeName}`);
           } else if (Array.isArray(route.all)) {

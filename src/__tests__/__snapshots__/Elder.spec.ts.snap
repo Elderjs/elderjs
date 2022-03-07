@@ -27,6 +27,7 @@ Object {
         "errors",
       ],
       "props": Array [
+        "perf",
         "hookInterface",
         "errors",
       ],
@@ -47,6 +48,7 @@ Object {
         "query",
       ],
       "props": Array [
+        "perf",
         "helpers",
         "data",
         "settings",
@@ -72,6 +74,7 @@ Object {
         "allRequests",
       ],
       "props": Array [
+        "perf",
         "helpers",
         "data",
         "settings",
@@ -107,6 +110,7 @@ Object {
         "serverLookupObject",
       ],
       "props": Array [
+        "perf",
         "errors",
         "query",
         "helpers",
@@ -147,6 +151,7 @@ Object {
         "route",
       ],
       "props": Array [
+        "perf",
         "helpers",
         "data",
         "settings",
@@ -183,6 +188,7 @@ Object {
         "footerStack",
       ],
       "props": Array [
+        "perf",
         "data",
         "request",
         "errors",
@@ -224,6 +230,7 @@ Object {
         "customJsStack",
       ],
       "props": Array [
+        "perf",
         "helpers",
         "data",
         "settings",
@@ -258,6 +265,7 @@ Object {
         "footerStack",
       ],
       "props": Array [
+        "perf",
         "helpers",
         "data",
         "settings",
@@ -296,6 +304,7 @@ Object {
         "headString",
       ],
       "props": Array [
+        "perf",
         "helpers",
         "data",
         "settings",
@@ -318,6 +327,7 @@ Object {
         "htmlString",
       ],
       "props": Array [
+        "perf",
         "helpers",
         "data",
         "settings",
@@ -342,6 +352,7 @@ Object {
         "htmlString",
       ],
       "props": Array [
+        "perf",
         "helpers",
         "data",
         "settings",
@@ -367,6 +378,7 @@ Object {
         "errors",
       ],
       "props": Array [
+        "perf",
         "request",
         "htmlString",
         "query",
@@ -392,6 +404,7 @@ Object {
       "location": "Page.ts, build.ts",
       "mutable": Array [],
       "props": Array [
+        "perf",
         "helpers",
         "data",
         "settings",
@@ -409,6 +422,7 @@ Object {
       "location": "build.ts",
       "mutable": Array [],
       "props": Array [
+        "perf",
         "helpers",
         "data",
         "settings",
@@ -558,6 +572,12 @@ Object {
     },
   ],
   "markBootstrapComplete": [Function],
+  "perf": Object {
+    "end": [Function],
+    "prefix": [Function],
+    "start": [Function],
+    "stop": [Function],
+  },
   "query": Object {},
   "router": [Function],
   "routes": Object {
@@ -632,6 +652,7 @@ Object {
       "shortcode": "svelteComponent",
     },
   ],
+  "uid": "startup",
 }
 `;
 
@@ -669,6 +690,7 @@ Object {
         "errors",
       ],
       "props": Array [
+        "perf",
         "hookInterface",
         "errors",
       ],
@@ -689,6 +711,7 @@ Object {
         "query",
       ],
       "props": Array [
+        "perf",
         "helpers",
         "data",
         "settings",
@@ -714,6 +737,7 @@ Object {
         "allRequests",
       ],
       "props": Array [
+        "perf",
         "helpers",
         "data",
         "settings",
@@ -749,6 +773,7 @@ Object {
         "serverLookupObject",
       ],
       "props": Array [
+        "perf",
         "errors",
         "query",
         "helpers",
@@ -789,6 +814,7 @@ Object {
         "route",
       ],
       "props": Array [
+        "perf",
         "helpers",
         "data",
         "settings",
@@ -825,6 +851,7 @@ Object {
         "footerStack",
       ],
       "props": Array [
+        "perf",
         "data",
         "request",
         "errors",
@@ -866,6 +893,7 @@ Object {
         "customJsStack",
       ],
       "props": Array [
+        "perf",
         "helpers",
         "data",
         "settings",
@@ -900,6 +928,7 @@ Object {
         "footerStack",
       ],
       "props": Array [
+        "perf",
         "helpers",
         "data",
         "settings",
@@ -938,6 +967,7 @@ Object {
         "headString",
       ],
       "props": Array [
+        "perf",
         "helpers",
         "data",
         "settings",
@@ -960,6 +990,7 @@ Object {
         "htmlString",
       ],
       "props": Array [
+        "perf",
         "helpers",
         "data",
         "settings",
@@ -984,6 +1015,7 @@ Object {
         "htmlString",
       ],
       "props": Array [
+        "perf",
         "helpers",
         "data",
         "settings",
@@ -1009,6 +1041,7 @@ Object {
         "errors",
       ],
       "props": Array [
+        "perf",
         "request",
         "htmlString",
         "query",
@@ -1034,6 +1067,7 @@ Object {
       "location": "Page.ts, build.ts",
       "mutable": Array [],
       "props": Array [
+        "perf",
         "helpers",
         "data",
         "settings",
@@ -1051,6 +1085,7 @@ Object {
       "location": "build.ts",
       "mutable": Array [],
       "props": Array [
+        "perf",
         "helpers",
         "data",
         "settings",
@@ -1210,6 +1245,12 @@ Object {
     },
   ],
   "markBootstrapComplete": [Function],
+  "perf": Object {
+    "end": [Function],
+    "prefix": [Function],
+    "start": [Function],
+    "stop": [Function],
+  },
   "query": Object {},
   "router": [Function],
   "routes": Object {
@@ -1291,5 +1332,6 @@ Object {
       "shortcode": "svelteComponent",
     },
   ],
+  "uid": "startup",
 }
 `;

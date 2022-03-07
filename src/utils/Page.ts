@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import getUniqueId from './getUniqueId';
-import perf, { prefixPerf } from './perf';
+import perf from './perf';
 import prepareProcessStack from './prepareProcessStack';
 import { ShortcodeDefs } from '../shortcodes/types';
 import { QueryOptions, Stack, RequestOptions, SettingsOptions, HydrateOptions } from './types';
@@ -27,7 +27,7 @@ const buildPage = async (page) => {
         settings: createReadOnlyProxy(page.settings, 'settings', `${page.request.route}: data function`),
         request: createReadOnlyProxy(page.request, 'request', `${page.request.route}: data function`),
         errors: page.errors,
-        perf: prefixPerf(page.perf, 'data'),
+        perf: page.perf.prefix('data'),
         allRequests: createReadOnlyProxy(page.allRequests, 'allRequests', `${page.request.route}: data function`),
         next: page.next,
       });
