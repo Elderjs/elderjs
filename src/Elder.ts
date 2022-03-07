@@ -82,7 +82,7 @@ class Elder {
     this.bootstrapComplete = new Promise((resolve) => {
       this.markBootstrapComplete = resolve;
     });
-    this.uid = 'bootstrap';
+    this.uid = 'startup';
 
     // merge the given config with the project and defaults;
     this.settings = getConfig(initializationOptions);
