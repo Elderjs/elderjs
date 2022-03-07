@@ -262,7 +262,7 @@ class Elder {
           const route = this.routes[routeName];
           let allRequestsForRoute = [];
           if (typeof route.all === 'function') {
-            this.perf.start(`startup.routes.${routeName}`);
+            this.perf.start(`startup.routes.${routeName}.all`);
             allRequestsForRoute = await route.all({
               settings: createReadOnlyProxy(this.settings, 'settings', `${routeName} all function`),
               query: createReadOnlyProxy(this.query, 'query', `${routeName} all function`),
@@ -270,7 +270,7 @@ class Elder {
               data: createReadOnlyProxy(this.data, 'data', `${routeName} all function`),
               perf: this.perf.prefix(`startup.routes.${routeName}.all`),
             });
-            this.perf.end(`startup.routes.${routeName}`);
+            this.perf.end(`startup.routes.${routeName}.all`);
           } else if (Array.isArray(route.all)) {
             allRequestsForRoute = route.all;
           }
