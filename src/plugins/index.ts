@@ -35,6 +35,7 @@ export const pluginVersionCheck = (elderVersion: string, pluginVersion: string):
 };
 
 async function plugins(elder: Elder) {
+  elder.perf.start('startup.plugins');
   /**
    * Plugin initialization
    * * Collect plugin routes
@@ -49,6 +50,8 @@ async function plugins(elder: Elder) {
   for (let i = 0; i < pluginNames.length; i += 1) {
     let usesNodeModulesFolder = false;
     const pluginName = pluginNames[i];
+
+    elder.perf.start(`startup.plugins.${pluginName}`);
 
     const pluginConfigFromConfig = elder.settings.plugins[pluginName];
 
@@ -83,6 +86,7 @@ async function plugins(elder: Elder) {
     }
 
     if (typeof plugin.init === 'function' || (plugin.init && typeof plugin.init.then === 'function')) {
+      elder.perf.start(`startup.plugins.${pluginName}.init`);
       plugin =
         // eslint-disable-next-line no-await-in-loop
         (await plugin.init({
@@ -90,6 +94,7 @@ async function plugins(elder: Elder) {
           config: defaultsDeep(pluginConfigFromConfig, plugin.config),
           settings: createReadOnlyProxy(elder.settings, 'Settings', 'plugin init()'),
         })) || plugin;
+      elder.perf.end(`startup.plugins.${pluginName}.init`);
     }
 
     if (plugin.minimumElderjsVersion) {
@@ -303,7 +308,10 @@ async function plugins(elder: Elder) {
         });
       }
     }
+
+    elder.perf.end(`startup.plugins.${pluginName}`);
   }
+  elder.perf.end('startup.plugins');
 
   return { pluginRoutes, pluginHooks, pluginShortcodes };
 }
