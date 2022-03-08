@@ -160,7 +160,7 @@ export default (page: Page) => {
       }
     }
 
-    if (component.hydrateOptions.loading === 'eager') {
+    if (component.hydrateOptions?.loading === 'eager') {
       eagerString += `'${component.name}' : { 'component' : '${component.client.replace(
         `${relPrefix}/svelte/components/`,
         '',
@@ -180,7 +180,7 @@ export default (page: Page) => {
       }},`;
     }
 
-    if (component.hydrateOptions.preload) {
+    if (component.hydrateOptions?.preload) {
       page.headStack.push({
         source: component.name,
         priority: 50,
@@ -195,7 +195,7 @@ export default (page: Page) => {
           // string: `<link rel="modulepreload" href="${clientSrcMjs}">`, <-- can be an option for Chrome if browsers don't like this.
         });
       }
-    } else if (!component.hydrateOptions.noPrefetch) {
+    } else if (!component.hydrateOptions?.noPrefetch) {
       page.headStack.push({
         source: component.name,
         priority: 50,

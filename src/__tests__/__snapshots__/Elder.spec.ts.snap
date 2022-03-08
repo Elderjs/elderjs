@@ -7,6 +7,7 @@ Object {
   "data": Object {},
   "errors": Array [],
   "helpers": Object {
+    "inlineComponent": [Function],
     "inlineSvelteComponent": [Function],
     "permalinks": Object {
       "route-a": [Function],
@@ -649,6 +650,7 @@ Object {
   "data": Object {},
   "errors": Array [],
   "helpers": Object {
+    "inlineComponent": [Function],
     "inlineSvelteComponent": [Function],
     "permalinks": Object {
       "route-a": [Function],

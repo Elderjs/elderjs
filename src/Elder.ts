@@ -33,7 +33,7 @@ import {
 } from './utils/types';
 import createReadOnlyProxy from './utils/createReadOnlyProxy';
 import workerBuild from './workerBuild';
-import { inlineSvelteComponent } from './partialHydration/inlineSvelteComponent';
+import { inlineComponent } from './partialHydration/inlineComponent';
 import elderJsShortcodes from './shortcodes';
 import prepareRouter from './routes/prepareRouter';
 
@@ -219,7 +219,9 @@ class Elder {
 
       this.helpers = {
         permalinks: permalinks({ routes: this.routes, settings: this.settings }),
-        inlineSvelteComponent,
+        // TODO: deprecate this?
+        inlineSvelteComponent: inlineComponent,
+        inlineComponent,
         shortcode: prepareInlineShortcode({ settings: this.settings }),
       };
 
