@@ -27,7 +27,7 @@ const $$ejs = (par,eager)=>{
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         observer.unobserve(entry.target);
-        const selected = par[entry.target.id];
+        const selected = par[entry.target.getAttribute("ejs-id")];
         initComponent(entry.target,selected)
       }
     });
@@ -35,7 +35,7 @@ const $$ejs = (par,eager)=>{
       : ''
   }
   Object.keys(par).forEach(k => {
-    const el = document.getElementById(k);
+    const el = document.querySelector(\`[ejs-id="\${k}"]\`);
     if (${generateLazy ? '!eager && IO' : 'false'}) {
         IO.observe(el);
     } else {

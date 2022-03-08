@@ -29,7 +29,7 @@ describe('#mountComponentsInHtml', () => {
       page,
     });
     expect(result).toMatchInlineSnapshot(
-      `"<div class=\\"svelte-datepicker\\"><div class=\\"ejs-component\\" ejs-id=\\"0\\"><div class=\\"component\\" path=\\"ssr/Datepicker\\">{\\"a\\":\\"b\\"}</div></div></div>"`,
+      `"<div class=\\"svelte-datepicker\\"><div ejs-id=\\"0\\" class=\\"ejs-component datepicker-component\\"><div class=\\"component\\" path=\\"ssr/Datepicker\\">{\\"a\\":\\"b\\"}</div></div></div>"`,
     );
     expect(page.componentsToHydrate).toMatchInlineSnapshot(`
       Array [
@@ -39,7 +39,7 @@ describe('#mountComponentsInHtml', () => {
             "loading": "lazy",
           },
           "id": "0",
-          "name": "ejs0",
+          "name": "0",
           "prepared": Object {},
           "props": Object {
             "a": "b",
@@ -58,7 +58,7 @@ describe('#mountComponentsInHtml', () => {
       page,
     });
     expect(result).toMatchInlineSnapshot(
-      `"<div class=\\"svelte-datepicker\\"><div class=\\"ejs-component\\" ejs-id=\\"0\\"><div class=\\"component\\" path=\\"ssr/Datepicker\\">{\\"a\\":\\"b\\"}</div></div></div><div class=\\"svelte-datepicker\\"><div class=\\"ejs-component\\" ejs-id=\\"1\\"><div class=\\"component\\" path=\\"ssr/Datepicker\\">{\\"a\\":\\"b\\"}</div></div></div>"`,
+      `"<div class=\\"svelte-datepicker\\"><div ejs-id=\\"0\\" class=\\"ejs-component datepicker-component\\"><div class=\\"component\\" path=\\"ssr/Datepicker\\">{\\"a\\":\\"b\\"}</div></div></div><div class=\\"svelte-datepicker\\"><div ejs-id=\\"1\\" class=\\"ejs-component datepicker-component\\"><div class=\\"component\\" path=\\"ssr/Datepicker\\">{\\"a\\":\\"b\\"}</div></div></div>"`,
     );
     expect(page.componentsToHydrate).toMatchInlineSnapshot(`
       Array [
@@ -68,7 +68,7 @@ describe('#mountComponentsInHtml', () => {
             "loading": "lazy",
           },
           "id": "0",
-          "name": "ejs0",
+          "name": "0",
           "prepared": Object {},
           "props": Object {
             "a": "b",
@@ -80,7 +80,7 @@ describe('#mountComponentsInHtml', () => {
             "loading": "eager",
           },
           "id": "1",
-          "name": "ejs1",
+          "name": "1",
           "prepared": Object {},
           "props": Object {
             "a": "b",
@@ -100,7 +100,7 @@ describe('#mountComponentsInHtml', () => {
       page,
     });
     expect(result).toMatchInlineSnapshot(
-      `"<div class=\\"svelte-datepicker\\"><div class=\\"ejs-component\\" ejs-id=\\"0\\"><div class=\\"component\\" path=\\"ssr/Datesicker\\">{\\"a\\":\\"b\\"}</div></div></div><div class=\\"svelte-datepicker\\"><div class=\\"ejs-component\\" ejs-id=\\"1\\"><div class=\\"component\\" path=\\"ssr/Datepicker\\">{\\"a\\":\\"b\\"}</div></div></div><div class=\\"svelte-datepicker\\"><div class=\\"ejs-component\\" ejs-id=\\"2\\"><div class=\\"component\\" path=\\"ssr/Datericker\\">{\\"a\\":\\"b\\"}</div></div></div>"`,
+      `"<div class=\\"svelte-datepicker\\"><div ejs-id=\\"0\\" class=\\"ejs-component datesicker-component\\"><div class=\\"component\\" path=\\"ssr/Datesicker\\">{\\"a\\":\\"b\\"}</div></div></div><div class=\\"svelte-datepicker\\"><div ejs-id=\\"1\\" class=\\"ejs-component datepicker-component\\"><div class=\\"component\\" path=\\"ssr/Datepicker\\">{\\"a\\":\\"b\\"}</div></div></div><div class=\\"svelte-datepicker\\"><div ejs-id=\\"2\\" class=\\"ejs-component datericker-component\\"><div class=\\"component\\" path=\\"ssr/Datericker\\">{\\"a\\":\\"b\\"}</div></div></div>"`,
     );
     expect(page.componentsToHydrate).toMatchInlineSnapshot(`
       Array [
@@ -110,7 +110,7 @@ describe('#mountComponentsInHtml', () => {
             "loading": "lazy",
           },
           "id": "0",
-          "name": "ejs0",
+          "name": "0",
           "prepared": Object {},
           "props": Object {
             "a": "b",
@@ -122,7 +122,7 @@ describe('#mountComponentsInHtml', () => {
             "loading": "eager",
           },
           "id": "1",
-          "name": "ejs1",
+          "name": "1",
           "prepared": Object {},
           "props": Object {
             "a": "b",
@@ -134,7 +134,7 @@ describe('#mountComponentsInHtml', () => {
             "loading": "lazy",
           },
           "id": "2",
-          "name": "ejs2",
+          "name": "2",
           "prepared": Object {},
           "props": Object {
             "a": "b",
@@ -156,9 +156,9 @@ describe('#mountComponentsInHtml', () => {
     });
     expect(result).toMatchInlineSnapshot(`
       "<div class=\\"problem\\">
-            <div class=\\"ejs-component\\" ejs-id=\\"0\\"><div class=\\"component\\" path=\\"ssr/Clock\\">{}</div></div>
-            <div class=\\"ejs-component\\" ejs-id=\\"1\\"><div class=\\"component\\" path=\\"ssr/Block\\">{}</div></div>
-            <div class=\\"ejs-component\\" ejs-id=\\"2\\"><div class=\\"component\\" path=\\"ssr/Alock\\">{}</div></div>
+            <div ejs-id=\\"0\\" class=\\"ejs-component clock-component\\"><div class=\\"component\\" path=\\"ssr/Clock\\">{}</div></div>
+            <div ejs-id=\\"1\\" class=\\"ejs-component block-component\\"><div class=\\"component\\" path=\\"ssr/Block\\">{}</div></div>
+            <div ejs-id=\\"2\\" class=\\"ejs-component alock-component\\"><div class=\\"component\\" path=\\"ssr/Alock\\">{}</div></div>
             </div>"
     `);
     expect(page.componentsToHydrate).toMatchInlineSnapshot(`
@@ -170,7 +170,7 @@ describe('#mountComponentsInHtml', () => {
             "preload": true,
           },
           "id": "0",
-          "name": "ejs0",
+          "name": "0",
           "prepared": Object {},
           "props": false,
         },
@@ -180,7 +180,7 @@ describe('#mountComponentsInHtml', () => {
             "loading": "lazy",
           },
           "id": "1",
-          "name": "ejs1",
+          "name": "1",
           "prepared": Object {},
           "props": false,
         },
@@ -190,7 +190,7 @@ describe('#mountComponentsInHtml', () => {
             "loading": "lazy",
           },
           "id": "2",
-          "name": "ejs2",
+          "name": "2",
           "prepared": Object {},
           "props": false,
         },
@@ -205,7 +205,7 @@ describe('#mountComponentsInHtml', () => {
       html: `<ejswrapper ejs-mount='["Foo",null,{"element": "span"}]'></ejswrapper>`,
     });
     expect(result).toMatchInlineSnapshot(
-      `"<span ejs-id=\\"0\\"><div class=\\"component\\" path=\\"ssr/Foo\\">null</div></span>"`,
+      `"<span ejs-id=\\"0\\" class=\\"foo-component\\"><div class=\\"component\\" path=\\"ssr/Foo\\">null</div></span>"`,
     );
     expect(page.componentsToHydrate).toMatchInlineSnapshot(`
       Array [
@@ -215,7 +215,7 @@ describe('#mountComponentsInHtml', () => {
             "element": "span",
           },
           "id": "0",
-          "name": "ejs0",
+          "name": "0",
           "prepared": Object {},
           "props": false,
         },
@@ -240,7 +240,7 @@ describe('#mountComponentsInHtml', () => {
       html: `<ejswrapper ejs-mount='["Foo",null,{"loading":"none"}]' style="color: red"></ejswrapper>`,
     });
     expect(result).toMatchInlineSnapshot(
-      `"<div style=\\"color: red\\"><div class=\\"component\\" path=\\"ssr/Foo\\">null</div></div>"`,
+      `"<div style=\\"color: red\\" class=\\"foo-component\\"><div class=\\"component\\" path=\\"ssr/Foo\\">null</div></div>"`,
     );
     expect(page.componentsToHydrate).toMatchInlineSnapshot(`Array []`);
   });
