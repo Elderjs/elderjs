@@ -11,11 +11,6 @@ export const getComponentName = (str) => {
   return out;
 };
 
-interface svelteComponentCompileOptions extends ComponentPayload {
-  openTagOnly?: boolean;
-  otherAttributes?: string;
-}
-
 export function renderComponent({ path, props }) {
   // eslint-disable-next-line import/no-dynamic-require
   const component = require(path);
@@ -26,39 +21,10 @@ export function renderComponent({ path, props }) {
 
 const svelteComponent =
   (componentName: String, folder: String = 'components') =>
-  ({
-    page,
-    props,
-    hydrateOptions,
-    openTagOnly = false,
-    otherAttributes = '',
-  }: svelteComponentCompileOptions): string => {
+  ({ page, props, hydrateOptions }: ComponentPayload): string => {
     const { ssr, client } = page.settings.$$internal.findComponent(componentName, folder);
 
     const cleanComponentName = getComponentName(componentName);
-
-    const generateWrapper = (innerHtml = '') => {
-      const id = getUniqueId();
-      const lowerCaseComponent = componentName.toLowerCase();
-      const uniqueComponentName = `${lowerCaseComponent}${id}`;
-
-      page.componentsToHydrate.push({
-        name: uniqueComponentName,
-        hydrateOptions,
-        client,
-        props: Object.keys(props).length > 0 ? props : false,
-        prepared: {},
-        id,
-      });
-      const openTag = `<${
-        hydrateOptions.element || 'div'
-      } class="${cleanComponentName.toLowerCase()}-component" id="${uniqueComponentName}"${otherAttributes}>`;
-
-      if (openTagOnly) return openTag;
-
-      return `${openTag}${innerHtml}</${hydrateOptions.element || 'div'}>`;
-    };
-    if (openTagOnly) return generateWrapper();
 
     // eslint-disable-next-line import/no-dynamic-require
     const ssrReq = require(ssr);
@@ -81,7 +47,7 @@ const svelteComponent =
       const innerHtml = mountComponentsInHtml({
         html: htmlOutput,
         page,
-        isClient: hydrateOptions == null || hydrateOptions.loading !== 'none',
+        isClient: hydrateOptions && hydrateOptions.loading !== 'none',
       });
 
       // hydrateOptions.loading=none for server only rendered injected into html
@@ -90,7 +56,22 @@ const svelteComponent =
         return innerHtml;
       }
 
-      return generateWrapper(innerHtml);
+      const id = getUniqueId();
+      const lowerCaseComponent = componentName.toLowerCase();
+      const uniqueComponentName = `${lowerCaseComponent}${id}`;
+
+      page.componentsToHydrate.push({
+        name: uniqueComponentName,
+        hydrateOptions,
+        client,
+        props: Object.keys(props).length > 0 ? props : false,
+        prepared: {},
+        id,
+      });
+      const element = hydrateOptions?.element || 'div';
+      const openTag = `<${element} class="${cleanComponentName.toLowerCase()}-component" id="${uniqueComponentName}">`;
+
+      return `${openTag}${innerHtml}</${element}>`;
     } catch (e) {
       // console.log(e);
       page.errors.push(e);
