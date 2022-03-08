@@ -33,7 +33,7 @@ import {
 } from './utils/types';
 import createReadOnlyProxy from './utils/createReadOnlyProxy';
 import workerBuild from './workerBuild';
-import { inlineComponent } from './partialHydration/inlineComponent';
+import inlineComponent from './partialHydration/inlineComponent';
 import elderJsShortcodes from './shortcodes';
 import prepareRouter from './routes/prepareRouter';
 

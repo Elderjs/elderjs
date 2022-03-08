@@ -1,4 +1,3 @@
-import { HydrateOptions } from '../utils/types';
 import { escapeHtml } from '../utils/htmlParser';
 
 type InputParamsInlineComponent = {
@@ -10,10 +9,6 @@ type InputParamsInlineComponent = {
   };
 };
 
-export function inlineComponent({
-  name,
-  props = null,
-  options = null,
-}: InputParamsInlineComponent): string {
+export default function inlineComponent({ name, props = null, options = null }: InputParamsInlineComponent): string {
   return `<ejswrapper ejs-mount="${escapeHtml(JSON.stringify([name, props, options]))}"></ejswrapper>`;
 }

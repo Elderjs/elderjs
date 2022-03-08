@@ -25,19 +25,19 @@ export default function mountComponentsInHtml({
     const mounts = [];
     let otherAttr = '';
     let className = '';
-    for (const attr of tag.attrs) {
+    tag.attrs.forEach((attr) => {
       if ('name' in attr) {
         if (/^ejs-mount/.test(attr.name)) {
           mounts.push(JSON.parse(attr.value.value));
-          continue;
+          return;
         }
         if (attr.name === 'class') {
           className = attr.value.value;
-          continue;
+          return;
         }
       }
       otherAttr += ` ${html.slice(attr.start, attr.end)}`;
-    }
+    });
     let element;
     let innerHtml = '';
     let mountedComponent;
@@ -56,18 +56,20 @@ export default function mountComponentsInHtml({
       }
       if (!innerHtml && closeImmediately && ssr) {
         const result = renderComponent({ path: ssr, props });
-        if (result.head) {
+        if (result?.head) {
           page.headStack.push({ source: name, priority: 50, string: result.head });
         }
-        if (result.css?.code && page.settings.css === 'inline' && options?.loading === 'none') {
+        if (result?.css?.code && page.settings.css === 'inline' && options?.loading === 'none') {
           page.svelteCss.push({ css: result.css.code, cssMap: result.css.map });
         }
-        innerHtml = mountComponentsInHtml({
-          page,
-          html: result.html,
-          isClient: isClient || options?.loading !== 'none',
-        });
-        mountedComponent = name;
+        if (result?.html) {
+          innerHtml = mountComponentsInHtml({
+            page,
+            html: result.html,
+            isClient: isClient || options?.loading !== 'none',
+          });
+          mountedComponent = name;
+        }
       }
       if (options?.loading !== 'none') {
         if (id == null) {

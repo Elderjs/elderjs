@@ -1,4 +1,4 @@
-import { inlineComponent } from '../inlineComponent';
+import inlineComponent from '../inlineComponent';
 
 test('#inlineComponent', () => {
   const options = {
