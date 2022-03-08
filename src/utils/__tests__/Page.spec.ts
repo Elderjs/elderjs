@@ -2,7 +2,13 @@
 import Page from '../Page';
 import normalizeSnapshot from '../normalizeSnapshot';
 
-jest.mock('../getUniqueId', () => () => 'xxxxxxxxxx');
+jest.mock('../getUniqueId', () => {
+  return {
+    __esModule: true,
+    ...(jest.requireActual('../getUniqueId') as object),
+    default: () => 'xxxxxxxxxx',
+  };
+});
 jest.mock('../prepareProcessStack', () => (page) => (stackName) => {
   const data = {
     headStack: 'headStack',

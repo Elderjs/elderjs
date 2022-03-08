@@ -76,7 +76,7 @@ describe('#svelteComponent', () => {
     expect(home(componentProps)).toEqual(`<div class="svelte-home">mock html output</div>`);
   });
 
-  it('svelteComponent works with partial hydration of subcomponent', () => {
+  it.skip('svelteComponent works with partial hydration of subcomponent', () => {
     jest.mock(
       resolve(process.cwd(), './test/components/Home'),
       () => ({
@@ -118,7 +118,7 @@ describe('#svelteComponent', () => {
     });
   });
 
-  it('svelteComponent respects css settings: inline', () => {
+  it.skip('svelteComponent respects css settings: inline', () => {
     jest.mock(
       resolve(process.cwd(), './test/components/Home'),
       () => ({
@@ -197,7 +197,7 @@ describe('#svelteComponent', () => {
     });
   });
 
-  it('svelteComponent respects css settings: file', () => {
+  it.skip('svelteComponent respects css settings: file', () => {
     jest.mock(
       resolve(process.cwd(), './test/components/Home'),
       () => ({

@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import getUniqueId from './getUniqueId';
+import getUniqueId, { prepareGetUniqueId } from './getUniqueId';
 import perf from './perf';
 import prepareProcessStack from './prepareProcessStack';
 import { ShortcodeDefs } from '../shortcodes/types';
@@ -76,7 +76,7 @@ const buildPage = async (page) => {
     await page.runHook('shortcodes', page);
 
     // shortcodes can add svelte components, so we have to process the resulting html accordingly.
-    page.layoutHtml = mountComponentsInHtml({ page, html: page.layoutHtml, hydrateOptions: false });
+    page.layoutHtml = mountComponentsInHtml({ page, html: page.layoutHtml, isClient: false });
 
     hydrateComponents(page);
 
@@ -219,6 +219,8 @@ class Page {
   shortcodes: ShortcodeDefs;
 
   componentsToHydrate: IComponentToHydrate[];
+
+  getUniqueId = prepareGetUniqueId();
 
   constructor({
     request,

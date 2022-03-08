@@ -36,6 +36,7 @@ Object {
   "data": Object {},
   "errors": Array [],
   "footerStack": Array [],
+  "getUniqueId": [Function],
   "headStack": Array [],
   "helpers": Object {
     "metersInAMile": 0.00062137119224,
@@ -273,6 +274,7 @@ Object {
     customJsStack
     footerStack
     ",
+  "getUniqueId": [Function],
   "head": "headStack",
   "headStack": Array [],
   "headString": "headStack<style>cssStack</style>",
@@ -494,6 +496,7 @@ Object {
     customJsStack
     footerStack
     ",
+              "getUniqueId": [Function],
               "head": "headStack",
               "headStack": Array [],
               "headString": "headStack<style>cssStack</style>",
@@ -985,6 +988,7 @@ Object {
     customJsStack
     footerStack
     ",
+              "getUniqueId": [Function],
               "head": "headStack",
               "headStack": Array [],
               "headString": "headStack<style>cssStack</style>",

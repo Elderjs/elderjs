@@ -7,8 +7,7 @@ const createReplacementString = (content, tag) => {
   let options = '';
   let clientProps = '';
   let styleProps = '';
-  let stylePropsRaw = '';
-  let serverProps = '';
+  let otherProps = '';
   for (const attr of tag.attrs) {
     if (/^hydrate-client$/i.test(attr.name)) {
       if (attr.value) {
@@ -17,28 +16,17 @@ const createReplacementString = (content, tag) => {
     } else if (/^hydrate-options$/i.test(attr.name)) {
       options = content.slice(attr.value.exp.start, attr.value.exp.end);
     } else if (/^--/i.test(attr.name)) {
-      stylePropsRaw += ` ${content.slice(attr.start, attr.end)}`;
       styleProps += ` style:${attr.name}=${content.slice(attr.value.start, attr.value.end)}`;
     } else {
-      serverProps += ` ${content.slice(attr.start, attr.end)}`;
+      otherProps += ` ${content.slice(attr.start, attr.end)}`;
     }
   }
-  const spreadClientProps = clientProps ? ` {...(${clientProps})}` : '';
-  // FIXME: it should be possible to merge three attributes into one
-  // FIXME: use hydrateOptions.element instead of 'div'
-  const wrapper =
-    `<div class="ejs-component" data-ejs-component="${tag.name}"` +
-    ` data-ejs-props=${stringifyExpression(clientProps)}` +
-    ` data-ejs-options=${stringifyExpression(options)}` +
-    `${styleProps}>` +
-    `<${tag.name}${spreadClientProps}${serverProps}/></div>`;
-  if (!options) {
-    return wrapper;
+  if (otherProps) {
+    throw new Error(`Found unxpected attributes on hydratable component:${otherProps}`);
   }
-  return (
-    `{#if (${options}).loading === 'none'}<${tag.name}${spreadClientProps}${stylePropsRaw}${serverProps}/>` +
-    `{:else}${wrapper}{/if}`
-  );
+  return `<ejswrapper ejs-mount=${stringifyExpression(
+    `["${tag.name}",${clientProps},${options}]`,
+  )}${styleProps}></ejswrapper>`;
 };
 
 export const preprocessSvelteContent = (content) => {

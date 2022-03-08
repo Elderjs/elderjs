@@ -8,3 +8,12 @@ const getUniqueId = (): string => {
 };
 
 export default getUniqueId;
+
+export function prepareGetUniqueId() {
+  let i = 0;
+  return () => {
+    const result = i.toString(36);
+    i += 1;
+    return result;
+  };
+}

@@ -16,6 +16,14 @@ interface svelteComponentCompileOptions extends ComponentPayload {
   otherAttributes?: string;
 }
 
+export function renderComponent({ path, props }) {
+  // eslint-disable-next-line import/no-dynamic-require
+  const component = require(path);
+  const { render, _css: css, _cssMap: cssMap } = component.default || component;
+  const { html, head } = render(props);
+  return { html, css: { code: css, map: cssMap }, head };
+}
+
 const svelteComponent =
   (componentName: String, folder: String = 'components') =>
   ({
@@ -73,7 +81,7 @@ const svelteComponent =
       const innerHtml = mountComponentsInHtml({
         html: htmlOutput,
         page,
-        hydrateOptions,
+        isClient: hydrateOptions == null || hydrateOptions.loading !== 'none',
       });
 
       // hydrateOptions.loading=none for server only rendered injected into html
