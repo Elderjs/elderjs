@@ -223,6 +223,28 @@ describe('#mountComponentsInHtml', () => {
     `);
   });
 
+  it('loading = none', () => {
+    const page = getPage();
+    const result = mount({
+      page,
+      html: `<ejswrapper ejs-mount='["Foo",null,{"loading":"none"}]'></ejswrapper>`,
+    });
+    expect(result).toMatchInlineSnapshot(`"<div class=\\"component\\" path=\\"ssr/Foo\\">null</div>"`);
+    expect(page.componentsToHydrate).toMatchInlineSnapshot(`Array []`);
+  });
+
+  it('loading = none with style attribute', () => {
+    const page = getPage();
+    const result = mount({
+      page,
+      html: `<ejswrapper ejs-mount='["Foo",null,{"loading":"none"}]' style="color: red"></ejswrapper>`,
+    });
+    expect(result).toMatchInlineSnapshot(
+      `"<div style=\\"color: red\\"><div class=\\"component\\" path=\\"ssr/Foo\\">null</div></div>"`,
+    );
+    expect(page.componentsToHydrate).toMatchInlineSnapshot(`Array []`);
+  });
+
   it('Performance test (#235)', () => {
     const comp = `<p><div class="ejs-component" ejs-mount='["Sicker",{ &quot;a&quot;: &quot;b&quot; },{ &quot;loading&quot;: &quot;lazy&quot; }]'></div></p>\n`;
     mount({

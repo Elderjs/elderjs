@@ -77,7 +77,8 @@ export default function mountComponentsInHtml({
     } else {
       const tagName = tag.name !== 'ejswrapper' ? tag.name : element || 'div';
       const closeTag = closeImmediately ? `</${tagName}>` : '';
-      repl = `<${tagName}${otherAttr} ejs-id="${id}">${innerHtml}${closeTag}`;
+      const tagId = id != null ? ` ejs-id="${id}"` : '';
+      repl = `<${tagName}${otherAttr}${tagId}>${innerHtml}${closeTag}`;
     }
     s.overwrite(match.index, match.index + match[0].length, repl);
     dirty = true;
