@@ -5,108 +5,104 @@ import createReadOnlyProxy from './createReadOnlyProxy';
 function prepareRunHook({ hooks, allSupportedHooks, settings }) {
   // eslint-disable-next-line consistent-return
   return async function processHook(hookName, props: any = {}) {
-    try {
-      if (props.perf) props.perf.start(`hook.${hookName}`);
+    if (props.perf) props.perf.start(`hook.${hookName}`);
 
-      // do we have a contract for the hook
-      const hookDefinition = allSupportedHooks.find((h) => h.hook === hookName);
-      if (!hookDefinition) {
-        throw new Error(`Hook ${hookName} not defined in hookInterface or via plugins.`);
-      }
+    // do we have a contract for the hook
+    const hookDefinition = allSupportedHooks.find((h) => h.hook === hookName);
+    if (!hookDefinition) {
+      throw new Error(`Hook ${hookName} not defined in hookInterface or via plugins.`);
+    }
 
-      const hookProps = hookDefinition.props.reduce((out, cv) => {
-        if (cv === 'perf') return out; // perf added and  prefixed below
+    const hookProps = hookDefinition.props.reduce((out, cv) => {
+      if (cv === 'perf') return out; // perf added and  prefixed below
 
-        if (Object.hasOwnProperty.call(props, cv)) {
-          if (!hookDefinition.mutable.includes(cv)) {
-            out[cv] = createReadOnlyProxy(props[cv], cv, hookName);
-          } else {
-            out[cv] = props[cv];
-          }
+      if (Object.hasOwnProperty.call(props, cv)) {
+        if (!hookDefinition.mutable.includes(cv)) {
+          out[cv] = createReadOnlyProxy(props[cv], cv, hookName);
         } else {
-          console.error(
-            `Hook named '${hookName}' cannot be run because prop ${cv} is not in scope to pass to the hook. Hook contract broken.`,
-          );
+          out[cv] = props[cv];
         }
-
-        return out;
-      }, {});
-
-      const theseHooks = hooks.filter((h) => h.hook === hookName);
-      if (theseHooks && Array.isArray(theseHooks) && theseHooks.length > 0) {
-        // higher priority is more important.
-        const hookList = theseHooks.sort((a, b) => b.priority - a.priority);
-
-        if (settings && settings.debug && settings.debug.hooks) {
-          console.log(`Hooks registered on ${hookName}:`, hookList);
-        }
-
-        const hookOutput = {};
-
-        // loop through the hooks, updating the output and the props in order
-        await hookList.reduce((p, hook) => {
-          return p.then(async () => {
-            if (props.perf) props.perf.start(`hook.${hookName}.${hook.name}`);
-            try {
-              let hookResponse = await hook.run({
-                ...hookProps,
-                perf: props.perf.prefix(`hook.${hookName}.${hook.name}`),
-              });
-
-              if (!hookResponse) hookResponse = {};
-
-              if (settings && settings.debug && settings.debug.hooks) {
-                console.log(`${hook.name} ran on ${hookName} and returned`, hookResponse);
-              }
-
-              Object.keys(hookResponse).forEach((key) => {
-                if (hookDefinition.mutable && hookDefinition.mutable.includes(key)) {
-                  hookOutput[key] = hookResponse[key];
-                  hookProps[key] = hookResponse[key];
-                } else {
-                  console.error(
-                    `Received attempted mutation on "${hookName}" from "${hook.name}" on the object "${key}". ${key} is not mutable on this hook `,
-                    hook.$$meta,
-                  );
-                }
-              });
-            } catch (e) {
-              console.error(e);
-              e.message = `Hook: "${hook.name}" threw an error: ${e.message}`;
-              props.errors.push(e);
-              if (hookName === 'buildComplete') console.error(e);
-            }
-            if (props.perf) props.perf.end(`hook.${hookName}.${hook.name}`);
-          });
-        }, Promise.resolve());
-
-        // this actually mutates the props.
-        if (
-          Object.keys(hookOutput).length > 0 &&
-          Array.isArray(hookDefinition.mutable) &&
-          hookDefinition.mutable.length > 0
-        ) {
-          hookDefinition.mutable.forEach((key) => {
-            if ({}.hasOwnProperty.call(hookOutput, key)) {
-              props[key] = hookOutput[key];
-            }
-          });
-        }
-
-        if (settings && settings.debug && settings.debug.hooks) console.log(`${hookName} finished`);
-
-        if (props.perf) props.perf.end(`hook.${hookName}`);
-        return hookOutput;
+      } else {
+        console.error(
+          `Hook named '${hookName}' cannot be run because prop ${cv} is not in scope to pass to the hook. Hook contract broken.`,
+        );
       }
+
+      return out;
+    }, {});
+
+    const theseHooks = hooks.filter((h) => h.hook === hookName);
+    if (theseHooks && Array.isArray(theseHooks) && theseHooks.length > 0) {
+      // higher priority is more important.
+      const hookList = theseHooks.sort((a, b) => b.priority - a.priority);
+
       if (settings && settings.debug && settings.debug.hooks) {
-        console.log(`${hookName} finished without executing any functions`);
+        console.log(`Hooks registered on ${hookName}:`, hookList);
       }
+
+      const hookOutput = {};
+
+      // loop through the hooks, updating the output and the props in order
+      await hookList.reduce((p, hook) => {
+        return p.then(async () => {
+          if (props.perf) props.perf.start(`hook.${hookName}.${hook.name}`);
+          try {
+            let hookResponse = await hook.run({
+              ...hookProps,
+              perf: props.perf.prefix(`hook.${hookName}.${hook.name}`),
+            });
+
+            if (!hookResponse) hookResponse = {};
+
+            if (settings && settings.debug && settings.debug.hooks) {
+              console.log(`${hook.name} ran on ${hookName} and returned`, hookResponse);
+            }
+
+            Object.keys(hookResponse).forEach((key) => {
+              if (hookDefinition.mutable && hookDefinition.mutable.includes(key)) {
+                hookOutput[key] = hookResponse[key];
+                hookProps[key] = hookResponse[key];
+              } else {
+                console.error(
+                  `Received attempted mutation on "${hookName}" from "${hook.name}" on the object "${key}". ${key} is not mutable on this hook `,
+                  hook.$$meta,
+                );
+              }
+            });
+          } catch (e) {
+            console.error(e);
+            e.message = `Hook: "${hook.name}" threw an error: ${e.message}`;
+            props.errors.push(e);
+            if (hookName === 'buildComplete') console.error(e);
+          }
+          if (props.perf) props.perf.end(`hook.${hookName}.${hook.name}`);
+        });
+      }, Promise.resolve());
+
+      // this actually mutates the props.
+      if (
+        Object.keys(hookOutput).length > 0 &&
+        Array.isArray(hookDefinition.mutable) &&
+        hookDefinition.mutable.length > 0
+      ) {
+        hookDefinition.mutable.forEach((key) => {
+          if ({}.hasOwnProperty.call(hookOutput, key)) {
+            props[key] = hookOutput[key];
+          }
+        });
+      }
+
+      if (settings && settings.debug && settings.debug.hooks) console.log(`${hookName} finished`);
 
       if (props.perf) props.perf.end(`hook.${hookName}`);
-      return props;
-    } catch (e) {
-      console.error(e);
+      return hookOutput;
     }
+    if (settings && settings.debug && settings.debug.hooks) {
+      console.log(`${hookName} finished without executing any functions`);
+    }
+
+    if (props.perf) props.perf.end(`hook.${hookName}`);
+    return props;
   };
 }
 
