@@ -349,8 +349,6 @@ class Elder {
         this.router = prepareRouter(this);
         this.perf.end(`startup.prepareRouter`);
 
-        this.markBootstrapComplete(this);
-
         this.perf.end('startup');
         this.perf.stop();
 
@@ -363,6 +361,8 @@ class Elder {
             displayPerfTimings([...this.perf.timings]);
           }
         }
+
+        this.markBootstrapComplete(this);
       });
     });
   }
