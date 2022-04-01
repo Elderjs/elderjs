@@ -106,13 +106,13 @@ describe('#svelteComponent', () => {
     const svelteComponent = require('../svelteComponent').default;
     const home = svelteComponent('Home', 'components');
     expect(home(componentProps)).toEqual(
-      `<div class="svelte-datepicker"><div class="datepicker-component" id="datepickerSwrzsrVDCd"><div>DATEPICKER</div></div></div>`,
+      `<div class="svelte-datepicker"><div class="datepicker-component" id="datepicker-ejs-SwrzsrVDCd"><div>DATEPICKER</div></div></div>`,
     );
 
     expect(componentProps.page.componentsToHydrate[0]).toMatchObject({
       hydrateOptions: { loading: 'lazy', element: 'div' },
       id: 'SwrzsrVDCd',
-      name: 'datepickerSwrzsrVDCd',
+      name: 'datepicker-ejs-SwrzsrVDCd',
       prepared: {},
       props: { a: 'b' },
     });
@@ -185,13 +185,13 @@ describe('#svelteComponent', () => {
       props: {},
     };
     expect(home(props)).toEqual(
-      `<div class="svelte-datepicker"><div class="datepicker-component" id="datepickerSwrzsrVDCd"><div>DATEPICKER</div></div></div>`,
+      `<div class="svelte-datepicker"><div class="datepicker-component" id="datepicker-ejs-SwrzsrVDCd"><div>DATEPICKER</div></div></div>`,
     );
     expect(props.page.svelteCss).toEqual([{ css: ['<css>', '<css2>'], cssMap: ['<cssmap>', '<cssmap2>'] }]);
     expect(props.page.componentsToHydrate[0]).toMatchObject({
       hydrateOptions: { loading: 'lazy', element: 'div' },
       id: 'SwrzsrVDCd',
-      name: 'datepickerSwrzsrVDCd',
+      name: 'datepicker-ejs-SwrzsrVDCd',
       prepared: {},
       props: { a: 'b' },
     });
@@ -264,7 +264,7 @@ describe('#svelteComponent', () => {
       props: {},
     };
     expect(home(props)).toEqual(
-      `<div class="svelte-datepicker"><div class="datepicker-component" id="datepickerSwrzsrVDCd"><div>DATEPICKER</div></div></div>`,
+      `<div class="svelte-datepicker"><div class="datepicker-component" id="datepicker-ejs-SwrzsrVDCd"><div>DATEPICKER</div></div></div>`,
     );
     expect(props.page.svelteCss).toEqual([]);
   });
