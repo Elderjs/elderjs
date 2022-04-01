@@ -50,7 +50,7 @@ const svelteComponent =
 
       const id = getUniqueId();
       const lowerCaseComponent = componentName.toLowerCase();
-      const uniqueComponentName = `${lowerCaseComponent}${id}`;
+      const uniqueComponentName = `${lowerCaseComponent}-ejs-${id}`;
 
       page.componentsToHydrate.push({
         name: uniqueComponentName,
