@@ -28,7 +28,6 @@ function prepareShortcodeParser({
 
     shortcodeParser.add(shortcode.shortcode, async (props, content) => {
       perf.start(shortcode.shortcode);
-      console.log('hit', shortcode, perf);
 
       const shortcodeResponse = await shortcode.run({
         perf,
