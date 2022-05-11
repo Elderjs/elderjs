@@ -13,6 +13,7 @@ function prepareShortcodeParser({
   cssStack,
   headStack,
   customJsStack,
+  perf,
 }) {
   const { openPattern, closePattern } = settings.shortcodes;
   const shortcodeParser = ShortcodeParser({ openPattern, closePattern });
@@ -26,7 +27,11 @@ function prepareShortcodeParser({
       );
 
     shortcodeParser.add(shortcode.shortcode, async (props, content) => {
+      perf.start(shortcode.shortcode);
+      console.log('hit', shortcode, perf);
+
       const shortcodeResponse = await shortcode.run({
+        perf,
         props,
         content,
         plugin: shortcode.plugin,
@@ -86,9 +91,11 @@ function prepareShortcodeParser({
             string: head,
           });
         }
+        perf.end(shortcode.shortcode);
         return html || '';
       }
 
+      perf.end(shortcode.shortcode);
       return shortcodeResponse || '';
     });
   });

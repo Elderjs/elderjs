@@ -57,8 +57,10 @@ const hooks: Array<HookOptions> = [
       layoutHtml,
       shortcodes,
       allRequests,
+      perf,
     }) => {
       const ShortcodeParser = prepareShortcodeParser({
+        perf,
         shortcodes,
         helpers,
         data,
@@ -215,7 +217,7 @@ const hooks: Array<HookOptions> = [
           console.log(`${Math.round(timings.slice(-1)[0].duration * 10) / 10}ms: \t ${request.permalink}`);
           displayPerfTimings([...timings]);
         } else {
-          console.log(request.permalink);
+          console.log(request.req.path);
         }
       }
     },

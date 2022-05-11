@@ -20,6 +20,10 @@ jest.mock('@elderjs/shortcodes', () => (opts) => new ShortcodeParser(opts));
 jest.mock('../createReadOnlyProxy');
 
 const args = {
+  perf: {
+    start: () => '',
+    end: () => '',
+  },
   helpers: {},
   data: {},
   request: {},
