@@ -40,7 +40,7 @@
     "lodash.defaultsdeep": "^4.6.1",
     "lodash.get": "^4.4.2",
     "lodash.kebabcase": "^4.1.1",
-    "nanoid": "^3.1.20",
+    "nanoid": "^3.3.4",
     "regexparam": "^2.0.0",
     "rollup": "^2.51.2",
     "rollup-plugin-babel": "^4.4.0",
