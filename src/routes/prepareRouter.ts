@@ -39,7 +39,27 @@ type Req = {
 interface IFindPrebuildRequest {
   req: Req;
   serverLookupObject: any;
+  dataRoutes: boolean | string;
 }
+
+export const getDataRequest = ({ req, server, serverLookupObject }) => {
+  // check data routes
+  let request;
+  if (server.dataRoutes) {
+    const dataSuffix = typeof server.dataRoutes === 'string' ? server.dataRoutes : 'data.json';
+    if (req.path.endsWith(dataSuffix)) {
+      const lookup = req.path.replace(dataSuffix, '');
+      request = serverLookupObject[lookup];
+    }
+  }
+
+  if (request) {
+    request.req = req;
+  }
+
+  return request;
+};
+
 export const findPrebuiltRequest = ({ req, serverLookupObject }: IFindPrebuildRequest): RequestOptions | false => {
   // see if we have a request object with the path as is. (could include / or not.)
   let request = serverLookupObject[req.path] ? serverLookupObject[req.path] : false;
@@ -128,19 +148,26 @@ function prepareRouter(Elder) {
     shortcodes: elder.shortcodes,
   };
 
-  async function handleRequest({ res, next, request, dynamic = false }) {
+  async function handleRequest({ res, next, request, dynamic = false, dataRequest = false }) {
     if (!request.route || typeof request.route !== 'string') return next();
     if (!routes[request.route]) return next();
     const page = new Page({ ...forPage, request, next: dynamic ? next : undefined, route: routes[request.route] });
-    const html = await page.html();
+    const { htmlString: html, data } = await page.build();
 
-    // note: html will be undefined if a dynamic route calls skip() as it aborts page building.
+    if (dataRequest && data) {
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify(data));
+      return undefined;
+    }
+
     if (html && !res.headerSent && !res.headersSent) {
+      // note: html will be undefined if a dynamic route calls skip() as it aborts page building.
       res.setHeader('Content-Type', 'text/html');
       res.end(html);
 
       return undefined;
     }
+
     return next();
   }
 
@@ -151,7 +178,11 @@ function prepareRouter(Elder) {
         // initial request may be well formed if it is modified via a hook BEFORE the router runs.
         if (initialRequestIsWellFormed(initialRequest)) return handleRequest({ res, next, request: initialRequest });
         if (!needsElderRequest({ req, prefix })) return next();
-        const request = findPrebuiltRequest({ req, serverLookupObject });
+        const dataRequest = getDataRequest({ req, server: settings.server, serverLookupObject });
+        if (dataRequest) {
+          return handleRequest({ res, next, request: { ...dataRequest, ...initialRequest }, dataRequest: true });
+        }
+        const request = findPrebuiltRequest({ req, serverLookupObject, dataRoutes: settings?.server?.dataRoutes });
         if (request) return handleRequest({ res, next, request: { ...request, ...initialRequest } });
         const dynamicRequest = requestFromDynamicRoute({ req, dynamicRoutes, requestCache });
         if (dynamicRequest)

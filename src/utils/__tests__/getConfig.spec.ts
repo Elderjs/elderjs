@@ -150,7 +150,9 @@ describe('#getConfig', () => {
         expect.objectContaining({
           ...common,
           context: 'server',
-          server: false,
+          server: {
+            prefix: '',
+          },
         }),
       );
       expect(r.$$internal).toMatchObject(common$$Internal);

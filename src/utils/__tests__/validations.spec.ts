@@ -55,6 +55,7 @@ describe('#validations', () => {
     server: {
       prefix: '',
       cacheRequests: true,
+      dataRoutes: false,
     },
     shortcodes: {
       closePattern: '}}',

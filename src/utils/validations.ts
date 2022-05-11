@@ -105,6 +105,13 @@ const configSchema = yup.object({
       .label(
         `If Elder.js should cache requests when using dynamic routing. It may be useful to turn off the cache when combining Elder.js with another caching solution to reduce the resources consumed by the server.`,
       ),
+    dataRoutes: yup
+      .boolean()
+      .notRequired()
+      .default(false)
+      .label(
+        'Experimental: Allows for getting a json response of the data object of a url. Defaults to [path]/data.json but can be any suffix/filename after the route.',
+      ),
   }),
   prefix: yup
     .string()
