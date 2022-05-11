@@ -182,7 +182,11 @@ function prepareRouter(Elder) {
         if (dataRequest) {
           return handleRequest({ res, next, request: { ...dataRequest, ...initialRequest }, dataRequest: true });
         }
-        const request = findPrebuiltRequest({ req, serverLookupObject, dataRoutes: settings?.server?.dataRoutes });
+        const request = findPrebuiltRequest({
+          req,
+          serverLookupObject,
+          dataRoutes: settings && settings.server && settings.server.dataRoutes,
+        });
         if (request) return handleRequest({ res, next, request: { ...request, ...initialRequest } });
         const dynamicRequest = requestFromDynamicRoute({ req, dynamicRoutes, requestCache });
         if (dynamicRequest)
