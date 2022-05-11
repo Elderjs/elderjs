@@ -51,6 +51,7 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
     findComponent: prepareFindSvelteComponent({
       ssrFolder: ssrComponents,
       rootDir,
+      srcDir: config.srcDir,
       clientComponents,
       distDir: config.distDir,
     }),

@@ -327,6 +327,7 @@ describe('#prepareFindSvelteComponent', () => {
     const common = {
       ssrFolder: path.resolve(`./test/___ELDER___/compiled`),
       rootDir: path.resolve(`./test/`),
+      srcDir: path.resolve('./test/src'),
       clientComponents: path.resolve(`./test/public/_elderjs/svelte/`),
       distDir: path.resolve(`./test/public`),
     };
