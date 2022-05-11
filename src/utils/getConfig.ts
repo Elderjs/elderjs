@@ -30,11 +30,14 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
   config.version = pkgJson.version.includes('-') ? pkgJson.version.split('-')[0] : pkgJson.version;
 
   config.context = typeof initializationOptions.context !== 'undefined' ? initializationOptions.context : 'unknown';
+
   config.server = initializationOptions.context === 'server' && config.server;
   config.build = initializationOptions.context === 'build' && config.build;
   config.worker = !!initializationOptions.worker;
   config.prefix = serverPrefix;
-  config.server = serverPrefix ? { prefix: serverPrefix } : false;
+  if (serverPrefix && config.server) {
+    config.server.prefix = serverPrefix;
+  }
 
   const ssrComponents = path.resolve(config.rootDir, './___ELDER___/compiled/');
   const clientComponents = path.resolve(config.distDir, `.${serverPrefix}/_elderjs/svelte/`);
