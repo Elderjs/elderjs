@@ -2,12 +2,11 @@ import svelteComponent from '../utils/svelteComponent';
 
 export const replaceSpecialCharacters = (str) =>
   str
-    .replace(/\\\\n/gim, '\\n')
     .replace(/&quot;/gim, '"')
     .replace(/&lt;/gim, '<')
     .replace(/&gt;/gim, '>')
     .replace(/&#39;/gim, "'")
-    .replace(/\\"/gim, '"')
+    .replace(/&#039;/gim, "'")
     .replace(/&amp;/gim, '&');
 
 export default function mountComponentsInHtml({ page, html, hydrateOptions }): string {
@@ -25,12 +24,12 @@ export default function mountComponentsInHtml({ page, html, hydrateOptions }): s
     try {
       hydrateComponentProps = JSON.parse(replaceSpecialCharacters(match[3]));
     } catch (e) {
-      throw new Error(`Failed to JSON.parse props for ${hydrateComponentName} ${match[3]}`);
+      throw new Error(`Failed to JSON.parse props for ${hydrateComponentName} ${replaceSpecialCharacters(match[3])}`);
     }
     try {
       hydrateComponentOptions = JSON.parse(replaceSpecialCharacters(match[4]));
     } catch (e) {
-      throw new Error(`Failed to JSON.parse props for ${hydrateComponentName} ${match[4]}`);
+      throw new Error(`Failed to JSON.parse props for ${hydrateComponentName} ${replaceSpecialCharacters(match[4])}`);
     }
 
     if (hydrateOptions) {
