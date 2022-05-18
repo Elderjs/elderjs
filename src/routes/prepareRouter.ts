@@ -57,7 +57,7 @@ export const getSpecialRequest = ({ req, server, serverLookupObject }: IGetSpeci
 
   if (server.allRequestsRoute) {
     const dataSuffix = typeof server.allRequestsRoute === 'string' ? server.allRequestsRoute : '/allRequests.json';
-    if (req.path === dataSuffix) {
+    if (req.path === (server.prefix ? `${server.prefix}${dataSuffix}` : dataSuffix)) {
       // just needs any request.
       const k1 = Object.keys(serverLookupObject)[0];
       request = serverLookupObject[k1];
