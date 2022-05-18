@@ -56,6 +56,7 @@ describe('#validations', () => {
       prefix: '',
       cacheRequests: true,
       dataRoutes: false,
+      allRequestsRoute: false,
     },
     shortcodes: {
       closePattern: '}}',

@@ -2,7 +2,7 @@
 import routeSort from 'route-sort';
 import get from 'lodash.get';
 import Page from '../utils/Page';
-import { RequestOptions } from '../utils/types';
+import { RequestOptions, ServerOptions } from '../utils/types';
 import { RouteOptions } from './types';
 
 export function extractDynamicRouteParams({ path, $$meta }) {
@@ -36,29 +36,47 @@ type Req = {
   search?: string;
 };
 
-interface IFindPrebuildRequest {
+interface IGetSpecialRequest {
   req: Req;
   serverLookupObject: any;
-  dataRoutes: boolean | string;
+  server: ServerOptions;
 }
 
-export const getDataRequest = ({ req, server, serverLookupObject }) => {
+export const getSpecialRequest = ({ req, server, serverLookupObject }: IGetSpecialRequest) => {
   // check data routes
   let request;
+  let type;
   if (server.dataRoutes) {
     const dataSuffix = typeof server.dataRoutes === 'string' ? server.dataRoutes : 'data.json';
     if (req.path.endsWith(dataSuffix)) {
       const lookup = req.path.replace(dataSuffix, '');
       request = serverLookupObject[lookup];
+      type = 'data';
+    }
+  }
+
+  if (server.allRequestsRoute) {
+    const dataSuffix = typeof server.allRequestsRoute === 'string' ? server.allRequestsRoute : '/allRequests.json';
+    if (req.path === dataSuffix) {
+      // just needs any request.
+      const k1 = Object.keys(serverLookupObject)[0];
+      request = serverLookupObject[k1];
+      type = 'allRequests';
     }
   }
 
   if (request) {
+    request = JSON.parse(JSON.stringify(request));
     request.req = req;
   }
 
-  return request;
+  return { request, type };
 };
+
+interface IFindPrebuildRequest {
+  req: Req;
+  serverLookupObject: any;
+}
 
 export const findPrebuiltRequest = ({ req, serverLookupObject }: IFindPrebuildRequest): RequestOptions | false => {
   // see if we have a request object with the path as is. (could include / or not.)
@@ -72,6 +90,7 @@ export const findPrebuiltRequest = ({ req, serverLookupObject }: IFindPrebuildRe
   }
 
   if (request) {
+    request = JSON.parse(JSON.stringify(request));
     request.req = req;
   }
 
@@ -148,15 +167,21 @@ function prepareRouter(Elder) {
     shortcodes: elder.shortcodes,
   };
 
-  async function handleRequest({ res, next, request, dynamic = false, dataRequest = false }) {
+  async function handleRequest({ res, next, request, dynamic = false, type = '' }) {
     if (!request.route || typeof request.route !== 'string') return next();
     if (!routes[request.route]) return next();
     const page = new Page({ ...forPage, request, next: dynamic ? next : undefined, route: routes[request.route] });
-    const { htmlString: html, data } = await page.build();
+    const { htmlString: html, data, allRequests } = await page.build();
 
-    if (dataRequest && data) {
+    if (type === 'data' && data) {
       res.setHeader('Content-Type', 'application/json');
       res.end(JSON.stringify(data));
+      return undefined;
+    }
+
+    if (type === 'allRequests' && allRequests) {
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify(allRequests));
       return undefined;
     }
 
@@ -178,14 +203,17 @@ function prepareRouter(Elder) {
         // initial request may be well formed if it is modified via a hook BEFORE the router runs.
         if (initialRequestIsWellFormed(initialRequest)) return handleRequest({ res, next, request: initialRequest });
         if (!needsElderRequest({ req, prefix })) return next();
-        const dataRequest = getDataRequest({ req, server: settings.server, serverLookupObject });
-        if (dataRequest) {
-          return handleRequest({ res, next, request: { ...dataRequest, ...initialRequest }, dataRequest: true });
+        const { request: specialRequest, type } = getSpecialRequest({
+          req,
+          server: settings.server,
+          serverLookupObject,
+        });
+        if (specialRequest) {
+          return handleRequest({ res, next, request: { ...specialRequest, ...initialRequest }, type });
         }
         const request = findPrebuiltRequest({
           req,
           serverLookupObject,
-          dataRoutes: settings && settings.server && settings.server.dataRoutes,
         });
         if (request) return handleRequest({ res, next, request: { ...request, ...initialRequest } });
         const dynamicRequest = requestFromDynamicRoute({ req, dynamicRoutes, requestCache });

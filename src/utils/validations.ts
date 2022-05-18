@@ -112,6 +112,13 @@ const configSchema = yup.object({
       .label(
         'Experimental: Allows for getting a json response of the data object of a url. Defaults to [path]/data.json but can be any suffix/filename after the route.',
       ),
+    allRequestsRoute: yup
+      .boolean()
+      .notRequired()
+      .default(false)
+      .label(
+        'Experimental: Allows for getting a json response of the all requests object by hitting a url. Defaults to /allRequests.json if "true" but can be overridden with any string.',
+      ),
   }),
   prefix: yup
     .string()

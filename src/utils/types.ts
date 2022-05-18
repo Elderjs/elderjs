@@ -3,9 +3,11 @@ import type { HookOptions } from '../hooks/types';
 import type { ShortcodeDefs } from '../shortcodes/types';
 import Page from './Page';
 
-type ServerOptions = {
+export type ServerOptions = {
   prefix: string;
   cacheRequests?: boolean;
+  dataRoutes?: boolean | string;
+  allRequestsRoute?: boolean | string;
 };
 
 type BuildOptions = {
