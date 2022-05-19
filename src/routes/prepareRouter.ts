@@ -4,6 +4,7 @@ import get from 'lodash.get';
 import Page from '../utils/Page';
 import { RequestOptions, ServerOptions } from '../utils/types';
 import { RouteOptions } from './types';
+import fixCircularJson from '../utils/fixCircularJson';
 
 export function extractDynamicRouteParams({ path, $$meta }) {
   let i = 0;
@@ -175,13 +176,13 @@ function prepareRouter(Elder) {
 
     if (type === 'data' && data) {
       res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify(data));
+      res.end(JSON.stringify(fixCircularJson(data)));
       return undefined;
     }
 
     if (type === 'allRequests' && allRequests) {
       res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify(allRequests));
+      res.end(JSON.stringify(fixCircularJson(allRequests)));
       return undefined;
     }
 
