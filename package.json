@@ -70,7 +70,7 @@
     "rimraf": "^3.0.2",
     "ts-jest": "^26.5.3",
     "ts-node": "^9.1.1",
-    "typescript": "^4.3.5"
+    "typescript": "^4.7.2"
   },
   "description": "Elder.js is an opinionated static site generator and web framework built with SEO in mind.",
   "repository": {

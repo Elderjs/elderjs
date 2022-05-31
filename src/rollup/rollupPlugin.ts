@@ -133,7 +133,7 @@ export function transformFn({
       const dependencies = getDependencies(id);
       compiled.js.dependencies = [...dependencies, ...processed.dependencies];
 
-      if (this.addWatchFile) {
+      if (this && this.addWatchFile) {
         this.addWatchFile(id);
         compiled.js.dependencies.map((d) => this.addWatchFile(d));
       }
