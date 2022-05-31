@@ -152,7 +152,7 @@ export default function getRollupConfig(options) {
         sourcemap: !production ? 'inline' : false,
       },
       multiInputConfig: multiInput({
-        relative: 'src/',
+        relative: relSrcDir,
       }),
       svelteConfig,
       replacements,
@@ -177,7 +177,7 @@ export default function getRollupConfig(options) {
           },
         ],
         multiInputConfig: multiInput({
-          relative: 'src/',
+          relative: relSrcDir,
         }),
         svelteConfig,
         replacements,

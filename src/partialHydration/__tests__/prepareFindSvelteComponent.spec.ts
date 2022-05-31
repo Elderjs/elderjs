@@ -329,6 +329,7 @@ describe('#prepareFindSvelteComponent', () => {
       rootDir: path.resolve(`./test/`),
       clientComponents: path.resolve(`./test/public/_elderjs/svelte/`),
       distDir: path.resolve(`./test/public`),
+      srcDir: path.resolve(`./test/src`),
     };
 
     const findComponent = prepareFindSvelteComponent(common);

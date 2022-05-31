@@ -56,6 +56,7 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
       rootDir,
       clientComponents,
       distDir: config.distDir,
+      srcDir: config.srcDir,
     }),
   };
 
