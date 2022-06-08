@@ -43,6 +43,8 @@ interface IHookBase {
 type TVoidOrUndefined = undefined | null | void | never;
 type TGenericHookReturn<T> = TVoidOrUndefined | T | Promise<TVoidOrUndefined> | Promise<T>;
 
+type TFilteredPlugin = Omit<PluginOptions, 'init' | 'shortcodes' | 'routes' | 'hooks'>;
+
 export interface ICustomizeHooksHook extends IHookBase {
   hook: 'customizeHooks';
   run: (params: { perf: TPerfPayload; hookInterface: THookInterface; errors: TErrors }) => TGenericHookReturn<{
@@ -53,7 +55,7 @@ export interface ICustomizeHooksHook extends IHookBase {
 export interface IBootstrapHook extends IHookBase {
   hook: 'bootstrap';
   run: (params: {
-    plugin?: Omit<PluginOptions, 'init' | 'shortcodes' | 'routes' | 'hooks'>;
+    plugin?: TFilteredPlugin;
     perf: TPerfPayload;
     errors: TErrors;
     helpers: TUserHelpers;
@@ -74,7 +76,7 @@ export interface IBootstrapHook extends IHookBase {
 export interface IAllRequestsHook extends IHookBase {
   hook: 'allRequests';
   run: (params: {
-    plugin?: Omit<PluginOptions, 'init' | 'shortcodes' | 'routes' | 'hooks'>;
+    plugin?: TFilteredPlugin;
     perf: TPerfPayload;
     helpers: TUserHelpers;
     data: any;
@@ -89,7 +91,7 @@ export interface IAllRequestsHook extends IHookBase {
 export interface IMiddlewareHook extends IHookBase {
   hook: 'middleware';
   run: (params: {
-    plugin?: Omit<PluginOptions, 'init' | 'shortcodes' | 'routes' | 'hooks'>;
+    plugin?: TFilteredPlugin;
     perf: TPerfPayload;
     errors: TErrors;
     query: any;
@@ -125,7 +127,7 @@ export interface IMiddlewareHook extends IHookBase {
 export interface IRequestHook extends IHookBase {
   hook: 'request';
   run: (params: {
-    plugin?: Omit<PluginOptions, 'init' | 'shortcodes' | 'routes' | 'hooks'>;
+    plugin?: TFilteredPlugin;
     perf: TPerfPayload;
     helpers: TUserHelpers;
     data: any;
@@ -149,7 +151,7 @@ export interface IRequestHook extends IHookBase {
 export interface IDataHook extends IHookBase {
   hook: 'data';
   run: (params: {
-    plugin?: Omit<PluginOptions, 'init' | 'shortcodes' | 'routes' | 'hooks'>;
+    plugin?: TFilteredPlugin;
     perf: TPerfPayload;
     data: any;
     request: TRequestObject;
@@ -180,7 +182,7 @@ export interface IDataHook extends IHookBase {
 export interface IShortcodeHook extends IHookBase {
   hook: 'shortcodes';
   run: (params: {
-    plugin?: Omit<PluginOptions, 'init' | 'shortcodes' | 'routes' | 'hooks'>;
+    plugin?: TFilteredPlugin;
     perf: TPerfPayload;
     helpers: TUserHelpers;
     data: any;
@@ -206,7 +208,7 @@ export interface IShortcodeHook extends IHookBase {
 export interface IStacksHook extends IHookBase {
   hook: 'stacks';
   run: (params: {
-    plugin?: Omit<PluginOptions, 'init' | 'shortcodes' | 'routes' | 'hooks'>;
+    plugin?: TFilteredPlugin;
     perf: TPerfPayload;
     helpers: TUserHelpers;
     data: any;
@@ -238,7 +240,7 @@ export interface IStacksHook extends IHookBase {
 export interface IHeadHook extends IHookBase {
   hook: 'head';
   run: (params: {
-    plugin?: Omit<PluginOptions, 'init' | 'shortcodes' | 'routes' | 'hooks'>;
+    plugin?: TFilteredPlugin;
     perf: TPerfPayload;
     helpers: TUserHelpers;
     data: any;
@@ -253,7 +255,7 @@ export interface IHeadHook extends IHookBase {
 export interface ICompileHtmlHook extends IHookBase {
   hook: 'compileHtml';
   run: (params: {
-    plugin?: Omit<PluginOptions, 'init' | 'shortcodes' | 'routes' | 'hooks'>;
+    plugin?: TFilteredPlugin;
     perf: TPerfPayload;
     helpers: TUserHelpers;
     data: any;
@@ -271,7 +273,7 @@ export interface ICompileHtmlHook extends IHookBase {
 export interface IHtmlHook extends IHookBase {
   hook: 'html';
   run: (params: {
-    plugin?: Omit<PluginOptions, 'init' | 'shortcodes' | 'routes' | 'hooks'>;
+    plugin?: TFilteredPlugin;
     perf: TPerfPayload;
     helpers: TUserHelpers;
     data: any;
@@ -286,7 +288,7 @@ export interface IHtmlHook extends IHookBase {
 export interface IRequestCompleteHook extends IHookBase {
   hook: 'requestComplete';
   run: (params: {
-    plugin?: Omit<PluginOptions, 'init' | 'shortcodes' | 'routes' | 'hooks'>;
+    plugin?: TFilteredPlugin;
     perf: TPerfPayload;
     request: TRequestObject;
     htmlString: string;
@@ -301,7 +303,7 @@ export interface IRequestCompleteHook extends IHookBase {
 export interface IErrorHook extends IHookBase {
   hook: 'error';
   run: (params: {
-    plugin?: Omit<PluginOptions, 'init' | 'shortcodes' | 'routes' | 'hooks'>;
+    plugin?: TFilteredPlugin;
     perf: TPerfPayload;
     helpers: TUserHelpers;
     data: any;
@@ -315,7 +317,7 @@ export interface IErrorHook extends IHookBase {
 export interface IBuildCompleteHook extends IHookBase {
   hook: 'buildComplete';
   run: (params: {
-    plugin?: Omit<PluginOptions, 'init' | 'shortcodes' | 'routes' | 'hooks'>;
+    plugin?: TFilteredPlugin;
     perf: TPerfPayload;
     helpers: TUserHelpers;
     data: any;
