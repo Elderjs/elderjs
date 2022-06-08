@@ -3,8 +3,11 @@
 exports[`#hooks elderAddExternalHelpers 1`] = `
 Object {
   "helpers": Object {
+    "inlineSvelteComponent": [Function],
     "old": [MockFunction],
     "permalink": [MockFunction],
+    "permalinks": Object {},
+    "shortcode": [Function],
   },
 }
 `;
@@ -30,6 +33,20 @@ Object {
       "string": "<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\" />",
     },
   ],
+}
+`;
+
+exports[`#hooks elderWriteBuildErrors 1`] = `
+Object {
+  "$$meta": Object {
+    "addedBy": "elder.js",
+    "type": "internal",
+  },
+  "description": "Writes out any errors of a build to a JSON file in the ___ELDER___ folder.",
+  "hook": "buildComplete",
+  "name": "elderWriteBuildErrors",
+  "priority": 50,
+  "run": [Function],
 }
 `;
 

@@ -1,7 +1,8 @@
-function createReadOnlyProxy(obj: object, objName: string, location: string) {
+function createReadOnlyProxy<T>(obj: T, objName: string, location: string): T {
   // proxies only work on objects/arrays.
   try {
     if (typeof obj !== 'object' && !Array.isArray(obj)) return obj;
+    /// @ts-ignore
     return new Proxy(obj, {
       set() {
         console.log(

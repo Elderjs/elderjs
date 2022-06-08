@@ -253,7 +253,15 @@ describe('#plugins', () => {
         permalink: expect.any(Function),
       },
     });
-    expect(pluginHooks).toEqual([{ priority: 50 }]);
+    expect(pluginHooks).toEqual([
+      {
+        priority: 50,
+        $$meta: {
+          addedBy: 'elder-plugin-upload-s3',
+          type: 'plugin',
+        },
+      },
+    ]);
     expect(pluginShortcodes).toHaveLength(1);
     expect(initMock).toHaveBeenCalled();
   });

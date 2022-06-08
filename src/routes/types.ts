@@ -1,7 +1,8 @@
 import type { THooksArray } from '../hooks/types';
+import { SettingsOptions, TRequestObject, TUserHelpers } from '../utils/types';
 
 interface Permalink {
-  (input?: Object): string;
+  (input: { request: TRequestObject; settings: SettingsOptions; helpers?: TUserHelpers }): string;
 }
 
 type MetaOptions = {

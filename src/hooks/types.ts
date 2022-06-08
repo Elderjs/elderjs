@@ -2,7 +2,7 @@
 import { TPerfPayload, TPerfTimings } from '../utils/perf';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { THookInterface, customizeHooks, bootstrapHook } from './hookInterface';
+import { THookInterface } from './hookInterface';
 import {
   TRequestObject,
   SettingsOptions,
@@ -40,7 +40,7 @@ interface IHookBase {
   priority?: Number;
 }
 
-type TVoidOrUndefined = undefined | null | void;
+type TVoidOrUndefined = undefined | null | void | never;
 type TGenericHookReturn<T> =
   | TVoidOrUndefined
   | T
@@ -49,14 +49,14 @@ type TGenericHookReturn<T> =
   | Partial<T>
   | Promise<Partial<T>>;
 
-interface IHookCustomizeHooks extends IHookBase {
+export interface ICustomizeHooksHook extends IHookBase {
   hook: 'customizeHooks';
   run: (params: { perf: TPerfPayload; hookInterface: THookInterface; errors: TErrors }) => TGenericHookReturn<{
     hookInterface?: THookInterface;
     errors?: TErrors;
   }>;
 }
-interface IHookBootstrap extends IHookBase {
+export interface IBootstrapHook extends IHookBase {
   hook: 'bootstrap';
   run: (params: {
     plugin?: Omit<PluginOptions, 'init' | 'shortcodes' | 'routes' | 'hooks'>;
@@ -66,7 +66,7 @@ interface IHookBootstrap extends IHookBase {
     data: any;
     settings: SettingsOptions;
     routes: RoutesObject;
-    hooks: THooksArray[];
+    hooks: TProcessedHooksArray;
     query: any;
   }) => TGenericHookReturn<{
     errors?: TErrors;
@@ -77,9 +77,7 @@ interface IHookBootstrap extends IHookBase {
   }>;
 }
 
-/******* */
-
-interface IAllRequestsHook extends IHookBase {
+export interface IAllRequestsHook extends IHookBase {
   hook: 'allRequests';
   run: (params: {
     plugin?: Omit<PluginOptions, 'init' | 'shortcodes' | 'routes' | 'hooks'>;
@@ -94,7 +92,7 @@ interface IAllRequestsHook extends IHookBase {
   }) => TGenericHookReturn<{ errors?: TErrors; allRequests?: any }>;
 }
 
-interface IMiddlewareHook extends IHookBase {
+export interface IMiddlewareHook extends IHookBase {
   hook: 'middleware';
   run: (params: {
     plugin?: Omit<PluginOptions, 'init' | 'shortcodes' | 'routes' | 'hooks'>;
@@ -130,7 +128,7 @@ interface IMiddlewareHook extends IHookBase {
   }>;
 }
 
-interface IRequestHook extends IHookBase {
+export interface IRequestHook extends IHookBase {
   hook: 'request';
   run: (params: {
     plugin?: Omit<PluginOptions, 'init' | 'shortcodes' | 'routes' | 'hooks'>;
@@ -154,7 +152,7 @@ interface IRequestHook extends IHookBase {
   }>;
 }
 
-interface IDataHook extends IHookBase {
+export interface IDataHook extends IHookBase {
   hook: 'data';
   run: (params: {
     plugin?: Omit<PluginOptions, 'init' | 'shortcodes' | 'routes' | 'hooks'>;
@@ -185,7 +183,7 @@ interface IDataHook extends IHookBase {
   }>;
 }
 
-interface IShortcodeHook extends IHookBase {
+export interface IShortcodeHook extends IHookBase {
   hook: 'shortcodes';
   run: (params: {
     plugin?: Omit<PluginOptions, 'init' | 'shortcodes' | 'routes' | 'hooks'>;
@@ -211,7 +209,7 @@ interface IShortcodeHook extends IHookBase {
   }>;
 }
 
-interface IStacksHook extends IHookBase {
+export interface IStacksHook extends IHookBase {
   hook: 'stacks';
   run: (params: {
     plugin?: Omit<PluginOptions, 'init' | 'shortcodes' | 'routes' | 'hooks'>;
@@ -243,7 +241,7 @@ interface IStacksHook extends IHookBase {
   }>;
 }
 
-interface IHeadHook extends IHookBase {
+export interface IHeadHook extends IHookBase {
   hook: 'head';
   run: (params: {
     plugin?: Omit<PluginOptions, 'init' | 'shortcodes' | 'routes' | 'hooks'>;
@@ -258,7 +256,7 @@ interface IHeadHook extends IHookBase {
   }) => TGenericHookReturn<{ errors?: TErrors; headString?: string }>;
 }
 
-interface ICompileHtmlHook extends IHookBase {
+export interface ICompileHtmlHook extends IHookBase {
   hook: 'compileHtml';
   run: (params: {
     plugin?: Omit<PluginOptions, 'init' | 'shortcodes' | 'routes' | 'hooks'>;
@@ -276,7 +274,7 @@ interface ICompileHtmlHook extends IHookBase {
   }) => TGenericHookReturn<{ errors?: TErrors; htmlString?: string }>;
 }
 
-interface IHtmlHook extends IHookBase {
+export interface IHtmlHook extends IHookBase {
   hook: 'html';
   run: (params: {
     plugin?: Omit<PluginOptions, 'init' | 'shortcodes' | 'routes' | 'hooks'>;
@@ -291,7 +289,7 @@ interface IHtmlHook extends IHookBase {
   }) => TGenericHookReturn<{ errors?: TErrors; htmlString?: string }>;
 }
 
-interface IRequestCompleteHook extends IHookBase {
+export interface IRequestCompleteHook extends IHookBase {
   hook: 'requestComplete';
   run: (params: {
     plugin?: Omit<PluginOptions, 'init' | 'shortcodes' | 'routes' | 'hooks'>;
@@ -306,7 +304,7 @@ interface IRequestCompleteHook extends IHookBase {
   }) => TGenericHookReturn<{ errors?: any }>;
 }
 
-interface IErrorHook extends IHookBase {
+export interface IErrorHook extends IHookBase {
   hook: 'error';
   run: (params: {
     plugin?: Omit<PluginOptions, 'init' | 'shortcodes' | 'routes' | 'hooks'>;
@@ -320,7 +318,7 @@ interface IErrorHook extends IHookBase {
   }) => void | undefined | Promise<void> | Promise<undefined> | any | Promise<any>;
 }
 
-interface IBuildCompleteHook extends IHookBase {
+export interface IBuildCompleteHook extends IHookBase {
   hook: 'buildComplete';
   run: (params: {
     plugin?: Omit<PluginOptions, 'init' | 'shortcodes' | 'routes' | 'hooks'>;
@@ -337,8 +335,8 @@ interface IBuildCompleteHook extends IHookBase {
 }
 
 export type THooks =
-  | IHookCustomizeHooks
-  | IHookBootstrap
+  | ICustomizeHooksHook
+  | IBootstrapHook
   | IAllRequestsHook
   | IMiddlewareHook
   | IRequestHook
@@ -363,8 +361,8 @@ export type ProcessedHook<T> = T & {
 };
 
 export type TProcessedHook =
-  | ProcessedHook<IHookCustomizeHooks>
-  | ProcessedHook<IHookBootstrap>
+  | ProcessedHook<ICustomizeHooksHook>
+  | ProcessedHook<IBootstrapHook>
   | ProcessedHook<IAllRequestsHook>
   | ProcessedHook<IMiddlewareHook>
   | ProcessedHook<IRequestHook>

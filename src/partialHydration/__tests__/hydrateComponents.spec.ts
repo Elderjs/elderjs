@@ -99,7 +99,7 @@ describe('#hydrateComponents', () => {
       page.settings.props.replacementChars = '123';
       page.perf = {
         start: () => '',
-        stop: () => '',
+        end: () => '',
       };
 
       await hydrateComponents(page);

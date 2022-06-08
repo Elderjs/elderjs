@@ -2,13 +2,13 @@
 import routeSort from 'route-sort';
 import get from 'lodash.get';
 import Page from '../utils/Page';
-import { TRequestObject, ServerOptions } from '../utils/types';
+import { TRequestObject, ServerOptions, SettingsOptions } from '../utils/types';
 import { RouteOptions } from './types';
 import fixCircularJson from '../utils/fixCircularJson';
 
 export function extractDynamicRouteParams({ path, $$meta }) {
   let i = 0;
-  const out = {};
+  const out = {} as TRequestObject;
   const ms = $$meta.pattern.exec(path);
   while (i < $$meta.keys.length) {
     out[$$meta.keys[i]] = ms[++i] || null;
@@ -115,12 +115,14 @@ interface IRequestFromDynamicRoute {
   req: Req;
   dynamicRoutes: RouteOptions[];
   requestCache: Map<string, TRequestObject> | undefined;
+  settings: SettingsOptions;
 }
 
 export function requestFromDynamicRoute({
   req,
   dynamicRoutes,
   requestCache,
+  settings,
 }: IRequestFromDynamicRoute): TRequestObject | false {
   if (requestCache && requestCache.has(req.path)) {
     const request = requestCache.get(req.path);
@@ -131,7 +133,7 @@ export function requestFromDynamicRoute({
   if (route) {
     const params = extractDynamicRouteParams({ path: req.path, $$meta: route.$$meta });
     const request: TRequestObject = {
-      permalink: route.permalink({ request: params }),
+      permalink: route.permalink({ request: params, settings }),
       route: route.name,
       type: 'server',
       ...params,
@@ -217,7 +219,7 @@ function prepareRouter(Elder) {
           serverLookupObject,
         });
         if (request) return handleRequest({ res, next, request: { ...request, ...initialRequest } });
-        const dynamicRequest = requestFromDynamicRoute({ req, dynamicRoutes, requestCache });
+        const dynamicRequest = requestFromDynamicRoute({ req, dynamicRoutes, requestCache, settings });
         if (dynamicRequest)
           return handleRequest({ res, next, request: { ...dynamicRequest, ...initialRequest }, dynamic: true });
         return next();

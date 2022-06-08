@@ -150,7 +150,7 @@ export interface BuildResult {
 export type StackItem = {
   source: string;
   string: string;
-  priority: number;
+  priority?: number;
 };
 
 export type Stack = Array<StackItem>;
