@@ -9,6 +9,7 @@ export { Elder, build } from './Elder';
 export * from './utils/types';
 export * from './utils/index';
 export * from './routes/routes';
+export * from './routes/types';
 export * from './hooks/types';
 export { hookInterface } from './hooks/hookInterface';
 export { hookEntityDefinitions } from './hooks/hookEntityDefinitions';

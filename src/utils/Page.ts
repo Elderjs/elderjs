@@ -1,16 +1,17 @@
 /* eslint-disable no-param-reassign */
 import getUniqueId from './getUniqueId';
-import perf, { TPerf } from './perf';
+import perf, { TPerf, TPerfTimings } from './perf';
 import prepareProcessStack from './prepareProcessStack';
 import { ShortcodeDefs } from '../shortcodes/types';
 import { QueryOptions, Stack, TRequestObject, SettingsOptions, HydrateOptions, TErrors, THelpers } from './types';
-import { RoutesObject } from '../routes/types';
+import { RouteOptions, RoutesObject } from '../routes/types';
 import createReadOnlyProxy from './createReadOnlyProxy';
 import outputStyles from './outputStyles';
 import mountComponentsInHtml from '../partialHydration/mountComponentsInHtml';
 import hydrateComponents from '../partialHydration/hydrateComponents';
 
-const buildPage = async (page) => {
+// eslint-disable-next-line no-use-before-define
+const buildPage = async (page: Page) => {
   try {
     page.perf.end('initToBuildGap');
 
@@ -170,7 +171,7 @@ class Page {
 
   data: Object;
 
-  route: any;
+  route: RouteOptions;
 
   query: QueryOptions;
 
@@ -191,6 +192,14 @@ class Page {
   svelteCss: Array<SvelteCss>;
 
   htmlString: string;
+
+  head: string;
+
+  headString: string;
+
+  footerString: string;
+
+  styleTag: string;
 
   bodyAttributesString: string;
 
@@ -219,6 +228,8 @@ class Page {
   shortcodes: ShortcodeDefs;
 
   componentsToHydrate: IComponentToHydrate[];
+
+  timings: TPerfTimings;
 
   constructor({
     request,
@@ -252,6 +263,10 @@ class Page {
     this.routes = routes;
     this.cssString = '';
     this.htmlString = '';
+    this.head = '';
+    this.headString = '';
+    this.footerString = '';
+    this.styleTag = '';
     this.htmlAttributesString = '';
     this.bodyAttributesString = '';
     this.bodyAttributesStack = [];
@@ -266,6 +281,7 @@ class Page {
     this.moduleStack = [];
     this.shortcodes = shortcodes;
     this.svelteCss = [];
+    this.timings = [];
     this.processStack = prepareProcessStack(this);
     this.perf.end('constructor');
     this.perf.start('initToBuildGap');

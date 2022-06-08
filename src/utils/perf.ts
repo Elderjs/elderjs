@@ -59,7 +59,7 @@ function perf(page: Page | Elder, force = false) {
         if (obs) obs.disconnect();
         obs = null;
       },
-      prefix: (pre) => {
+      prefix: (pre): TPerfPayload => {
         return { start: (name) => page.perf.start(`${pre}.${name}`), end: (name) => page.perf.end(`${pre}.${name}`) };
       },
     };
@@ -74,7 +74,7 @@ function perf(page: Page | Elder, force = false) {
       start: placeholder,
       end: placeholder,
       stop: () => {},
-      prefix: () => ({ start: placeholder, end: placeholder }),
+      prefix: (): TPerfPayload => ({ start: placeholder, end: placeholder }),
     };
   }
 }

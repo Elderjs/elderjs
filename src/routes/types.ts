@@ -1,5 +1,5 @@
-import type { THooksArray } from '../hooks/types';
-import { SettingsOptions, TRequestObject, TUserHelpers } from '../utils/types';
+import { TPerfPayload } from '../utils/perf';
+import { SettingsOptions, TErrors, TRequestObject, TUserHelpers } from '../utils/types';
 
 interface Permalink {
   (input: { request: TRequestObject; settings: SettingsOptions; helpers?: TUserHelpers }): string;
@@ -13,17 +13,38 @@ type MetaOptions = {
   keys?: string[];
 };
 
+export type DataFnPayload = {
+  data: any;
+  query: any;
+  helpers: TUserHelpers;
+  settings: SettingsOptions;
+  request: TRequestObject;
+  errors: TErrors;
+  perf: TPerfPayload;
+  allRequests: TRequestObject[];
+  next: () => any;
+};
+
+export type DataFn = (payload: DataFnPayload) => PromiseLike<{ [key: string]: any }> | { [key: string]: any };
+
 interface IBaseRouteOptions {
   template?: string;
-  templateComponent?: (string) => Object;
+  templateComponent?: (x: any) => string;
   layout?: string;
-  layoutComponent?: (string) => Object;
-  data?: Object | (() => Object);
+  layoutComponent?: (x: any) => string;
+  data?: Object | DataFn;
   permalink: Permalink;
-  all?: any[] | ((payload: any) => [any] | Promise<any>);
+  all?:
+    | any[]
+    | ((payload: {
+        settings: SettingsOptions;
+        query: any;
+        helpers: TUserHelpers;
+        data: any;
+        perf: TPerfPayload;
+      }) => [any] | Promise<any>);
   $$meta?: MetaOptions;
-  name: string;
-  hooks?: Array<THooksArray>;
+  name?: string;
   dynamic?: boolean;
 }
 export interface RouteOptions extends IBaseRouteOptions {
