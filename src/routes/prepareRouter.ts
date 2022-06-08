@@ -2,7 +2,7 @@
 import routeSort from 'route-sort';
 import get from 'lodash.get';
 import Page from '../utils/Page';
-import { TRequestObject, ServerOptions, SettingsOptions } from '../utils/types';
+import { TRequestObject, ServerOptions, SettingsOptions, TServerLookupObject } from '../utils/types';
 import { RouteOptions } from './types';
 import fixCircularJson from '../utils/fixCircularJson';
 
@@ -39,7 +39,7 @@ type Req = {
 
 interface IGetSpecialRequest {
   req: Req;
-  serverLookupObject: any;
+  serverLookupObject: TServerLookupObject;
   server: ServerOptions;
 }
 
@@ -76,7 +76,7 @@ export const getSpecialRequest = ({ req, server, serverLookupObject }: IGetSpeci
 
 interface IFindPrebuildRequest {
   req: Req;
-  serverLookupObject: any;
+  serverLookupObject: TServerLookupObject;
 }
 
 export const findPrebuiltRequest = ({ req, serverLookupObject }: IFindPrebuildRequest): TRequestObject | false => {
@@ -90,8 +90,8 @@ export const findPrebuiltRequest = ({ req, serverLookupObject }: IFindPrebuildRe
     request = serverLookupObject[`${req.path}/`];
   }
 
-  if (request) {
-    request = JSON.parse(JSON.stringify(request));
+  if (typeof request !== 'undefined' && request) {
+    request = JSON.parse(JSON.stringify(request)) as TRequestObject;
     request.req = req;
   }
 

@@ -41,9 +41,9 @@ import prepareRouter from './routes/prepareRouter';
 import perf, { displayPerfTimings, TPerf } from './utils/perf';
 
 class Elder {
-  bootstrapComplete: Promise<any>;
+  bootstrapComplete: Promise<Elder>;
 
-  markBootstrapComplete: (Object) => void;
+  markBootstrapComplete: (e: Elder | PromiseLike<Elder>) => void;
 
   settings: SettingsOptions;
 
@@ -65,11 +65,9 @@ class Elder {
 
   helpers: THelpers;
 
-  server: any;
+  server: ReturnType<typeof prepareServer>;
 
-  builder: any;
-
-  hookInterface: any;
+  hookInterface: typeof hookInterface;
 
   shortcodes: ShortcodeDefs;
 
@@ -77,7 +75,7 @@ class Elder {
 
   uid: string;
 
-  router: (any) => any;
+  router: ReturnType<typeof prepareRouter>;
 
   constructor(initializationOptions: InitializationOptions = {}) {
     const initialOptions = { ...initializationOptions };

@@ -1,4 +1,6 @@
-function prepareServer({ bootstrapComplete }) {
+import { Elder } from '../Elder';
+
+function prepareServer({ bootstrapComplete }: { bootstrapComplete: Promise<Elder> }) {
   // eslint-disable-next-line consistent-return
   return async function prepServer(req, res, next) {
     try {
