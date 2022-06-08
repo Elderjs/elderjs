@@ -41,13 +41,7 @@ interface IHookBase {
 }
 
 type TVoidOrUndefined = undefined | null | void | never;
-type TGenericHookReturn<T> =
-  | TVoidOrUndefined
-  | T
-  | Promise<TVoidOrUndefined>
-  | Promise<T>
-  | Partial<T>
-  | Promise<Partial<T>>;
+type TGenericHookReturn<T> = TVoidOrUndefined | T | Promise<TVoidOrUndefined> | Promise<T>;
 
 export interface ICustomizeHooksHook extends IHookBase {
   hook: 'customizeHooks';
