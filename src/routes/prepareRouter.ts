@@ -1,10 +1,10 @@
 /* eslint-disable no-plusplus */
 import routeSort from 'route-sort';
-import get from 'lodash.get';
 import Page from '../utils/Page';
 import { TRequestObject, ServerOptions, SettingsOptions, TServerLookupObject } from '../utils/types';
 import { RouteOptions } from './types';
 import fixCircularJson from '../utils/fixCircularJson';
+import { Elder as ElderClass } from '..';
 
 export function extractDynamicRouteParams({ path, $$meta }) {
   let i = 0;
@@ -147,16 +147,16 @@ export function requestFromDynamicRoute({
   return false;
 }
 
-function prepareRouter(Elder) {
+function prepareRouter(Elder: ElderClass) {
   const { routes, serverLookupObject, settings, ...elder } = Elder;
-  const requestCache = settings.server.cacheRequests ? new Map() : undefined;
+  const requestCache = settings.server && settings.server.cacheRequests ? new Map() : undefined;
 
   // sort the routes in order of specificity
   const dynamicRoutes: RouteOptions[] = routeSort(
     Object.keys(routes).filter((cv) => routes[cv] && routes[cv].$$meta && routes[cv].$$meta.type === 'dynamic'),
   ).map((cv) => routes[cv]);
 
-  const prefix = get(settings, '$$internal.serverPrefix', '');
+  const prefix = settings.$$internal.serverPrefix;
 
   const forPage = {
     settings,
@@ -208,7 +208,7 @@ function prepareRouter(Elder) {
         if (!needsElderRequest({ req, prefix })) return next();
         const { request: specialRequest, type } = getSpecialRequest({
           req,
-          server: settings.server,
+          server: settings.server as ServerOptions,
           serverLookupObject,
         });
         if (specialRequest) {

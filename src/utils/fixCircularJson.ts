@@ -1,5 +1,5 @@
-function fixCircularJson(val, cache = undefined) {
-  cache = cache || new WeakSet();
+function fixCircularJson(val, givenCache = undefined) {
+  const cache = givenCache || new WeakSet();
 
   if (val && typeof val === 'object') {
     if (cache.has(val)) return '[Circular]';

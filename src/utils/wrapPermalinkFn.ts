@@ -1,9 +1,15 @@
-import get from 'lodash.get';
+import { SettingsOptions, TRequestObject } from './types';
+
+export type TWrapPermalinkFn = {
+  permalinkFn: (any) => string;
+  routeName: string;
+  settings: SettingsOptions;
+};
 
 const wrapPermalinkFn =
-  ({ permalinkFn, routeName, settings }) =>
-  (payload) => {
-    let permalink = permalinkFn(payload);
+  ({ permalinkFn, routeName, settings }: TWrapPermalinkFn) =>
+  (payload: { request: TRequestObject }) => {
+    let permalink = permalinkFn({ ...payload, settings });
     if (typeof permalink !== 'string') {
       throw new Error(
         `The permalink function for route: "${routeName}" returned ${JSON.stringify(
@@ -57,7 +63,7 @@ const wrapPermalinkFn =
       );
     }
 
-    const prefix = get(settings, '$$internal.serverPrefix', '');
+    const prefix = settings.$$internal.serverPrefix;
 
     return prefix ? prefix + permalink : permalink;
   };
