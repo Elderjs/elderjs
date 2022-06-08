@@ -1,7 +1,9 @@
+import { SettingsOptions } from './types';
+
 /* eslint-disable no-param-reassign */
 const prepareInlineShortcode =
-  ({ settings }) =>
-  ({ name, props = {}, content = '' }) => {
+  ({ settings }: { settings: SettingsOptions }) =>
+  ({ name, props = {}, content = '' }: { name: string; props: any; content: string }) => {
     const { openPattern, closePattern } = settings.shortcodes;
     const openNoEscape = openPattern.replace('\\', '');
     const closeNoEscape = closePattern.replace('\\', '');

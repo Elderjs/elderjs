@@ -2,7 +2,7 @@
 import routeSort from 'route-sort';
 import get from 'lodash.get';
 import Page from '../utils/Page';
-import { RequestOptions, ServerOptions } from '../utils/types';
+import { TRequestObject, ServerOptions } from '../utils/types';
 import { RouteOptions } from './types';
 import fixCircularJson from '../utils/fixCircularJson';
 
@@ -79,7 +79,7 @@ interface IFindPrebuildRequest {
   serverLookupObject: any;
 }
 
-export const findPrebuiltRequest = ({ req, serverLookupObject }: IFindPrebuildRequest): RequestOptions | false => {
+export const findPrebuiltRequest = ({ req, serverLookupObject }: IFindPrebuildRequest): TRequestObject | false => {
   // see if we have a request object with the path as is. (could include / or not.)
   let request = serverLookupObject[req.path] ? serverLookupObject[req.path] : false;
   if (!request && req.path[req.path.length - 1] === '/') {
@@ -108,20 +108,20 @@ export const needsElderRequest = ({ req, prefix }) => {
 };
 
 // make sure we're dealing with a well form elderjs request.
-export const initialRequestIsWellFormed = (request: RequestOptions) =>
+export const initialRequestIsWellFormed = (request: TRequestObject) =>
   !!(request && request.permalink && request.route);
 
 interface IRequestFromDynamicRoute {
   req: Req;
   dynamicRoutes: RouteOptions[];
-  requestCache: Map<string, RequestOptions> | undefined;
+  requestCache: Map<string, TRequestObject> | undefined;
 }
 
 export function requestFromDynamicRoute({
   req,
   dynamicRoutes,
   requestCache,
-}: IRequestFromDynamicRoute): RequestOptions | false {
+}: IRequestFromDynamicRoute): TRequestObject | false {
   if (requestCache && requestCache.has(req.path)) {
     const request = requestCache.get(req.path);
     request.req = req;
@@ -130,7 +130,7 @@ export function requestFromDynamicRoute({
   const route = getDynamicRoute({ path: req.path, dynamicRoutes });
   if (route) {
     const params = extractDynamicRouteParams({ path: req.path, $$meta: route.$$meta });
-    const request: RequestOptions = {
+    const request: TRequestObject = {
       permalink: route.permalink({ request: params }),
       route: route.name,
       type: 'server',

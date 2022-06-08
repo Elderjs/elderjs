@@ -1,13 +1,8 @@
-import type { HookOptions } from '../hooks/types';
+import type { THooksArray } from '../hooks/types';
 
 interface Permalink {
   (input?: Object): string;
 }
-
-export type StateSlug = {
-  slug: string;
-  id: Number;
-};
 
 type MetaOptions = {
   type: string;
@@ -17,25 +12,21 @@ type MetaOptions = {
   keys?: string[];
 };
 
-type RequestObject = {
-  slug: string;
-};
-
-// TODO: cleanup to remove ElderGuide.com specific things.
-export type RouteOptions = {
+interface IBaseRouteOptions {
   template?: string;
   templateComponent?: (string) => Object;
   layout?: string;
   layoutComponent?: (string) => Object;
   data?: Object | (() => Object);
   permalink: Permalink;
-  all?: [RequestObject] | ((Object) => [RequestObject] | Promise<any>);
+  all?: any[] | ((payload: any) => [any] | Promise<any>);
   $$meta?: MetaOptions;
   name: string;
-  hooks?: Array<HookOptions>;
+  hooks?: Array<THooksArray>;
   dynamic?: boolean;
-};
+}
+export interface RouteOptions extends IBaseRouteOptions {
+  [x: string]: any;
+}
 
-export type RoutesOptions = {
-  [name: string]: RouteOptions;
-};
+export type RoutesObject = Record<string, RouteOptions>;

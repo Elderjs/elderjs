@@ -1,7 +1,10 @@
-import type { RoutesOptions } from '../routes/types';
-import type { HookOptions } from '../hooks/types';
+import type { RoutesObject } from '../routes/types';
+import type { THooksArray } from '../hooks/types';
 import type { ShortcodeDefs } from '../shortcodes/types';
 import Page from './Page';
+import { inlineSvelteComponent } from '../partialHydration/inlineSvelteComponent';
+import prepareInlineShortcode from './prepareInlineShortcode';
+import permalinks from './permalinks';
 
 export type ServerOptions = {
   prefix: string;
@@ -80,7 +83,7 @@ export type InitializationOptions = {
   worker?: boolean;
 };
 
-export type SettingsOptions = {
+interface ISettingsOptionsBase {
   version: string;
   prefix: string;
   distDir: string;
@@ -104,17 +107,15 @@ export type SettingsOptions = {
   context?: string;
   worker?: boolean;
   css: 'none' | 'file' | 'inline' | 'lazy';
-};
+}
+
+export interface SettingsOptions extends ISettingsOptionsBase {
+  [x: string]: unknown;
+}
 
 export type QueryOptions = {
   db?: any;
-};
-
-export type ExternalHelperRequestOptions = {
-  helpers: [];
-  query: QueryOptions;
-  settings: SettingsOptions;
-};
+} & { [x: string]: unknown };
 
 export type ReqDetails = {
   path?: string;
@@ -122,16 +123,18 @@ export type ReqDetails = {
   search?: string;
 };
 
-export type RequestOptions = {
+export type TRequestObject = {
   slug?: string;
   route: string;
   type: string;
   permalink: string;
   req?: ReqDetails;
+} & {
+  [x: string]: any | { [y: string]: any };
 };
 
-export type RequestsOptions = {
-  [name: string]: RequestOptions;
+export type TServerLookupObject = {
+  [name: string]: TRequestObject;
 };
 
 export interface Timing {
@@ -160,8 +163,8 @@ export type PluginOptions = {
   name: string;
   description: string;
   init: Init | any;
-  routes?: RoutesOptions;
-  hooks: Array<HookOptions>;
+  routes?: RoutesObject;
+  hooks: THooksArray;
   config?: Object;
   shortcodes?: ShortcodeDefs;
   minimumElderjsVersion?: string;
@@ -194,3 +197,15 @@ export interface RollupSettings {
   replacements?: Object;
   dev?: RollupDevOptions;
 }
+
+export type THelpers = {
+  permalinks: ReturnType<typeof permalinks>;
+  inlineSvelteComponent: typeof inlineSvelteComponent;
+  shortcode: ReturnType<typeof prepareInlineShortcode>;
+};
+
+export type TUserHelpers = THelpers & {
+  [x: string]: any | { [y: string]: any };
+};
+
+export type TErrors = (any | Error)[];

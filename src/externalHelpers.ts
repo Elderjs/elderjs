@@ -3,19 +3,28 @@
 import path from 'path';
 import fs from 'fs';
 
-import { ExternalHelperRequestOptions } from './utils/types';
+import { QueryOptions, SettingsOptions, THelpers } from './utils/types';
 
 let userHelpers;
 
 let cache;
 
-async function externalHelpers({ settings, query, helpers }: ExternalHelperRequestOptions) {
+async function externalHelpers({
+  settings,
+  query,
+  helpers,
+}: {
+  settings: SettingsOptions;
+  query: QueryOptions;
+  helpers: THelpers;
+}) {
   const srcHelpers = path.join(settings.srcDir, 'helpers/index.js');
   try {
     if (!cache) {
       try {
         fs.statSync(srcHelpers);
-        userHelpers = require(srcHelpers);
+        const reqHelpers = require(srcHelpers);
+        userHelpers = reqHelpers.default || reqHelpers;
 
         if (typeof userHelpers === 'function') {
           userHelpers = await userHelpers({ settings, query, helpers });

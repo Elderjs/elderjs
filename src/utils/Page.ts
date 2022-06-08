@@ -1,10 +1,10 @@
 /* eslint-disable no-param-reassign */
 import getUniqueId from './getUniqueId';
-import perf from './perf';
+import perf, { TPerf } from './perf';
 import prepareProcessStack from './prepareProcessStack';
 import { ShortcodeDefs } from '../shortcodes/types';
-import { QueryOptions, Stack, RequestOptions, SettingsOptions, HydrateOptions } from './types';
-import { RoutesOptions } from '../routes/types';
+import { QueryOptions, Stack, TRequestObject, SettingsOptions, HydrateOptions, TErrors, THelpers } from './types';
+import { RoutesObject } from '../routes/types';
 import createReadOnlyProxy from './createReadOnlyProxy';
 import outputStyles from './outputStyles';
 import mountComponentsInHtml from '../partialHydration/mountComponentsInHtml';
@@ -160,13 +160,13 @@ class Page {
 
   shouldSkipRequest: boolean;
 
-  allRequests: Array<RequestOptions>;
+  allRequests: Array<TRequestObject>;
 
-  request: RequestOptions;
+  request: TRequestObject;
 
   settings: SettingsOptions;
 
-  helpers: {};
+  helpers: THelpers;
 
   data: Object;
 
@@ -174,13 +174,13 @@ class Page {
 
   query: QueryOptions;
 
-  errors: any[];
+  errors: TErrors;
 
-  routes: RoutesOptions;
+  routes: RoutesObject;
 
   processStack: any;
 
-  perf: any;
+  perf: TPerf;
 
   layoutHtml: string;
 

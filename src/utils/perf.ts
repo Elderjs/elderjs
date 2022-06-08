@@ -13,7 +13,18 @@ export type TPerfTiming = { name: string; duration: number };
 
 export type TPerfTimings = TPerfTiming[];
 
-const perf = (page: Page | Elder, force = false) => {
+export type TPerfPayload = {
+  start: (label: string) => void;
+  end: (label: string) => void;
+};
+
+export type TPerf = TPerfPayload & {
+  timings: TPerfTimings;
+  stop: () => void;
+  prefix: (label: string) => TPerfPayload;
+};
+
+function perf(page: Page | Elder, force = false) {
   if (page.settings.debug.performance || force) {
     let obs = new PerformanceObserver((items) => {
       items.getEntries().forEach((entry) => {
@@ -48,25 +59,25 @@ const perf = (page: Page | Elder, force = false) => {
         if (obs) obs.disconnect();
         obs = null;
       },
+      prefix: (pre) => {
+        return { start: (name) => page.perf.start(`${pre}.${name}`), end: (name) => page.perf.end(`${pre}.${name}`) };
+      },
     };
 
     obs.observe({ entryTypes: ['measure'] });
   } else {
-    const placeholder = () => {};
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const placeholder = (label: string) => {};
     // eslint-disable-next-line no-param-reassign
     page.perf = {
       timings: [],
       start: placeholder,
       end: placeholder,
-      stop: placeholder,
+      stop: () => {},
+      prefix: () => ({ start: placeholder, end: placeholder }),
     };
   }
-
-  // eslint-disable-next-line no-param-reassign
-  page.perf.prefix = (pre) => {
-    return { start: (name) => page.perf.start(`${pre}.${name}`), end: (name) => page.perf.end(`${pre}.${name}`) };
-  };
-};
+}
 
 export default perf;
 

@@ -7,9 +7,9 @@ import path from 'path';
 import toRegExp from 'regexparam';
 
 import { ShortcodeDefs } from '../shortcodes/types';
-import { validatePlugin, validateHook, svelteComponent, HookOptions, PluginOptions } from '..';
+import { validatePlugin, validateHook, svelteComponent, PluginOptions, TProcessedHook, TProcessedHooksArray } from '..';
 import { Elder } from '../Elder';
-import { RoutesOptions } from '../routes/types';
+import { RoutesObject } from '../routes/types';
 import createReadOnlyProxy from '../utils/createReadOnlyProxy';
 import wrapPermalinkFn from '../utils/wrapPermalinkFn';
 import makeDynamicPermalinkFn from '../routes/makeDynamicPermalinkFn';
@@ -41,8 +41,8 @@ async function plugins(elder: Elder) {
    * * Collect plugin routes
    * * Add plugin object and helpers to all plugin hook functions.
    */
-  let pluginRoutes: RoutesOptions = {};
-  const pluginHooks: Array<HookOptions> = [];
+  let pluginRoutes: RoutesObject = {};
+  const pluginHooks: TProcessedHooksArray = [];
   const pluginShortcodes: ShortcodeDefs = [];
 
   const pluginNames = Object.keys(elder.settings.plugins);
@@ -124,14 +124,15 @@ async function plugins(elder: Elder) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { init, ...sanitizedPlugin } = plugin;
 
-      pluginHooksArray = pluginHooksArray.map((hook): HookOptions => {
+      pluginHooksArray = pluginHooksArray.map((hook): TProcessedHook => {
         return {
+          priority: 50,
           ...hook,
           $$meta: {
             type: 'plugin',
             addedBy: pluginName,
           },
-          run: async (payload: any = {}) => {
+          run: async (payload) => {
             // pass the plugin definition into the closure of every hook.
             let pluginDefinition = sanitizedPlugin;
 
@@ -158,9 +159,16 @@ async function plugins(elder: Elder) {
 
       pluginHooksArray.forEach((hook) => {
         const validatedHook = validateHook(hook);
-        if (validatedHook) {
+        if (validatedHook && validatedHook.hook !== 'customizeHooks') {
           if (validatedHook.priority >= 0 && validatedHook.priority <= 100) {
-            pluginHooks.push(validatedHook);
+            pluginHooks.push({
+              priority: 50,
+              $$meta: {
+                type: 'plugin',
+                addedBy: pluginName,
+              },
+              ...validatedHook,
+            });
           } else {
             console.log(`${pluginName}.${hook.name} has an invalid priority. Plugin hooks must be >= 0 or <= 100`);
           }

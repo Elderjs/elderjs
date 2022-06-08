@@ -1,5 +1,17 @@
-function prepareProcessStack(page) {
-  return function processStack(name) {
+import { Page } from '..';
+
+export type TStackNames =
+  | 'headStack'
+  | 'cssStack'
+  | 'beforeHydrateStack'
+  | 'hydrateStack'
+  | 'customJsStack'
+  | 'footerStack'
+  | 'moduleJsStack'
+  | 'moduleStack';
+
+function prepareProcessStack(page: Page) {
+  return function processStack(name: TStackNames): string {
     page.perf.start(`stack.${name}`);
 
     // used to check if we've already add this string to the stack.

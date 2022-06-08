@@ -2,7 +2,7 @@ import * as yup from 'yup';
 import type { SettingsOptions, PluginOptions, RollupSettings } from './types';
 import type { ShortcodeDef } from '../shortcodes/types';
 import type { RouteOptions } from '../routes/types';
-import type { HookOptions } from '../hooks/types';
+import type { THooks } from '../hooks/types';
 import hookInterface from '../hooks/hookInterface';
 
 /**
@@ -325,7 +325,7 @@ function validatePlugin(plugin): PluginOptions | false {
   }
 }
 
-function validateHook(hook): HookOptions | false {
+function validateHook(hook): THooks | false {
   try {
     hookSchema.validateSync(hook);
     const validated = hookSchema.cast(hook);

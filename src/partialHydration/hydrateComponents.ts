@@ -133,7 +133,7 @@ export default (page: Page) => {
         reduction: 1 - hydratedPropLength / initialPropLength,
       });
     }
-    page.perf.stop('prepareProps');
+    page.perf.end('prepareProps');
   }
 
   let eagerString = '';
@@ -242,6 +242,4 @@ export default (page: Page) => {
       }</script>`,
     });
   }
-
-  // add components to stack
 };

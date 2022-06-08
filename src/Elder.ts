@@ -20,23 +20,25 @@ import {
   getConfig,
   prepareInlineShortcode,
 } from './utils';
-import { RoutesOptions } from './routes/types';
-import { HookOptions } from './hooks/types';
+import { RoutesObject } from './routes/types';
+import { THooksArray, TProcessedHooksArray, TRunHook } from './hooks/types';
 import { ShortcodeDefs } from './shortcodes/types';
 import {
   SettingsOptions,
   QueryOptions,
-  RequestOptions,
-  RequestsOptions,
+  TRequestObject,
+  TServerLookupObject,
   ExcludesFalse,
   InitializationOptions,
+  THelpers,
+  TErrors,
 } from './utils/types';
 import createReadOnlyProxy from './utils/createReadOnlyProxy';
 import workerBuild from './workerBuild';
 import { inlineSvelteComponent } from './partialHydration/inlineSvelteComponent';
 import elderJsShortcodes from './shortcodes';
 import prepareRouter from './routes/prepareRouter';
-import perf, { displayPerfTimings } from './utils/perf';
+import perf, { displayPerfTimings, TPerf } from './utils/perf';
 
 class Elder {
   bootstrapComplete: Promise<any>;
@@ -45,23 +47,23 @@ class Elder {
 
   settings: SettingsOptions;
 
-  routes: RoutesOptions;
+  routes: RoutesObject;
 
-  hooks: Array<HookOptions>;
+  hooks: TProcessedHooksArray;
 
   data: Object;
 
-  runHook: (string, Object) => Promise<any>;
+  runHook: TRunHook;
 
   query: QueryOptions;
 
-  allRequests: Array<RequestOptions>;
+  allRequests: Array<TRequestObject>;
 
-  serverLookupObject: RequestsOptions;
+  serverLookupObject: TServerLookupObject;
 
-  errors: any[];
+  errors: TErrors;
 
-  helpers: {};
+  helpers: THelpers;
 
   server: any;
 
@@ -71,7 +73,7 @@ class Elder {
 
   shortcodes: ShortcodeDefs;
 
-  perf: any;
+  perf: TPerf;
 
   uid: string;
 
@@ -120,7 +122,7 @@ class Elder {
       const userRoutesJsFile = routes(this.settings);
 
       // plugins should never overwrite user routes.
-      const collectedRoutes: RoutesOptions = { ...pluginRoutes, ...userRoutesJsFile };
+      const collectedRoutes: RoutesObject = { ...pluginRoutes, ...userRoutesJsFile };
       const validatedRoutes = {};
       const collectedRouteNames = Object.keys(collectedRoutes);
       collectedRouteNames.forEach((collectedRouteName) => {
@@ -141,13 +143,14 @@ class Elder {
        * Filter out hooks that are disabled.
        */
 
-      let hooksJs: Array<HookOptions> = [];
+      let hooksJs: TProcessedHooksArray = [];
       const hookSrcPath = path.resolve(this.settings.srcDir, './hooks.js');
 
       try {
         const hooksReq = require(hookSrcPath);
-        const hookSrcFile: Array<HookOptions> = hooksReq.default || hooksReq;
+        const hookSrcFile: THooksArray = hooksReq.default || hooksReq;
         hooksJs = hookSrcFile.map((hook) => ({
+          priority: 50,
           ...hook,
           $$meta: {
             type: 'hooks.js',
@@ -163,7 +166,8 @@ class Elder {
       }
 
       // validate hooks
-      const elderJsHooks: Array<HookOptions> = internalHooks.map((hook) => ({
+      const elderJsHooks: TProcessedHooksArray = internalHooks.map((hook) => ({
+        priority: 50,
         ...hook,
         $$meta: {
           type: 'internal',
@@ -174,7 +178,15 @@ class Elder {
       // validate hooks
       this.hooks = [...elderJsHooks, ...pluginHooks, ...hooksJs]
         .map((hook) => validateHook(hook))
-        .filter(Boolean as any as ExcludesFalse);
+        .filter(Boolean as any as ExcludesFalse)
+        .map((hook) => ({
+          priority: 50,
+          $$meta: {
+            type: 'internal',
+            addedBy: 'elder.js',
+          },
+          ...hook,
+        }));
 
       if (this.settings.hooks.disable && this.settings.hooks.disable.length > 0) {
         this.hooks = this.hooks.filter((h) => !this.settings.hooks.disable.includes(h.name));
@@ -223,7 +235,6 @@ class Elder {
        */
 
       this.data = {};
-
       this.query = {};
       this.allRequests = [];
       this.serverLookupObject = {};

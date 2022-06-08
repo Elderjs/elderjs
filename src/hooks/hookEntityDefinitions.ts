@@ -47,7 +47,7 @@ const hookEntityDefinitions = {
   serverLookupObject: `A key value object where the key is the relative permalink and the object is the 'request' object used by the Elder.js server.`,
   runHook: `The function that powers hooks. 'await runhook('hookName', objectContainingProps)`,
   perf: `Includes two functions: perf.start('thingToTrack') and perf.end('thingToTrack') which allows easily adding tracking to Elder.js' perf reporting which can be toggled under debug.performance in your elder.config.js file.`,
-};
+} as const;
 
 // eslint-disable-next-line import/prefer-default-export
 export { hookEntityDefinitions };
