@@ -51,4 +51,25 @@ export interface RouteOptions extends IBaseRouteOptions {
   [x: string]: any;
 }
 
-export type RoutesObject = Record<string, RouteOptions>;
+export interface ProcessedRouteOptions extends RouteOptions {
+  template: string;
+  templateComponent: (x: any) => string;
+  layout: string;
+  layoutComponent: (x: any) => string;
+  data: Object | DataFn;
+  permalink: Permalink;
+  all:
+    | any[]
+    | ((payload: {
+        settings: SettingsOptions;
+        query: any;
+        helpers: TUserHelpers;
+        data: any;
+        perf: TPerfPayload;
+      }) => [any] | Promise<any>);
+  $$meta: MetaOptions;
+  name: string;
+  dynamic: boolean;
+}
+
+export type RoutesObject = Record<string, ProcessedRouteOptions>;

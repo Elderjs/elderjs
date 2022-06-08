@@ -1,5 +1,5 @@
 import type { RoutesObject } from '../routes/types';
-import type { THooksArray } from '../hooks/types';
+import type { HooksArray } from '../hooks/types';
 import type { ShortcodeDefs } from '../shortcodes/types';
 import Page from './Page';
 import { inlineSvelteComponent } from '../partialHydration/inlineSvelteComponent';
@@ -164,7 +164,7 @@ export type PluginOptions = {
   description: string;
   init: Init | any;
   routes?: RoutesObject;
-  hooks: THooksArray;
+  hooks: HooksArray;
   config?: Object;
   shortcodes?: ShortcodeDefs;
   minimumElderjsVersion?: string;

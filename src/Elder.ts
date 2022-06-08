@@ -21,7 +21,7 @@ import {
   prepareInlineShortcode,
 } from './utils';
 import { RoutesObject } from './routes/types';
-import { THooksArray, TProcessedHooksArray, TRunHook } from './hooks/types';
+import { HooksArray, TProcessedHooksArray, TRunHook } from './hooks/types';
 import { ShortcodeDefs } from './shortcodes/types';
 import {
   SettingsOptions,
@@ -146,7 +146,7 @@ class Elder {
 
       try {
         const hooksReq = require(hookSrcPath);
-        const hookSrcFile: THooksArray = hooksReq.default || hooksReq;
+        const hookSrcFile: HooksArray = hooksReq.default || hooksReq;
         hooksJs = hookSrcFile.map((hook) => ({
           priority: 50,
           ...hook,

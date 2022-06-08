@@ -350,7 +350,7 @@ export type THooks =
   | IErrorHook
   | IBuildCompleteHook;
 
-export type THooksArray = Array<THooks>;
+export type HooksArray = Array<THooks>;
 
 export type ProcessedHook<T> = T & {
   priority: Number;

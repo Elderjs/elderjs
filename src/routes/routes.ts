@@ -12,20 +12,21 @@ import { SettingsOptions } from '../utils/types';
 import wrapPermalinkFn from '../utils/wrapPermalinkFn';
 import windowsPathFix from '../utils/windowsPathFix';
 import makeDynamicPermalinkFn from './makeDynamicPermalinkFn';
+import { ProcessedRouteOptions, RouteOptions, RoutesObject } from './types';
 
 const requireFile = (file: string) => {
   const dataReq = require(file);
   return dataReq.default || dataReq;
 };
 
-function prepareRoutes(settings: SettingsOptions) {
+function prepareRoutes(settings: SettingsOptions): RoutesObject {
   try {
     const { ssrComponents: ssrFolder, serverPrefix = '' } = settings.$$internal;
 
     const files = glob.sync(`${settings.srcDir}/routes/*/+(*.js|*.svelte)`).map((p) => windowsPathFix(p));
-    const routejsFiles = files.filter((f) => f.endsWith('/route.js'));
+    const routejsFiles: string[] = files.filter((f) => f.endsWith('/route.js'));
 
-    const routes = {};
+    const routes: RoutesObject = {};
 
     /**
      * Set Defaults in Route.js files
@@ -34,7 +35,7 @@ function prepareRoutes(settings: SettingsOptions) {
 
     routejsFiles.forEach((routeFile) => {
       const routeName = routeFile.replace('/route.js', '').split('/').pop();
-      const route = requireFile(routeFile);
+      const route: RouteOptions = requireFile(routeFile);
       route.$$meta = {
         type: 'file',
         addedBy: routeFile,
@@ -106,7 +107,7 @@ function prepareRoutes(settings: SettingsOptions) {
         route.layout = `Layout.svelte`;
       }
 
-      routes[routeName] = route;
+      routes[routeName] = route as ProcessedRouteOptions;
     });
 
     const ssrComponents = glob.sync(`${ssrFolder}/**/*.js`).map((p) => windowsPathFix(p));

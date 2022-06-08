@@ -2,7 +2,6 @@
 /* eslint-disable global-require */
 import fs from 'fs-extra';
 import defaultsDeep from 'lodash.defaultsdeep';
-
 import path from 'path';
 import toRegExp from 'regexparam';
 
@@ -298,8 +297,9 @@ async function plugins(elder: Elder) {
 
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { hooks: pluginRouteHooks, ...sanitizedRouteDeets } = plugin.routes[routeName];
-          const sanitizedRoute = {};
-          sanitizedRoute[routeName] = { ...sanitizedRouteDeets, $$meta: { type: 'plugin', addedBy: pluginName } };
+          const sanitizedRoute: RoutesObject = {
+            [routeName]: { ...sanitizedRouteDeets, $$meta: { type: 'plugin', addedBy: pluginName } },
+          };
 
           pluginRoutes = { ...pluginRoutes, ...sanitizedRoute };
         }

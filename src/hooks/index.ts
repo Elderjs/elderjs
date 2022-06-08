@@ -3,11 +3,11 @@ import path from 'path';
 import fs from 'fs-extra';
 import { parseBuildPerf } from '../utils';
 import externalHelpers from '../externalHelpers';
-import { THooksArray } from './types';
+import { HooksArray } from './types';
 import prepareShortcodeParser from '../utils/prepareShortcodeParser';
 import { displayPerfTimings } from '../utils/perf';
 
-const hooks: THooksArray = [
+const hooks: HooksArray = [
   {
     hook: 'bootstrap',
     name: 'elderAddExternalHelpers',
