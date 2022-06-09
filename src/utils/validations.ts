@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 import type { SettingsOptions, PluginOptions, RollupSettings } from './types';
-import type { ShortcodeDef } from '../shortcodes/types';
+import type { ShortcodeDefinition } from '../shortcodes/types';
 import type { RouteOptions } from '../routes/types';
 import type { THooks } from '../hooks/types';
 import hookInterface from '../hooks/hookInterface';
@@ -344,7 +344,7 @@ function validateHook(hook): THooks | false {
   }
 }
 
-function validateShortcode(shortcode): ShortcodeDef | false {
+function validateShortcode(shortcode): ShortcodeDefinition | false {
   try {
     shortcodeSchema.validateSync(shortcode);
     const validated = shortcodeSchema.cast(shortcode);

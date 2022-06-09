@@ -1,8 +1,8 @@
 import { TPerfPayload } from '../utils/perf';
-import { SettingsOptions, TErrors, TRequestObject, TUserHelpers } from '../utils/types';
+import { AllRequests, SettingsOptions, TErrors, RequestObject, TUserHelpers } from '../utils/types';
 
 interface Permalink {
-  (input: { request: TRequestObject; settings: SettingsOptions; helpers?: TUserHelpers }): string;
+  (input: { request: RequestObject; settings: SettingsOptions; helpers?: TUserHelpers }): string;
 }
 
 type MetaOptions = {
@@ -18,10 +18,10 @@ export type DataFnPayload = {
   query: any;
   helpers: TUserHelpers;
   settings: SettingsOptions;
-  request: TRequestObject;
+  request: RequestObject;
   errors: TErrors;
   perf: TPerfPayload;
-  allRequests: TRequestObject[];
+  allRequests: AllRequests;
   next: () => any;
 };
 

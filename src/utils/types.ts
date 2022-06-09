@@ -1,6 +1,6 @@
 import type { RoutesObject } from '../routes/types';
 import type { HooksArray } from '../hooks/types';
-import type { ShortcodeDefs } from '../shortcodes/types';
+import type { ShortcodeDefinitions } from '../shortcodes/types';
 import Page from './Page';
 import { inlineSvelteComponent } from '../partialHydration/inlineSvelteComponent';
 import prepareInlineShortcode from './prepareInlineShortcode';
@@ -123,7 +123,7 @@ export type ReqDetails = {
   search?: string;
 };
 
-export type TRequestObject = {
+export type RequestObject = {
   slug?: string;
   route: string;
   type: string;
@@ -134,7 +134,7 @@ export type TRequestObject = {
 };
 
 export type TServerLookupObject = {
-  [name: string]: TRequestObject;
+  [name: string]: RequestObject;
 };
 
 export interface Timing {
@@ -166,9 +166,11 @@ export type PluginOptions = {
   routes?: RoutesObject;
   hooks: HooksArray;
   config?: Object;
-  shortcodes?: ShortcodeDefs;
+  shortcodes?: ShortcodeDefinitions;
   minimumElderjsVersion?: string;
 };
+
+export type TFilteredPlugin = Omit<PluginOptions, 'init' | 'shortcodes' | 'routes' | 'hooks'>;
 
 // eslint-disable-next-line no-undef
 export type ExcludesFalse = <T>(x: T | false) => x is T;
@@ -209,3 +211,5 @@ export type TUserHelpers = THelpers & {
 };
 
 export type TErrors = (any | Error)[];
+
+export type AllRequests = RequestObject[];

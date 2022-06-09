@@ -22,11 +22,11 @@ import {
 } from './utils';
 import { RoutesObject } from './routes/types';
 import { HooksArray, TProcessedHooksArray, TRunHook } from './hooks/types';
-import { ShortcodeDefs } from './shortcodes/types';
+import { ShortcodeDefinitions } from './shortcodes/types';
 import {
   SettingsOptions,
   QueryOptions,
-  TRequestObject,
+  RequestObject,
   TServerLookupObject,
   ExcludesFalse,
   InitializationOptions,
@@ -57,7 +57,7 @@ class Elder {
 
   query: QueryOptions;
 
-  allRequests: Array<TRequestObject>;
+  allRequests: Array<RequestObject>;
 
   serverLookupObject: TServerLookupObject;
 
@@ -69,7 +69,7 @@ class Elder {
 
   hookInterface: typeof hookInterface;
 
-  shortcodes: ShortcodeDefs;
+  shortcodes: ShortcodeDefinitions;
 
   perf: TPerf;
 
@@ -196,12 +196,12 @@ class Elder {
        * Validate Shortcodes
        */
 
-      let shortcodesJs: ShortcodeDefs = [];
+      let shortcodesJs: ShortcodeDefinitions = [];
       const shortcodeSrcPath = path.resolve(this.settings.srcDir, './shortcodes.js');
 
       try {
         const shortcodeReq = require(shortcodeSrcPath);
-        const shortcodes: ShortcodeDefs = shortcodeReq.default || shortcodeReq;
+        const shortcodes: ShortcodeDefinitions = shortcodeReq.default || shortcodeReq;
         shortcodesJs = shortcodes.map((shortcode) => ({
           ...shortcode,
           $$meta: {

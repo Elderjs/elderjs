@@ -5,7 +5,7 @@ import defaultsDeep from 'lodash.defaultsdeep';
 import path from 'path';
 import toRegExp from 'regexparam';
 
-import { ShortcodeDefs } from '../shortcodes/types';
+import { ShortcodeDefinitions } from '../shortcodes/types';
 import { validatePlugin, validateHook, svelteComponent, PluginOptions, TProcessedHook, TProcessedHooksArray } from '..';
 import { Elder } from '../Elder';
 import { RoutesObject } from '../routes/types';
@@ -42,7 +42,7 @@ async function plugins(elder: Elder) {
    */
   let pluginRoutes: RoutesObject = {};
   const pluginHooks: TProcessedHooksArray = [];
-  const pluginShortcodes: ShortcodeDefs = [];
+  const pluginShortcodes: ShortcodeDefinitions = [];
 
   const pluginNames = Object.keys(elder.settings.plugins);
 

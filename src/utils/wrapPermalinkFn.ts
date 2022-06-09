@@ -1,4 +1,4 @@
-import { SettingsOptions, TRequestObject } from './types';
+import { SettingsOptions, RequestObject } from './types';
 
 export type TWrapPermalinkFn = {
   permalinkFn: (any) => string;
@@ -8,7 +8,7 @@ export type TWrapPermalinkFn = {
 
 const wrapPermalinkFn =
   ({ permalinkFn, routeName, settings }: TWrapPermalinkFn) =>
-  (payload: { request: TRequestObject }) => {
+  (payload: { request: RequestObject }) => {
     let permalink = permalinkFn({ ...payload, settings });
     if (typeof permalink !== 'string') {
       throw new Error(

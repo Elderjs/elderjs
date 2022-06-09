@@ -4,16 +4,17 @@ import { TPerfPayload, TPerfTimings } from '../utils/perf';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { THookInterface } from './hookInterface';
 import {
-  TRequestObject,
+  RequestObject,
   SettingsOptions,
   Stack,
   TErrors,
   TServerLookupObject,
   TUserHelpers,
-  PluginOptions,
+  TFilteredPlugin,
+  AllRequests,
 } from '../utils/types';
 import { RouteOptions, RoutesObject } from '../routes/types';
-import { ShortcodeDefs } from '../shortcodes/types';
+import { ShortcodeDefinitions } from '../shortcodes/types';
 
 export type THookName =
   | 'customizeHooks'
@@ -42,8 +43,6 @@ interface IHookBase {
 
 type TVoidOrUndefined = undefined | null | void | never;
 type TGenericHookReturn<T> = TVoidOrUndefined | T | Promise<TVoidOrUndefined> | Promise<T>;
-
-type TFilteredPlugin = Omit<PluginOptions, 'init' | 'shortcodes' | 'routes' | 'hooks'>;
 
 export interface ICustomizeHooksHook extends IHookBase {
   hook: 'customizeHooks';
@@ -81,7 +80,7 @@ export interface IAllRequestsHook extends IHookBase {
     helpers: TUserHelpers;
     data: any;
     settings: SettingsOptions;
-    allRequests: TRequestObject[];
+    allRequests: AllRequests;
     routes: RoutesObject;
     query: any;
     errors: TErrors;
@@ -98,15 +97,15 @@ export interface IMiddlewareHook extends IHookBase {
     helpers: TUserHelpers;
     data: any;
     settings: SettingsOptions;
-    allRequests: TRequestObject[];
+    allRequests: AllRequests;
     routes: RoutesObject;
     req: any;
     next: any;
     res: any;
     serverLookupObject: TServerLookupObject;
     runHook: TRunHook;
-    shortcodes: ShortcodeDefs;
-    request: TRequestObject;
+    shortcodes: ShortcodeDefinitions;
+    request: RequestObject;
     router: any;
   }) => TGenericHookReturn<{
     errors?: TErrors;
@@ -114,12 +113,12 @@ export interface IMiddlewareHook extends IHookBase {
     helpers?: TUserHelpers;
     data?: any;
     settings?: SettingsOptions;
-    allRequests?: TRequestObject[];
+    allRequests?: AllRequests;
     routes?: RoutesObject;
     req?: any;
     next?: any;
     res?: any;
-    request?: TRequestObject;
+    request?: RequestObject;
     serverLookupObject?: TServerLookupObject;
   }>;
 }
@@ -132,8 +131,8 @@ export interface IRequestHook extends IHookBase {
     helpers: TUserHelpers;
     data: any;
     settings: SettingsOptions;
-    request: TRequestObject;
-    allRequests: TRequestObject[];
+    request: RequestObject;
+    allRequests: AllRequests;
     query: any;
     errors: TErrors;
     routes: RoutesObject;
@@ -143,7 +142,7 @@ export interface IRequestHook extends IHookBase {
     helpers?: TUserHelpers;
     data?: any;
     settings?: SettingsOptions;
-    request?: TRequestObject;
+    request?: RequestObject;
     route?: RouteOptions;
   }>;
 }
@@ -154,7 +153,7 @@ export interface IDataHook extends IHookBase {
     plugin?: TFilteredPlugin;
     perf: TPerfPayload;
     data: any;
-    request: TRequestObject;
+    request: RequestObject;
     errors: TErrors;
     helpers: TUserHelpers;
     query: any;
@@ -187,7 +186,7 @@ export interface IShortcodeHook extends IHookBase {
     helpers: TUserHelpers;
     data: any;
     settings: SettingsOptions;
-    request: TRequestObject;
+    request: RequestObject;
     query: any;
     errors: TErrors;
     cssStack: Stack;
@@ -195,7 +194,7 @@ export interface IShortcodeHook extends IHookBase {
     customJsStack: Stack;
     layoutHtml: any;
     shortcodes: any;
-    allRequests: TRequestObject[];
+    allRequests: AllRequests;
   }) => TGenericHookReturn<{
     errors?: TErrors;
     layoutHtml?: any;
@@ -213,7 +212,7 @@ export interface IStacksHook extends IHookBase {
     helpers: TUserHelpers;
     data: any;
     settings: SettingsOptions;
-    request: TRequestObject;
+    request: RequestObject;
     query: any;
     errors: TErrors;
     cssStack: Stack;
@@ -245,7 +244,7 @@ export interface IHeadHook extends IHookBase {
     helpers: TUserHelpers;
     data: any;
     settings: SettingsOptions;
-    request: TRequestObject;
+    request: RequestObject;
     headString: string;
     query: any;
     errors: TErrors;
@@ -262,7 +261,7 @@ export interface ICompileHtmlHook extends IHookBase {
     settings: SettingsOptions;
     htmlAttributesString: string;
     bodyAttributesString: string;
-    request: TRequestObject;
+    request: RequestObject;
     headString: string;
     footerString: string;
     layoutHtml: string;
@@ -278,7 +277,7 @@ export interface IHtmlHook extends IHookBase {
     helpers: TUserHelpers;
     data: any;
     settings: SettingsOptions;
-    request: TRequestObject;
+    request: RequestObject;
     htmlString: string;
     query: any;
     errors: TErrors;
@@ -290,7 +289,7 @@ export interface IRequestCompleteHook extends IHookBase {
   run: (params: {
     plugin?: TFilteredPlugin;
     perf: TPerfPayload;
-    request: TRequestObject;
+    request: RequestObject;
     htmlString: string;
     query: any;
     settings: SettingsOptions;
@@ -308,7 +307,7 @@ export interface IErrorHook extends IHookBase {
     helpers: TUserHelpers;
     data: any;
     settings: SettingsOptions;
-    request: TRequestObject;
+    request: RequestObject;
     query: any;
     errors: TErrors;
   }) => void | undefined | Promise<void> | Promise<undefined> | any | Promise<any>;
@@ -326,7 +325,7 @@ export interface IBuildCompleteHook extends IHookBase {
     query: any;
     errors: TErrors;
     routes: RoutesObject;
-    allRequests: TRequestObject[];
+    allRequests: AllRequests;
   }) => void | undefined | Promise<void> | Promise<undefined> | any | Promise<any>;
 }
 

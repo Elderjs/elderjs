@@ -1,14 +1,14 @@
 /* eslint-disable no-plusplus */
 import routeSort from 'route-sort';
 import Page from '../utils/Page';
-import { TRequestObject, ServerOptions, SettingsOptions, TServerLookupObject } from '../utils/types';
+import { RequestObject, ServerOptions, SettingsOptions, TServerLookupObject } from '../utils/types';
 import { RouteOptions } from './types';
 import fixCircularJson from '../utils/fixCircularJson';
 import { Elder as ElderClass } from '..';
 
 export function extractDynamicRouteParams({ path, $$meta }) {
   let i = 0;
-  const out = {} as TRequestObject;
+  const out = {} as RequestObject;
   const ms = $$meta.pattern.exec(path);
   while (i < $$meta.keys.length) {
     out[$$meta.keys[i]] = ms[++i] || null;
@@ -79,7 +79,7 @@ interface IFindPrebuildRequest {
   serverLookupObject: TServerLookupObject;
 }
 
-export const findPrebuiltRequest = ({ req, serverLookupObject }: IFindPrebuildRequest): TRequestObject | false => {
+export const findPrebuiltRequest = ({ req, serverLookupObject }: IFindPrebuildRequest): RequestObject | false => {
   // see if we have a request object with the path as is. (could include / or not.)
   let request = serverLookupObject[req.path] ? serverLookupObject[req.path] : false;
   if (!request && req.path[req.path.length - 1] === '/') {
@@ -91,7 +91,7 @@ export const findPrebuiltRequest = ({ req, serverLookupObject }: IFindPrebuildRe
   }
 
   if (typeof request !== 'undefined' && request) {
-    request = JSON.parse(JSON.stringify(request)) as TRequestObject;
+    request = JSON.parse(JSON.stringify(request)) as RequestObject;
     request.req = req;
   }
 
@@ -108,13 +108,12 @@ export const needsElderRequest = ({ req, prefix }) => {
 };
 
 // make sure we're dealing with a well form elderjs request.
-export const initialRequestIsWellFormed = (request: TRequestObject) =>
-  !!(request && request.permalink && request.route);
+export const initialRequestIsWellFormed = (request: RequestObject) => !!(request && request.permalink && request.route);
 
 interface IRequestFromDynamicRoute {
   req: Req;
   dynamicRoutes: RouteOptions[];
-  requestCache: Map<string, TRequestObject> | undefined;
+  requestCache: Map<string, RequestObject> | undefined;
   settings: SettingsOptions;
 }
 
@@ -123,7 +122,7 @@ export function requestFromDynamicRoute({
   dynamicRoutes,
   requestCache,
   settings,
-}: IRequestFromDynamicRoute): TRequestObject | false {
+}: IRequestFromDynamicRoute): RequestObject | false {
   if (requestCache && requestCache.has(req.path)) {
     const request = requestCache.get(req.path);
     request.req = req;
@@ -132,7 +131,7 @@ export function requestFromDynamicRoute({
   const route = getDynamicRoute({ path: req.path, dynamicRoutes });
   if (route) {
     const params = extractDynamicRouteParams({ path: req.path, $$meta: route.$$meta });
-    const request: TRequestObject = {
+    const request: RequestObject = {
       permalink: route.permalink({ request: params, settings }),
       route: route.name,
       type: 'server',

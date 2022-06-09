@@ -2,8 +2,8 @@
 import getUniqueId from './getUniqueId';
 import perf, { TPerf, TPerfTimings } from './perf';
 import prepareProcessStack from './prepareProcessStack';
-import { ShortcodeDefs } from '../shortcodes/types';
-import { QueryOptions, Stack, TRequestObject, SettingsOptions, HydrateOptions, TErrors, THelpers } from './types';
+import { ShortcodeDefinitions } from '../shortcodes/types';
+import { QueryOptions, Stack, RequestObject, SettingsOptions, HydrateOptions, TErrors, THelpers } from './types';
 import { RouteOptions, RoutesObject } from '../routes/types';
 import createReadOnlyProxy from './createReadOnlyProxy';
 import outputStyles from './outputStyles';
@@ -161,9 +161,9 @@ class Page {
 
   shouldSkipRequest: boolean;
 
-  allRequests: Array<TRequestObject>;
+  allRequests: Array<RequestObject>;
 
-  request: TRequestObject;
+  request: RequestObject;
 
   settings: SettingsOptions;
 
@@ -225,7 +225,7 @@ class Page {
 
   footerStack: Stack;
 
-  shortcodes: ShortcodeDefs;
+  shortcodes: ShortcodeDefinitions;
 
   componentsToHydrate: IComponentToHydrate[];
 

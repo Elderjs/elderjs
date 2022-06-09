@@ -1,6 +1,6 @@
-import { ShortcodeDefs } from './types';
+import { ShortcodeDefinitions } from './types';
 
-const shortcodes: ShortcodeDefs = [
+const shortcodes: ShortcodeDefinitions = [
   {
     shortcode: 'svelteComponent',
     run: async ({ props, helpers }) => {
