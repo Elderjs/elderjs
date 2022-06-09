@@ -21,22 +21,26 @@ const buildPage = async (page: Page) => {
     if (typeof page.route.data === 'object') {
       page.data = { ...page.data, ...page.route.data };
     } else if (typeof page.route.data === 'function') {
-      const dataResponse = await page.route.data({
-        data: page.data,
-        query: page.query,
-        helpers: page.helpers,
-        settings: createReadOnlyProxy(page.settings, 'settings', `${page.request.route}: data function`),
-        request: createReadOnlyProxy(page.request, 'request', `${page.request.route}: data function`),
-        errors: page.errors,
-        perf: page.perf.prefix('data'),
-        allRequests: createReadOnlyProxy(page.allRequests, 'allRequests', `${page.request.route}: data function`),
-        next: page.next,
-      });
-      if (dataResponse && Object.keys(dataResponse).length > 0) {
-        page.data = {
-          ...page.data,
-          ...dataResponse,
-        };
+      try {
+        const dataResponse = await page.route.data({
+          data: page.data,
+          query: page.query,
+          helpers: page.helpers,
+          settings: createReadOnlyProxy(page.settings, 'settings', `${page.request.route}: data function`),
+          request: createReadOnlyProxy(page.request, 'request', `${page.request.route}: data function`),
+          errors: page.errors,
+          perf: page.perf.prefix('data'),
+          allRequests: createReadOnlyProxy(page.allRequests, 'allRequests', `${page.request.route}: data function`),
+          next: page.next,
+        });
+        if (dataResponse && Object.keys(dataResponse).length > 0) {
+          page.data = {
+            ...page.data,
+            ...dataResponse,
+          };
+        }
+      } catch (e) {
+        page.errors.push(e);
       }
     }
     page.perf.end('data');
