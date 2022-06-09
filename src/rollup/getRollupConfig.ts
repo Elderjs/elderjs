@@ -135,7 +135,7 @@ export default function getRollupConfig(options) {
   const configs = [];
 
   const { paths: pluginPaths } = getPluginLocations(elderConfig);
-  const pluginGlobs = pluginPaths.map((plugin) => `${plugin}*.svelte`);
+  const pluginGlobs = pluginPaths.map((plugin) => `${plugin}*/*.svelte`);
 
   configs.push(
     createSSRConfig({

@@ -1,3 +1,4 @@
+/* eslint-disable global-require */
 import { promises as fsPromises } from 'fs';
 import { dirname, resolve, isAbsolute, sep, relative } from 'path';
 // eslint-disable-next-line import/no-unresolved
@@ -116,6 +117,7 @@ function esbuildPluginSvelte({ type, svelteConfig, elderConfig, sveltePackages =
               throw err;
             }
 
+            console.log('esbuildPluginSvelte pkgs', pkg);
             // use pkg.svelte
             if (parts.length === 0 && pkg.svelte) {
               return {
