@@ -1,7 +1,7 @@
 import glob from 'glob';
 import path from 'path';
-import { SvelteComponentFiles } from '../utils/types';
-import windowsPathFix from '../utils/windowsPathFix';
+import { SvelteComponentFiles } from '../utils/types.js';
+import windowsPathFix from '../utils/windowsPathFix.js';
 
 export const removeHash = (pathWithHash) => {
   const parsed = path.parse(pathWithHash);

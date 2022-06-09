@@ -1,4 +1,4 @@
-import prepareShortcodeParser from '../prepareShortcodeParser';
+import prepareShortcodeParser from '../prepareShortcodeParser.js';
 
 class ShortcodeParser {
   opts: any = {}; // just store them so we know what got passed over

@@ -1,7 +1,5 @@
-/* eslint-disable global-require */
 import { promises as fsPromises } from 'fs';
 import { dirname, resolve, isAbsolute, sep, relative } from 'path';
-// eslint-disable-next-line import/no-unresolved
 
 import { Plugin, PartialMessage } from 'esbuild';
 
@@ -9,9 +7,8 @@ import del from 'del';
 import crypto from 'crypto';
 import fs from 'fs-extra';
 
-// eslint-disable-next-line import/no-unresolved
 import { PreprocessorGroup } from 'svelte/types/compiler/preprocess/types';
-import { resolveFn, minifyCss, transformFn, loadCss } from '../rollup/rollupPlugin';
+import { resolveFn, minifyCss, transformFn, loadCss } from '../rollup/rollupPlugin.js';
 import { SettingsOptions } from '..';
 
 function md5(string) {
@@ -91,7 +88,7 @@ function esbuildPluginSvelte({ type, svelteConfig, elderConfig, sveltePackages =
             sveltePackages.length > 1
               ? new RegExp(`(${sveltePackages.join('|')})`)
               : new RegExp(`${sveltePackages[0]}`);
-          build.onResolve({ filter }, ({ path, importer }) => {
+          build.onResolve({ filter }, async ({ path, importer }) => {
             // below largely adapted from the rollup svelte plugin
             // ----------------------------------------------
 
@@ -110,8 +107,8 @@ function esbuildPluginSvelte({ type, svelteConfig, elderConfig, sveltePackages =
               const file = `.${sep}${['node_modules', name, 'package.json'].join(sep)}`;
               const resolved = resolve(process.cwd(), file);
               dir = dirname(resolved);
-              // eslint-disable-next-line import/no-dynamic-require
-              pkg = require(resolved);
+
+              pkg = await import(resolved);
             } catch (err) {
               if (err.code === 'MODULE_NOT_FOUND') return null;
               throw err;
@@ -129,15 +126,15 @@ function esbuildPluginSvelte({ type, svelteConfig, elderConfig, sveltePackages =
           });
         }
 
-        build.onResolve({ filter: /\.svelte$/ }, ({ path, importer, resolveDir }) => {
+        build.onResolve({ filter: /\.svelte$/ }, async ({ path, importer, resolveDir }) => {
           const importee = resolve(resolveDir, path);
-          resolveFn(importee, importer);
+          await resolveFn(importee, importer);
           return {};
         });
 
-        build.onResolve({ filter: /\.css$/ }, ({ path, importer, resolveDir }) => {
+        build.onResolve({ filter: /\.css$/ }, async ({ path, importer, resolveDir }) => {
           const importee = resolve(resolveDir, path);
-          resolveFn(importee, importer);
+          await resolveFn(importee, importer);
 
           return { path: importee };
         });

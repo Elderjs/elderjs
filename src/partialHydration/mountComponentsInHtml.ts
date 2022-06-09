@@ -1,4 +1,4 @@
-import svelteComponent from '../utils/svelteComponent';
+import svelteComponent from '../utils/svelteComponent.js';
 
 export const replaceSpecialCharacters = (str) =>
   str
@@ -9,7 +9,7 @@ export const replaceSpecialCharacters = (str) =>
     .replace(/&#039;/gim, "'")
     .replace(/&amp;/gim, '&');
 
-export default function mountComponentsInHtml({ page, html, hydrateOptions }): string {
+export default async function mountComponentsInHtml({ page, html, hydrateOptions }): Promise<string> {
   let outputHtml = html;
   // sometimes svelte adds a class to our inlining.
   const matches = outputHtml.matchAll(
@@ -45,7 +45,7 @@ export default function mountComponentsInHtml({ page, html, hydrateOptions }): s
       );
     }
 
-    const hydratedHtml = svelteComponent(hydrateComponentName)({
+    const hydratedHtml = await svelteComponent(hydrateComponentName)({
       page,
       props: hydrateComponentProps,
       hydrateOptions: hydrateComponentOptions,

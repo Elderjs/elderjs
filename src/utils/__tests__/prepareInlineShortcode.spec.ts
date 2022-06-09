@@ -1,5 +1,5 @@
-import prepareInlineShortcode from '../prepareInlineShortcode';
-import { Elder } from '../../Elder';
+import prepareInlineShortcode from '../prepareInlineShortcode.js';
+import { Elder } from '../../Elder.js';
 
 const elder = new Elder({ context: 'server' });
 

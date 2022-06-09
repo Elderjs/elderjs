@@ -1,4 +1,4 @@
-import normalizeSnapshot from '../normalizeSnapshot';
+import normalizeSnapshot from '../normalizeSnapshot.js';
 
 describe('#normalizeSnapshot', () => {
   const obj = {

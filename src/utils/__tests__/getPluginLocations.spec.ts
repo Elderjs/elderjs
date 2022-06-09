@@ -1,7 +1,7 @@
 /* eslint-disable global-require */
 
 describe('#getPluginLocations', () => {
-  const path = require('path');
+  const path = await import('path');
   it('getPluginPaths works', () => {
     jest.mock('glob', () => ({
       sync: jest
@@ -24,7 +24,7 @@ describe('#getPluginLocations', () => {
 
     expect(
       // @ts-ignore
-      require('../getPluginLocations').default({
+      await import('../getPluginLocations').default({
         srcDir: './src',
         rootDir: './',
         plugins: {

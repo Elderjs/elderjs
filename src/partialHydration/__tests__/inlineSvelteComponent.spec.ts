@@ -1,4 +1,4 @@
-import { inlinePreprocessedSvelteComponent, escapeHtml, inlineSvelteComponent } from '../inlineSvelteComponent';
+import { inlinePreprocessedSvelteComponent, escapeHtml, inlineSvelteComponent } from '../inlineSvelteComponent.js';
 
 test('#escapeHtml', () => {
   expect(escapeHtml('')).toEqual('');

@@ -1,8 +1,7 @@
-/* eslint-disable no-use-before-define */
-import Page from './Page';
-import { inlineSvelteComponent } from '../partialHydration/inlineSvelteComponent';
-import prepareInlineShortcode from './prepareInlineShortcode';
-import permalinks from './permalinks';
+import Page from './Page.js';
+import { inlineSvelteComponent } from '../partialHydration/inlineSvelteComponent.js';
+import prepareInlineShortcode from './prepareInlineShortcode.js';
+import permalinks from './permalinks.js';
 
 export type ServerOptions = {
   prefix: string;
@@ -79,6 +78,7 @@ export type InitializationOptions = {
   };
   context?: string;
   worker?: boolean;
+  css?: string;
 };
 
 interface ISettingsOptionsBase {

@@ -1,4 +1,4 @@
-import createReadOnlyProxy from '../createReadOnlyProxy';
+import createReadOnlyProxy from '../createReadOnlyProxy.js';
 
 test('#createReadOnlyProxy', () => {
   const readOnly = {

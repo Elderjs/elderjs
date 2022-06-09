@@ -1,5 +1,4 @@
-/* eslint-disable no-return-assign */
-import hydrateComponents, { hashCode, howManyBytes } from '../hydrateComponents';
+import hydrateComponents, { hashCode, howManyBytes } from '../hydrateComponents.js';
 import largeProp from '../__fixtures__/largeProp.json';
 
 let counts = {
@@ -130,7 +129,7 @@ describe('#hydrateComponents', () => {
       page.componentsToHydrate = JSON.parse(JSON.stringify(defaultComponents));
       page.componentsToHydrate[0].props = largeProp;
 
-      const reqHydrateComponents = require('../hydrateComponents');
+      const reqHydrateComponents = await import('../hydrateComponents');
 
       await reqHydrateComponents.default(page);
 
@@ -144,7 +143,7 @@ describe('#hydrateComponents', () => {
       page.componentsToHydrate = JSON.parse(JSON.stringify(defaultComponents));
       page.componentsToHydrate[0].props = { a: 'b' };
 
-      const reqHydrateComponents = require('../hydrateComponents');
+      const reqHydrateComponents = await import('../hydrateComponents');
 
       await reqHydrateComponents.default(page);
 
@@ -157,7 +156,7 @@ describe('#hydrateComponents', () => {
       page.componentsToHydrate = JSON.parse(JSON.stringify(defaultComponents));
       page.componentsToHydrate[0].hydrateOptions.preload = true;
 
-      const reqHydrateComponents = require('../hydrateComponents');
+      const reqHydrateComponents = await import('../hydrateComponents');
 
       await reqHydrateComponents.default(page);
 
@@ -203,7 +202,7 @@ describe('#hydrateComponents', () => {
       page.componentsToHydrate = JSON.parse(JSON.stringify(defaultComponents));
       page.componentsToHydrate[0].hydrateOptions.noPrefetch = true;
 
-      const reqHydrateComponents = require('../hydrateComponents');
+      const reqHydrateComponents = await import('../hydrateComponents');
 
       await reqHydrateComponents.default(page);
 

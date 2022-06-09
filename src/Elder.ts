@@ -1,13 +1,12 @@
-/* eslint-disable global-require */
-/* eslint-disable import/no-dynamic-require */
 import path from 'path';
 
-import routes from './routes/routes';
-import plugins from './plugins';
-import { hookInterface } from './hooks/hookInterface';
-import internalHooks from './hooks';
-import build from './build/build';
-import partialHydration from './partialHydration/partialHydration';
+import routes from './routes/routes.js';
+import plugins from './plugins/index.js';
+import elderJsShortcodes from './shortcodes/index.js';
+import { hookInterface } from './hooks/hookInterface.js';
+import internalHooks from './hooks/index.js';
+import build from './build/build.js';
+import partialHydration from './partialHydration/partialHydration.js';
 
 import {
   prepareRunHook,
@@ -20,9 +19,9 @@ import {
   getConfig,
   prepareInlineShortcode,
 } from './utils';
-import { RoutesObject } from './routes/types';
-import { HooksArray, TProcessedHooksArray, TRunHook } from './hooks/types';
-import { ShortcodeDefinitions } from './shortcodes/types';
+import { RoutesObject } from './routes/types.js';
+import { HooksArray, TProcessedHooksArray, TRunHook } from './hooks/types.js';
+import { ShortcodeDefinitions } from './shortcodes/types.js';
 import {
   SettingsOptions,
   QueryOptions,
@@ -33,12 +32,12 @@ import {
   THelpers,
   TErrors,
 } from './utils/types';
-import createReadOnlyProxy from './utils/createReadOnlyProxy';
-import workerBuild from './workerBuild';
-import { inlineSvelteComponent } from './partialHydration/inlineSvelteComponent';
-import elderJsShortcodes from './shortcodes';
-import prepareRouter from './routes/prepareRouter';
-import perf, { displayPerfTimings, Perf } from './utils/perf';
+import createReadOnlyProxy from './utils/createReadOnlyProxy.js';
+import workerBuild from './workerBuild.js';
+import { inlineSvelteComponent } from './partialHydration/inlineSvelteComponent.js';
+
+import prepareRouter from './routes/prepareRouter.js';
+import perf, { displayPerfTimings, Perf } from './utils/perf.js';
 
 class Elder {
   bootstrapComplete: Promise<Elder>;
@@ -51,7 +50,7 @@ class Elder {
 
   hooks: TProcessedHooksArray;
 
-  data: Object;
+  data: Record<string, unknown>;
 
   runHook: TRunHook;
 
@@ -117,7 +116,7 @@ class Elder {
        */
 
       // add meta to routes and collect hooks from routes
-      const userRoutesJsFile = routes(this.settings);
+      const userRoutesJsFile = await routes(this.settings);
 
       // plugins should never overwrite user routes.
       const collectedRoutes: RoutesObject = { ...pluginRoutes, ...userRoutesJsFile };
@@ -145,7 +144,7 @@ class Elder {
       const hookSrcPath = path.resolve(this.settings.srcDir, './hooks.js');
 
       try {
-        const hooksReq = require(hookSrcPath);
+        const hooksReq = await import(hookSrcPath);
         const hookSrcFile: HooksArray = hooksReq.default || hooksReq;
         hooksJs = hookSrcFile.map((hook) => ({
           priority: 50,
@@ -200,7 +199,7 @@ class Elder {
       const shortcodeSrcPath = path.resolve(this.settings.srcDir, './shortcodes.js');
 
       try {
-        const shortcodeReq = require(shortcodeSrcPath);
+        const shortcodeReq = await import(shortcodeSrcPath);
         const shortcodes: ShortcodeDefinitions = shortcodeReq.default || shortcodeReq;
         shortcodesJs = shortcodes.map((shortcode) => ({
           ...shortcode,

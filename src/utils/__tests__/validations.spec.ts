@@ -8,7 +8,7 @@ import {
   routeSchema,
   pluginSchema,
 } from '../validations';
-import normalizeSnapshot from '../normalizeSnapshot';
+import normalizeSnapshot from '../normalizeSnapshot.js';
 
 describe('#validations', () => {
   const validHook = {

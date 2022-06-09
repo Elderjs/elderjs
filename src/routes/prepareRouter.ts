@@ -1,10 +1,9 @@
-/* eslint-disable no-plusplus */
 import routeSort from 'route-sort';
-import Page from '../utils/Page';
-import { RequestObject, ServerOptions, SettingsOptions, TServerLookupObject } from '../utils/types';
-import { RouteOptions } from './types';
-import fixCircularJson from '../utils/fixCircularJson';
-import { Elder as ElderClass } from '..';
+import Page from '../utils/Page.js';
+import { RequestObject, ServerOptions, SettingsOptions, TServerLookupObject } from '../utils/types.js';
+import { RouteOptions } from './types.js';
+import fixCircularJson from '../utils/fixCircularJson.js';
+import { Elder as ElderClass } from '../Elder.js';
 
 export function extractDynamicRouteParams({ path, $$meta }) {
   let i = 0;
@@ -152,9 +151,10 @@ function prepareRouter(Elder: ElderClass) {
   const requestCache = settings.server && settings.server.cacheRequests ? new Map() : undefined;
 
   // sort the routes in order of specificity
-  const dynamicRoutes: RouteOptions[] = routeSort(
-    Object.keys(routes).filter((cv) => routes[cv] && routes[cv].$$meta && routes[cv].$$meta.type === 'dynamic'),
-  ).map((cv) => routes[cv]);
+  const routesPresort = Object.keys(routes).filter(
+    (cv) => routes[cv] && routes[cv].$$meta && routes[cv].$$meta.type === 'dynamic',
+  );
+  const dynamicRoutes: RouteOptions[] = routeSort(routesPresort).map((cv) => routes[cv]);
 
   const prefix = settings.$$internal.serverPrefix;
 

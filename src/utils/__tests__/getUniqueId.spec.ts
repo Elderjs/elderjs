@@ -1,4 +1,4 @@
-import getUniqueId from '../getUniqueId';
+import getUniqueId from '../getUniqueId.js';
 
 jest.mock('nanoid/non-secure', () => ({ customAlphabet: (_, len) => () => 'x'.repeat(len) }));
 

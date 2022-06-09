@@ -1,7 +1,7 @@
 import path from 'path';
-import prepareFindSvelteComponent, { removeHash } from '../prepareFindSvelteComponent';
-import normalizeSnapshot from '../../utils/normalizeSnapshot';
-import windowsPathFix from '../../utils/windowsPathFix';
+import prepareFindSvelteComponent, { removeHash } from '../prepareFindSvelteComponent.js';
+import normalizeSnapshot from '../../utils/normalizeSnapshot.js';
+import windowsPathFix from '../../utils/windowsPathFix.js';
 
 const hashedClientComponents = [
   '/_elderjs/svelte/asyncToGenerator-7ac7dd51.js',

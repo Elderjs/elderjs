@@ -1,4 +1,4 @@
-import fixCircularJson from '../fixCircularJson';
+import fixCircularJson from '../fixCircularJson.js';
 
 describe('#fixCircularJson', () => {
   it('Handles circular', () => {

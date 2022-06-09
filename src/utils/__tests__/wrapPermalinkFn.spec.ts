@@ -1,4 +1,4 @@
-import wrapPermalinkFn from '../wrapPermalinkFn';
+import wrapPermalinkFn from '../wrapPermalinkFn.js';
 
 const payload = { request: { slug: 'test' } };
 const settings = {

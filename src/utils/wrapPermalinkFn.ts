@@ -1,4 +1,4 @@
-import { SettingsOptions, RequestObject } from './types';
+import { SettingsOptions, RequestObject } from './types.js';
 
 export type TWrapPermalinkFn = {
   permalinkFn: (any) => string;

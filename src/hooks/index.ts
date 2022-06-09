@@ -1,11 +1,10 @@
-/* eslint-disable consistent-return */
 import path from 'path';
 import fs from 'fs-extra';
-import { parseBuildPerf } from '../utils';
-import externalHelpers from '../externalHelpers';
-import { HooksArray } from './types';
-import prepareShortcodeParser from '../utils/prepareShortcodeParser';
-import { displayPerfTimings } from '../utils/perf';
+import { parseBuildPerf } from '../utils/index.js';
+import externalHelpers from '../externalHelpers.js';
+import { HooksArray } from './types.js';
+import prepareShortcodeParser from '../utils/prepareShortcodeParser.js';
+import { displayPerfTimings } from '../utils/perf.js';
 
 const hooks: HooksArray = [
   {

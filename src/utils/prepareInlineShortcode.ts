@@ -1,6 +1,5 @@
-import { SettingsOptions } from './types';
+import { SettingsOptions } from './types.js';
 
-/* eslint-disable no-param-reassign */
 const prepareInlineShortcode =
   ({ settings }: { settings: SettingsOptions }) =>
   ({ name, props = {}, content = '' }: { name: string; props: any; content: string }) => {

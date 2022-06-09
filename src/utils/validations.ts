@@ -1,10 +1,10 @@
 import * as yup from 'yup';
-import type { SettingsOptions, RollupSettings } from './types';
-import type { ShortcodeDefinition } from '../shortcodes/types';
-import type { RouteOptions } from '../routes/types';
-import type { THooks } from '../hooks/types';
-import hookInterface from '../hooks/hookInterface';
-import { PluginOptions } from '../plugins/types';
+import type { SettingsOptions, RollupSettings } from './types.js';
+import type { ShortcodeDefinition } from '../shortcodes/types.js';
+import type { RouteOptions } from '../routes/types.js';
+import type { THooks } from '../hooks/types.js';
+import hookInterface from '../hooks/hookInterface.js';
+import { PluginOptions } from '../plugins/types.js';
 
 /**
  * Important note:

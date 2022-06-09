@@ -1,5 +1,5 @@
-import { RoutesObject } from '../routes/types';
-import { SettingsOptions } from './types';
+import { RoutesObject } from '../routes/types.js';
+import { SettingsOptions } from './types.js';
 
 export type TPermalinks<T> = {
   [key in keyof T]: (data: any) => string;

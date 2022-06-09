@@ -1,9 +1,9 @@
 import path from 'path';
 import fsExtra from 'fs-extra';
-import getConfig from '../../utils/getConfig';
-import { createSSRConfig } from '../getRollupConfig';
+import getConfig from '../../utils/getConfig.js';
+import { createSSRConfig } from '../getRollupConfig.js';
 
-const rollup = require('rollup');
+const rollup = await import('rollup');
 
 describe('#rollupPlugin', () => {
   const cfs = fsExtra.copyFileSync;

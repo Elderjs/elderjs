@@ -3,10 +3,10 @@ import cliProgress from 'cli-progress';
 import os from 'os';
 import cluster from 'cluster';
 
-import getElderConfig from '../utils/getConfig';
-import { Elder } from '../Elder';
-import shuffleArray from '../utils/shuffleArray';
-import { BuildResult, InitializationOptions } from '../utils/types';
+import getElderConfig from '../utils/getConfig.js';
+import { Elder } from '../Elder.js';
+import shuffleArray from '../utils/shuffleArray.js';
+import { BuildResult, InitializationOptions } from '../utils/types.js';
 
 export function getWorkerCounts(counts) {
   return Object.keys(counts).reduce(

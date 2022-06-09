@@ -3,7 +3,7 @@
 import path from 'path';
 import fs from 'fs';
 
-import { QueryOptions, SettingsOptions, THelpers } from './utils/types';
+import { QueryOptions, SettingsOptions, THelpers } from './utils/types.js';
 
 let userHelpers;
 
@@ -23,7 +23,7 @@ async function externalHelpers({
     if (!cache) {
       try {
         fs.statSync(srcHelpers);
-        const reqHelpers = require(srcHelpers);
+        const reqHelpers = await import(srcHelpers);
         userHelpers = reqHelpers.default || reqHelpers;
 
         if (typeof userHelpers === 'function') {

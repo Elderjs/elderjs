@@ -1,9 +1,8 @@
-/* eslint-disable global-require */
-import { ComponentPayload } from './types';
-import mountComponentsInHtml from '../partialHydration/mountComponentsInHtml';
-import getUniqueId from './getUniqueId';
+import { ComponentPayload } from './types.js';
+import mountComponentsInHtml from '../partialHydration/mountComponentsInHtml.js';
+import getUniqueId from './getUniqueId.js';
 
-export const getComponentName = (str) => {
+export const getComponentName = (str: string) => {
   let out = str.replace('.svelte', '').replace('.js', '');
   if (out.includes('/')) {
     out = out.split('/').pop();
@@ -12,14 +11,13 @@ export const getComponentName = (str) => {
 };
 
 const svelteComponent =
-  (componentName: String, folder: String = 'components') =>
-  ({ page, props, hydrateOptions }: ComponentPayload): string => {
+  (componentName: string, folder = 'components') =>
+  async ({ page, props, hydrateOptions }: ComponentPayload): Promise<string> => {
     const { ssr, client } = page.settings.$$internal.findComponent(componentName, folder);
 
     const cleanComponentName = getComponentName(componentName);
 
-    // eslint-disable-next-line import/no-dynamic-require
-    const ssrReq = require(ssr);
+    const ssrReq = await import(ssr);
 
     const { render, _css: css, _cssMap: cssMap } = ssrReq.default || ssrReq;
 
@@ -36,7 +34,7 @@ const svelteComponent =
         page.headStack.push({ source: cleanComponentName, priority: 50, string: head });
       }
 
-      const innerHtml = mountComponentsInHtml({
+      const innerHtml = await mountComponentsInHtml({
         html: htmlOutput,
         page,
         hydrateOptions,

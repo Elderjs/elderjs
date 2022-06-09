@@ -13,11 +13,11 @@ import fs from 'fs-extra';
 
 // eslint-disable-next-line import/no-unresolved
 import { PreprocessorGroup } from 'svelte/types/compiler/preprocess/types';
-import esbuildPluginSvelte from './esbuildPluginSvelte';
-import { InitializationOptions, SettingsOptions } from '../utils/types';
+import esbuildPluginSvelte from './esbuildPluginSvelte.js';
+import { InitializationOptions, SettingsOptions } from '../utils/types.js';
 import { getElderConfig } from '..';
-import { devServer } from '../rollup/rollupPlugin';
-import getPluginLocations from '../utils/getPluginLocations';
+import { devServer } from '../rollup/rollupPlugin.js';
+import getPluginLocations from '../utils/getPluginLocations.js';
 
 const production = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'PRODUCTION';
 export type TPreprocess = PreprocessorGroup | PreprocessorGroup[] | false;
@@ -26,12 +26,11 @@ export type TSvelteHandler = {
   preprocess: TPreprocess;
 };
 
-export function getSvelteConfig(elderConfig: SettingsOptions): TPreprocess {
+export async function getSvelteConfig(elderConfig: SettingsOptions): Promise<TPreprocess> {
   const svelteConfigPath = path.resolve(elderConfig.rootDir, `./svelte.config.js`);
   if (fs.existsSync(svelteConfigPath)) {
     try {
-      // eslint-disable-next-line import/no-dynamic-require
-      const req = require(svelteConfigPath);
+      const req = await import(svelteConfigPath);
       if (req) {
         return req;
       }
@@ -45,22 +44,24 @@ export function getSvelteConfig(elderConfig: SettingsOptions): TPreprocess {
   return false;
 }
 
-export function getPackagesWithSvelte(pkg, elderConfig: SettingsOptions) {
+export async function getPackagesWithSvelte(pkg, elderConfig: SettingsOptions) {
   const pkgs = []
     .concat(pkg.dependents ? Object.keys(pkg.dependents) : [])
     .concat(pkg.devDependencies ? Object.keys(pkg.devDependencies) : []);
-  const sveltePackages = pkgs.reduce((out, cv) => {
+
+  const sveltePackages = [];
+  for (const pkg of pkgs) {
     try {
-      const resolved = path.resolve(elderConfig.rootDir, `./node_modules/${cv}/package.json`);
-      const current = require(resolved);
+      const resolved = path.resolve(elderConfig.rootDir, `./node_modules/${pkg}/package.json`);
+      const current = await import(resolved);
       if (current.svelte) {
-        out.push(cv);
+        sveltePackages.push(pkg);
       }
     } catch (e) {
       //
     }
-    return out;
-  }, []);
+  }
+
   return sveltePackages;
 }
 
@@ -96,10 +97,10 @@ const svelteHandler = async ({ elderConfig, svelteConfig, replacements, restartH
     const builders: { ssr?: BuildResult; client?: BuildResult } = {};
 
     // eslint-disable-next-line global-require
-    const pkg = require(path.resolve(elderConfig.rootDir, './package.json'));
+    const pkg = await import(path.resolve(elderConfig.rootDir, './package.json'));
     const globPath = path.resolve(elderConfig.rootDir, `./src/**/*.svelte`);
     const initialEntryPoints = glob.sync(globPath);
-    const sveltePackages = getPackagesWithSvelte(pkg, elderConfig);
+    const sveltePackages = await getPackagesWithSvelte(pkg, elderConfig);
     const elderPlugins = getPluginLocations(elderConfig);
 
     builders.ssr = await build({
@@ -196,8 +197,8 @@ type TEsbuildBundler = {
 
 const esbuildBundler = async ({ initializationOptions = {}, replacements = {} }: TEsbuildBundler = {}) => {
   try {
-    const elderConfig = getElderConfig(initializationOptions);
-    const svelteConfig = getSvelteConfig(elderConfig);
+    const elderConfig = await getElderConfig(initializationOptions);
+    const svelteConfig = await getSvelteConfig(elderConfig);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { startOrRestartServer, startWatcher, childProcess } = devServer({

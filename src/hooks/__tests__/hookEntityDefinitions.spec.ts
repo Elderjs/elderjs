@@ -1,5 +1,5 @@
-import { hookEntityDefinitions } from '../hookEntityDefinitions';
-import hookInterface from '../hookInterface';
+import { hookEntityDefinitions } from '../hookEntityDefinitions.js';
+import hookInterface from '../hookInterface.js';
 
 test('#hookEntityDefinitions', async () => {
   const entities = [...new Set(hookInterface.reduce((out, hook) => [...out, ...hook.props, ...hook.mutable], []))];

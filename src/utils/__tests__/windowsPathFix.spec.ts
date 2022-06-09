@@ -1,4 +1,4 @@
-import windowsPathFix from '../windowsPathFix';
+import windowsPathFix from '../windowsPathFix.js';
 
 describe('#windowsPathFix', () => {
   it('windows path fix works', () => {

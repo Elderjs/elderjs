@@ -1,4 +1,4 @@
-import asyncForEach from '../asyncForEach';
+import asyncForEach from '../asyncForEach.js';
 
 test('#asyncForEach', async () => {
   const timeouts = [50, 10, 20];

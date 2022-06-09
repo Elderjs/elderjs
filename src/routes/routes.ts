@@ -1,25 +1,21 @@
-/* eslint-disable no-cond-assign */
-/* eslint-disable no-param-reassign */
-/* eslint-disable global-require */
-/* eslint-disable import/no-dynamic-require */
 import glob from 'glob';
 import kebabcase from 'lodash.kebabcase';
 import toRegExp from 'regexparam';
 import path from 'path';
 
-import { svelteComponent } from '../utils';
-import { SettingsOptions } from '../utils/types';
-import wrapPermalinkFn from '../utils/wrapPermalinkFn';
-import windowsPathFix from '../utils/windowsPathFix';
-import makeDynamicPermalinkFn from './makeDynamicPermalinkFn';
-import { ProcessedRouteOptions, RouteOptions, RoutesObject } from './types';
+import { svelteComponent } from '../utils/index.js';
+import { SettingsOptions } from '../utils/types.js';
+import wrapPermalinkFn from '../utils/wrapPermalinkFn.js';
+import windowsPathFix from '../utils/windowsPathFix.js';
+import makeDynamicPermalinkFn from './makeDynamicPermalinkFn.js';
+import { ProcessedRouteOptions, RouteOptions, RoutesObject } from './types.js';
 
-const requireFile = (file: string) => {
-  const dataReq = require(file);
+const requireFile = async (file: string) => {
+  const dataReq = await import(file);
   return dataReq.default || dataReq;
 };
 
-function prepareRoutes(settings: SettingsOptions): RoutesObject {
+async function prepareRoutes(settings: SettingsOptions): Promise<RoutesObject> {
   try {
     const { ssrComponents: ssrFolder, serverPrefix = '' } = settings.$$internal;
 
@@ -33,9 +29,9 @@ function prepareRoutes(settings: SettingsOptions): RoutesObject {
      * Add them to the 'routes' object
      */
 
-    routejsFiles.forEach((routeFile) => {
+    for (const routeFile of routejsFiles) {
       const routeName = routeFile.replace('/route.js', '').split('/').pop();
-      const route: RouteOptions = requireFile(routeFile);
+      const route: RouteOptions = await requireFile(routeFile);
       route.$$meta = {
         type: 'file',
         addedBy: routeFile,
@@ -79,9 +75,7 @@ function prepareRoutes(settings: SettingsOptions): RoutesObject {
 
       // set default data as it is optional.
       if (!route.data) {
-        route.data = (page) => {
-          page.data = {};
-        };
+        route.data = {};
       }
 
       // find svelte template or set default
@@ -108,7 +102,7 @@ function prepareRoutes(settings: SettingsOptions): RoutesObject {
       }
 
       routes[routeName] = route as ProcessedRouteOptions;
-    });
+    }
 
     const ssrComponents = glob.sync(`${ssrFolder}/**/*.js`).map((p) => windowsPathFix(p));
     Object.keys(routes).forEach((routeName) => {

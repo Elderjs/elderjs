@@ -1,4 +1,4 @@
-import windowsPathFix from './windowsPathFix';
+import windowsPathFix from './windowsPathFix.js';
 
 const normalizeSnapshot = (val) => {
   if (Object.prototype.toString.call(val) === '[object String]') {

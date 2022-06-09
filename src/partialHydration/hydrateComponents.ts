@@ -1,9 +1,9 @@
 import fs from 'fs-extra';
 import path from 'path';
 
-import { Page } from '../utils';
-import { walkAndCount, prepareSubstitutions, walkAndSubstitute } from './propCompression';
-import windowsPathFix from '../utils/windowsPathFix';
+import { Page } from '../utils/index.js';
+import { walkAndCount, prepareSubstitutions, walkAndSubstitute } from './propCompression.js';
+import windowsPathFix from '../utils/windowsPathFix.js';
 
 const defaultElderHelpers = (decompressCode, prefix, generateLazy) => `
 const $$ejs = (par,eager)=>{

@@ -1,10 +1,7 @@
-import { customAlphabet } from 'nanoid/non-secure';
-
-const nanoid = customAlphabet('bcdfgjklmnpqrstvwxyzVCDFGJKLMNQRSTVWXYZ', 10);
-
-// generate a 10 digit unique ID
+import hexoid from 'hexoid';
+const id = hexoid(10);
 const getUniqueId = (): string => {
-  return nanoid();
+  return id();
 };
 
 export default getUniqueId;

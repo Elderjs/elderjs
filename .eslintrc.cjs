@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-undef
 module.exports = {
   env: {
     browser: true,
@@ -5,18 +6,22 @@ module.exports = {
     'jest/globals': true,
   },
   extends: [
-    'airbnb-base',
+    'eslint:recommended',
+    'plugin:eslint-comments/recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:jest/style',
     'plugin:jest/recommended',
+    'plugin:import/typescript',
+    'prettier',
     'prettier/@typescript-eslint',
     'plugin:prettier/recommended',
-    'plugin:jest/style',
   ],
   settings: {
-    'import/resolver': {
-      node: {
-        extensions: ['.js', '.ts'],
-      },
-    },
+    // "import/resolver": {
+    //   "node": {
+    //     "extensions": [".js", ".ts"]
+    //   }
+    // }
   },
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -26,25 +31,16 @@ module.exports = {
   plugins: ['@typescript-eslint', 'jest', 'prettier'],
   rules: {
     'prettier/prettier': 'error',
-    // do not require ext. when importing file
-    'import/extensions': [
-      'error',
-      'ignorePackages',
-      {
-        ts: 'never',
-      },
-    ],
 
-    // avoid having warnings when we import types and they are detected as unused imports
-    'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': ['error'],
 
-    // <temporarily allowed until fixed>
     'no-param-reassign': ['warn'],
-    'global-require': ['warn'],
 
     // -- OVERRIDES by choice --
+    '@typescript-eslint/no-explicit-any': 'warn',
+
     // allow ForOfStatement
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
     'no-restricted-syntax': [
       // override aribnb config here to allow for (const ... of ...) https://github.com/airbnb/javascript/blob/64b965efe0355c8290996ff5a675cd8fb30bf843/packages/eslint-config-airbnb-base/rules/style.js#L334-L352
       'error',

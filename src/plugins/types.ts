@@ -1,8 +1,8 @@
 /* eslint-disable no-use-before-define */
-import type { UnprocessedRoutesObject } from '../routes/types';
-import type { HooksArray } from '../hooks/types';
-import type { ShortcodeDefinitions } from '../shortcodes/types';
-import { SettingsOptions } from '../utils/types';
+import type { UnprocessedRoutesObject } from '../routes/types.js';
+import type { HooksArray } from '../hooks/types.js';
+import type { ShortcodeDefinitions } from '../shortcodes/types.js';
+import { SettingsOptions } from '../utils/types.js';
 
 export type PluginInitPayload = PluginOptions & {
   settings: SettingsOptions;

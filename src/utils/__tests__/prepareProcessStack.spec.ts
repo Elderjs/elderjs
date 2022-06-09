@@ -1,5 +1,5 @@
-import { Elder } from '../../Elder';
-import Page from '../Page';
+import { Elder } from '../../Elder.js';
+import Page from '../Page.js';
 
 const elder = new Elder({ context: 'server' });
 

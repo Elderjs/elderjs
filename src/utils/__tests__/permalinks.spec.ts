@@ -1,6 +1,6 @@
-import permalinks from '../permalinks';
-import { Elder } from '../../Elder';
-import { RoutesObject } from '../../routes/types';
+import permalinks from '../permalinks.js';
+import { Elder } from '../../Elder.js';
+import { RoutesObject } from '../../routes/types.js';
 
 const elder = new Elder({ context: 'server' });
 

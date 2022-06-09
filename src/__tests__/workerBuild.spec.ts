@@ -66,7 +66,7 @@ describe('#workerBuild', () => {
     const processSendMock = jest.fn();
     process.send = processSendMock;
     // eslint-disable-next-line global-require
-    const workerBuild = require('../workerBuild').default;
+    const workerBuild = await import('../workerBuild').default;
     expect(await workerBuild({ bootstrapComplete: Promise.resolve(input), workerRequests: input.allRequests })).toEqual(
       {
         errors: [
@@ -109,7 +109,7 @@ describe('#workerBuild', () => {
     const processSendMock = jest.fn();
     process.send = processSendMock;
     // eslint-disable-next-line global-require
-    const workerBuild = require('../workerBuild').default;
+    const workerBuild = await import('../workerBuild').default;
     expect(await workerBuild({ bootstrapComplete: Promise.resolve(input), workerRequests: input.allRequests })).toEqual(
       {
         errors: [],

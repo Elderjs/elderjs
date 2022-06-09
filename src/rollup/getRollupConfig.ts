@@ -7,10 +7,10 @@ import replace from '@rollup/plugin-replace';
 import json from '@rollup/plugin-json';
 import glob from 'glob';
 import defaultsDeep from 'lodash.defaultsdeep';
-import { getElderConfig } from '../index';
-import { getDefaultRollup } from '../utils/validations';
-import getPluginLocations from '../utils/getPluginLocations';
-import elderSvelte from './rollupPlugin';
+import { getElderConfig } from '../index.js';
+import { getDefaultRollup } from '../utils/validations.js';
+import getPluginLocations from '../utils/getPluginLocations.js';
+import elderSvelte from './rollupPlugin.js';
 
 const production = process.env.NODE_ENV === 'production' || !process.env.ROLLUP_WATCH;
 

@@ -1,5 +1,7 @@
-/* eslint-disable global-require */
-import path from 'path';
+// eslint-disable-next-line eslint-comments/disable-enable-pair
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+import path, { resolve } from 'path';
+import svelteComponent, { getComponentName } from '../svelteComponent';
 
 const componentProps = {
   page: {
@@ -38,7 +40,6 @@ const componentProps = {
 };
 
 describe('#svelteComponent', () => {
-  const { resolve } = require('path');
   beforeAll(() => {
     jest.mock('../getUniqueId', () => () => 'SwrzsrVDCd');
   });
@@ -49,7 +50,7 @@ describe('#svelteComponent', () => {
 
   it('getComponentName works', () => {
     // eslint-disable-next-line global-require
-    const { getComponentName } = require('../svelteComponent');
+
     expect(getComponentName('Home.svelte')).toEqual('Home');
     expect(getComponentName('Home.js')).toEqual('Home');
     expect(getComponentName('foo/bar/Home.js')).toEqual('Home');
@@ -71,8 +72,10 @@ describe('#svelteComponent', () => {
       { virtual: true },
     );
     // eslint-disable-next-line global-require
-    const svelteComponent = require('../svelteComponent').default;
+
     const home = svelteComponent('Layout.svelte', 'layouts');
+
+    // @ts-expect-error
     expect(home(componentProps)).toEqual(`<div class="svelte-home">mock html output</div>`);
   });
 
@@ -103,8 +106,9 @@ describe('#svelteComponent', () => {
       { virtual: true },
     );
     // eslint-disable-next-line global-require
-    const svelteComponent = require('../svelteComponent').default;
+
     const home = svelteComponent('Home', 'components');
+    // @ts-expect-error
     expect(home(componentProps)).toEqual(
       `<div class="svelte-datepicker"><div class="datepicker-component" id="datepicker-ejs-SwrzsrVDCd"><div>DATEPICKER</div></div></div>`,
     );
@@ -146,7 +150,7 @@ describe('#svelteComponent', () => {
       { virtual: true },
     );
     // eslint-disable-next-line global-require
-    const svelteComponent = require('../svelteComponent').default;
+
     const home = svelteComponent('Home', 'components');
     const props = {
       page: {
@@ -184,6 +188,7 @@ describe('#svelteComponent', () => {
       },
       props: {},
     };
+    // @ts-expect-error
     expect(home(props)).toEqual(
       `<div class="svelte-datepicker"><div class="datepicker-component" id="datepicker-ejs-SwrzsrVDCd"><div>DATEPICKER</div></div></div>`,
     );
@@ -225,7 +230,7 @@ describe('#svelteComponent', () => {
       { virtual: true },
     );
     // eslint-disable-next-line global-require
-    const svelteComponent = require('../svelteComponent').default;
+
     const home = svelteComponent('Home', 'components');
     const props = {
       page: {
@@ -263,6 +268,7 @@ describe('#svelteComponent', () => {
       },
       props: {},
     };
+    // @ts-expect-error
     expect(home(props)).toEqual(
       `<div class="svelte-datepicker"><div class="datepicker-component" id="datepicker-ejs-SwrzsrVDCd"><div>DATEPICKER</div></div></div>`,
     );

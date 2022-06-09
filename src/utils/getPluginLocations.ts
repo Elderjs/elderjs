@@ -1,8 +1,7 @@
-/* eslint-disable no-param-reassign */
 import glob from 'glob';
 import path from 'path';
 import fs from 'fs-extra';
-import { SettingsOptions } from '..';
+import { SettingsOptions } from '../utils/types.js';
 
 export default function getPluginLocations(elderConfig: SettingsOptions) {
   const pluginNames = Object.keys(elderConfig.plugins);

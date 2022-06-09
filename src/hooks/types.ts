@@ -1,8 +1,8 @@
 /* eslint-disable no-use-before-define */
-import { PerfPayload, PerfTimings } from '../utils/perf';
+import { PerfPayload, PerfTimings } from '../utils/perf.js';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { THookInterface } from './hookInterface';
+import { THookInterface } from './hookInterface.js';
 import {
   RequestObject,
   SettingsOptions,
@@ -13,9 +13,9 @@ import {
   AllRequests,
 } from '../utils/types';
 
-import { RouteOptions, RoutesObject } from '../routes/types';
-import { ShortcodeDefinitions } from '../shortcodes/types';
-import { PluginClosure } from '../plugins/types';
+import { RouteOptions, RoutesObject } from '../routes/types.js';
+import { ShortcodeDefinitions } from '../shortcodes/types.js';
+import { PluginClosure } from '../plugins/types.js';
 
 export type THookName =
   | 'customizeHooks'

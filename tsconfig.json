@@ -2,7 +2,8 @@
   "compileOnSave": true,
   "compilerOptions": {
     "target": "es2020",
-    "module": "commonjs",
+    "module": "esnext",
+    "moduleResolution": "Node",
     "lib": ["es2020"],
     "allowJs": true,
 
@@ -10,10 +11,12 @@
     "rootDir": "src",
     "strict": false,
     // "noImplicitAny": true,
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "declaration": true
+    "esModuleInterop": false,
+    "declaration": true,
+    "allowSyntheticDefaultImports": true
   },
   "include": ["src"],
-  "exclude": ["node_modules", "**/__tests__/**", "dist"]
+  "exclude": ["node_modules", "**/__tests__/**", "dist"],
+  "types": ["jest", "node", "@types/jest"],
+  "typeRoots": ["node_modules/@types", "src/types", "node_modules/svelte/types"]
 }

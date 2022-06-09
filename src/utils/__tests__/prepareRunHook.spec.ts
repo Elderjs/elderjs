@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import prepareRunHook from '../prepareRunHook';
+import prepareRunHook from '../prepareRunHook.js';
 
 const hooks = [
   {

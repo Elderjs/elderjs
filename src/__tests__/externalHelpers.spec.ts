@@ -1,5 +1,5 @@
 import { sep } from 'path';
-import normalizeSnapshot from '../utils/normalizeSnapshot';
+import normalizeSnapshot from '../utils/normalizeSnapshot.js';
 
 process.cwd = () => 'test';
 
@@ -29,7 +29,7 @@ describe('#externalHelpers', () => {
       }),
     }));
     // eslint-disable-next-line global-require
-    const externalHelpers = require('../externalHelpers').default;
+    const externalHelpers = await import('../externalHelpers').default;
     // @ts-ignore
     expect(await externalHelpers({ settings, query, helpers: [] })).toBeUndefined();
     const modifiedSettings = {
@@ -52,7 +52,7 @@ describe('#externalHelpers', () => {
       }),
     }));
     // eslint-disable-next-line global-require
-    const externalHelpers = require('../externalHelpers').default;
+    const externalHelpers = await import('../externalHelpers').default;
     // @ts-ignore
     expect(await externalHelpers({ settings, query, helpers: [] })).toBeUndefined();
   });
@@ -69,7 +69,7 @@ describe('#externalHelpers', () => {
       statSync: jest.fn().mockImplementationOnce(() => {}),
     }));
     // eslint-disable-next-line global-require
-    const externalHelpers = require('../externalHelpers').default;
+    const externalHelpers = await import('../externalHelpers').default;
     // @ts-ignore
     const c1 = await externalHelpers({ settings, query, helpers: [] });
     expect(normalizeSnapshot(c1)).toMatchSnapshot();
@@ -91,7 +91,7 @@ describe('#externalHelpers', () => {
       statSync: jest.fn().mockImplementationOnce(() => {}),
     }));
     // eslint-disable-next-line global-require
-    const externalHelpers = require('../externalHelpers').default;
+    const externalHelpers = await import('../externalHelpers').default;
     // @ts-ignore
     const c1 = await externalHelpers({ settings, query, helpers: [] });
     expect(normalizeSnapshot(c1)).toMatchSnapshot();

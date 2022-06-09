@@ -1,4 +1,4 @@
-import { inlinePreprocessedSvelteComponent } from './inlineSvelteComponent';
+import { inlinePreprocessedSvelteComponent } from './inlineSvelteComponent.js';
 
 const extractHydrateOptions = (htmlString) => {
   const hydrateOptionsPattern = /hydrate-options={([^]*?})}/gim;

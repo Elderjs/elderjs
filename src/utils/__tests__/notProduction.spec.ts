@@ -1,4 +1,4 @@
-const notProduction = require('../notProduction');
+const notProduction = await import('../notProduction');
 
 describe('#notProduction', () => {
   it('false on process.env.NODE_ENV === production', () => {

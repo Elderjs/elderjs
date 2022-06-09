@@ -5,9 +5,9 @@ import path from 'path';
 import fsExtra from 'fs-extra';
 import del from 'del';
 
-import windowsPathFix from '../../utils/windowsPathFix';
-import normalizeSnapshot from '../../utils/normalizeSnapshot';
-import getConfig from '../../utils/getConfig';
+import windowsPathFix from '../../utils/windowsPathFix.js';
+import normalizeSnapshot from '../../utils/normalizeSnapshot.js';
+import getConfig from '../../utils/getConfig.js';
 
 import elderjsRollup, {
   encodeSourceMap,

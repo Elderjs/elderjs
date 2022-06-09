@@ -1,4 +1,4 @@
-import normalizePrefix from '../normalizePrefix';
+import normalizePrefix from '../normalizePrefix.js';
 
 describe('#normalizePrefix', () => {
   const correctPrefix = '/testing';

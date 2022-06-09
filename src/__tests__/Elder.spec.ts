@@ -1,6 +1,6 @@
 /* eslint-disable global-require */
 import path, { sep } from 'path';
-import normalizeSnapshot from '../utils/normalizeSnapshot';
+import normalizeSnapshot from '../utils/normalizeSnapshot.js';
 
 describe('#Elder', () => {
   jest.mock(`..${sep}routes${sep}routes`, () => () => ({
@@ -106,8 +106,7 @@ describe('#Elder', () => {
         virtual: true,
       },
     );
-    // eslint-disable-next-line import/no-dynamic-require
-    const { Elder } = require(`..${sep}index`);
+    const { Elder } = await import(`..${sep}index`);
     const elder = await new Elder({ context: 'server', worker: false });
     await elder.bootstrap();
     await elder.worker([]);
@@ -198,7 +197,7 @@ describe('#Elder', () => {
       },
     );
     // eslint-disable-next-line import/no-dynamic-require
-    const { Elder } = require(`..${sep}index`);
+    const { Elder } = await import`..${sep}index`);
     const elder = await new Elder({ context: 'server', worker: false });
     await elder.bootstrap();
 

@@ -1,4 +1,4 @@
-import normalizeSnapshot from '../normalizeSnapshot';
+import normalizeSnapshot from '../normalizeSnapshot.js';
 
 class PerformanceObserverMock {
   cb: (any) => void;
@@ -38,7 +38,7 @@ describe('#perf', () => {
     }));
     const mockPage = new MockPage();
     // eslint-disable-next-line global-require
-    const perf = require('../perf').default;
+    const perf = await import('../perf').default;
 
     // mutate
     perf(mockPage);
@@ -86,7 +86,7 @@ describe('#perf', () => {
     }));
     const mockPage = new MockPage();
     // eslint-disable-next-line global-require
-    const perf = require('../perf').default;
+    const perf = await import('../perf').default;
 
     // mutate
     perf(mockPage);

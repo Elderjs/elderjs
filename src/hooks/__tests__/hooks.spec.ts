@@ -1,4 +1,4 @@
-import hooks from '../index';
+import hooks from '../index.js';
 import {
   IBootstrapHook,
   IBuildCompleteHook,
@@ -10,8 +10,8 @@ import {
   IStacksHook,
   ProcessedHook,
 } from '../types';
-import normalizeSnapshot from '../../utils/normalizeSnapshot';
-import { Elder } from '../../Elder';
+import normalizeSnapshot from '../../utils/normalizeSnapshot.js';
+import { Elder } from '../../Elder.js';
 
 jest.mock('../../externalHelpers', () => () => Promise.resolve({ permalink: jest.fn() }));
 

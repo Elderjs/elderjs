@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { Timing } from '../utils/types';
+import { Timing } from '../utils/types.js';
 
 function parseBuildPerf(timings: Array<Timing[]>): any {
   const counts = {};

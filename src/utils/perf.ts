@@ -1,6 +1,6 @@
 import { performance, PerformanceObserver } from 'perf_hooks';
-import { Elder } from '..';
-import Page from './Page';
+import { Elder } from '../Elder.js';
+import Page from './Page.js';
 /**
  * A little helper around perf_hooks.
  * Returns an object with a start and end function.

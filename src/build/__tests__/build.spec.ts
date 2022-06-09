@@ -1,5 +1,5 @@
 /* eslint-disable max-classes-per-file */
-import { getWorkerCounts } from '../build';
+import { getWorkerCounts } from '../build.js';
 
 let calledHooks = [];
 
@@ -147,7 +147,7 @@ describe('#build', () => {
     };
 
     // eslint-disable-next-line global-require
-    const build = require('../build').default;
+    const build = await import('../build').default;
     await build();
     expect(listeners[0].event).toEqual('message');
     await listeners[0].cb({ cmd: 'start' });
@@ -181,11 +181,11 @@ describe('#build', () => {
 
     expect(calledHooks).toEqual([]);
     // eslint-disable-next-line global-require
-    const build = require('../build').default;
+    const build = await import('../build').default;
     await build();
     jest.advanceTimersByTime(1000); // not all intervalls are cleared
     // eslint-disable-next-line global-require
-    expect(require('cluster').workers.map((w) => w.killed)).toEqual([true, true, true, true, true]);
+    expect(await import('cluster').workers.map((w) => w.killed)).toEqual([true, true, true, true, true]);
     expect(calledHooks).toEqual(['buildComplete-{"success":true,"errors":[],"timings":[null,null,null,null,null]}']);
     expect(setInterval).toHaveBeenCalledTimes(5);
   });
@@ -263,14 +263,14 @@ describe('#build', () => {
 
     expect(calledHooks).toEqual([]);
     // eslint-disable-next-line global-require
-    const build = require('../build').default;
+    const build = await import('../build').default;
     await build();
     jest.advanceTimersByTime(1000); // not all intervalls are cleared
     expect(setInterval).toHaveBeenCalledTimes(2);
     expect(exitMock).toHaveBeenCalled();
 
     // eslint-disable-next-line global-require
-    expect(require('cluster').workers.map((w) => w.killed)).toEqual([true, true]);
+    expect(await import('cluster').workers.map((w) => w.killed)).toEqual([true, true]);
 
     expect(calledHooks).toEqual([
       'buildComplete-{"success":false,"errors":["bornToFail",{"errors":[{"msg":"pushMeToErrors"}]}],"timings":[null,null]}',

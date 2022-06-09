@@ -1,4 +1,4 @@
-import capitalizeFirstLetter from '../capitalizeFirstLetter';
+import capitalizeFirstLetter from '../capitalizeFirstLetter.js';
 
 test('#capitalizeFirstLetter', async () => {
   expect(capitalizeFirstLetter('abcd')).toBe('Abcd');

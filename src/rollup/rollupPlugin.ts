@@ -1,23 +1,19 @@
-/* eslint-disable global-require */
-/* eslint-disable no-param-reassign */
 import path, { sep } from 'path';
 import CleanCSS from 'clean-css';
 import { Plugin } from 'rollup';
-
 import { compile, preprocess } from 'svelte/compiler';
 import sparkMd5 from 'spark-md5';
 import fs from 'fs-extra';
-import devalue from 'devalue';
 import btoa from 'btoa';
-// eslint-disable-next-line import/no-unresolved
+
 import { CompileOptions } from 'svelte/types/compiler/interfaces';
 import del from 'del';
 import { fork, ChildProcess } from 'child_process';
 import chokidar from 'chokidar';
 
-import partialHydration from '../partialHydration/partialHydration';
-import windowsPathFix from '../utils/windowsPathFix';
-import { SettingsOptions } from '../utils/types';
+import partialHydration from '../partialHydration/partialHydration.js';
+import windowsPathFix from '../utils/windowsPathFix.js';
+import { SettingsOptions } from '../utils/types.js';
 
 export type RollupCacheElder = {
   [name: string]: Set<string>;
@@ -121,7 +117,6 @@ export function transformFn({
 
       const processed = await preprocess(code, preprocessors, { filename });
 
-      // @ts-ignore - these types aren't in the type files... but if we don't pass in a map things break.
       if (processed.map) compilerOptions.sourcemap = processed.map;
 
       const compiled = await compile(processed.code, { ...compilerOptions, filename });
@@ -201,7 +196,7 @@ export function resetDependencyCache() {
 }
 
 // allows for injection of the cache and future sharing with esbuild
-export function resolveFn(importee, importer) {
+export async function resolveFn(importee, importer) {
   // build list of dependencies so we know what CSS to inject into the export.
 
   logDependency(importee, importer);
@@ -223,8 +218,8 @@ export function resolveFn(importee, importer) {
     const file = `.${path.sep}${['node_modules', name, 'package.json'].join(path.sep)}`;
     const resolved = path.resolve(process.cwd(), file);
     dir = path.dirname(resolved);
-    // eslint-disable-next-line import/no-dynamic-require
-    pkg = require(resolved);
+
+    pkg = await import(resolved);
   } catch (err) {
     if (err.code === 'MODULE_NOT_FOUND') {
       if (err.message && name !== 'svelte') console.log(err);
@@ -483,8 +478,8 @@ export default function elderjsRollup({
           const trackedDeps = getDependencies(chunk.facadeModuleId);
 
           const cssOutput = await minifyCss(trackedDeps, elderConfig);
-          code += `\nmodule.exports._css = ${devalue(cssOutput.styles)};`;
-          code += `\nmodule.exports._cssMap = ${devalue(encodeSourceMap(cssOutput.sourceMap))};`;
+          code += `\nmodule.exports._css = ${cssOutput.styles};`;
+          code += `\nmodule.exports._cssMap = ${encodeSourceMap(cssOutput.sourceMap)};`;
           code += `\nmodule.exports._cssIncluded = ${JSON.stringify(
             cssOutput.included.map((d) => path.relative(elderConfig.rootDir, d)),
           )}`;

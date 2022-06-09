@@ -1,4 +1,4 @@
-const outputStyles = require('../outputStyles');
+const outputStyles = await import('../outputStyles');
 
 const svelteCss = [
   { css: '.one{}', cssMap: 'one' },

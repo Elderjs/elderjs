@@ -1,6 +1,6 @@
-import { PluginClosure } from '../plugins/types';
-import { PerfPayload } from '../utils/perf';
-import { AllRequests, SettingsOptions, RequestObject, TUserHelpers } from '../utils/types';
+import { PluginClosure } from '../plugins/types.js';
+import { PerfPayload } from '../utils/perf.js';
+import { AllRequests, SettingsOptions, RequestObject, TUserHelpers } from '../utils/types.js';
 
 interface FullShortcodeResponse {
   html?: string;

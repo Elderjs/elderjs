@@ -1,4 +1,4 @@
-import parseBuildPerf from '../parseBuildPerf';
+import parseBuildPerf from '../parseBuildPerf.js';
 
 test('#parseBuildPerf', async () => {
   expect(parseBuildPerf([])).toEqual({});

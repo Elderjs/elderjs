@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import createReadOnlyProxy from './createReadOnlyProxy';
+import createReadOnlyProxy from './createReadOnlyProxy.js';
 
 // TODO: How do we get types to the user when they are writing plugins, etc?
 function prepareRunHook({ hooks, allSupportedHooks, settings }) {

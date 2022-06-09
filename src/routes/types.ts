@@ -1,5 +1,5 @@
-import { PerfPayload } from '../utils/perf';
-import { AllRequests, SettingsOptions, TErrors, RequestObject, TUserHelpers } from '../utils/types';
+import { PerfPayload } from '../utils/perf.js';
+import { AllRequests, SettingsOptions, TErrors, RequestObject, TUserHelpers } from '../utils/types.js';
 
 interface Permalink {
   (input: { request: RequestObject; settings: SettingsOptions; helpers?: TUserHelpers }): string;
@@ -29,10 +29,10 @@ export type DataFn = (payload: DataFnPayload) => PromiseLike<{ [key: string]: an
 
 interface IBaseRouteOptions {
   template?: string;
-  templateComponent?: (x: any) => string;
+  templateComponent?: (x: any) => string | Promise<string>;
   layout?: string;
-  layoutComponent?: (x: any) => string;
-  data?: Object | DataFn;
+  layoutComponent?: (x: any) => string | Promise<string>;
+  data?: Record<string, unknown> | DataFn;
   permalink: Permalink;
   all?:
     | any[]
@@ -55,10 +55,10 @@ export type UnprocessedRoutesObject = Record<string, RouteOptions>;
 
 export interface ProcessedRouteOptions extends RouteOptions {
   template: string;
-  templateComponent: (x: any) => string;
+  templateComponent: (x: unknown) => string | Promise<string>;
   layout: string;
-  layoutComponent: (x: any) => string;
-  data: Object | DataFn;
+  layoutComponent: (x: unknown) => string | Promise<string>;
+  data: Record<string, unknown> | DataFn;
   permalink: Permalink;
   all:
     | any[]
@@ -68,7 +68,7 @@ export interface ProcessedRouteOptions extends RouteOptions {
         helpers: TUserHelpers;
         data: any;
         perf: PerfPayload;
-      }) => [any] | Promise<any>);
+      }) => [any] | Promise<any[]>);
   $$meta: MetaOptions;
   name: string;
   dynamic: boolean;

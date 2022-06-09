@@ -1,4 +1,4 @@
-import normalizeSnapshot from '../../utils/normalizeSnapshot';
+import normalizeSnapshot from '../../utils/normalizeSnapshot.js';
 
 // process.cwd = () => 'test';
 
@@ -63,7 +63,7 @@ describe('#routes', () => {
     jest.mock(`test/src/routes/content/data.js`, () => ({ default: { foo: 'bar' } }), { virtual: true });
 
     // eslint-disable-next-line global-require
-    const routes = require('../routes').default;
+    const routes = await import('../routes').default;
     // @ts-ignore
     const routesObject = routes(settings);
 
@@ -125,7 +125,7 @@ describe('#routes', () => {
     jest.mock('test/src/routes/SomethingCamel/data.js', () => ({ default: { foo: 'bar' } }), { virtual: true });
 
     // eslint-disable-next-line global-require
-    const routes = require('../routes').default;
+    const routes = await import('../routes').default;
     // @ts-ignore
     const routesObject = normalizeSnapshot(routes(settings));
 
@@ -176,7 +176,7 @@ describe('#routes', () => {
 
     jest.mock('test/src/routes/content/data.js', () => ({ foo: 'bar' }), { virtual: true });
     // eslint-disable-next-line global-require
-    const routes = require('../routes').default;
+    const routes = await import('../routes').default;
     // @ts-ignore
 
     const r = normalizeSnapshot(routes(settings));
@@ -233,7 +233,7 @@ describe('#routes', () => {
     jest.mock('test/src/routes/content/data.js', () => ({ default: { foo: 'bar' } }), { virtual: true });
 
     // eslint-disable-next-line global-require
-    const routes = require('../routes').default;
+    const routes = await import('../routes').default;
     // @ts-ignore
 
     const r = normalizeSnapshot(routes(settings));
@@ -276,7 +276,7 @@ describe('#routes', () => {
     );
 
     // eslint-disable-next-line global-require
-    const routes = require('../routes').default;
+    const routes = await import('../routes').default;
     // @ts-ignore
 
     const r = normalizeSnapshot(routes(settings));

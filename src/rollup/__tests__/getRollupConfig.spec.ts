@@ -1,8 +1,8 @@
 /* eslint-disable global-require */
 import multiInput from 'rollup-plugin-multi-input';
 import path from 'path';
-import { createBrowserConfig, createSSRConfig } from '../getRollupConfig';
-import getConfig from '../../utils/getConfig';
+import { createBrowserConfig, createSSRConfig } from '../getRollupConfig.js';
+import getConfig from '../../utils/getConfig.js';
 
 // TODO: test replace
 
@@ -198,7 +198,7 @@ describe('#getRollupConfig', () => {
     };
 
     // would be nice to mock getPluginPaths if it's extracted to separate file
-    const configs = require('../getRollupConfig').default({ svelteConfig });
+    const configs = await import('../getRollupConfig').default({ svelteConfig });
     expect(configs).toHaveLength(2);
   });
 });

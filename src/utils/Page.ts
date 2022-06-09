@@ -1,14 +1,13 @@
-/* eslint-disable no-param-reassign */
-import getUniqueId from './getUniqueId';
-import perf, { Perf, PerfTimings } from './perf';
-import prepareProcessStack from './prepareProcessStack';
-import { ShortcodeDefinitions } from '../shortcodes/types';
-import { QueryOptions, Stack, RequestObject, SettingsOptions, HydrateOptions, TErrors, THelpers } from './types';
-import { RouteOptions, RoutesObject } from '../routes/types';
-import createReadOnlyProxy from './createReadOnlyProxy';
-import outputStyles from './outputStyles';
-import mountComponentsInHtml from '../partialHydration/mountComponentsInHtml';
-import hydrateComponents from '../partialHydration/hydrateComponents';
+import getUniqueId from './getUniqueId.js';
+import perf, { Perf, PerfTimings } from './perf.js';
+import prepareProcessStack from './prepareProcessStack.js';
+import { ShortcodeDefinitions } from '../shortcodes/types.js';
+import { QueryOptions, Stack, RequestObject, SettingsOptions, HydrateOptions, TErrors, THelpers } from './types.js';
+import { RouteOptions, RoutesObject } from '../routes/types.js';
+import createReadOnlyProxy from './createReadOnlyProxy.js';
+import outputStyles from './outputStyles.js';
+import mountComponentsInHtml from '../partialHydration/mountComponentsInHtml.js';
+import hydrateComponents from '../partialHydration/hydrateComponents.js';
 
 // eslint-disable-next-line no-use-before-define
 const buildPage = async (page: Page) => {
@@ -54,7 +53,7 @@ const buildPage = async (page: Page) => {
 
     // start building templates
     page.perf.start('html.template');
-    page.templateHtml = page.route.templateComponent({
+    page.templateHtml = await page.route.templateComponent({
       page,
       props: {
         data: page.data,
@@ -66,7 +65,7 @@ const buildPage = async (page: Page) => {
     page.perf.end('html.template');
 
     page.perf.start('html.layout');
-    page.layoutHtml = page.route.layoutComponent({
+    page.layoutHtml = await page.route.layoutComponent({
       page,
       props: {
         data: page.data,
@@ -81,7 +80,7 @@ const buildPage = async (page: Page) => {
     await page.runHook('shortcodes', page);
 
     // shortcodes can add svelte components, so we have to process the resulting html accordingly.
-    page.layoutHtml = mountComponentsInHtml({ page, html: page.layoutHtml, hydrateOptions: false });
+    page.layoutHtml = await mountComponentsInHtml({ page, html: page.layoutHtml, hydrateOptions: false });
 
     hydrateComponents(page);
 
@@ -137,8 +136,8 @@ const buildPage = async (page: Page) => {
 };
 
 interface SvelteCss {
-  cssMap: String;
-  css: String;
+  cssMap: string;
+  css: string;
 }
 
 export interface IComponentToHydrate {
@@ -173,7 +172,7 @@ class Page {
 
   helpers: THelpers;
 
-  data: Object;
+  data: Record<string, unknown>;
 
   route: RouteOptions;
 
@@ -183,7 +182,7 @@ class Page {
 
   routes: RoutesObject;
 
-  processStack: any;
+  processStack: ReturnType<typeof prepareProcessStack>;
 
   perf: Perf;
 

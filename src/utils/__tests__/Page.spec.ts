@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
-import Page from '../Page';
-import normalizeSnapshot from '../normalizeSnapshot';
+import Page from '../Page.js';
+import normalizeSnapshot from '../normalizeSnapshot.js';
 
 jest.mock('../getUniqueId', () => () => 'xxxxxxxxxx');
 jest.mock('../prepareProcessStack', () => (page) => (stackName) => {

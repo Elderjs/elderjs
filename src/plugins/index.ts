@@ -1,17 +1,15 @@
-/* eslint-disable no-param-reassign */
-/* eslint-disable global-require */
 import fs from 'fs-extra';
 import defaultsDeep from 'lodash.defaultsdeep';
 import path from 'path';
 import toRegExp from 'regexparam';
 
-import { ShortcodeDefinitions } from '../shortcodes/types';
+import { ShortcodeDefinitions } from '../shortcodes/types.js';
 import { validatePlugin, validateHook, svelteComponent, PluginOptions, TProcessedHook, TProcessedHooksArray } from '..';
-import { Elder } from '../Elder';
-import { ProcessedRouteOptions, RoutesObject } from '../routes/types';
-import createReadOnlyProxy from '../utils/createReadOnlyProxy';
-import wrapPermalinkFn from '../utils/wrapPermalinkFn';
-import makeDynamicPermalinkFn from '../routes/makeDynamicPermalinkFn';
+import { Elder } from '../Elder.js';
+import { ProcessedRouteOptions, RoutesObject } from '../routes/types.js';
+import createReadOnlyProxy from '../utils/createReadOnlyProxy.js';
+import wrapPermalinkFn from '../utils/wrapPermalinkFn.js';
+import makeDynamicPermalinkFn from '../routes/makeDynamicPermalinkFn.js';
 
 export const pluginVersionCheck = (elderVersion: string, pluginVersion: string): boolean => {
   const eSplit = elderVersion.split('.');
@@ -59,8 +57,7 @@ async function plugins(elder: Elder) {
     const srcPlugin = path.resolve(elder.settings.srcDir, pluginPath);
 
     if (fs.existsSync(srcPlugin)) {
-      // eslint-disable-next-line import/no-dynamic-require
-      const pluginReq = require(srcPlugin);
+      const pluginReq = await import(srcPlugin);
       plugin = pluginReq.default || pluginReq;
     }
 
@@ -68,15 +65,13 @@ async function plugins(elder: Elder) {
       const pkgPath = path.resolve(elder.settings.rootDir, './node_modules/', pluginName);
       if (fs.existsSync(pkgPath)) {
         usesNodeModulesFolder = true;
-        // eslint-disable-next-line import/no-dynamic-require
-        const pluginPackageJson = require(path.resolve(pkgPath, './package.json'));
+        const pluginPackageJson = await import(path.resolve(pkgPath, './package.json'));
         const pluginPkgPath = path.resolve(
           pkgPath,
           pluginPackageJson.main.startsWith('/') ? `.${pluginPackageJson.main}` : pluginPackageJson.main,
         );
 
-        // eslint-disable-next-line import/no-dynamic-require
-        const nmPluginReq = require(pluginPkgPath);
+        const nmPluginReq = await import(pluginPkgPath);
         plugin = nmPluginReq.default || nmPluginReq;
       }
     }

@@ -1,4 +1,4 @@
-import partialHydration from '../partialHydration';
+import partialHydration from '../partialHydration.js';
 
 describe('#partialHydration', () => {
   it('replaces as expected', async () => {

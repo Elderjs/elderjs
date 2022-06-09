@@ -1,4 +1,4 @@
-import makeDynamicPermalinkFn from '../makeDynamicPermalinkFn';
+import makeDynamicPermalinkFn from '../makeDynamicPermalinkFn.js';
 
 describe('#makeRoutesjsPermalink', () => {
   it('works with basic fill in', () => {

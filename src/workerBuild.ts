@@ -1,4 +1,4 @@
-import { asyncForEach, Page } from './utils';
+import { Page } from './utils/index.js';
 
 async function workerBuild({ bootstrapComplete, workerRequests }) {
   const {
@@ -25,7 +25,7 @@ async function workerBuild({ bootstrapComplete, workerRequests }) {
   const bTimes = [];
   const bErrors = [];
 
-  await asyncForEach(workerRequests, async (request) => {
+  for (const request of workerRequests) {
     const page = new Page({
       allRequests: workerRequests || allRequests,
       request,
@@ -38,7 +38,7 @@ async function workerBuild({ bootstrapComplete, workerRequests }) {
       routes: workerRoutes,
       errors,
       shortcodes,
-      next: () => {},
+      next: () => '',
     });
     i += 1;
     const response: any = ['requestComplete', i];
@@ -60,7 +60,7 @@ async function workerBuild({ bootstrapComplete, workerRequests }) {
     if (process.send) {
       process.send(response);
     }
-  });
+  }
   return { timings: bTimes, errors: bErrors };
 }
 

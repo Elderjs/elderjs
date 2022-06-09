@@ -1,4 +1,4 @@
-import shuffleArray from '../shuffleArray';
+import shuffleArray from '../shuffleArray.js';
 
 const mockMath = Object.create(global.Math);
 

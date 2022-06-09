@@ -1,4 +1,4 @@
-import { ShortcodeDefinitions } from './types';
+import { ShortcodeDefinitions } from './types.js';
 
 const shortcodes: ShortcodeDefinitions = [
   {

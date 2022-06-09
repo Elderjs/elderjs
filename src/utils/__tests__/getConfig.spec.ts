@@ -1,4 +1,6 @@
-/* eslint-disable global-require */
+import { resolve } from 'path';
+import getConfig from '../../utils/getConfig.js';
+
 const defaultConfig = {
   debug: { automagic: false, build: false, hooks: false, performance: false, shortcodes: false, stacks: false },
   distDir: 'public',
@@ -35,8 +37,6 @@ jest.mock('cosmiconfig', () => {
 });
 
 describe('#getConfig', () => {
-  const { resolve } = require('path');
-
   const output = {
     $$internal: {
       ssrComponents: resolve(process.cwd(), './___ELDER___/compiled'),
@@ -80,12 +80,10 @@ describe('#getConfig', () => {
   it('sets the expected default', () => {
     jest.mock('fs-extra', () => {
       return {
-        ensureDirSync: () => {},
+        ensureDirSync: () => '',
         readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
       };
     });
-    // eslint-disable-next-line global-require
-    const getConfig = require('../getConfig').default;
 
     expect(getConfig()).toStrictEqual(
       expect.objectContaining({
@@ -101,12 +99,10 @@ describe('#getConfig', () => {
   describe('it accepts custom initalization options', () => {
     jest.mock('fs-extra', () => {
       return {
-        ensureDirSync: () => {},
+        ensureDirSync: () => '',
         readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
       };
     });
-    // eslint-disable-next-line global-require
-    const getConfig = require('../getConfig').default;
 
     const common = {
       distDir: resolve(process.cwd(), './t/public'),
@@ -124,7 +120,7 @@ describe('#getConfig', () => {
     it('gives back a custom context such as serverless', () => {
       jest.mock('fs-extra', () => {
         return {
-          ensureDirSync: () => {},
+          ensureDirSync: () => '',
           readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
         };
       });
@@ -141,7 +137,7 @@ describe('#getConfig', () => {
     it('sets a server without a prefix', () => {
       jest.mock('fs-extra', () => {
         return {
-          ensureDirSync: () => {},
+          ensureDirSync: () => '',
           readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
         };
       });
@@ -161,7 +157,7 @@ describe('#getConfig', () => {
     it('sets a server with a server.prefix without leading or trailing "/"', () => {
       jest.mock('fs-extra', () => {
         return {
-          ensureDirSync: () => {},
+          ensureDirSync: () => '',
           readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
         };
       });
@@ -186,7 +182,7 @@ describe('#getConfig', () => {
     it('sets a server with a server.prefix with a trailing "/"', () => {
       jest.mock('fs-extra', () => {
         return {
-          ensureDirSync: () => {},
+          ensureDirSync: () => '',
           readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
         };
       });
@@ -211,7 +207,7 @@ describe('#getConfig', () => {
     it('sets a server with a server.prefix with a leading "/"', () => {
       jest.mock('fs-extra', () => {
         return {
-          ensureDirSync: () => {},
+          ensureDirSync: () => '',
           readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
         };
       });
@@ -236,7 +232,7 @@ describe('#getConfig', () => {
     it('sets a server with a server.prefix with a leading and trailing "/"', () => {
       jest.mock('fs-extra', () => {
         return {
-          ensureDirSync: () => {},
+          ensureDirSync: () => '',
           readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
         };
       });
@@ -261,7 +257,7 @@ describe('#getConfig', () => {
     it('sets a server with a prefix without a leading or trailing "/"', () => {
       jest.mock('fs-extra', () => {
         return {
-          ensureDirSync: () => {},
+          ensureDirSync: () => '',
           readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
         };
       });
@@ -286,7 +282,7 @@ describe('#getConfig', () => {
     it('sets a server with a prefix with a leading "/"', () => {
       jest.mock('fs-extra', () => {
         return {
-          ensureDirSync: () => {},
+          ensureDirSync: () => '',
           readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
         };
       });
@@ -311,7 +307,7 @@ describe('#getConfig', () => {
     it('sets a server with a prefix with a trailing "/"', () => {
       jest.mock('fs-extra', () => {
         return {
-          ensureDirSync: () => {},
+          ensureDirSync: () => '',
           readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
         };
       });
@@ -336,7 +332,7 @@ describe('#getConfig', () => {
     it('sets a server with a prefix with a leading and trailing "/"', () => {
       jest.mock('fs-extra', () => {
         return {
-          ensureDirSync: () => {},
+          ensureDirSync: () => '',
           readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
         };
       });
@@ -361,7 +357,7 @@ describe('#getConfig', () => {
     it('sets build with default', () => {
       jest.mock('fs-extra', () => {
         return {
-          ensureDirSync: () => {},
+          ensureDirSync: () => '',
           readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
         };
       });
@@ -384,13 +380,10 @@ describe('#getConfig', () => {
     it('sets the publicCssFile', () => {
       jest.mock('fs-extra', () => {
         return {
-          ensureDirSync: () => {},
+          ensureDirSync: () => '',
           readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
         };
       });
-
-      // eslint-disable-next-line global-require
-      const getConfig = require('../getConfig').default;
 
       expect(getConfig({ css: 'file' })).toStrictEqual(
         expect.objectContaining({
@@ -405,12 +398,9 @@ describe('#getConfig', () => {
     });
 
     it('throws an error on multiple css for publicCssFile', () => {
-      // eslint-disable-next-line global-require
-      const getConfig = require('../getConfig').default;
-
       jest.mock('fs-extra', () => {
         return {
-          ensureDirSync: () => {},
+          ensureDirSync: () => '',
           readdirSync: () => ['svelte-3449427d.css', 'svelte-3449427213123.css', 'svelte.css-0050caf1.map'],
         };
       });

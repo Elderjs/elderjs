@@ -1,5 +1,5 @@
-import Page from './Page';
-import notProduction from './notProduction';
+import Page from './Page.js';
+import notProduction from './notProduction.js';
 
 export default function outputStyles(page: Page): string {
   let svelteCssStrings = '';

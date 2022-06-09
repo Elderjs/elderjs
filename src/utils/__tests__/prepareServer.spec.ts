@@ -1,4 +1,4 @@
-import { prepareServer } from '../prepareServer';
+import { prepareServer } from '../prepareServer.js';
 
 describe('#prepareServer', () => {
   it('works', async () => {

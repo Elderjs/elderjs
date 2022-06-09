@@ -1,10 +1,14 @@
 import path from 'path';
+import plugins, { pluginVersionCheck } from '../index.js';
 
 const findComponent = () => ({ ssr: true, client: true, iife: undefined });
 
 const perf = {
-  start: () => {},
-  end: () => {},
+  start: () => undefined,
+  end: () => undefined,
+  timings: [],
+  stop: () => undefined,
+  prefix: () => ({ start: () => undefined, end: () => undefined }),
 };
 
 describe('#plugins', () => {
@@ -12,7 +16,6 @@ describe('#plugins', () => {
 
   describe('#pluginVersionCheck', () => {
     // eslint-disable-next-line global-require
-    const { pluginVersionCheck } = require('../index');
     it('Returns false: Elder v1.4.13 < Required v1.4.14', () => {
       expect(pluginVersionCheck('1.4.13', '1.4.14')).toBe(false);
     });
@@ -34,14 +37,15 @@ describe('#plugins', () => {
 
   it('no plugins in settings', async () => {
     // eslint-disable-next-line global-require
-    const plugins = require('../index').default;
+
     const { pluginRoutes, pluginHooks, pluginShortcodes } = await plugins({
       perf,
       settings: {
         plugins: {},
         srcDir: 'test/src',
         rootDir: 'test',
-        // @ts-ignore
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        /// @ts-ignore
         $$internal: { ssrComponents: 'test/___ELDER___/compiled', findComponent },
       },
     });
@@ -55,7 +59,7 @@ describe('#plugins', () => {
       existsSync: () => false,
     }));
     // eslint-disable-next-line global-require
-    const plugins = require('../index').default;
+
     const { pluginRoutes, pluginHooks, pluginShortcodes } = await plugins({
       perf,
       settings: {
@@ -68,6 +72,7 @@ describe('#plugins', () => {
         },
         srcDir: 'test/src',
         rootDir: 'test',
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         $$internal: { ssrComponents: 'test/___ELDER___/compiled', findComponent },
       },
@@ -91,7 +96,7 @@ describe('#plugins', () => {
       virtual: true,
     });
     // eslint-disable-next-line global-require
-    const plugins = require('../index').default;
+
     const { pluginRoutes, pluginHooks, pluginShortcodes } = await plugins({
       perf,
       settings: {
@@ -104,6 +109,7 @@ describe('#plugins', () => {
         },
         srcDir: 'test/src',
         rootDir: 'test',
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         $$internal: { ssrComponents: 'test/___ELDER___/compiled', findComponent },
       },
@@ -148,7 +154,7 @@ describe('#plugins', () => {
       },
     );
     // eslint-disable-next-line global-require
-    const plugins = require('../index').default;
+
     const { pluginRoutes, pluginHooks, pluginShortcodes } = await plugins({
       perf,
       settings: {
@@ -161,6 +167,7 @@ describe('#plugins', () => {
         },
         srcDir: 'test/src',
         rootDir: 'test',
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         $$internal: { ssrComponents: 'test/___ELDER___/compiled', findComponent },
       },
@@ -208,7 +215,7 @@ describe('#plugins', () => {
         shortcodes: [
           {
             shortcode: 'svelteComponent',
-            run: () => {},
+            run: () => '',
           },
         ],
         config: {},
@@ -221,7 +228,7 @@ describe('#plugins', () => {
       },
     );
     // eslint-disable-next-line global-require
-    const plugins = require('../index').default;
+
     const { pluginRoutes, pluginHooks, pluginShortcodes } = await plugins({
       perf,
       settings: {
@@ -234,6 +241,8 @@ describe('#plugins', () => {
         },
         srcDir: 'test/src',
         rootDir: 'test',
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         $$internal: { ssrComponents: 'test/___ELDER___/compiled', findComponent },
       },

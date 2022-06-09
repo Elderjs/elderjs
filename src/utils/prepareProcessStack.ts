@@ -1,4 +1,4 @@
-import { Page } from '..';
+import Page from '../utils/Page.js';
 
 export type TStackNames =
   | 'headStack'
@@ -8,7 +8,9 @@ export type TStackNames =
   | 'customJsStack'
   | 'footerStack'
   | 'moduleJsStack'
-  | 'moduleStack';
+  | 'moduleStack'
+  | 'htmlAttributesStack'
+  | 'bodyAttributesStack';
 
 function prepareProcessStack(page: Page) {
   return function processStack(name: TStackNames): string {

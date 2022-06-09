@@ -1,4 +1,4 @@
-import { HydrateOptions } from '../utils/types';
+import { HydrateOptions } from '../utils/types.js';
 
 const defaultHydrationOptions: HydrateOptions = {
   loading: 'lazy',
