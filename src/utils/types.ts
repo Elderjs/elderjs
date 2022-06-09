@@ -125,7 +125,7 @@ export type RequestObject = {
   slug?: string;
   route: string;
   type: string;
-  permalink: string;
+  permalink?: string;
   req?: ReqDetails;
 } & {
   [x: string]: any | { [y: string]: any };
