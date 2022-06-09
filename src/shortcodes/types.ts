@@ -1,4 +1,4 @@
-import { PluginOptions } from '@babel/core';
+import { PluginClosure } from '../plugins/types';
 import { PerfPayload } from '../utils/perf';
 import { AllRequests, SettingsOptions, RequestObject, TUserHelpers } from '../utils/types';
 
@@ -17,7 +17,7 @@ export interface ShortcodeDefinition {
     perf: PerfPayload;
     props: Record<string, string>;
     content?: string;
-    plugin?: PluginOptions;
+    plugin?: PluginClosure;
     data: any;
     query: any;
     request: RequestObject;
@@ -25,7 +25,7 @@ export interface ShortcodeDefinition {
     settings: SettingsOptions;
     allRequests: AllRequests;
   }) => ShortcodeResponse;
-  plugin?: PluginOptions; // reference to the plugin closure scope.
+  plugin?: PluginClosure; // reference to the plugin closure scope.
   $$meta?: {
     addedBy: string;
     type: string;

@@ -8,7 +8,7 @@ import toRegExp from 'regexparam';
 import { ShortcodeDefinitions } from '../shortcodes/types';
 import { validatePlugin, validateHook, svelteComponent, PluginOptions, TProcessedHook, TProcessedHooksArray } from '..';
 import { Elder } from '../Elder';
-import { RoutesObject } from '../routes/types';
+import { ProcessedRouteOptions, RoutesObject } from '../routes/types';
 import createReadOnlyProxy from '../utils/createReadOnlyProxy';
 import wrapPermalinkFn from '../utils/wrapPermalinkFn';
 import makeDynamicPermalinkFn from '../routes/makeDynamicPermalinkFn';
@@ -70,7 +70,10 @@ async function plugins(elder: Elder) {
         usesNodeModulesFolder = true;
         // eslint-disable-next-line import/no-dynamic-require
         const pluginPackageJson = require(path.resolve(pkgPath, './package.json'));
-        const pluginPkgPath = path.resolve(pkgPath, pluginPackageJson.main);
+        const pluginPkgPath = path.resolve(
+          pkgPath,
+          pluginPackageJson.main.startsWith('/') ? `.${pluginPackageJson.main}` : pluginPackageJson.main,
+        );
 
         // eslint-disable-next-line import/no-dynamic-require
         const nmPluginReq = require(pluginPkgPath);
@@ -84,7 +87,7 @@ async function plugins(elder: Elder) {
       continue;
     }
 
-    if (typeof plugin.init === 'function' || (plugin.init && typeof plugin.init.then === 'function')) {
+    if (typeof plugin.init === 'function') {
       elder.perf.start(`startup.plugins.${pluginName}.init`);
       plugin =
         // eslint-disable-next-line no-await-in-loop
@@ -179,54 +182,52 @@ async function plugins(elder: Elder) {
         // eslint-disable-next-line no-loop-func
         for (let ii = 0; ii < routeNames.length; ii += 1) {
           const routeName = routeNames[ii];
-
-          plugin.routes[routeName].$$meta = {
-            type: 'plugin',
-            addedBy: routeName,
+          const processedRoute: Partial<ProcessedRouteOptions> = {
+            ...plugin.routes[routeName],
+            $$meta: {
+              type: 'plugin',
+              addedBy: routeName,
+            },
           };
 
-          if (typeof plugin.routes[routeName].permalink === 'undefined') {
+          if (typeof processedRoute.permalink === 'undefined') {
             console.error(
               `WARN: Plugin ${routeName} does not define a permalink function on it's routes. Setting default permalink to \`/${routeName}/\``,
             );
-            plugin.routes[routeName].permalink = () => `/${routeName}/`;
+            processedRoute.permalink = () => `/${routeName}/`;
           }
 
           const { serverPrefix } = elder.settings.$$internal;
 
           // handle string based permalinks
-          if (typeof plugin.routes[routeName].permalink === 'string') {
-            const routeString = `${serverPrefix}${plugin.routes[routeName].permalink}`;
-            plugin.routes[routeName].permalink = makeDynamicPermalinkFn(plugin.routes[routeName].permalink);
+          if (typeof processedRoute.permalink === 'string') {
+            const routeString = `${serverPrefix}${processedRoute.permalink}`;
+            processedRoute.permalink = makeDynamicPermalinkFn(processedRoute.permalink);
 
-            plugin.routes[routeName].$$meta = {
-              ...plugin.routes[routeName].$$meta,
+            processedRoute.$$meta = {
+              ...processedRoute.$$meta,
               routeString,
               ...toRegExp.parse(routeString),
-              type: plugin.routes[routeName].dynamic ? `dynamic` : 'static',
+              type: processedRoute.dynamic ? `dynamic` : 'static',
             };
           }
 
-          plugin.routes[routeName].permalink = wrapPermalinkFn({
-            permalinkFn: plugin.routes[routeName].permalink,
+          processedRoute.permalink = wrapPermalinkFn({
+            permalinkFn: processedRoute.permalink,
             routeName,
             settings: elder.settings,
           });
 
-          // don't allow plugins to add hooks via the routes definitions like users can.
-          if (plugin.routes[routeName].hooks)
+          if (processedRoute.hooks)
             console.error(
               `WARN: Plugin ${routeName} is trying to register a hooks via a the 'hooks' array on a route. This is not supported. Plugins must define the 'hooks' array at the plugin level.`,
             );
-          if (!plugin.routes[routeName].data) {
-            plugin.routes[routeName].data = () => ({});
+          if (!processedRoute.data) {
+            processedRoute.data = () => ({});
           }
 
-          if (
-            typeof plugin.routes[routeName].template === 'string' &&
-            plugin.routes[routeName].template.endsWith('.svelte')
-          ) {
-            const templateName = plugin.routes[routeName].template.replace('.svelte', '');
+          if (typeof processedRoute.template === 'string' && processedRoute.template.endsWith('.svelte')) {
+            const templateName = processedRoute.template.replace('.svelte', '');
             const ssrComponent = path.resolve(
               elder.settings.$$internal.ssrComponents,
               `./${usesNodeModulesFolder ? 'node_modules/' : 'plugins/'}${pluginName}/${templateName}.js`,
@@ -243,7 +244,7 @@ async function plugins(elder: Elder) {
               );
             }
 
-            plugin.routes[routeName].templateComponent = svelteComponent(
+            processedRoute.templateComponent = svelteComponent(
               templateName,
               usesNodeModulesFolder ? 'node_modules' : 'plugins',
             );
@@ -257,11 +258,8 @@ async function plugins(elder: Elder) {
             continue;
           }
 
-          if (
-            typeof plugin.routes[routeName].layout === 'string' &&
-            plugin.routes[routeName].layout.endsWith('.svelte')
-          ) {
-            const layoutName = plugin.routes[routeName].layout.replace('.svelte', '');
+          if (typeof processedRoute.layout === 'string' && processedRoute.layout.endsWith('.svelte')) {
+            const layoutName = processedRoute.layout.replace('.svelte', '');
             const ssrComponent = path.resolve(
               elder.settings.$$internal.ssrComponents,
               `./plugins/${pluginName}/${layoutName}.js`,
@@ -277,12 +275,12 @@ async function plugins(elder: Elder) {
                 `Plugin Route: ${routeName} added by plugin ${pluginName} has an error. No SSR svelte component found ${layoutName}. This may cause unexpected outcomes. If you believe this should be working, make sure rollup has run before this file is initialized. If the issue persists, please contact the plugin author. Expected location \`${ssrComponent}\``,
               );
             }
-            plugin.routes[routeName].layoutComponent = svelteComponent(
+            processedRoute.layoutComponent = svelteComponent(
               layoutName,
               usesNodeModulesFolder ? 'node_modules' : 'plugins',
             );
           } else {
-            plugin.routes[routeName].layout = 'Layout.svelte';
+            processedRoute.layout = 'Layout.svelte';
             const ssrComponent = path.resolve(elder.settings.$$internal.ssrComponents, `./layouts/Layout.js`);
 
             if (!fs.existsSync(ssrComponent)) {
@@ -292,11 +290,11 @@ async function plugins(elder: Elder) {
               // eslint-disable-next-line no-continue
               continue;
             }
-            plugin.routes[routeName].layoutComponent = svelteComponent('Layout.svelte', 'layouts');
+            processedRoute.layoutComponent = svelteComponent('Layout.svelte', 'layouts');
           }
 
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { hooks: pluginRouteHooks, ...sanitizedRouteDeets } = plugin.routes[routeName];
+          const sanitizedRouteDeets = processedRoute as ProcessedRouteOptions;
           const sanitizedRoute: RoutesObject = {
             [routeName]: { ...sanitizedRouteDeets, $$meta: { type: 'plugin', addedBy: pluginName } },
           };

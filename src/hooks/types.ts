@@ -10,11 +10,12 @@ import {
   TErrors,
   TServerLookupObject,
   TUserHelpers,
-  TFilteredPlugin,
   AllRequests,
 } from '../utils/types';
+
 import { RouteOptions, RoutesObject } from '../routes/types';
 import { ShortcodeDefinitions } from '../shortcodes/types';
+import { PluginClosure } from '../plugins/types';
 
 export type THookName =
   | 'customizeHooks'
@@ -47,6 +48,7 @@ type TGenericHookReturn<T> = TVoidOrUndefined | T | Promise<TVoidOrUndefined> | 
 export interface ICustomizeHooksHook extends IHookBase {
   hook: 'customizeHooks';
   run: (params: { perf: PerfPayload; hookInterface: THookInterface; errors: TErrors }) => TGenericHookReturn<{
+    plugin?: PluginClosure;
     hookInterface?: THookInterface;
     errors?: TErrors;
   }>;
@@ -54,7 +56,7 @@ export interface ICustomizeHooksHook extends IHookBase {
 export interface IBootstrapHook extends IHookBase {
   hook: 'bootstrap';
   run: (params: {
-    plugin?: TFilteredPlugin;
+    plugin?: PluginClosure;
     perf: PerfPayload;
     errors: TErrors;
     helpers: TUserHelpers;
@@ -64,6 +66,7 @@ export interface IBootstrapHook extends IHookBase {
     hooks: TProcessedHooksArray;
     query: any;
   }) => TGenericHookReturn<{
+    plugin?: PluginClosure;
     errors?: TErrors;
     helpers?: TUserHelpers;
     data?: any;
@@ -75,7 +78,7 @@ export interface IBootstrapHook extends IHookBase {
 export interface IAllRequestsHook extends IHookBase {
   hook: 'allRequests';
   run: (params: {
-    plugin?: TFilteredPlugin;
+    plugin?: PluginClosure;
     perf: PerfPayload;
     helpers: TUserHelpers;
     data: any;
@@ -84,13 +87,17 @@ export interface IAllRequestsHook extends IHookBase {
     routes: RoutesObject;
     query: any;
     errors: TErrors;
-  }) => TGenericHookReturn<{ errors?: TErrors; allRequests?: any }>;
+  }) => TGenericHookReturn<{
+    plugin?: PluginClosure;
+    errors?: TErrors;
+    allRequests?: any;
+  }>;
 }
 
 export interface IMiddlewareHook extends IHookBase {
   hook: 'middleware';
   run: (params: {
-    plugin?: TFilteredPlugin;
+    plugin?: PluginClosure;
     perf: PerfPayload;
     errors: TErrors;
     query: any;
@@ -108,6 +115,7 @@ export interface IMiddlewareHook extends IHookBase {
     request: RequestObject;
     router: any;
   }) => TGenericHookReturn<{
+    plugin?: PluginClosure;
     errors?: TErrors;
     query?: any;
     helpers?: TUserHelpers;
@@ -126,7 +134,7 @@ export interface IMiddlewareHook extends IHookBase {
 export interface IRequestHook extends IHookBase {
   hook: 'request';
   run: (params: {
-    plugin?: TFilteredPlugin;
+    plugin?: PluginClosure;
     perf: PerfPayload;
     helpers: TUserHelpers;
     data: any;
@@ -138,6 +146,7 @@ export interface IRequestHook extends IHookBase {
     routes: RoutesObject;
     route: RouteOptions;
   }) => TGenericHookReturn<{
+    plugin?: PluginClosure;
     errors?: TErrors;
     helpers?: TUserHelpers;
     data?: any;
@@ -150,7 +159,7 @@ export interface IRequestHook extends IHookBase {
 export interface IDataHook extends IHookBase {
   hook: 'data';
   run: (params: {
-    plugin?: TFilteredPlugin;
+    plugin?: PluginClosure;
     perf: PerfPayload;
     data: any;
     request: RequestObject;
@@ -167,6 +176,7 @@ export interface IDataHook extends IHookBase {
     settings: SettingsOptions;
     next: any;
   }) => TGenericHookReturn<{
+    plugin?: PluginClosure;
     errors?: TErrors;
     data?: any;
     cssStack?: Stack;
@@ -181,7 +191,7 @@ export interface IDataHook extends IHookBase {
 export interface IShortcodeHook extends IHookBase {
   hook: 'shortcodes';
   run: (params: {
-    plugin?: TFilteredPlugin;
+    plugin?: PluginClosure;
     perf: PerfPayload;
     helpers: TUserHelpers;
     data: any;
@@ -196,6 +206,7 @@ export interface IShortcodeHook extends IHookBase {
     shortcodes: any;
     allRequests: AllRequests;
   }) => TGenericHookReturn<{
+    plugin?: PluginClosure;
     errors?: TErrors;
     layoutHtml?: any;
     cssStack?: Stack;
@@ -207,7 +218,7 @@ export interface IShortcodeHook extends IHookBase {
 export interface IStacksHook extends IHookBase {
   hook: 'stacks';
   run: (params: {
-    plugin?: TFilteredPlugin;
+    plugin?: PluginClosure;
     perf: PerfPayload;
     helpers: TUserHelpers;
     data: any;
@@ -224,6 +235,7 @@ export interface IStacksHook extends IHookBase {
     customJsStack: Stack;
     footerStack: Stack;
   }) => TGenericHookReturn<{
+    plugin?: PluginClosure;
     errors?: TErrors;
     cssStack?: Stack;
     htmlAttributesStack?: Stack;
@@ -239,7 +251,7 @@ export interface IStacksHook extends IHookBase {
 export interface IHeadHook extends IHookBase {
   hook: 'head';
   run: (params: {
-    plugin?: TFilteredPlugin;
+    plugin?: PluginClosure;
     perf: PerfPayload;
     helpers: TUserHelpers;
     data: any;
@@ -248,13 +260,17 @@ export interface IHeadHook extends IHookBase {
     headString: string;
     query: any;
     errors: TErrors;
-  }) => TGenericHookReturn<{ errors?: TErrors; headString?: string }>;
+  }) => TGenericHookReturn<{
+    plugin?: PluginClosure;
+    errors?: TErrors;
+    headString?: string;
+  }>;
 }
 
 export interface ICompileHtmlHook extends IHookBase {
   hook: 'compileHtml';
   run: (params: {
-    plugin?: TFilteredPlugin;
+    plugin?: PluginClosure;
     perf: PerfPayload;
     helpers: TUserHelpers;
     data: any;
@@ -266,13 +282,17 @@ export interface ICompileHtmlHook extends IHookBase {
     footerString: string;
     layoutHtml: string;
     htmlString: string;
-  }) => TGenericHookReturn<{ errors?: TErrors; htmlString?: string }>;
+  }) => TGenericHookReturn<{
+    plugin?: PluginClosure;
+    errors?: TErrors;
+    htmlString?: string;
+  }>;
 }
 
 export interface IHtmlHook extends IHookBase {
   hook: 'html';
   run: (params: {
-    plugin?: TFilteredPlugin;
+    plugin?: PluginClosure;
     perf: PerfPayload;
     helpers: TUserHelpers;
     data: any;
@@ -281,13 +301,17 @@ export interface IHtmlHook extends IHookBase {
     htmlString: string;
     query: any;
     errors: TErrors;
-  }) => TGenericHookReturn<{ errors?: TErrors; htmlString?: string }>;
+  }) => TGenericHookReturn<{
+    plugin?: PluginClosure;
+    errors?: TErrors;
+    htmlString?: string;
+  }>;
 }
 
 export interface IRequestCompleteHook extends IHookBase {
   hook: 'requestComplete';
   run: (params: {
-    plugin?: TFilteredPlugin;
+    plugin?: PluginClosure;
     perf: PerfPayload;
     request: RequestObject;
     htmlString: string;
@@ -296,13 +320,16 @@ export interface IRequestCompleteHook extends IHookBase {
     errors: TErrors;
     timings: PerfTimings;
     data: any;
-  }) => TGenericHookReturn<{ errors?: any }>;
+  }) => TGenericHookReturn<{
+    plugin?: PluginClosure;
+    errors?: any;
+  }>;
 }
 
 export interface IErrorHook extends IHookBase {
   hook: 'error';
   run: (params: {
-    plugin?: TFilteredPlugin;
+    plugin?: PluginClosure;
     perf: PerfPayload;
     helpers: TUserHelpers;
     data: any;
@@ -316,7 +343,7 @@ export interface IErrorHook extends IHookBase {
 export interface IBuildCompleteHook extends IHookBase {
   hook: 'buildComplete';
   run: (params: {
-    plugin?: TFilteredPlugin;
+    plugin?: PluginClosure;
     perf: PerfPayload;
     helpers: TUserHelpers;
     data: any;

@@ -51,6 +51,8 @@ export interface RouteOptions extends IBaseRouteOptions {
   [x: string]: any;
 }
 
+export type UnprocessedRoutesObject = Record<string, RouteOptions>;
+
 export interface ProcessedRouteOptions extends RouteOptions {
   template: string;
   templateComponent: (x: any) => string;

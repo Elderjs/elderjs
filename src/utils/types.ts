@@ -1,6 +1,4 @@
-import type { RoutesObject } from '../routes/types';
-import type { HooksArray } from '../hooks/types';
-import type { ShortcodeDefinitions } from '../shortcodes/types';
+/* eslint-disable no-use-before-define */
 import Page from './Page';
 import { inlineSvelteComponent } from '../partialHydration/inlineSvelteComponent';
 import prepareInlineShortcode from './prepareInlineShortcode';
@@ -154,23 +152,6 @@ export type StackItem = {
 };
 
 export type Stack = Array<StackItem>;
-
-interface Init {
-  (input: any): any;
-}
-
-export type PluginOptions = {
-  name: string;
-  description: string;
-  init: Init | any;
-  routes?: RoutesObject;
-  hooks: HooksArray;
-  config?: Object;
-  shortcodes?: ShortcodeDefinitions;
-  minimumElderjsVersion?: string;
-};
-
-export type TFilteredPlugin = Omit<PluginOptions, 'init' | 'shortcodes' | 'routes' | 'hooks'>;
 
 // eslint-disable-next-line no-undef
 export type ExcludesFalse = <T>(x: T | false) => x is T;

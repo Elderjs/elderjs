@@ -11,6 +11,7 @@ export * from './utils/index';
 export * from './routes/routes';
 export * from './routes/types';
 export * from './hooks/types';
+export * from './plugins/types';
 export { hookInterface } from './hooks/hookInterface';
 export { hookEntityDefinitions } from './hooks/hookEntityDefinitions';
 
