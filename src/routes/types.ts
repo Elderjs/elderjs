@@ -1,4 +1,4 @@
-import { TPerfPayload } from '../utils/perf';
+import { PerfPayload } from '../utils/perf';
 import { AllRequests, SettingsOptions, TErrors, RequestObject, TUserHelpers } from '../utils/types';
 
 interface Permalink {
@@ -20,7 +20,7 @@ export type DataFnPayload = {
   settings: SettingsOptions;
   request: RequestObject;
   errors: TErrors;
-  perf: TPerfPayload;
+  perf: PerfPayload;
   allRequests: AllRequests;
   next: () => any;
 };
@@ -41,7 +41,7 @@ interface IBaseRouteOptions {
         query: any;
         helpers: TUserHelpers;
         data: any;
-        perf: TPerfPayload;
+        perf: PerfPayload;
       }) => [any] | Promise<any>);
   $$meta?: MetaOptions;
   name?: string;
@@ -65,7 +65,7 @@ export interface ProcessedRouteOptions extends RouteOptions {
         query: any;
         helpers: TUserHelpers;
         data: any;
-        perf: TPerfPayload;
+        perf: PerfPayload;
       }) => [any] | Promise<any>);
   $$meta: MetaOptions;
   name: string;

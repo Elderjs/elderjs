@@ -38,7 +38,7 @@ import workerBuild from './workerBuild';
 import { inlineSvelteComponent } from './partialHydration/inlineSvelteComponent';
 import elderJsShortcodes from './shortcodes';
 import prepareRouter from './routes/prepareRouter';
-import perf, { displayPerfTimings, TPerf } from './utils/perf';
+import perf, { displayPerfTimings, Perf } from './utils/perf';
 
 class Elder {
   bootstrapComplete: Promise<Elder>;
@@ -71,7 +71,7 @@ class Elder {
 
   shortcodes: ShortcodeDefinitions;
 
-  perf: TPerf;
+  perf: Perf;
 
   uid: string;
 

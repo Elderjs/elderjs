@@ -9,19 +9,19 @@ import Page from './Page';
  *
  */
 
-export type TPerfTiming = { name: string; duration: number };
+export type PerfTiming = { name: string; duration: number };
 
-export type TPerfTimings = TPerfTiming[];
+export type PerfTimings = PerfTiming[];
 
-export type TPerfPayload = {
+export type PerfPayload = {
   start: (label: string) => void;
   end: (label: string) => void;
 };
 
-export type TPerf = TPerfPayload & {
-  timings: TPerfTimings;
+export type Perf = PerfPayload & {
+  timings: PerfTimings;
   stop: () => void;
-  prefix: (label: string) => TPerfPayload;
+  prefix: (label: string) => PerfPayload;
 };
 
 function perf(page: Page | Elder, force = false) {
@@ -59,7 +59,7 @@ function perf(page: Page | Elder, force = false) {
         if (obs) obs.disconnect();
         obs = null;
       },
-      prefix: (pre): TPerfPayload => {
+      prefix: (pre): PerfPayload => {
         return { start: (name) => page.perf.start(`${pre}.${name}`), end: (name) => page.perf.end(`${pre}.${name}`) };
       },
     };
@@ -74,14 +74,14 @@ function perf(page: Page | Elder, force = false) {
       start: placeholder,
       end: placeholder,
       stop: () => {},
-      prefix: (): TPerfPayload => ({ start: placeholder, end: placeholder }),
+      prefix: (): PerfPayload => ({ start: placeholder, end: placeholder }),
     };
   }
 }
 
 export default perf;
 
-export const displayPerfTimings = (timings: TPerfTimings) => {
+export const displayPerfTimings = (timings: PerfTimings) => {
   const display = timings.sort((a, b) => a.duration - b.duration).map((t) => ({ ...t, ms: t.duration }));
   console.table(display, ['name', 'ms']);
 };

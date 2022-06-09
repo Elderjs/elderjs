@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import getUniqueId from './getUniqueId';
-import perf, { TPerf, TPerfTimings } from './perf';
+import perf, { Perf, PerfTimings } from './perf';
 import prepareProcessStack from './prepareProcessStack';
 import { ShortcodeDefinitions } from '../shortcodes/types';
 import { QueryOptions, Stack, RequestObject, SettingsOptions, HydrateOptions, TErrors, THelpers } from './types';
@@ -185,7 +185,7 @@ class Page {
 
   processStack: any;
 
-  perf: TPerf;
+  perf: Perf;
 
   layoutHtml: string;
 
@@ -233,7 +233,7 @@ class Page {
 
   componentsToHydrate: IComponentToHydrate[];
 
-  timings: TPerfTimings;
+  timings: PerfTimings;
 
   constructor({
     request,

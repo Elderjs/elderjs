@@ -1,5 +1,5 @@
 /* eslint-disable no-use-before-define */
-import { TPerfPayload, TPerfTimings } from '../utils/perf';
+import { PerfPayload, PerfTimings } from '../utils/perf';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { THookInterface } from './hookInterface';
@@ -46,7 +46,7 @@ type TGenericHookReturn<T> = TVoidOrUndefined | T | Promise<TVoidOrUndefined> | 
 
 export interface ICustomizeHooksHook extends IHookBase {
   hook: 'customizeHooks';
-  run: (params: { perf: TPerfPayload; hookInterface: THookInterface; errors: TErrors }) => TGenericHookReturn<{
+  run: (params: { perf: PerfPayload; hookInterface: THookInterface; errors: TErrors }) => TGenericHookReturn<{
     hookInterface?: THookInterface;
     errors?: TErrors;
   }>;
@@ -55,7 +55,7 @@ export interface IBootstrapHook extends IHookBase {
   hook: 'bootstrap';
   run: (params: {
     plugin?: TFilteredPlugin;
-    perf: TPerfPayload;
+    perf: PerfPayload;
     errors: TErrors;
     helpers: TUserHelpers;
     data: any;
@@ -76,7 +76,7 @@ export interface IAllRequestsHook extends IHookBase {
   hook: 'allRequests';
   run: (params: {
     plugin?: TFilteredPlugin;
-    perf: TPerfPayload;
+    perf: PerfPayload;
     helpers: TUserHelpers;
     data: any;
     settings: SettingsOptions;
@@ -91,7 +91,7 @@ export interface IMiddlewareHook extends IHookBase {
   hook: 'middleware';
   run: (params: {
     plugin?: TFilteredPlugin;
-    perf: TPerfPayload;
+    perf: PerfPayload;
     errors: TErrors;
     query: any;
     helpers: TUserHelpers;
@@ -127,7 +127,7 @@ export interface IRequestHook extends IHookBase {
   hook: 'request';
   run: (params: {
     plugin?: TFilteredPlugin;
-    perf: TPerfPayload;
+    perf: PerfPayload;
     helpers: TUserHelpers;
     data: any;
     settings: SettingsOptions;
@@ -151,7 +151,7 @@ export interface IDataHook extends IHookBase {
   hook: 'data';
   run: (params: {
     plugin?: TFilteredPlugin;
-    perf: TPerfPayload;
+    perf: PerfPayload;
     data: any;
     request: RequestObject;
     errors: TErrors;
@@ -182,7 +182,7 @@ export interface IShortcodeHook extends IHookBase {
   hook: 'shortcodes';
   run: (params: {
     plugin?: TFilteredPlugin;
-    perf: TPerfPayload;
+    perf: PerfPayload;
     helpers: TUserHelpers;
     data: any;
     settings: SettingsOptions;
@@ -208,7 +208,7 @@ export interface IStacksHook extends IHookBase {
   hook: 'stacks';
   run: (params: {
     plugin?: TFilteredPlugin;
-    perf: TPerfPayload;
+    perf: PerfPayload;
     helpers: TUserHelpers;
     data: any;
     settings: SettingsOptions;
@@ -240,7 +240,7 @@ export interface IHeadHook extends IHookBase {
   hook: 'head';
   run: (params: {
     plugin?: TFilteredPlugin;
-    perf: TPerfPayload;
+    perf: PerfPayload;
     helpers: TUserHelpers;
     data: any;
     settings: SettingsOptions;
@@ -255,7 +255,7 @@ export interface ICompileHtmlHook extends IHookBase {
   hook: 'compileHtml';
   run: (params: {
     plugin?: TFilteredPlugin;
-    perf: TPerfPayload;
+    perf: PerfPayload;
     helpers: TUserHelpers;
     data: any;
     settings: SettingsOptions;
@@ -273,7 +273,7 @@ export interface IHtmlHook extends IHookBase {
   hook: 'html';
   run: (params: {
     plugin?: TFilteredPlugin;
-    perf: TPerfPayload;
+    perf: PerfPayload;
     helpers: TUserHelpers;
     data: any;
     settings: SettingsOptions;
@@ -288,13 +288,13 @@ export interface IRequestCompleteHook extends IHookBase {
   hook: 'requestComplete';
   run: (params: {
     plugin?: TFilteredPlugin;
-    perf: TPerfPayload;
+    perf: PerfPayload;
     request: RequestObject;
     htmlString: string;
     query: any;
     settings: SettingsOptions;
     errors: TErrors;
-    timings: TPerfTimings;
+    timings: PerfTimings;
     data: any;
   }) => TGenericHookReturn<{ errors?: any }>;
 }
@@ -303,7 +303,7 @@ export interface IErrorHook extends IHookBase {
   hook: 'error';
   run: (params: {
     plugin?: TFilteredPlugin;
-    perf: TPerfPayload;
+    perf: PerfPayload;
     helpers: TUserHelpers;
     data: any;
     settings: SettingsOptions;
@@ -317,11 +317,11 @@ export interface IBuildCompleteHook extends IHookBase {
   hook: 'buildComplete';
   run: (params: {
     plugin?: TFilteredPlugin;
-    perf: TPerfPayload;
+    perf: PerfPayload;
     helpers: TUserHelpers;
     data: any;
     settings: SettingsOptions;
-    timings: TPerfTimings[];
+    timings: PerfTimings[];
     query: any;
     errors: TErrors;
     routes: RoutesObject;

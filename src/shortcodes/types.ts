@@ -1,18 +1,20 @@
 import { PluginOptions } from '@babel/core';
-import { TPerfPayload } from '../utils/perf';
+import { PerfPayload } from '../utils/perf';
 import { AllRequests, SettingsOptions, RequestObject, TUserHelpers } from '../utils/types';
 
-export interface ShortcodeResponse {
+interface FullShortcodeResponse {
   html?: string;
   css?: string;
   js?: string;
   head?: string;
 }
 
+export type ShortcodeResponse = FullShortcodeResponse | string | Promise<FullShortcodeResponse> | Promise<string>;
+
 export interface ShortcodeDefinition {
   shortcode: string;
   run: (payload: {
-    perf: TPerfPayload;
+    perf: PerfPayload;
     props: Record<string, string>;
     content?: string;
     plugin?: PluginOptions;
@@ -22,7 +24,7 @@ export interface ShortcodeDefinition {
     helpers: TUserHelpers;
     settings: SettingsOptions;
     allRequests: AllRequests;
-  }) => string | Promise<string> | ShortcodeResponse | Promise<ShortcodeResponse>;
+  }) => ShortcodeResponse;
   plugin?: PluginOptions; // reference to the plugin closure scope.
   $$meta?: {
     addedBy: string;
