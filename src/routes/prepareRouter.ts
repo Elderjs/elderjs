@@ -67,8 +67,9 @@ export const getSpecialRequest = ({ req, server, serverLookupObject }: IGetSpeci
   }
 
   if (request) {
-    request = JSON.parse(JSON.stringify(request));
-    request.req = req;
+    const { req: priorReq, ...prior } = request;
+    request = JSON.parse(JSON.stringify(prior));
+    request.req = req || priorReq;
   }
 
   return { request, type };
