@@ -24,7 +24,7 @@ export type PluginOptions = {
   hooks: HooksArray;
   config?: PluginConfig;
   shortcodes?: ShortcodeDefinitions;
-  minimumElderjsVersion?: string;
+  minimumElderjsVersion?: `${string}.${string}.${string}`;
 
   [x: string]: any;
 };
