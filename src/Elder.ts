@@ -18,8 +18,8 @@ import {
   asyncForEach,
   getConfig,
   prepareInlineShortcode,
-} from './utils';
-import { RoutesObject } from './routes/types.js';
+} from './utils/index.js';
+import { ProcessedRoutesObject } from './routes/types.js';
 import { HooksArray, TProcessedHooksArray, TRunHook } from './hooks/types.js';
 import { ShortcodeDefinitions } from './shortcodes/types.js';
 import {
@@ -46,7 +46,7 @@ class Elder {
 
   settings: SettingsOptions;
 
-  routes: RoutesObject;
+  routes: ProcessedRoutesObject;
 
   hooks: TProcessedHooksArray;
 
@@ -119,7 +119,7 @@ class Elder {
       const userRoutesJsFile = await routes(this.settings);
 
       // plugins should never overwrite user routes.
-      const collectedRoutes: RoutesObject = { ...pluginRoutes, ...userRoutesJsFile };
+      const collectedRoutes: ProcessedRoutesObject = { ...pluginRoutes, ...userRoutesJsFile };
       const validatedRoutes = {};
       const collectedRouteNames = Object.keys(collectedRoutes);
       collectedRouteNames.forEach((collectedRouteName) => {

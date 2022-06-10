@@ -1,4 +1,3 @@
-/* eslint-disable import/no-dynamic-require */
 // reload the build process when svelte files are added clearing the cache.
 
 // server that reloads the app which watches the file system for changes.
@@ -11,11 +10,10 @@ import path from 'path';
 
 import fs from 'fs-extra';
 
-// eslint-disable-next-line import/no-unresolved
 import { PreprocessorGroup } from 'svelte/types/compiler/preprocess/types';
 import esbuildPluginSvelte from './esbuildPluginSvelte.js';
 import { InitializationOptions, SettingsOptions } from '../utils/types.js';
-import { getElderConfig } from '..';
+import getConfig from '../utils/getConfig.js';
 import { devServer } from '../rollup/rollupPlugin.js';
 import getPluginLocations from '../utils/getPluginLocations.js';
 
@@ -53,7 +51,7 @@ export async function getPackagesWithSvelte(pkg, elderConfig: SettingsOptions) {
   for (const pkg of pkgs) {
     try {
       const resolved = path.resolve(elderConfig.rootDir, `./node_modules/${pkg}/package.json`);
-      const current = await import(resolved);
+      const current = fs.readJSONSync(resolved);
       if (current.svelte) {
         sveltePackages.push(pkg);
       }
@@ -97,7 +95,7 @@ const svelteHandler = async ({ elderConfig, svelteConfig, replacements, restartH
     const builders: { ssr?: BuildResult; client?: BuildResult } = {};
 
     // eslint-disable-next-line global-require
-    const pkg = await import(path.resolve(elderConfig.rootDir, './package.json'));
+    const pkg = fs.readJsonSync(path.resolve(elderConfig.rootDir, './package.json'));
     const globPath = path.resolve(elderConfig.rootDir, `./src/**/*.svelte`);
     const initialEntryPoints = glob.sync(globPath);
     const sveltePackages = await getPackagesWithSvelte(pkg, elderConfig);
@@ -121,8 +119,8 @@ const svelteHandler = async ({ elderConfig, svelteConfig, replacements, restartH
           if (error) console.error('ssr watch build failed:', error);
         },
       },
-      format: 'cjs',
-      target: ['node12'],
+      format: 'esm',
+      target: ['es2020'],
       platform: 'node',
       sourcemap: !production,
       minify: production,
@@ -197,7 +195,7 @@ type TEsbuildBundler = {
 
 const esbuildBundler = async ({ initializationOptions = {}, replacements = {} }: TEsbuildBundler = {}) => {
   try {
-    const elderConfig = await getElderConfig(initializationOptions);
+    const elderConfig = await getConfig(initializationOptions);
     const svelteConfig = await getSvelteConfig(elderConfig);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

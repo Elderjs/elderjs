@@ -1,11 +1,11 @@
 import permalinks from '../permalinks.js';
 import { Elder } from '../../Elder.js';
-import { RoutesObject } from '../../routes/types.js';
+import { ProcessedRoutesObject } from '../../routes/types.js';
 
 const elder = new Elder({ context: 'server' });
 
 describe('#permalinks', () => {
-  const routes: RoutesObject = {
+  const routes: ProcessedRoutesObject = {
     home: {
       name: 'home',
       permalink: ({ request, settings }) =>

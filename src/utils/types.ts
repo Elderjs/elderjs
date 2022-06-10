@@ -108,12 +108,12 @@ interface ISettingsOptionsBase {
 }
 
 export interface SettingsOptions extends ISettingsOptionsBase {
-  [x: string]: unknown;
+  [x: string]: any;
 }
 
 export type QueryOptions = {
   db?: any;
-} & { [x: string]: unknown };
+} & { [x: string]: any };
 
 export type ReqDetails = {
   path?: string;

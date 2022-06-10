@@ -1,5 +1,6 @@
-/* eslint-disable max-classes-per-file */
-import { getWorkerCounts } from '../build.js';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { workers } from 'cluster';
+import build, { getWorkerCounts } from '../build.js';
 
 let calledHooks = [];
 
@@ -135,9 +136,10 @@ describe('#build', () => {
     const sent = [];
 
     global.process = {
-      // @ts-ignore
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
       on: (event, cb) => {
-        listeners.push({ event, cb });
+        return listeners.push({ event, cb });
       },
       send: (i) => {
         sent.push(i);
@@ -146,8 +148,6 @@ describe('#build', () => {
       exit: () => '' as never,
     };
 
-    // eslint-disable-next-line global-require
-    const build = await import('../build').default;
     await build();
     expect(listeners[0].event).toEqual('message');
     await listeners[0].cb({ cmd: 'start' });
@@ -180,12 +180,11 @@ describe('#build', () => {
     global.Date.now = dateNowStub;
 
     expect(calledHooks).toEqual([]);
-    // eslint-disable-next-line global-require
-    const build = await import('../build').default;
     await build();
     jest.advanceTimersByTime(1000); // not all intervalls are cleared
-    // eslint-disable-next-line global-require
-    expect(await import('cluster').workers.map((w) => w.killed)).toEqual([true, true, true, true, true]);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    expect(workers.map((w) => w.killed)).toEqual([true, true, true, true, true]);
     expect(calledHooks).toEqual(['buildComplete-{"success":true,"errors":[],"timings":[null,null,null,null,null]}']);
     expect(setInterval).toHaveBeenCalledTimes(5);
   });
@@ -258,19 +257,21 @@ describe('#build', () => {
 
     const realProcess = process;
     const exitMock = jest.fn();
-    // @ts-ignore
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-expect-error
     global.process = { ...realProcess, exit: exitMock };
 
     expect(calledHooks).toEqual([]);
-    // eslint-disable-next-line global-require
-    const build = await import('../build').default;
     await build();
     jest.advanceTimersByTime(1000); // not all intervalls are cleared
-    expect(setInterval).toHaveBeenCalledTimes(2);
     expect(exitMock).toHaveBeenCalled();
 
-    // eslint-disable-next-line global-require
-    expect(await import('cluster').workers.map((w) => w.killed)).toEqual([true, true]);
+    console.log(workers);
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    expect(workers.map((w) => w.killed)).toEqual([true, true]);
 
     expect(calledHooks).toEqual([
       'buildComplete-{"success":false,"errors":["bornToFail",{"errors":[{"msg":"pushMeToErrors"}]}],"timings":[null,null]}',

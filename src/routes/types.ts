@@ -1,9 +1,7 @@
 import { PerfPayload } from '../utils/perf.js';
 import { AllRequests, SettingsOptions, TErrors, RequestObject, TUserHelpers } from '../utils/types.js';
 
-interface Permalink {
-  (input: { request: RequestObject; settings: SettingsOptions; helpers?: TUserHelpers }): string;
-}
+type Permalink = (input: { request: RequestObject; settings: SettingsOptions; helpers?: TUserHelpers }) => string;
 
 type MetaOptions = {
   type: string;
@@ -33,7 +31,7 @@ interface IBaseRouteOptions {
   layout?: string;
   layoutComponent?: (x: any) => string | Promise<string>;
   data?: Record<string, unknown> | DataFn;
-  permalink: Permalink;
+  permalink: string | Permalink;
   all?:
     | any[]
     | ((payload: {
@@ -42,7 +40,7 @@ interface IBaseRouteOptions {
         helpers: TUserHelpers;
         data: any;
         perf: PerfPayload;
-      }) => [any] | Promise<any>);
+      }) => any[] | Promise<any>);
   $$meta?: MetaOptions;
   name?: string;
   dynamic?: boolean;
@@ -51,14 +49,14 @@ export interface RouteOptions extends IBaseRouteOptions {
   [x: string]: any;
 }
 
-export type UnprocessedRoutesObject = Record<string, RouteOptions>;
+export type RoutesObject = Record<string, RouteOptions>;
 
 export interface ProcessedRouteOptions extends RouteOptions {
   template: string;
-  templateComponent: (x: unknown) => string | Promise<string>;
+  templateComponent: (x: any) => string | Promise<string>;
   layout: string;
-  layoutComponent: (x: unknown) => string | Promise<string>;
-  data: Record<string, unknown> | DataFn;
+  layoutComponent: (x: any) => string | Promise<string>;
+  data: Record<string, any> | DataFn;
   permalink: Permalink;
   all:
     | any[]
@@ -68,10 +66,10 @@ export interface ProcessedRouteOptions extends RouteOptions {
         helpers: TUserHelpers;
         data: any;
         perf: PerfPayload;
-      }) => [any] | Promise<any[]>);
+      }) => any[] | Promise<any[]>);
   $$meta: MetaOptions;
   name: string;
   dynamic: boolean;
 }
 
-export type RoutesObject = Record<string, ProcessedRouteOptions>;
+export type ProcessedRoutesObject = Record<string, ProcessedRouteOptions>;

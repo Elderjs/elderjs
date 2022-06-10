@@ -1,12 +1,19 @@
 import fs from 'fs-extra';
 import defaultsDeep from 'lodash.defaultsdeep';
 import path from 'path';
-import toRegExp from 'regexparam';
+import { parse as toRegExp } from 'regexparam';
 
 import { ShortcodeDefinitions } from '../shortcodes/types.js';
-import { validatePlugin, validateHook, svelteComponent, PluginOptions, TProcessedHook, TProcessedHooksArray } from '..';
+import {
+  validatePlugin,
+  validateHook,
+  svelteComponent,
+  PluginOptions,
+  TProcessedHook,
+  TProcessedHooksArray,
+} from '../index.js';
 import { Elder } from '../Elder.js';
-import { ProcessedRouteOptions, RoutesObject } from '../routes/types.js';
+import { ProcessedRouteOptions, ProcessedRoutesObject } from '../routes/types.js';
 import createReadOnlyProxy from '../utils/createReadOnlyProxy.js';
 import wrapPermalinkFn from '../utils/wrapPermalinkFn.js';
 import makeDynamicPermalinkFn from '../routes/makeDynamicPermalinkFn.js';
@@ -38,7 +45,7 @@ async function plugins(elder: Elder) {
    * * Collect plugin routes
    * * Add plugin object and helpers to all plugin hook functions.
    */
-  let pluginRoutes: RoutesObject = {};
+  let pluginRoutes: ProcessedRoutesObject = {};
   const pluginHooks: TProcessedHooksArray = [];
   const pluginShortcodes: ShortcodeDefinitions = [];
 
@@ -65,11 +72,13 @@ async function plugins(elder: Elder) {
       const pkgPath = path.resolve(elder.settings.rootDir, './node_modules/', pluginName);
       if (fs.existsSync(pkgPath)) {
         usesNodeModulesFolder = true;
-        const pluginPackageJson = await import(path.resolve(pkgPath, './package.json'));
+        const pluginPackageJson = fs.readJsonSync(path.resolve(pkgPath, './package.json'));
         const pluginPkgPath = path.resolve(
           pkgPath,
           pluginPackageJson.main.startsWith('/') ? `.${pluginPackageJson.main}` : pluginPackageJson.main,
         );
+
+        console.log(pluginPkgPath);
 
         const nmPluginReq = await import(pluginPkgPath);
         plugin = nmPluginReq.default || nmPluginReq;
@@ -177,32 +186,33 @@ async function plugins(elder: Elder) {
         // eslint-disable-next-line no-loop-func
         for (let ii = 0; ii < routeNames.length; ii += 1) {
           const routeName = routeNames[ii];
+          const { permalink, ...restOfRoute } = plugin.routes[routeName];
+
           const processedRoute: Partial<ProcessedRouteOptions> = {
-            ...plugin.routes[routeName],
+            ...restOfRoute,
             $$meta: {
               type: 'plugin',
               addedBy: routeName,
             },
           };
 
-          if (typeof processedRoute.permalink === 'undefined') {
+          if (typeof permalink === 'function') {
+            processedRoute.permalink = permalink;
+          } else if (typeof permalink === 'undefined') {
             console.error(
               `WARN: Plugin ${routeName} does not define a permalink function on it's routes. Setting default permalink to \`/${routeName}/\``,
             );
             processedRoute.permalink = () => `/${routeName}/`;
-          }
-
-          const { serverPrefix } = elder.settings.$$internal;
-
-          // handle string based permalinks
-          if (typeof processedRoute.permalink === 'string') {
+          } else if (typeof processedRoute.permalink === 'string') {
+            // handle string based permalinks
+            const { serverPrefix } = elder.settings.$$internal;
             const routeString = `${serverPrefix}${processedRoute.permalink}`;
             processedRoute.permalink = makeDynamicPermalinkFn(processedRoute.permalink);
 
             processedRoute.$$meta = {
               ...processedRoute.$$meta,
               routeString,
-              ...toRegExp.parse(routeString),
+              ...toRegExp(routeString),
               type: processedRoute.dynamic ? `dynamic` : 'static',
             };
           }
@@ -290,7 +300,7 @@ async function plugins(elder: Elder) {
 
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const sanitizedRouteDeets = processedRoute as ProcessedRouteOptions;
-          const sanitizedRoute: RoutesObject = {
+          const sanitizedRoute: ProcessedRoutesObject = {
             [routeName]: { ...sanitizedRouteDeets, $$meta: { type: 'plugin', addedBy: pluginName } },
           };
 

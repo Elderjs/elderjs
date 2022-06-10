@@ -13,7 +13,7 @@ import {
   AllRequests,
 } from '../utils/types';
 
-import { RouteOptions, RoutesObject } from '../routes/types.js';
+import { RouteOptions, ProcessedRoutesObject } from '../routes/types.js';
 import { ShortcodeDefinitions } from '../shortcodes/types.js';
 import { PluginClosure } from '../plugins/types.js';
 
@@ -62,7 +62,7 @@ export interface IBootstrapHook extends IHookBase {
     helpers: TUserHelpers;
     data: any;
     settings: SettingsOptions;
-    routes: RoutesObject;
+    routes: ProcessedRoutesObject;
     hooks: TProcessedHooksArray;
     query: any;
   }) => TGenericHookReturn<{
@@ -84,7 +84,7 @@ export interface IAllRequestsHook extends IHookBase {
     data: any;
     settings: SettingsOptions;
     allRequests: AllRequests;
-    routes: RoutesObject;
+    routes: ProcessedRoutesObject;
     query: any;
     errors: TErrors;
   }) => TGenericHookReturn<{
@@ -105,7 +105,7 @@ export interface IMiddlewareHook extends IHookBase {
     data: any;
     settings: SettingsOptions;
     allRequests: AllRequests;
-    routes: RoutesObject;
+    routes: ProcessedRoutesObject;
     req: any;
     next: any;
     res: any;
@@ -122,7 +122,7 @@ export interface IMiddlewareHook extends IHookBase {
     data?: any;
     settings?: SettingsOptions;
     allRequests?: AllRequests;
-    routes?: RoutesObject;
+    routes?: ProcessedRoutesObject;
     req?: any;
     next?: any;
     res?: any;
@@ -143,7 +143,7 @@ export interface IRequestHook extends IHookBase {
     allRequests: AllRequests;
     query: any;
     errors: TErrors;
-    routes: RoutesObject;
+    routes: ProcessedRoutesObject;
     route: RouteOptions;
   }) => TGenericHookReturn<{
     plugin?: PluginClosure;
@@ -166,7 +166,7 @@ export interface IDataHook extends IHookBase {
     errors: TErrors;
     helpers: TUserHelpers;
     query: any;
-    routes: RoutesObject;
+    routes: ProcessedRoutesObject;
     cssStack: Stack;
     headStack: Stack;
     beforeHydrateStack: Stack;
@@ -351,7 +351,7 @@ export interface IBuildCompleteHook extends IHookBase {
     timings: PerfTimings[];
     query: any;
     errors: TErrors;
-    routes: RoutesObject;
+    routes: ProcessedRoutesObject;
     allRequests: AllRequests;
   }) => void | undefined | Promise<void> | Promise<undefined> | any | Promise<any>;
 }

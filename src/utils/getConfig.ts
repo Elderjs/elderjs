@@ -23,7 +23,7 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
   config.srcDir = path.resolve(rootDir, `./${config.srcDir}`);
   config.distDir = path.resolve(rootDir, `./${config.distDir}`);
 
-  const pkgJson = fs.readJSONSync(path.resolve(__dirname, '../../package.json'));
+  const pkgJson = fs.readJSONSync(path.resolve(`./node_modules/@elderjs/elderjs/package.json`));
   config.version = pkgJson.version.includes('-') ? pkgJson.version.split('-')[0] : pkgJson.version;
 
   config.context = typeof initializationOptions.context !== 'undefined' ? initializationOptions.context : 'unknown';

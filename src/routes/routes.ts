@@ -1,6 +1,6 @@
 import glob from 'glob';
 import kebabcase from 'lodash.kebabcase';
-import toRegExp from 'regexparam';
+import { parse as toRegExp } from 'regexparam';
 import path from 'path';
 
 import { svelteComponent } from '../utils/index.js';
@@ -8,21 +8,21 @@ import { SettingsOptions } from '../utils/types.js';
 import wrapPermalinkFn from '../utils/wrapPermalinkFn.js';
 import windowsPathFix from '../utils/windowsPathFix.js';
 import makeDynamicPermalinkFn from './makeDynamicPermalinkFn.js';
-import { ProcessedRouteOptions, RouteOptions, RoutesObject } from './types.js';
+import { ProcessedRouteOptions, RouteOptions, ProcessedRoutesObject } from './types.js';
 
 const requireFile = async (file: string) => {
   const dataReq = await import(file);
   return dataReq.default || dataReq;
 };
 
-async function prepareRoutes(settings: SettingsOptions): Promise<RoutesObject> {
+async function prepareRoutes(settings: SettingsOptions): Promise<ProcessedRoutesObject> {
   try {
     const { ssrComponents: ssrFolder, serverPrefix = '' } = settings.$$internal;
 
     const files = glob.sync(`${settings.srcDir}/routes/*/+(*.js|*.svelte)`).map((p) => windowsPathFix(p));
     const routejsFiles: string[] = files.filter((f) => f.endsWith('/route.js'));
 
-    const routes: RoutesObject = {};
+    const routes: ProcessedRoutesObject = {};
 
     /**
      * Set Defaults in Route.js files
@@ -53,7 +53,7 @@ async function prepareRoutes(settings: SettingsOptions): Promise<RoutesObject> {
         route.$$meta = {
           ...route.$$meta,
           routeString,
-          ...toRegExp.parse(routeString),
+          ...toRegExp(routeString),
           type: route.dynamic ? `dynamic` : 'static',
         };
       }

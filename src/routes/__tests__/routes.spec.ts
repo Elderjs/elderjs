@@ -65,7 +65,7 @@ describe('#routes', () => {
     // eslint-disable-next-line global-require
     const routes = await import('../routes').default;
     // @ts-ignore
-    const routesObject = routes(settings);
+    constProcessedRoutesObject = routes(settings);
 
     expect(routesObject.content.permalink({ request: { slug: 'content' } })).toEqual(`/content/`);
     expect(routesObject.content.permalink({ request: { slug: '/' } })).toEqual(`/`);
@@ -127,7 +127,7 @@ describe('#routes', () => {
     // eslint-disable-next-line global-require
     const routes = await import('../routes').default;
     // @ts-ignore
-    const routesObject = normalizeSnapshot(routes(settings));
+    constProcessedRoutesObject = normalizeSnapshot(routes(settings));
 
     expect(routesObject.content.all).toEqual([{ slug: 'content' }]);
     expect(routesObject.SomethingCamel.all).toEqual([{ slug: 'something-camel' }]);

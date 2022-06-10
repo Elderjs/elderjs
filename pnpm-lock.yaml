@@ -26,7 +26,7 @@ specifiers:
   eslint-plugin-import: ^2.22.1
   eslint-plugin-jest: ^24.2.1
   eslint-plugin-prettier: ^3.1.4
-  fs-extra: ^9.1.0
+  fs-extra: ^10.1.0
   glob: ^7.1.6
   hexoid: ^1.0.0
   jest: ^28.1.1
@@ -62,7 +62,7 @@ dependencies:
   cosmiconfig: 7.0.1
   del: 6.1.1
   esbuild: 0.12.29
-  fs-extra: 9.1.0
+  fs-extra: 10.1.0
   glob: 7.2.3
   hexoid: 1.0.0
   lodash.defaultsdeep: 4.6.1
@@ -1289,11 +1289,6 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /at-least-node/1.0.0:
-    resolution: {integrity: sha512-+q/t7Ekv1EDY2l6Gda6LLiX14rU9TV20Wa3ofeQmwPFZbOMo9DXrLbOjFaaclkXKWidIaopwAObQDqwWtGUjqg==}
-    engines: {node: '>= 4.0.0'}
-    dev: false
-
   /babel-jest/28.1.1_@babel+core@7.18.2:
     resolution: {integrity: sha512-MEt0263viUdAkTq5D7upHPNxvt4n9uLUGa6pPz3WviNBMtOmStb1lIXS3QobnoqM+qnH+vr4EKlvhe8QcmxIYw==}
     engines: {node: ^12.13.0 || ^14.15.0 || ^16.10.0 || >=17.0.0}
@@ -2149,11 +2144,10 @@ packages:
     engines: {node: '>=8'}
     dev: false
 
-  /fs-extra/9.1.0:
-    resolution: {integrity: sha512-hcg3ZmepS30/7BSFqRvoo3DOMQu7IjqxO5nCDt+zM9XWjb33Wg7ziNT+Qvqbuc3+gWpzO02JubVyk2G4Zvo1OQ==}
-    engines: {node: '>=10'}
+  /fs-extra/10.1.0:
+    resolution: {integrity: sha512-oRXApq54ETRj4eMiFzGnHWGy+zo5raudjuxN0b8H7s/RU2oW0Wvsx9O0ACRN/kRq9E8Vu/ReskGB5o3ji+FzHQ==}
+    engines: {node: '>=12'}
     dependencies:
-      at-least-node: 1.0.0
       graceful-fs: 4.2.10
       jsonfile: 6.1.0
       universalify: 2.0.0

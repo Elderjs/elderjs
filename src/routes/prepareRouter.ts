@@ -1,7 +1,7 @@
 import routeSort from 'route-sort';
 import Page from '../utils/Page.js';
 import { RequestObject, ServerOptions, SettingsOptions, TServerLookupObject } from '../utils/types.js';
-import { RouteOptions } from './types.js';
+import { ProcessedRouteOptions } from './types.js';
 import fixCircularJson from '../utils/fixCircularJson.js';
 import { Elder as ElderClass } from '../Elder.js';
 
@@ -17,10 +17,10 @@ export function extractDynamicRouteParams({ path, $$meta }) {
 
 interface IGetDynamicRoute {
   path: string;
-  dynamicRoutes: RouteOptions[];
+  dynamicRoutes: ProcessedRouteOptions[];
 }
 
-export function getDynamicRoute({ path, dynamicRoutes }: IGetDynamicRoute): RouteOptions | false {
+export function getDynamicRoute({ path, dynamicRoutes }: IGetDynamicRoute): ProcessedRouteOptions | false {
   let i = 0;
   for (; i < dynamicRoutes.length; i++) {
     if (dynamicRoutes[i].$$meta.pattern.test(path)) {
@@ -112,7 +112,7 @@ export const initialRequestIsWellFormed = (request: RequestObject) => !!(request
 
 interface IRequestFromDynamicRoute {
   req: Req;
-  dynamicRoutes: RouteOptions[];
+  dynamicRoutes: ProcessedRouteOptions[];
   requestCache: Map<string, RequestObject> | undefined;
   settings: SettingsOptions;
 }
@@ -154,7 +154,7 @@ function prepareRouter(Elder: ElderClass) {
   const routesPresort = Object.keys(routes).filter(
     (cv) => routes[cv] && routes[cv].$$meta && routes[cv].$$meta.type === 'dynamic',
   );
-  const dynamicRoutes: RouteOptions[] = routeSort(routesPresort).map((cv) => routes[cv]);
+  const dynamicRoutes: ProcessedRouteOptions[] = routeSort(routesPresort).map((cv) => routes[cv]);
 
   const prefix = settings.$$internal.serverPrefix;
 
