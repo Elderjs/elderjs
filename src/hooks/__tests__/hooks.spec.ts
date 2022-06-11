@@ -67,7 +67,7 @@ let stacks = {
 let request = { permalink: '/foo/', route: 'test', type: 'test' };
 
 beforeAll(() => {
-  return elder.bootstrap().then();
+  elder.bootstrap();
 });
 
 beforeEach(() => {
@@ -94,7 +94,7 @@ describe('#hooks', () => {
     expect(normalizeSnapshot(hooks)).toMatchSnapshot();
   });
   test('elderAddExternalHelpers', async () => {
-    await elder;
+    await elder.bootstrap();
     const hook = elder.hooks
       .filter((h) => h.hook === 'bootstrap')
       .find((h) => h.name === 'elderAddExternalHelpers') as ProcessedHook<IBootstrapHook>;
