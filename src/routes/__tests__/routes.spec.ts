@@ -1,31 +1,21 @@
+// eslint-disable-next-line eslint-comments/disable-enable-pair
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import normalizeSnapshot from '../../utils/normalizeSnapshot.js';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import getConfig from '../../utils/getConfig';
 
+const settings = getConfig({ css: 'inline' });
 // process.cwd = () => 'test';
 
-jest.mock('../../utils/svelteComponent', () => (component) => `<div class="svelteComponent">${component}</div>`);
+vi.mock('../../utils/svelteComponent', () => (component) => `<div class="svelteComponent">${component}</div>`);
 
 describe('#routes', () => {
-  const settings = {
-    debug: {
-      automagic: true,
-    },
-    siteUrl: '',
-    distDir: 'test/public',
-    rootDir: 'test',
-    srcDir: 'test/src',
-    hooks: {},
-    $$internal: {
-      clientComponents: 'test/public/svelte',
-      ssrComponents: 'test/___ELDER___/compiled',
-    },
-  };
-
-  it('Sets a default permalink function when undefined.', () => {
+  it('Sets a default permalink function when undefined.', async () => {
     beforeEach(() => {
-      jest.resetModules();
+      vi.resetModules();
     });
-    jest.mock('glob', () => ({
-      sync: jest
+    vi.mock('glob', () => ({
+      sync: vi
         .fn()
         .mockImplementationOnce(() => [
           `test/src/routes/content/route.js`,
@@ -42,41 +32,37 @@ describe('#routes', () => {
           `test/___ELDER___/compiled/routes/content/Content.js`,
         ]),
     }));
-    jest.mock(
-      `test/src/routes/content/route.js`,
-      () => ({
-        all: [{ slug: 'content' }],
-        template: 'Default',
-        layout: 'Layout.svelte',
-      }),
-      { virtual: true },
-    );
-    jest.mock(`test/src/routes/content/data.js`, () => ({ default: { foo: 'bar' } }), { virtual: true });
-    jest.mock(
-      `test/src/routes/home/route.js`,
-      () => ({
-        all: () => [{ slug: 'home' }],
-      }),
-      { virtual: true },
-    );
+    vi.mock(`test/src/routes/content/route.js`, () => ({
+      all: [{ slug: 'content' }],
+      template: 'Default',
+      layout: 'Layout.svelte',
+    }));
+    vi.mock(`test/src/routes/content/data.js`, () => ({ default: { foo: 'bar' } }));
+    vi.mock(`test/src/routes/home/route.js`, () => ({
+      all: () => [{ slug: 'home' }],
+    }));
 
-    jest.mock(`test/src/routes/content/data.js`, () => ({ default: { foo: 'bar' } }), { virtual: true });
+    vi.mock(`test/src/routes/content/data.js`, () => ({ default: { foo: 'bar' } }));
 
     // eslint-disable-next-line global-require
-    const routes = await import('../routes').default;
+    const routes = (await import('../routes')).default;
     // @ts-ignore
-    constProcessedRoutesObject = routes(settings);
+    const routesObject = await routes(settings);
 
-    expect(routesObject.content.permalink({ request: { slug: 'content' } })).toEqual(`/content/`);
-    expect(routesObject.content.permalink({ request: { slug: '/' } })).toEqual(`/`);
+    expect(
+      routesObject.content.permalink({ settings, request: { route: 'test', type: 'test', slug: 'content' } }),
+    ).toEqual(`/content/`);
+    expect(routesObject.content.permalink({ settings, request: { route: 'test', type: 'test', slug: '/' } })).toEqual(
+      `/`,
+    );
   });
 
-  it('Sets a single request object for all array when when no all function', () => {
+  it('Sets a single request object for all array when when no all function', async () => {
     beforeEach(() => {
-      jest.resetModules();
+      vi.resetModules();
     });
-    jest.mock('glob', () => ({
-      sync: jest
+    vi.mock('glob', () => ({
+      sync: vi
         .fn()
         .mockImplementationOnce(() => [
           `test/src/routes/content/route.js`,
@@ -96,36 +82,26 @@ describe('#routes', () => {
           `test/___ELDER___/compiled/SomethingCamel.js`,
         ]),
     }));
-    jest.mock(
-      `test/src/routes/content/route.js`,
-      () => ({
-        permalink: () => 'content-permalink',
-        template: 'Default',
-        layout: 'Layout.svelte',
-      }),
-      { virtual: true },
-    );
-    jest.mock('test/src/routes/content/data.js', () => ({ default: { foo: 'bar' } }), { virtual: true });
-    jest.mock(
-      'test/src/routes/home/route.js',
-      () => ({
-        permalink: () => 'home-permalink',
-      }),
-      { virtual: true },
-    );
-    jest.mock('test/src/routes/home/data.js', () => ({ default: { foo: 'bar' } }), { virtual: true });
+    vi.mock(`test/src/routes/content/route.js`, () => ({
+      permalink: () => 'content-permalink',
+      template: 'Default',
+      layout: 'Layout.svelte',
+    }));
+    vi.mock('test/src/routes/content/data.js', () => ({ default: { foo: 'bar' } }));
+    vi.mock('test/src/routes/home/route.js', () => ({
+      permalink: () => 'home-permalink',
+    }));
+    vi.mock('test/src/routes/home/data.js', () => ({ default: { foo: 'bar' } }));
 
-    jest.mock(
-      'test/src/routes/SomethingCamel/route.js',
-      () => ({
-        permalink: () => '/something-camel/',
-      }),
-      { virtual: true },
-    );
-    jest.mock('test/src/routes/SomethingCamel/data.js', () => ({ default: { foo: 'bar' } }), { virtual: true });
+    vi.mock('test/src/routes/SomethingCamel/route.js', () => ({
+      permalink: () => '/something-camel/',
+    }));
+    vi.mock('test/src/routes/SomethingCamel/data.js', () => ({ default: { foo: 'bar' } }));
 
-    // eslint-disable-next-line global-require
-    const routes = await import('../routes').default;
+    const routes = (await import('../routes')).default;
+    // @ts-ignore
+    const routesObject = await routes(settings);
+
     // @ts-ignore
     constProcessedRoutesObject = normalizeSnapshot(routes(settings));
 
@@ -134,9 +110,9 @@ describe('#routes', () => {
     expect(routesObject.home.all).toEqual([{ slug: '/' }]);
   });
 
-  it('works where things are set', () => {
-    jest.mock('glob', () => ({
-      sync: jest
+  it('works where things are set', async () => {
+    vi.mock('glob', () => ({
+      sync: vi
         .fn()
         .mockImplementationOnce(() => [
           `test/src/routes/content/route.js`,
@@ -154,29 +130,23 @@ describe('#routes', () => {
         ]),
     }));
 
-    jest.mock(
-      'test/src/routes/content/route.js',
-      () => ({
-        permalink: () => 'content-permalink',
-        all: () => null,
-        template: 'Another.svelte',
-        layout: 'Layout.svelte',
-      }),
-      { virtual: true },
-    );
+    vi.mock('test/src/routes/content/route.js', () => ({
+      permalink: () => 'content-permalink',
+      all: () => null,
+      template: 'Another.svelte',
+      layout: 'Layout.svelte',
+    }));
 
-    jest.mock(
-      'test/src/routes/home/route.js',
-      () => ({
-        permalink: () => 'home-permalink',
-        all: () => null,
-      }),
-      { virtual: true },
-    );
+    vi.mock('test/src/routes/home/route.js', () => ({
+      permalink: () => 'home-permalink',
+      all: () => null,
+    }));
 
-    jest.mock('test/src/routes/content/data.js', () => ({ foo: 'bar' }), { virtual: true });
+    vi.mock('test/src/routes/content/data.js', () => ({ foo: 'bar' }));
     // eslint-disable-next-line global-require
-    const routes = await import('../routes').default;
+    const routes = (await import('../routes')).default;
+    // @ts-ignore
+
     // @ts-ignore
 
     const r = normalizeSnapshot(routes(settings));
@@ -188,9 +158,9 @@ describe('#routes', () => {
     expect(r.content.name).toEqual('content');
   });
 
-  it('no template', () => {
-    jest.mock('glob', () => ({
-      sync: jest
+  it('no template', async () => {
+    vi.mock('glob', () => ({
+      sync: vi
         .fn()
         .mockImplementationOnce(() => [
           `test/src/routes/content/route.js`,
@@ -207,33 +177,26 @@ describe('#routes', () => {
           `test/___ELDER___/compiled/routes/Content/Content.js`,
         ]),
     }));
-    jest.mock(
-      'test/src/routes/content/route.js',
-      () => ({
-        default: {
-          permalink: () => 'content-permalink',
-          all: () => null,
-          layout: 'Layout.svelte',
-        },
-      }),
-      { virtual: true },
-    );
+    vi.mock('test/src/routes/content/route.js', () => ({
+      default: {
+        permalink: () => 'content-permalink',
+        all: () => null,
+        layout: 'Layout.svelte',
+      },
+    }));
 
-    jest.mock(
-      'test/src/routes/home/route.js',
-      () => ({
-        default: {
-          permalink: () => 'home-permalink',
-          all: () => null,
-        },
-      }),
-      { virtual: true },
-    );
+    vi.mock('test/src/routes/home/route.js', () => ({
+      default: {
+        permalink: () => 'home-permalink',
+        all: () => null,
+      },
+    }));
 
-    jest.mock('test/src/routes/content/data.js', () => ({ default: { foo: 'bar' } }), { virtual: true });
+    vi.mock('test/src/routes/content/data.js', () => ({ default: { foo: 'bar' } }));
 
     // eslint-disable-next-line global-require
-    const routes = await import('../routes').default;
+    const routes = (await import('../routes')).default;
+
     // @ts-ignore
 
     const r = normalizeSnapshot(routes(settings));
@@ -243,9 +206,9 @@ describe('#routes', () => {
     expect(r.home.layout).toBe('Layout.svelte');
   });
 
-  it('tests case sensitivity', () => {
-    jest.mock('glob', () => ({
-      sync: jest
+  it('tests case sensitivity', async () => {
+    vi.mock('glob', () => ({
+      sync: vi
         .fn()
         .mockImplementationOnce(() => [
           `test/src/routes/content/route.js`,
@@ -263,20 +226,17 @@ describe('#routes', () => {
         ]),
     }));
 
-    jest.mock(
-      'test/src/routes/home/route.js',
-      () => ({
-        default: {
-          template: 'Home.svelte',
-          permalink: () => 'home-permalink',
-          all: () => null,
-        },
-      }),
-      { virtual: true },
-    );
+    vi.mock('test/src/routes/home/route.js', () => ({
+      default: {
+        template: 'Home.svelte',
+        permalink: () => 'home-permalink',
+        all: () => null,
+      },
+    }));
 
     // eslint-disable-next-line global-require
-    const routes = await import('../routes').default;
+    const routes = (await import('../routes')).default;
+
     // @ts-ignore
 
     const r = normalizeSnapshot(routes(settings));

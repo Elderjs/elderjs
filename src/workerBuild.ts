@@ -45,6 +45,7 @@ async function workerBuild({ bootstrapComplete, workerRequests }) {
 
     // try {
     const { errors: buildErrors, timings } = await page.build();
+
     bTimes.push(timings);
 
     if (buildErrors && buildErrors.length > 0) {

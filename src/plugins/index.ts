@@ -68,6 +68,8 @@ async function plugins(elder: Elder) {
       plugin = pluginReq.default || pluginReq;
     }
 
+    console.log(plugin, srcPlugin, fs.existsSync(''));
+
     if (!plugin) {
       const pkgPath = path.resolve(elder.settings.rootDir, './node_modules/', pluginName);
       if (fs.existsSync(pkgPath)) {

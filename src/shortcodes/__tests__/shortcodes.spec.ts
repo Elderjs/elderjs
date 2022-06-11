@@ -1,5 +1,7 @@
 import shortcodes from '..';
 
+import { describe, it, expect } from 'vitest';
+
 describe('#shortcodes', () => {
   it('contains all shortcodes we want', () => {
     expect(shortcodes).toEqual([
@@ -20,6 +22,19 @@ describe('#shortcodes', () => {
       shortcodes[0].run({
         props: {},
         helpers: null,
+        perf: {
+          start: function (): void {
+            throw new Error('Function not implemented.');
+          },
+          end: function (): void {
+            throw new Error('Function not implemented.');
+          },
+        },
+        data: undefined,
+        query: undefined,
+        request: undefined,
+        settings: undefined,
+        allRequests: [],
       }),
     ).rejects.toThrow('svelteComponent shortcode requires a name="" property.');
     // parse nothing
@@ -27,12 +42,27 @@ describe('#shortcodes', () => {
       await shortcodes[0].run({
         props: {
           name: 'ParseNothing',
-          something: 12,
+          something: '12',
         },
         helpers: {
           inlineSvelteComponent: ({ name, props, options }) =>
             `${name}${JSON.stringify(props)}${JSON.stringify(options)}`,
+          permalinks: { key: () => '' },
+          shortcode: () => '',
         },
+        perf: {
+          start: function (): void {
+            throw new Error('Function not implemented.');
+          },
+          end: function (): void {
+            throw new Error('Function not implemented.');
+          },
+        },
+        data: undefined,
+        query: undefined,
+        request: undefined,
+        settings: undefined,
+        allRequests: [],
       }),
     ).toEqual({
       html: 'ParseNothing{}{}',
@@ -46,7 +76,22 @@ describe('#shortcodes', () => {
         helpers: {
           inlineSvelteComponent: ({ name, props, options }) =>
             `${name}${JSON.stringify(props)}${JSON.stringify(options)}`,
+          permalinks: { key: () => '' },
+          shortcode: () => '',
         },
+        perf: {
+          start: function (): void {
+            throw new Error('Function not implemented.');
+          },
+          end: function (): void {
+            throw new Error('Function not implemented.');
+          },
+        },
+        data: undefined,
+        query: undefined,
+        request: undefined,
+        settings: undefined,
+        allRequests: [],
       }),
     ).toEqual({
       html: 'ParseProps{"foo":"bar","count":42}{}',
@@ -60,7 +105,22 @@ describe('#shortcodes', () => {
         helpers: {
           inlineSvelteComponent: ({ name, props, options }) =>
             `${name}${JSON.stringify(props)}${JSON.stringify(options)}`,
+          permalinks: { key: () => '' },
+          shortcode: () => '',
         },
+        perf: {
+          start: function (): void {
+            throw new Error('Function not implemented.');
+          },
+          end: function (): void {
+            throw new Error('Function not implemented.');
+          },
+        },
+        data: undefined,
+        query: undefined,
+        request: undefined,
+        settings: undefined,
+        allRequests: [],
       }),
     ).toEqual({
       html: 'ParseOptions{}{"foo":"bar","count":37}',

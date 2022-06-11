@@ -1,7 +1,11 @@
+// eslint-disable-next-line eslint-comments/disable-enable-pair
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+
 import path from 'path';
 import fsExtra from 'fs-extra';
 import getConfig from '../../utils/getConfig.js';
 import { createSSRConfig } from '../getRollupConfig.js';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const rollup = await import('rollup');
 
@@ -11,15 +15,15 @@ describe('#rollupPlugin', () => {
   const eds = fsExtra.ensureDirSync;
 
   // @ts-ignore
-  fsExtra.copyFileSync = jest.fn(cfs);
+  fsExtra.copyFileSync = vi.fn(cfs);
   // @ts-ignore
   fsExtra.copyFileSync.mockImplementation(() => 'copied');
   // @ts-ignore
-  fsExtra.readdirSync = jest.fn(rds);
+  fsExtra.readdirSync = vi.fn(rds);
   // @ts-ignore
   fsExtra.readdirSync.mockImplementation(() => ['style.css', 'style.css.map']);
   // @ts-ignore
-  fsExtra.ensureDirSync = jest.fn(eds);
+  fsExtra.ensureDirSync = vi.fn(eds);
   // @ts-ignore
   fsExtra.ensureDirSync.mockImplementation(console.log);
   // @ts-ignore
@@ -73,7 +77,7 @@ describe('#rollupPlugin', () => {
 
     const root = path.resolve('./src/rollup/__tests__/__fixtures__/external');
 
-    process.cwd = jest.fn(process.cwd).mockImplementation(() => root);
+    process.cwd = vi.fn(process.cwd).mockImplementation(() => root);
 
     const { input, plugins, output } = createSSRConfig({
       input: [
