@@ -1,4 +1,13 @@
 import { prepareServer } from '../prepareServer.js';
+import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest';
+
+beforeAll(() => {
+  vi.resetModules();
+});
+
+beforeEach(() => {
+  vi.resetModules();
+});
 
 describe('#prepareServer', () => {
   it('works', async () => {
@@ -6,8 +15,10 @@ describe('#prepareServer', () => {
     const runHook = async (name, props) => {
       hooks.push({ name, props });
     };
-    const nextMock = jest.fn();
+    const nextMock = vi.fn();
     const prepServer = prepareServer({
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       bootstrapComplete: Promise.resolve({
         runHook,
         foo: 'bar',

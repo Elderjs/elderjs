@@ -1,37 +1,47 @@
-/* eslint-disable no-param-reassign */
 import Page from '../Page.js';
 import normalizeSnapshot from '../normalizeSnapshot.js';
+import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest';
+beforeAll(() => {
+  vi.resetModules();
+});
 
-jest.mock('../getUniqueId', () => () => 'xxxxxxxxxx');
-jest.mock('../prepareProcessStack', () => (page) => (stackName) => {
-  const data = {
-    headStack: 'headStack',
-    cssStack: 'cssStack',
-    hydrateStack: 'hydrateStack',
-    beforeHydrateStack: 'beforeHydrateStack',
-    customJsStack: 'customJsStack',
-    footerStack: 'footerStack',
-  };
-  if (!page.hydrateStack || !page.hydrateStack.length) {
-    // should be done in stacks hook
-    page.footerStack = ['footerStack'];
-    page.customJsStack = ['customJsStack'];
-    page.hydrateStack = ['hydrateStack'];
-  }
-  if (data[stackName]) {
-    return data[stackName];
-  }
-  return '';
+beforeEach(() => {
+  vi.resetModules();
 });
-jest.mock('../perf', () => (page) => {
-  page.perf = {
-    timings: [],
-    start: jest.fn(),
-    end: jest.fn(),
-    stop: jest.fn(),
-    prefix: jest.fn(),
-  };
-});
+vi.mock('../getUniqueId', () => ({ default: () => 'xxxxxxxxxx' }));
+vi.mock('../prepareProcessStack', () => ({
+  default: (page) => (stackName) => {
+    const data = {
+      headStack: 'headStack',
+      cssStack: 'cssStack',
+      hydrateStack: 'hydrateStack',
+      beforeHydrateStack: 'beforeHydrateStack',
+      customJsStack: 'customJsStack',
+      footerStack: 'footerStack',
+    };
+    if (!page.hydrateStack || !page.hydrateStack.length) {
+      // should be done in stacks hook
+      page.footerStack = ['footerStack'];
+      page.customJsStack = ['customJsStack'];
+      page.hydrateStack = ['hydrateStack'];
+    }
+    if (data[stackName]) {
+      return data[stackName];
+    }
+    return '';
+  },
+}));
+vi.mock('../perf', () => ({
+  default: (page) => {
+    page.perf = {
+      timings: [],
+      start: vi.fn(),
+      end: vi.fn(),
+      stop: vi.fn(),
+      prefix: vi.fn(),
+    };
+  },
+}));
 
 const allRequests = [
   {
@@ -155,9 +165,9 @@ const route = {
   hooks: [],
   template: 'Content.svelte',
   data: () => Promise.resolve({ worldPopulation: 7805564950 }),
-  templateComponent: jest.fn(),
+  templateComponent: vi.fn(),
   layout: 'Layout.svelte',
-  layoutComponent: jest.fn(() => '<div class="container"></div>'),
+  layoutComponent: vi.fn(() => '<div class="container"></div>'),
   parent: 'home',
   $$meta: {
     type: 'route',

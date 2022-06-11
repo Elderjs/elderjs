@@ -1,18 +1,28 @@
 import prepareInlineShortcode from '../prepareInlineShortcode.js';
-import { Elder } from '../../Elder.js';
 
-const elder = new Elder({ context: 'server' });
+import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest';
+import getConfig from '../getConfig.js';
+
+beforeAll(() => {
+  vi.resetModules();
+});
+
+beforeEach(() => {
+  vi.resetModules();
+});
+
+const defaultSettings = getConfig({ css: 'inline' });
 
 describe('#prepareInlineShortcode', () => {
   it('works - no content, no props', async () => {
-    await elder.bootstrap();
     const settings = {
       shortcodes: {
         openPattern: '<12345',
         closePattern: '54321>',
       },
     };
-    const fn = prepareInlineShortcode({ settings: { ...elder.settings, ...settings } });
+    const fn = prepareInlineShortcode({ settings: { ...defaultSettings, ...settings } });
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     expect(() => fn({})).toThrow('helpers.shortcode requires a name prop');
     expect(
@@ -25,14 +35,13 @@ describe('#prepareInlineShortcode', () => {
   });
 
   it('works - with content and props', async () => {
-    await elder.bootstrap();
     const settings = {
       shortcodes: {
         openPattern: '<',
         closePattern: '>',
       },
     };
-    const fn = prepareInlineShortcode({ settings: { ...elder.settings, ...settings } });
+    const fn = prepareInlineShortcode({ settings: { ...defaultSettings, ...settings } });
     expect(
       fn({
         name: 'Test',
@@ -49,14 +58,13 @@ describe('#prepareInlineShortcode', () => {
   });
 
   it('works - with \\ for escaped regex options', async () => {
-    await elder.bootstrap();
     const settings = {
       shortcodes: {
         openPattern: '\\[',
         closePattern: '\\]',
       },
     };
-    const fn = prepareInlineShortcode({ settings: { ...elder.settings, ...settings } });
+    const fn = prepareInlineShortcode({ settings: { ...defaultSettings, ...settings } });
     expect(
       fn({
         name: 'Test',

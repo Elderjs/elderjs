@@ -1,4 +1,32 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1
+
+exports[`#perf > works in performance and mocks 1`] = `
+{
+  "htmlString": "",
+  "perf": {
+    "end": [Function],
+    "prefix": [Function],
+    "start": [Function],
+    "stop": [Function],
+    "timings": [
+      {
+        "duration": 0.026834,
+        "name": "test",
+      },
+      {
+        "duration": 0.014667,
+        "name": "prefix.prefix",
+      },
+    ],
+  },
+  "settings": {
+    "debug": {
+      "performance": true,
+    },
+  },
+  "uid": "xxxxxxxx",
+}
+`;
 
 exports[`#perf works in performance and mocks 1`] = `
 Object {

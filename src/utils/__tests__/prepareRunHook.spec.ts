@@ -1,5 +1,14 @@
-/* eslint-disable no-param-reassign */
 import prepareRunHook from '../prepareRunHook.js';
+
+import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest';
+
+beforeAll(() => {
+  vi.resetModules();
+});
+
+beforeEach(() => {
+  vi.resetModules();
+});
 
 const hooks = [
   {
@@ -58,7 +67,7 @@ describe('#prepareRunHook', () => {
     },
     magicNumber: 42,
   };
-  const perf = { start: jest.fn(), end: jest.fn(), prefix: () => {} };
+  const perf = { start: vi.fn(), end: vi.fn(), prefix: () => '' };
   let prepareRunHookFn = prepareRunHook({ hooks: [hooks[0], hooks[1]], allSupportedHooks, settings });
 
   it('throws for unknown hook', async () => {

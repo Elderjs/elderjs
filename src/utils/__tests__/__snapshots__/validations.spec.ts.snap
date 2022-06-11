@@ -1,4 +1,1829 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1
+
+exports[`#validations > configSchema 1`] = `
+{
+  "_blacklist": {
+    "list": Set {},
+    "refs": Map {},
+  },
+  "_conditions": [],
+  "_defaultDefault": [Function],
+  "_deps": [],
+  "_excludedEdges": [],
+  "_exclusive": {},
+  "_mutate": undefined,
+  "_nodes": [
+    "css",
+    "plugins",
+    "shortcodes",
+    "build",
+    "prefix",
+    "server",
+    "hooks",
+    "debug",
+    "props",
+    "srcDir",
+    "distDir",
+    "rootDir",
+    "lang",
+    "origin",
+  ],
+  "_options": {
+    "abortEarly": true,
+    "recursive": true,
+  },
+  "_type": "object",
+  "_typeError": [Function],
+  "_whitelist": {
+    "list": Set {},
+    "refs": Map {},
+  },
+  "fields": {
+    "build": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_defaultDefault": [Function],
+      "_deps": [],
+      "_excludedEdges": [],
+      "_exclusive": {},
+      "_mutate": undefined,
+      "_nodes": [
+        "shuffleRequests",
+        "numberOfWorkers",
+      ],
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "object",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "fields": {
+        "numberOfWorkers": {
+          "_blacklist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "_conditions": [],
+          "_default": -1,
+          "_deps": [],
+          "_exclusive": {},
+          "_label": "This controls the number of worker processes spun up during build. It accepts negative numbers to represent the number of cpus minus the given number. Or the total number of processes to spin up. ",
+          "_mutate": undefined,
+          "_options": {
+            "abortEarly": true,
+            "recursive": true,
+          },
+          "_type": "number",
+          "_typeError": [Function],
+          "_whitelist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "tests": [],
+          "transforms": [
+            [Function],
+          ],
+          "type": "number",
+        },
+        "shuffleRequests": {
+          "_blacklist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "_conditions": [],
+          "_default": false,
+          "_deps": [],
+          "_exclusive": {},
+          "_label": "If you have some pages that take longer to generate than others, you may want to shuffle your requests so they are spread out more evenly across processes when building.",
+          "_mutate": undefined,
+          "_options": {
+            "abortEarly": true,
+            "recursive": true,
+          },
+          "_type": "boolean",
+          "_typeError": [Function],
+          "_whitelist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "tests": [],
+          "transforms": [
+            [Function],
+          ],
+          "type": "boolean",
+        },
+      },
+      "tests": [],
+      "transforms": [
+        [Function],
+      ],
+      "type": "object",
+    },
+    "css": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_default": "file",
+      "_deps": [],
+      "_exclusive": {
+        "inline-lazy-none-file": false,
+        "required": true,
+      },
+      "_label": "How should css found in svelte files be handled? 'inline' emits styles into the head. 'file' adds a file include into the head. 'none' doesn't do anything with the styles.",
+      "_mutate": undefined,
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "string",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": [
+        [Function],
+        [Function],
+      ],
+      "transforms": [
+        [Function],
+      ],
+      "type": "string",
+    },
+    "debug": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_defaultDefault": [Function],
+      "_deps": [],
+      "_excludedEdges": [],
+      "_exclusive": {},
+      "_label": "Offers various levels of debug logging.",
+      "_mutate": undefined,
+      "_nodes": [
+        "automagic",
+        "build",
+        "performance",
+        "shortcodes",
+        "hooks",
+        "stacks",
+        "props",
+      ],
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "object",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "fields": {
+        "automagic": {
+          "_blacklist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "_conditions": [],
+          "_default": false,
+          "_deps": [],
+          "_exclusive": {},
+          "_label": "Displays settings or actions that are automagically done to help with debugging.",
+          "_mutate": undefined,
+          "_options": {
+            "abortEarly": true,
+            "recursive": true,
+          },
+          "_type": "boolean",
+          "_typeError": [Function],
+          "_whitelist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "tests": [],
+          "transforms": [
+            [Function],
+          ],
+          "type": "boolean",
+        },
+        "build": {
+          "_blacklist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "_conditions": [],
+          "_default": false,
+          "_deps": [],
+          "_exclusive": {},
+          "_label": "Displays detailed build information for each worker.",
+          "_mutate": undefined,
+          "_options": {
+            "abortEarly": true,
+            "recursive": true,
+          },
+          "_type": "boolean",
+          "_typeError": [Function],
+          "_whitelist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "tests": [],
+          "transforms": [
+            [Function],
+          ],
+          "type": "boolean",
+        },
+        "hooks": {
+          "_blacklist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "_conditions": [],
+          "_default": false,
+          "_deps": [],
+          "_exclusive": {},
+          "_label": "Output details of hook execution in the console.",
+          "_mutate": undefined,
+          "_options": {
+            "abortEarly": true,
+            "recursive": true,
+          },
+          "_type": "boolean",
+          "_typeError": [Function],
+          "_whitelist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "tests": [],
+          "transforms": [
+            [Function],
+          ],
+          "type": "boolean",
+        },
+        "performance": {
+          "_blacklist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "_conditions": [],
+          "_default": false,
+          "_deps": [],
+          "_exclusive": {},
+          "_label": "Outputs a detailed speed report on each pageload.",
+          "_mutate": undefined,
+          "_options": {
+            "abortEarly": true,
+            "recursive": true,
+          },
+          "_type": "boolean",
+          "_typeError": [Function],
+          "_whitelist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "tests": [],
+          "transforms": [
+            [Function],
+          ],
+          "type": "boolean",
+        },
+        "props": {
+          "_blacklist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "_conditions": [],
+          "_default": false,
+          "_deps": [],
+          "_exclusive": {},
+          "_label": "Adds debugging information for prop compression",
+          "_mutate": undefined,
+          "_options": {
+            "abortEarly": true,
+            "recursive": true,
+          },
+          "_type": "boolean",
+          "_typeError": [Function],
+          "_whitelist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "tests": [],
+          "transforms": [
+            [Function],
+          ],
+          "type": "boolean",
+        },
+        "shortcodes": {
+          "_blacklist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "_conditions": [],
+          "_default": false,
+          "_deps": [],
+          "_exclusive": {},
+          "_label": "Output details of shortcode execution in the console.",
+          "_mutate": undefined,
+          "_options": {
+            "abortEarly": true,
+            "recursive": true,
+          },
+          "_type": "boolean",
+          "_typeError": [Function],
+          "_whitelist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "tests": [],
+          "transforms": [
+            [Function],
+          ],
+          "type": "boolean",
+        },
+        "stacks": {
+          "_blacklist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "_conditions": [],
+          "_default": false,
+          "_deps": [],
+          "_exclusive": {},
+          "_label": "Outputs details of stack processing in the console.",
+          "_mutate": undefined,
+          "_options": {
+            "abortEarly": true,
+            "recursive": true,
+          },
+          "_type": "boolean",
+          "_typeError": [Function],
+          "_whitelist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "tests": [],
+          "transforms": [
+            [Function],
+          ],
+          "type": "boolean",
+        },
+      },
+      "tests": [],
+      "transforms": [
+        [Function],
+      ],
+      "type": "object",
+    },
+    "distDir": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_default": "public",
+      "_deps": [],
+      "_exclusive": {},
+      "_label": "Where should files be written? This represents the \\"root\\" of your site and where your html will be built.",
+      "_mutate": undefined,
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "string",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": [],
+      "transforms": [
+        [Function],
+      ],
+      "type": "string",
+    },
+    "hooks": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_defaultDefault": [Function],
+      "_deps": [],
+      "_excludedEdges": [],
+      "_exclusive": {},
+      "_mutate": undefined,
+      "_nodes": [
+        "disable",
+      ],
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "object",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "fields": {
+        "disable": {
+          "_blacklist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "_conditions": [],
+          "_default": [],
+          "_deps": [],
+          "_exclusive": {},
+          "_label": "This is an array of hooks to be excluded from execution. To be clear, this isn't the \\"hook\\" name found in the \\"hookInterface.ts\\" file but instead the name of the system, user, plugin, or route hook that is defined.  For instance if you wanted to by name to prevent the system hook that writes html to the public folder during builds from being run, you would add \\"internalWriteFile\\" to this array.",
+          "_mutate": undefined,
+          "_options": {
+            "abortEarly": true,
+            "recursive": true,
+          },
+          "_subType": {
+            "_blacklist": {
+              "list": Set {},
+              "refs": Map {},
+            },
+            "_conditions": [],
+            "_deps": [],
+            "_exclusive": {},
+            "_mutate": undefined,
+            "_options": {
+              "abortEarly": true,
+              "recursive": true,
+            },
+            "_type": "string",
+            "_typeError": [Function],
+            "_whitelist": {
+              "list": Set {},
+              "refs": Map {},
+            },
+            "tests": [],
+            "transforms": [
+              [Function],
+            ],
+            "type": "string",
+          },
+          "_type": "array",
+          "_typeError": [Function],
+          "_whitelist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "innerType": {
+            "_blacklist": {
+              "list": Set {},
+              "refs": Map {},
+            },
+            "_conditions": [],
+            "_deps": [],
+            "_exclusive": {},
+            "_mutate": undefined,
+            "_options": {
+              "abortEarly": true,
+              "recursive": true,
+            },
+            "_type": "string",
+            "_typeError": [Function],
+            "_whitelist": {
+              "list": Set {},
+              "refs": Map {},
+            },
+            "tests": [],
+            "transforms": [
+              [Function],
+            ],
+            "type": "string",
+          },
+          "tests": [],
+          "transforms": [
+            [Function],
+          ],
+          "type": "array",
+        },
+      },
+      "tests": [],
+      "transforms": [
+        [Function],
+      ],
+      "type": "object",
+    },
+    "lang": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_default": "en",
+      "_deps": [],
+      "_exclusive": {},
+      "_label": "Your site language, will be set in html.",
+      "_mutate": undefined,
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "string",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": [],
+      "transforms": [
+        [Function],
+      ],
+      "type": "string",
+    },
+    "origin": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_default": "",
+      "_deps": [],
+      "_exclusive": {},
+      "_label": "The URL of your site's root, without a trailing slash. https://yourdomain.com.",
+      "_mutate": undefined,
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "string",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": [],
+      "transforms": [
+        [Function],
+      ],
+      "type": "string",
+    },
+    "plugins": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_default": {},
+      "_defaultDefault": [Function],
+      "_deps": [],
+      "_excludedEdges": [],
+      "_exclusive": {},
+      "_label": "Used to define Elder.js plugins.",
+      "_mutate": undefined,
+      "_nodes": [],
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "object",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "fields": {},
+      "tests": [],
+      "transforms": [
+        [Function],
+      ],
+      "type": "object",
+    },
+    "prefix": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_default": "",
+      "_deps": [],
+      "_exclusive": {},
+      "_label": "The prefix Elder.js should prepend to all pages and assets built/served.",
+      "_mutate": undefined,
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "string",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": [],
+      "transforms": [
+        [Function],
+      ],
+      "type": "string",
+    },
+    "props": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_defaultDefault": [Function],
+      "_deps": [],
+      "_excludedEdges": [],
+      "_exclusive": {},
+      "_mutate": undefined,
+      "_nodes": [
+        "replacementChars",
+        "compress",
+        "hydration",
+      ],
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "object",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "fields": {
+        "compress": {
+          "_blacklist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "_conditions": [],
+          "_default": false,
+          "_deps": [],
+          "_exclusive": {},
+          "_label": "Compress the props of hydrated components.",
+          "_mutate": undefined,
+          "_options": {
+            "abortEarly": true,
+            "recursive": true,
+          },
+          "_type": "boolean",
+          "_typeError": [Function],
+          "_whitelist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "tests": [],
+          "transforms": [
+            [Function],
+          ],
+          "type": "boolean",
+        },
+        "hydration": {
+          "_blacklist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "_conditions": [],
+          "_default": "hybrid",
+          "_deps": [],
+          "_exclusive": {},
+          "_label": "How should props be handled. \\"hybrid\\": writes props under 2kb to the html, props > 2kb are an external file. \\"html\\": props are written to page html. \\"file\\" writes props to a hashed external file.",
+          "_mutate": undefined,
+          "_options": {
+            "abortEarly": true,
+            "recursive": true,
+          },
+          "_type": "string",
+          "_typeError": [Function],
+          "_whitelist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "tests": [],
+          "transforms": [
+            [Function],
+          ],
+          "type": "string",
+        },
+        "replacementChars": {
+          "_blacklist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "_conditions": [],
+          "_default": "$abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+          "_deps": [],
+          "_exclusive": {},
+          "_label": "List of characters to be used when compressing props",
+          "_mutate": undefined,
+          "_options": {
+            "abortEarly": true,
+            "recursive": true,
+          },
+          "_type": "string",
+          "_typeError": [Function],
+          "_whitelist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "tests": [],
+          "transforms": [
+            [Function],
+          ],
+          "type": "string",
+        },
+      },
+      "tests": [],
+      "transforms": [
+        [Function],
+      ],
+      "type": "object",
+    },
+    "rootDir": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_default": "process.cwd()",
+      "_deps": [],
+      "_exclusive": {},
+      "_label": "Here your package.json lives.",
+      "_mutate": undefined,
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "string",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": [],
+      "transforms": [
+        [Function],
+      ],
+      "type": "string",
+    },
+    "server": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_defaultDefault": [Function],
+      "_deps": [],
+      "_excludedEdges": [],
+      "_exclusive": {},
+      "_mutate": undefined,
+      "_nodes": [
+        "allRequestsRoute",
+        "dataRoutes",
+        "cacheRequests",
+        "prefix",
+      ],
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "object",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "fields": {
+        "allRequestsRoute": {
+          "_blacklist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "_conditions": [],
+          "_default": false,
+          "_deps": [],
+          "_exclusive": {},
+          "_label": "Experimental: Allows for getting a json response of the all requests object by hitting a url. Defaults to /allRequests.json if \\"true\\" but can be overridden with any string.",
+          "_mutate": undefined,
+          "_options": {
+            "abortEarly": true,
+            "recursive": true,
+          },
+          "_type": "boolean",
+          "_typeError": [Function],
+          "_whitelist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "tests": [],
+          "transforms": [
+            [Function],
+          ],
+          "type": "boolean",
+        },
+        "cacheRequests": {
+          "_blacklist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "_conditions": [],
+          "_default": true,
+          "_deps": [],
+          "_exclusive": {},
+          "_label": "If Elder.js should cache requests when using dynamic routing. It may be useful to turn off the cache when combining Elder.js with another caching solution to reduce the resources consumed by the server.",
+          "_mutate": undefined,
+          "_options": {
+            "abortEarly": true,
+            "recursive": true,
+          },
+          "_type": "boolean",
+          "_typeError": [Function],
+          "_whitelist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "tests": [],
+          "transforms": [
+            [Function],
+          ],
+          "type": "boolean",
+        },
+        "dataRoutes": {
+          "_blacklist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "_conditions": [],
+          "_default": false,
+          "_deps": [],
+          "_exclusive": {},
+          "_label": "Experimental: Allows for getting a json response of the data object of a url. Defaults to [path]/data.json but can be any suffix/filename after the route.",
+          "_mutate": undefined,
+          "_options": {
+            "abortEarly": true,
+            "recursive": true,
+          },
+          "_type": "boolean",
+          "_typeError": [Function],
+          "_whitelist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "tests": [],
+          "transforms": [
+            [Function],
+          ],
+          "type": "boolean",
+        },
+        "prefix": {
+          "_blacklist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "_conditions": [],
+          "_default": "",
+          "_deps": [],
+          "_exclusive": {},
+          "_label": "If Elder.js should serve all pages with a prefix. (deprecated)",
+          "_mutate": undefined,
+          "_options": {
+            "abortEarly": true,
+            "recursive": true,
+          },
+          "_type": "string",
+          "_typeError": [Function],
+          "_whitelist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "tests": [],
+          "transforms": [
+            [Function],
+          ],
+          "type": "string",
+        },
+      },
+      "tests": [],
+      "transforms": [
+        [Function],
+      ],
+      "type": "object",
+    },
+    "shortcodes": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_defaultDefault": [Function],
+      "_deps": [],
+      "_excludedEdges": [],
+      "_exclusive": {},
+      "_mutate": undefined,
+      "_nodes": [
+        "closePattern",
+        "openPattern",
+      ],
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "object",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "fields": {
+        "closePattern": {
+          "_blacklist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "_conditions": [],
+          "_default": "}}",
+          "_deps": [],
+          "_exclusive": {},
+          "_label": "closing pattern for identifying shortcodes in html output.",
+          "_mutate": undefined,
+          "_options": {
+            "abortEarly": true,
+            "recursive": true,
+          },
+          "_type": "string",
+          "_typeError": [Function],
+          "_whitelist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "tests": [],
+          "transforms": [
+            [Function],
+          ],
+          "type": "string",
+        },
+        "openPattern": {
+          "_blacklist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "_conditions": [],
+          "_default": "{{",
+          "_deps": [],
+          "_exclusive": {},
+          "_label": "Opening pattern for identifying shortcodes in html output.",
+          "_mutate": undefined,
+          "_options": {
+            "abortEarly": true,
+            "recursive": true,
+          },
+          "_type": "string",
+          "_typeError": [Function],
+          "_whitelist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "tests": [],
+          "transforms": [
+            [Function],
+          ],
+          "type": "string",
+        },
+      },
+      "tests": [],
+      "transforms": [
+        [Function],
+      ],
+      "type": "object",
+    },
+    "srcDir": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_default": "src",
+      "_deps": [],
+      "_exclusive": {},
+      "_label": "Where Elder.js should find it's expected file structure. If you are using a build step such as typescript on your project, you may need to edit this. ",
+      "_mutate": undefined,
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "string",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": [],
+      "transforms": [
+        [Function],
+      ],
+      "type": "string",
+    },
+  },
+  "tests": [],
+  "transforms": [
+    [Function],
+  ],
+  "type": "object",
+}
+`;
+
+exports[`#validations > hookSchema 1`] = `
+{
+  "_blacklist": {
+    "list": Set {},
+    "refs": Map {},
+  },
+  "_conditions": [],
+  "_defaultDefault": [Function],
+  "_deps": [],
+  "_excludedEdges": [],
+  "_exclusive": {
+    "noUnknown": true,
+  },
+  "_mutate": undefined,
+  "_nodes": [
+    "$$meta",
+    "run",
+    "priority",
+    "description",
+    "name",
+    "hook",
+  ],
+  "_options": {
+    "abortEarly": true,
+    "recursive": true,
+    "stripUnknown": true,
+  },
+  "_type": "object",
+  "_typeError": [Function],
+  "_whitelist": {
+    "list": Set {},
+    "refs": Map {},
+  },
+  "fields": {
+    "$$meta": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_defaultDefault": [Function],
+      "_deps": [],
+      "_excludedEdges": [],
+      "_exclusive": {},
+      "_mutate": undefined,
+      "_nodes": [
+        "addedBy",
+        "type",
+      ],
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "object",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "fields": {
+        "addedBy": {
+          "_blacklist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "_conditions": [],
+          "_deps": [],
+          "_exclusive": {
+            "required": true,
+          },
+          "_label": "Where the hook was added from. Defined by Elder.js for debugging.",
+          "_mutate": undefined,
+          "_options": {
+            "abortEarly": true,
+            "recursive": true,
+          },
+          "_type": "string",
+          "_typeError": [Function],
+          "_whitelist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "tests": [
+            [Function],
+          ],
+          "transforms": [
+            [Function],
+          ],
+          "type": "string",
+        },
+        "type": {
+          "_blacklist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "_conditions": [],
+          "_deps": [],
+          "_exclusive": {
+            "required": true,
+          },
+          "_label": "What type of hook this is. Defined by Elder.js for debugging.",
+          "_mutate": undefined,
+          "_options": {
+            "abortEarly": true,
+            "recursive": true,
+          },
+          "_type": "string",
+          "_typeError": [Function],
+          "_whitelist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "tests": [
+            [Function],
+          ],
+          "transforms": [
+            [Function],
+          ],
+          "type": "string",
+        },
+      },
+      "tests": [],
+      "transforms": [
+        [Function],
+      ],
+      "type": "object",
+    },
+    "description": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_deps": [],
+      "_exclusive": {
+        "required": true,
+      },
+      "_label": "A description of what the function does.",
+      "_mutate": undefined,
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "string",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": [
+        [Function],
+      ],
+      "transforms": [
+        [Function],
+      ],
+      "type": "string",
+    },
+    "hook": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_deps": [],
+      "_exclusive": {
+        "required": true,
+        "valid-hook": false,
+      },
+      "_label": "The hook the defined \\"run\\" function should be executed on.",
+      "_mutate": undefined,
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "string",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": [
+        [Function],
+        [Function],
+      ],
+      "transforms": [
+        [Function],
+      ],
+      "type": "string",
+    },
+    "name": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_deps": [],
+      "_exclusive": {
+        "required": true,
+      },
+      "_label": "A user friendly name of the function to be run.",
+      "_mutate": undefined,
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "string",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": [
+        [Function],
+      ],
+      "transforms": [
+        [Function],
+      ],
+      "type": "string",
+    },
+    "priority": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_default": 50,
+      "_deps": [],
+      "_exclusive": {
+        "integer": false,
+      },
+      "_label": "The priority level a hook should run at. The highest priority is 100 and 1 is the lowest priority.",
+      "_mutate": undefined,
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "number",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": [
+        [Function],
+      ],
+      "transforms": [
+        [Function],
+      ],
+      "type": "number",
+    },
+    "run": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_deps": [],
+      "_exclusive": {
+        "defined": true,
+        "isFunction": false,
+      },
+      "_label": "The function to be run on the hook.",
+      "_mutate": undefined,
+      "_nullable": true,
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "mixed",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": [
+        [Function],
+        [Function],
+      ],
+      "transforms": [],
+      "type": "mixed",
+    },
+  },
+  "tests": [
+    [Function],
+  ],
+  "transforms": [
+    [Function],
+  ],
+  "type": "object",
+}
+`;
+
+exports[`#validations > pluginSchema 1`] = `
+{
+  "_blacklist": {
+    "list": Set {},
+    "refs": Map {},
+  },
+  "_conditions": [],
+  "_defaultDefault": [Function],
+  "_deps": [],
+  "_excludedEdges": [],
+  "_exclusive": {},
+  "_mutate": undefined,
+  "_nodes": [
+    "shortcodes",
+    "config",
+    "hooks",
+    "routes",
+    "init",
+    "description",
+    "name",
+  ],
+  "_options": {
+    "abortEarly": true,
+    "recursive": true,
+  },
+  "_type": "object",
+  "_typeError": [Function],
+  "_whitelist": {
+    "list": Set {},
+    "refs": Map {},
+  },
+  "fields": {
+    "config": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_default": {},
+      "_defaultDefault": [Function],
+      "_deps": [],
+      "_excludedEdges": [],
+      "_exclusive": {},
+      "_label": "(optional) An object of default configs. These will be used when none are set in their elder.config.js.",
+      "_mutate": undefined,
+      "_nodes": [],
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "object",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "fields": {},
+      "tests": [],
+      "transforms": [
+        [Function],
+      ],
+      "type": "object",
+    },
+    "description": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_default": "",
+      "_deps": [],
+      "_exclusive": {},
+      "_label": "A description of the plugin.",
+      "_mutate": undefined,
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "string",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": [],
+      "transforms": [
+        [Function],
+      ],
+      "type": "string",
+    },
+    "hooks": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_default": [],
+      "_deps": [],
+      "_exclusive": {
+        "required": true,
+      },
+      "_label": "An array of hooks.",
+      "_mutate": undefined,
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_subType": undefined,
+      "_type": "array",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "innerType": undefined,
+      "tests": [
+        [Function],
+      ],
+      "transforms": [
+        [Function],
+      ],
+      "type": "array",
+    },
+    "init": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_deps": [],
+      "_exclusive": {
+        "isFunction": false,
+      },
+      "_label": "A sync function that handles the plugin init. Receives plugin definition. plugin.settings contains Elder.js config. plugin.config contains plugin config",
+      "_mutate": undefined,
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "mixed",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": [
+        [Function],
+      ],
+      "transforms": [],
+      "type": "mixed",
+    },
+    "name": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_default": "",
+      "_deps": [],
+      "_exclusive": {},
+      "_label": "The name of the plugin.",
+      "_mutate": undefined,
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "string",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": [],
+      "transforms": [
+        [Function],
+      ],
+      "type": "string",
+    },
+    "routes": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_default": {},
+      "_defaultDefault": [Function],
+      "_deps": [],
+      "_excludedEdges": [],
+      "_exclusive": {},
+      "_label": "(optional) Any routes the plugin is adding.",
+      "_mutate": undefined,
+      "_nodes": [],
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "object",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "fields": {},
+      "tests": [],
+      "transforms": [
+        [Function],
+      ],
+      "type": "object",
+    },
+    "shortcodes": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_default": [],
+      "_deps": [],
+      "_exclusive": {},
+      "_label": "Array of shortcodes",
+      "_mutate": undefined,
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_subType": undefined,
+      "_type": "array",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "innerType": undefined,
+      "tests": [],
+      "transforms": [
+        [Function],
+      ],
+      "type": "array",
+    },
+  },
+  "tests": [],
+  "transforms": [
+    [Function],
+  ],
+  "type": "object",
+}
+`;
+
+exports[`#validations > routeSchema 1`] = `
+{
+  "_blacklist": {
+    "list": Set {},
+    "refs": Map {},
+  },
+  "_conditions": [],
+  "_defaultDefault": [Function],
+  "_deps": [],
+  "_excludedEdges": [],
+  "_exclusive": {},
+  "_mutate": undefined,
+  "_nodes": [
+    "dynamic",
+    "name",
+    "data",
+    "permalink",
+    "all",
+    "layout",
+    "template",
+  ],
+  "_options": {
+    "abortEarly": true,
+    "recursive": true,
+  },
+  "_type": "object",
+  "_typeError": [Function],
+  "_whitelist": {
+    "list": Set {},
+    "refs": Map {},
+  },
+  "fields": {
+    "all": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_deps": [],
+      "_exclusive": {
+        "isFunction": false,
+        "required": true,
+      },
+      "_label": "A sync/async function that returns an array of all of the 'request objects' for this route.",
+      "_mutate": undefined,
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "mixed",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": [
+        [Function],
+        [Function],
+      ],
+      "transforms": [],
+      "type": "mixed",
+    },
+    "data": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_default": {},
+      "_deps": [],
+      "_exclusive": {},
+      "_label": "Async/sync function that returns a JS object. Can also be a plain JS object.",
+      "_mutate": undefined,
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "mixed",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": [],
+      "transforms": [],
+      "type": "mixed",
+    },
+    "dynamic": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_default": false,
+      "_deps": [],
+      "_exclusive": {},
+      "_label": "Enables dynamic route parameters in SSR mode. This means /:foo/ will be derived from the visited URL. Useful for logged in experiences.",
+      "_mutate": undefined,
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "boolean",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": [],
+      "transforms": [
+        [Function],
+      ],
+      "type": "boolean",
+    },
+    "layout": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_deps": [],
+      "_exclusive": {
+        "required": true,
+      },
+      "_label": "Svelte file for your layout. Defaults to Layout.svelte if not defined. Relative to /src",
+      "_mutate": undefined,
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "string",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": [
+        [Function],
+      ],
+      "transforms": [
+        [Function],
+      ],
+      "type": "string",
+    },
+    "name": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_deps": [],
+      "_exclusive": {
+        "min": true,
+      },
+      "_label": "A name used to identify the route internally. If not defined, it uses [routeName] from \\"/routes/[routeName]/route.js\\". Mainly used with helpers.permalink.[name]().",
+      "_mutate": undefined,
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "string",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": [
+        [Function],
+      ],
+      "transforms": [
+        [Function],
+      ],
+      "type": "string",
+    },
+    "permalink": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_deps": [],
+      "_exclusive": {
+        "isFunction": false,
+        "required": true,
+      },
+      "_label": "Sync function that turns request objects from the all() function into permalinks which are relative to the site root",
+      "_mutate": undefined,
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "mixed",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": [
+        [Function],
+        [Function],
+      ],
+      "transforms": [],
+      "type": "mixed",
+    },
+    "template": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_deps": [],
+      "_exclusive": {
+        "required": true,
+      },
+      "_label": "Svelte file for your route. Defaults to [RouteName].svelte if not defined. Relative to /src",
+      "_mutate": undefined,
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "string",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "tests": [
+        [Function],
+      ],
+      "transforms": [
+        [Function],
+      ],
+      "type": "string",
+    },
+  },
+  "tests": [],
+  "transforms": [
+    [Function],
+  ],
+  "type": "object",
+}
+`;
 
 exports[`#validations configSchema 1`] = `
 Object {

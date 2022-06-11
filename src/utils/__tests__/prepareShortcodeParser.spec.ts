@@ -1,4 +1,13 @@
 import prepareShortcodeParser from '../prepareShortcodeParser.js';
+import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest';
+
+beforeAll(() => {
+  vi.resetModules();
+});
+
+beforeEach(() => {
+  vi.resetModules();
+});
 
 class ShortcodeParser {
   opts: any = {}; // just store them so we know what got passed over
@@ -16,8 +25,8 @@ class ShortcodeParser {
   }
 }
 
-jest.mock('@elderjs/shortcodes', () => (opts) => new ShortcodeParser(opts));
-jest.mock('../createReadOnlyProxy');
+vi.mock('@elderjs/shortcodes', () => ({ default: (opts) => new ShortcodeParser(opts) }));
+vi.mock('../createReadOnlyProxy');
 
 const args = {
   perf: {
@@ -70,7 +79,7 @@ describe('#prepareShortcodeParser', () => {
         ...args,
         shortcodes: [
           {
-            run: jest.fn(),
+            run: vi.fn(),
             foo: 'bar',
           },
         ],
@@ -90,7 +99,7 @@ describe('#prepareShortcodeParser', () => {
       }),
     ).toThrow(
       `Shortcodes must have a shortcode property to define their usage. Problem code: ${JSON.stringify({
-        run: jest.fn(),
+        run: vi.fn(),
         foo: 'bar',
       })}`,
     );

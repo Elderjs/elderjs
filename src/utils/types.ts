@@ -78,7 +78,7 @@ export type InitializationOptions = {
   };
   context?: string;
   worker?: boolean;
-  css?: string;
+  css?: 'inline' | 'lazy' | 'file';
 };
 
 interface ISettingsOptionsBase {

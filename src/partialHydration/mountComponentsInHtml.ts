@@ -1,16 +1,18 @@
 import svelteComponent from '../utils/svelteComponent.js';
 
-export const replaceSpecialCharacters = (str) =>
-  str
+export function replaceSpecialCharacters(str: string): string {
+  return str
     .replace(/&quot;/gim, '"')
     .replace(/&lt;/gim, '<')
     .replace(/&gt;/gim, '>')
     .replace(/&#39;/gim, "'")
     .replace(/&#039;/gim, "'")
     .replace(/&amp;/gim, '&');
+}
 
 export default async function mountComponentsInHtml({ page, html, hydrateOptions }): Promise<string> {
   let outputHtml = html;
+
   // sometimes svelte adds a class to our inlining.
   const matches = outputHtml.matchAll(
     /<([^<>\s]+) class="ejs-component[^"]*?" data-ejs-component="([A-Za-z]+)" data-ejs-props="({[^"]*?})" data-ejs-options="({[^"]*?})"><\/\1>/gim,
@@ -44,8 +46,8 @@ export default async function mountComponentsInHtml({ page, html, hydrateOptions
             `,
       );
     }
-
-    const hydratedHtml = await svelteComponent(hydrateComponentName)({
+    const componentToHydrate = svelteComponent(hydrateComponentName);
+    const hydratedHtml = await componentToHydrate({
       page,
       props: hydrateComponentProps,
       hydrateOptions: hydrateComponentOptions,

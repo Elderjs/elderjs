@@ -1,5 +1,6 @@
+import { describe, test, vi, expect, beforeEach } from 'vitest';
 import { resolve } from 'path';
-import getConfig from '../../utils/getConfig.js';
+import getConfig, { getCssFile } from '../../utils/getConfig.js';
 
 const defaultConfig = {
   debug: { automagic: false, build: false, hooks: false, performance: false, shortcodes: false, stacks: false },
@@ -24,11 +25,11 @@ const defaultConfig = {
   plugins: {},
 };
 
-jest.mock('../validations.ts', () => ({
+vi.mock('../validations.ts', () => ({
   getDefaultConfig: () => defaultConfig,
 }));
 
-jest.mock('cosmiconfig', () => {
+vi.mock('cosmiconfig', () => {
   return {
     cosmiconfigSync: () => ({
       search: () => ({ config: defaultConfig }),
@@ -36,70 +37,73 @@ jest.mock('cosmiconfig', () => {
   };
 });
 
-describe('#getConfig', () => {
-  const output = {
-    $$internal: {
-      ssrComponents: resolve(process.cwd(), './___ELDER___/compiled'),
-      clientComponents: resolve(process.cwd(), `./public/_elderjs/svelte`),
-      distElder: resolve(process.cwd(), `./public/_elderjs`),
-      // findComponent: () => {},
-      logPrefix: '[Elder.js]:',
-      serverPrefix: '',
-    },
+const output = {
+  $$internal: {
+    ssrComponents: resolve(process.cwd(), './___ELDER___/compiled'),
+    clientComponents: resolve(process.cwd(), `./public/_elderjs/svelte`),
+    distElder: resolve(process.cwd(), `./public/_elderjs`),
+    // findComponent: () => {},
+    logPrefix: '[Elder.js]:',
+    serverPrefix: '',
+  },
+  build: false,
+  debug: {
+    automagic: false,
     build: false,
-    debug: {
-      automagic: false,
-      build: false,
-      hooks: false,
-      performance: false,
-      shortcodes: false,
-      stacks: false,
-    },
-    distDir: resolve(process.cwd(), './public'),
-    rootDir: process.cwd(),
-    srcDir: resolve(process.cwd(), './src'),
-    server: false,
-    prefix: '',
-    shortcodes: {
-      closePattern: '}}',
-      openPattern: '{{',
-    },
-    hooks: {
-      disable: [],
-    },
-    origin: '',
-    plugins: {},
-    context: 'unknown',
-    worker: false,
-  };
+    hooks: false,
+    performance: false,
+    shortcodes: false,
+    stacks: false,
+  },
+  distDir: resolve(process.cwd(), './public'),
+  rootDir: process.cwd(),
+  srcDir: resolve(process.cwd(), './src'),
+  server: false,
+  prefix: '',
+  shortcodes: {
+    closePattern: '}}',
+    openPattern: '{{',
+  },
+  hooks: {
+    disable: [],
+  },
+  origin: '',
+  plugins: {},
+  context: 'unknown',
+  worker: false,
+};
 
+describe('#getConfig', () => {
   beforeEach(() => {
-    jest.resetModules();
-  });
-
-  it('sets the expected default', () => {
-    jest.mock('fs-extra', () => {
-      return {
-        ensureDirSync: () => '',
-        readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
-      };
-    });
-
-    expect(getConfig()).toStrictEqual(
-      expect.objectContaining({
-        ...output,
-        $$internal: {
-          ...output.$$internal,
-          findComponent: expect.anything(),
-        },
-      }),
-    );
+    vi.resetModules();
   });
 
   describe('it accepts custom initalization options', () => {
-    jest.mock('fs-extra', () => {
+    test('sets the expected default', () => {
+      vi.mock('fs-extra', () => {
+        return {
+          readJSONSync: () => ({ version: '1.2.3' }),
+          ensureDirSync: () => '',
+          existsSync: () => true,
+          readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+        };
+      });
+
+      expect(getConfig()).toStrictEqual(
+        expect.objectContaining({
+          ...output,
+          $$internal: {
+            ...output.$$internal,
+            findComponent: expect.anything(),
+          },
+        }),
+      );
+    });
+    vi.mock('fs-extra', () => {
       return {
+        readJSONSync: () => ({ version: '1.2.3' }),
         ensureDirSync: () => '',
+        existsSync: () => true,
         readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
       };
     });
@@ -117,10 +121,12 @@ describe('#getConfig', () => {
       logPrefix: '[Elder.js]:',
     };
 
-    it('gives back a custom context such as serverless', () => {
-      jest.mock('fs-extra', () => {
+    test('gives back a custom context such as serverless', () => {
+      vi.mock('fs-extra', () => {
         return {
+          readJSONSync: () => ({ version: '1.2.3' }),
           ensureDirSync: () => '',
+          existsSync: () => true,
           readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
         };
       });
@@ -134,10 +140,12 @@ describe('#getConfig', () => {
       expect(r.$$internal).toMatchObject(common$$Internal);
     });
 
-    it('sets a server without a prefix', () => {
-      jest.mock('fs-extra', () => {
+    test('sets a server without a prefix', () => {
+      vi.mock('fs-extra', () => {
         return {
+          readJSONSync: () => ({ version: '1.2.3' }),
           ensureDirSync: () => '',
+          existsSync: () => true,
           readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
         };
       });
@@ -154,10 +162,12 @@ describe('#getConfig', () => {
       expect(r.$$internal).toMatchObject(common$$Internal);
     });
 
-    it('sets a server with a server.prefix without leading or trailing "/"', () => {
-      jest.mock('fs-extra', () => {
+    test('sets a server with a server.prefix without leading or trailing "/"', () => {
+      vi.mock('fs-extra', () => {
         return {
+          readJSONSync: () => ({ version: '1.2.3' }),
           ensureDirSync: () => '',
+          existsSync: () => true,
           readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
         };
       });
@@ -179,10 +189,12 @@ describe('#getConfig', () => {
       });
     });
 
-    it('sets a server with a server.prefix with a trailing "/"', () => {
-      jest.mock('fs-extra', () => {
+    test('sets a server with a server.prefix with a trailing "/"', () => {
+      vi.mock('fs-extra', () => {
         return {
+          readJSONSync: () => ({ version: '1.2.3' }),
           ensureDirSync: () => '',
+          existsSync: () => true,
           readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
         };
       });
@@ -204,10 +216,12 @@ describe('#getConfig', () => {
       });
     });
 
-    it('sets a server with a server.prefix with a leading "/"', () => {
-      jest.mock('fs-extra', () => {
+    test('sets a server with a server.prefix with a leading "/"', () => {
+      vi.mock('fs-extra', () => {
         return {
+          readJSONSync: () => ({ version: '1.2.3' }),
           ensureDirSync: () => '',
+          existsSync: () => true,
           readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
         };
       });
@@ -229,10 +243,12 @@ describe('#getConfig', () => {
       });
     });
 
-    it('sets a server with a server.prefix with a leading and trailing "/"', () => {
-      jest.mock('fs-extra', () => {
+    test('sets a server with a server.prefix with a leading and trailing "/"', () => {
+      vi.mock('fs-extra', () => {
         return {
+          readJSONSync: () => ({ version: '1.2.3' }),
           ensureDirSync: () => '',
+          existsSync: () => true,
           readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
         };
       });
@@ -254,10 +270,12 @@ describe('#getConfig', () => {
       });
     });
 
-    it('sets a server with a prefix without a leading or trailing "/"', () => {
-      jest.mock('fs-extra', () => {
+    test('sets a server with a prefix without a leading or trailing "/"', () => {
+      vi.mock('fs-extra', () => {
         return {
+          readJSONSync: () => ({ version: '1.2.3' }),
           ensureDirSync: () => '',
+          existsSync: () => true,
           readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
         };
       });
@@ -279,10 +297,12 @@ describe('#getConfig', () => {
       });
     });
 
-    it('sets a server with a prefix with a leading "/"', () => {
-      jest.mock('fs-extra', () => {
+    test('sets a server with a prefix with a leading "/"', () => {
+      vi.mock('fs-extra', () => {
         return {
+          readJSONSync: () => ({ version: '1.2.3' }),
           ensureDirSync: () => '',
+          existsSync: () => true,
           readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
         };
       });
@@ -304,10 +324,12 @@ describe('#getConfig', () => {
       });
     });
 
-    it('sets a server with a prefix with a trailing "/"', () => {
-      jest.mock('fs-extra', () => {
+    test('sets a server with a prefix with a trailing "/"', () => {
+      vi.mock('fs-extra', () => {
         return {
+          readJSONSync: () => ({ version: '1.2.3' }),
           ensureDirSync: () => '',
+          existsSync: () => true,
           readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
         };
       });
@@ -329,10 +351,12 @@ describe('#getConfig', () => {
       });
     });
 
-    it('sets a server with a prefix with a leading and trailing "/"', () => {
-      jest.mock('fs-extra', () => {
+    test('sets a server with a prefix with a leading and trailing "/"', () => {
+      vi.mock('fs-extra', () => {
         return {
+          readJSONSync: () => ({ version: '1.2.3' }),
           ensureDirSync: () => '',
+          existsSync: () => true,
           readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
         };
       });
@@ -354,10 +378,12 @@ describe('#getConfig', () => {
       });
     });
 
-    it('sets build with default', () => {
-      jest.mock('fs-extra', () => {
+    test('sets build with default', () => {
+      vi.mock('fs-extra', () => {
         return {
+          readJSONSync: () => ({ version: '1.2.3' }),
           ensureDirSync: () => '',
+          existsSync: () => true,
           readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
         };
       });
@@ -375,39 +401,35 @@ describe('#getConfig', () => {
       expect(r.$$internal).toMatchObject(common$$Internal);
     });
   });
-
-  describe('Css Options', () => {
-    it('sets the publicCssFile', () => {
-      jest.mock('fs-extra', () => {
-        return {
-          ensureDirSync: () => '',
-          readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
-        };
-      });
-
-      expect(getConfig({ css: 'file' })).toStrictEqual(
-        expect.objectContaining({
-          ...output,
-          $$internal: {
-            ...output.$$internal,
-            findComponent: expect.anything(),
-            publicCssFile: expect.stringContaining('svelte-3449427d.css'),
-          },
-        }),
-      );
+  test('sets the publicCssFile', () => {
+    vi.mock('fs-extra', () => {
+      return {
+        readJSONSync: () => ({ version: '1.2.3' }),
+        ensureDirSync: () => '',
+        existsSync: () => true,
+        readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+      };
     });
 
-    it('throws an error on multiple css for publicCssFile', () => {
-      jest.mock('fs-extra', () => {
-        return {
-          ensureDirSync: () => '',
-          readdirSync: () => ['svelte-3449427d.css', 'svelte-3449427213123.css', 'svelte.css-0050caf1.map'],
-        };
-      });
+    expect(getConfig({ css: 'file' })).toStrictEqual(
+      expect.objectContaining({
+        ...output,
+        $$internal: {
+          ...output.$$internal,
+          findComponent: expect.anything(),
+          publicCssFile: expect.stringContaining('svelte-3449427d.css'),
+        },
+      }),
+    );
+  });
+});
 
-      expect(() => {
-        getConfig({ css: 'file' });
-      }).toThrow(/Race condition has caused multiple css/gim);
-    });
+describe('Css Options', () => {
+  test('throws an error on multiple css for publicCssFile', () => {
+    const config = getConfig({ css: 'file' });
+
+    expect(() => {
+      getCssFile({ cssFiles: ['one.css', 'two.css'], serverPrefix: 'test', assetPath: 'test', config });
+    }).toThrow(/Race condition has caused multiple css/gim);
   });
 });

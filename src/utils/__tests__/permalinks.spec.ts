@@ -1,17 +1,45 @@
 import permalinks from '../permalinks.js';
 import { Elder } from '../../Elder.js';
-import { ProcessedRoutesObject } from '../../routes/types.js';
+import { ProcessedRouteOptions, ProcessedRoutesObject } from '../../routes/types.js';
 
-const elder = new Elder({ context: 'server' });
+import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest';
+
+beforeAll(() => {
+  vi.resetModules();
+});
+
+beforeEach(() => {
+  vi.resetModules();
+});
+
+const elder = new Elder({ context: 'test' });
+
+const commonRoute: ProcessedRouteOptions = {
+  data: () => ({}),
+  layout: 'test',
+  all: [],
+  template: 'test',
+  templateComponent: () => 'test',
+  permalink: () => '/test/',
+  layoutComponent: () => 'test',
+  name: 'test',
+  dynamic: false,
+  $$meta: {
+    type: 'test',
+    addedBy: 'test',
+  },
+};
 
 describe('#permalinks', () => {
   const routes: ProcessedRoutesObject = {
     home: {
+      ...commonRoute,
       name: 'home',
       permalink: ({ request, settings }) =>
         `${!settings.disableInitialSlash ? '/' : ''}${request ? request.query : ''}`,
     },
     blog: {
+      ...commonRoute,
       name: 'blog',
       permalink: ({ request, settings }) =>
         `${!settings.disableInitialSlash ? '/' : ''}blog/${request ? request.query : ''}`,

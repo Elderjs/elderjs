@@ -3,6 +3,8 @@
 import path, { resolve } from 'path';
 import svelteComponent, { getComponentName } from '../svelteComponent';
 
+import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest';
+
 const componentProps = {
   page: {
     hydrateStack: [],
@@ -12,7 +14,7 @@ const componentProps = {
     componentsToHydrate: [],
 
     helpers: {
-      permalinks: jest.fn(),
+      permalinks: vi.fn(),
     },
     settings: {
       distDir: 'test/public',
@@ -25,30 +27,31 @@ const componentProps = {
         },
         clientComponents: 'test/public/svelte',
         ssrComponents: 'test/___ELDER___/compiled',
-        findComponent: jest.fn((name, folder) => {
+        findComponent: (name, folder) => {
           const str = path.resolve(process.cwd(), `./test/${folder}/${name}`);
           return {
             ssr: str,
             iife: str,
             client: str,
           };
-        }),
+        },
       },
     },
   },
   props: {},
 };
 
+beforeAll(() => {
+  vi.mock('../getUniqueId', () => ({ default: () => 'SwrzsrVDCd' }));
+  vi.resetModules();
+});
+
+beforeEach(() => {
+  vi.resetModules();
+});
+
 describe('#svelteComponent', () => {
-  beforeAll(() => {
-    jest.mock('../getUniqueId', () => () => 'SwrzsrVDCd');
-  });
-
-  beforeEach(() => {
-    jest.resetModules();
-  });
-
-  it('getComponentName works', () => {
+  it('getComponentName works', async () => {
     // eslint-disable-next-line global-require
 
     expect(getComponentName('Home.svelte')).toEqual('Home');
@@ -57,63 +60,51 @@ describe('#svelteComponent', () => {
     expect(getComponentName('foo/bar///Home.svelte')).toEqual('Home');
   });
 
-  it('svelteComponent works with layouts folder for SSR', () => {
-    jest.mock(
-      resolve(process.cwd(), './test/layouts/Layout.svelte'),
-      () => ({
-        render: () => ({
-          head: '<head>',
-          css: { code: '<css>' },
-          html: '<div class="svelte-home">mock html output</div>',
-        }),
-        _css: ['<css>'],
-        _cssMap: ['<cssmap>'],
+  it('svelteComponent works with layouts folder for SSR', async () => {
+    vi.mock(resolve(process.cwd(), './test/layouts/Layout.svelte'), () => ({
+      render: () => ({
+        head: '<head>',
+        css: { code: '<css>' },
+        html: '<div class="svelte-home">mock html output</div>',
       }),
-      { virtual: true },
-    );
+      _css: ['<css>'],
+      _cssMap: ['<cssmap>'],
+    }));
     // eslint-disable-next-line global-require
 
     const home = svelteComponent('Layout.svelte', 'layouts');
 
     // @ts-expect-error
-    expect(home(componentProps)).toEqual(`<div class="svelte-home">mock html output</div>`);
+    expect(await home({ ...componentProps })).toEqual(`<div class="svelte-home">mock html output</div>`);
   });
 
-  it('svelteComponent works with partial hydration of subcomponent', () => {
-    jest.mock(
-      resolve(process.cwd(), './test/components/Home'),
-      () => ({
-        render: () => ({
-          head: '<head>',
-          css: { code: '<old>' },
-          html: '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ &quot;a&quot;: &quot;b&quot; }" data-ejs-options="{ &quot;loading&quot;: &quot;lazy&quot;, &quot;element&quot;: &quot;div&quot; }"></div></div>',
-        }),
-        _css: ['<css>', '<css2>'],
+  it('svelteComponent works with partial hydration of subcomponent', async () => {
+    vi.mock(resolve(process.cwd(), './test/components/Home'), () => ({
+      render: () => ({
+        head: '<head>',
+        css: { code: '<old>' },
+        html: '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ &quot;a&quot;: &quot;b&quot; }" data-ejs-options="{ &quot;loading&quot;: &quot;lazy&quot;, &quot;element&quot;: &quot;div&quot; }"></div></div>',
       }),
-      { virtual: true },
-    );
-    jest.mock(
-      resolve(process.cwd(), './test/components/Datepicker'),
-      () => ({
-        render: () => ({
-          head: '<head>',
-          css: { code: '<old>' },
-          html: '<div>DATEPICKER</div>',
-        }),
-        _css: ['<css>'],
-        _cssMap: ['<cssmap>'],
+      _css: ['<css>', '<css2>'],
+    }));
+    vi.mock(resolve(process.cwd(), './test/components/Datepicker'), () => ({
+      render: () => ({
+        head: '<head>',
+        css: { code: '<old>' },
+        html: '<div>DATEPICKER</div>',
       }),
-      { virtual: true },
-    );
+      _css: ['<css>'],
+      _cssMap: ['<cssmap>'],
+    }));
     // eslint-disable-next-line global-require
 
     const home = svelteComponent('Home', 'components');
     // @ts-expect-error
-    expect(home(componentProps)).toEqual(
+    expect(await home({ ...componentProps })).toEqual(
       `<div class="svelte-datepicker"><div class="datepicker-component" id="datepicker-ejs-SwrzsrVDCd"><div>DATEPICKER</div></div></div>`,
     );
 
-    expect(componentProps.page.componentsToHydrate[0]).toMatchObject({
+    expect({ ...componentProps }.page.componentsToHydrate[0]).toMatchObject({
       hydrateOptions: { loading: 'lazy', element: 'div' },
       id: 'SwrzsrVDCd',
       name: 'datepicker-ejs-SwrzsrVDCd',
@@ -122,33 +113,25 @@ describe('#svelteComponent', () => {
     });
   });
 
-  it('svelteComponent respects css settings: inline', () => {
-    jest.mock(
-      resolve(process.cwd(), './test/components/Home'),
-      () => ({
-        render: () => ({
-          head: '<head>',
-          css: { code: '<old>' },
-          html: '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ &quot;a&quot;: &quot;b&quot; }" data-ejs-options="{ &quot;loading&quot;: &quot;lazy&quot;, &quot;element&quot;: &quot;div&quot; }"></div></div>',
-        }),
-        _css: ['<css>', '<css2>'],
-        _cssMap: ['<cssmap>', '<cssmap2>'],
+  it('svelteComponent respects css settings: inline', async () => {
+    vi.mock(resolve(process.cwd(), './test/components/Home'), () => ({
+      render: () => ({
+        head: '<head>',
+        css: { code: '<old>' },
+        html: '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ &quot;a&quot;: &quot;b&quot; }" data-ejs-options="{ &quot;loading&quot;: &quot;lazy&quot;, &quot;element&quot;: &quot;div&quot; }"></div></div>',
       }),
-      { virtual: true },
-    );
-    jest.mock(
-      resolve(process.cwd(), './test/components/Datepicker'),
-      () => ({
-        render: () => ({
-          head: '<head>',
-          css: { code: '<old>' },
-          html: '<div>DATEPICKER</div>',
-        }),
-        _css: ['<css3>'],
-        _cssMap: ['<cssmap3>'],
+      _css: ['<css>', '<css2>'],
+      _cssMap: ['<cssmap>', '<cssmap2>'],
+    }));
+    vi.mock(resolve(process.cwd(), './test/components/Datepicker'), () => ({
+      render: () => ({
+        head: '<head>',
+        css: { code: '<old>' },
+        html: '<div>DATEPICKER</div>',
       }),
-      { virtual: true },
-    );
+      _css: ['<css3>'],
+      _cssMap: ['<cssmap3>'],
+    }));
     // eslint-disable-next-line global-require
 
     const home = svelteComponent('Home', 'components');
@@ -161,7 +144,7 @@ describe('#svelteComponent', () => {
         svelteCss: [],
         componentsToHydrate: [],
         helpers: {
-          permalinks: jest.fn(),
+          permalinks: vi.fn(),
         },
         settings: {
           css: 'inline',
@@ -175,7 +158,7 @@ describe('#svelteComponent', () => {
             },
             clientComponents: 'test/public/svelte',
             ssrComponents: 'test/___ELDER___/compiled',
-            findComponent: jest.fn((name, folder) => {
+            findComponent: vi.fn((name, folder) => {
               const str = path.resolve(process.cwd(), `./test/${folder}/${name}`);
               return {
                 ssr: str,
@@ -189,7 +172,7 @@ describe('#svelteComponent', () => {
       props: {},
     };
     // @ts-expect-error
-    expect(home(props)).toEqual(
+    expect(await home(props)).toEqual(
       `<div class="svelte-datepicker"><div class="datepicker-component" id="datepicker-ejs-SwrzsrVDCd"><div>DATEPICKER</div></div></div>`,
     );
     expect(props.page.svelteCss).toEqual([{ css: ['<css>', '<css2>'], cssMap: ['<cssmap>', '<cssmap2>'] }]);
@@ -202,33 +185,25 @@ describe('#svelteComponent', () => {
     });
   });
 
-  it('svelteComponent respects css settings: file', () => {
-    jest.mock(
-      resolve(process.cwd(), './test/components/Home'),
-      () => ({
-        render: () => ({
-          head: '<head>',
-          css: { code: '<old>' },
-          html: '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ &quot;a&quot;: &quot;b&quot; }" data-ejs-options="{ &quot;loading&quot;: &quot;lazy&quot;, &quot;element&quot;: &quot;div&quot; }"></div></div>',
-        }),
-        _css: ['<css>', '<css2>'],
-        _cssMap: ['<cssmap>', '<cssmap2>'],
+  it('svelteComponent respects css settings: file', async () => {
+    vi.mock(resolve(process.cwd(), './test/components/Home'), () => ({
+      render: () => ({
+        head: '<head>',
+        css: { code: '<old>' },
+        html: '<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ &quot;a&quot;: &quot;b&quot; }" data-ejs-options="{ &quot;loading&quot;: &quot;lazy&quot;, &quot;element&quot;: &quot;div&quot; }"></div></div>',
       }),
-      { virtual: true },
-    );
-    jest.mock(
-      resolve(process.cwd(), './test/components/Datepicker'),
-      () => ({
-        render: () => ({
-          head: '<head>',
-          css: { code: '<old>' },
-          html: '<div>DATEPICKER</div>',
-        }),
-        _css: ['<css3>'],
-        _cssMap: ['<cssmap3>'],
+      _css: ['<css>', '<css2>'],
+      _cssMap: ['<cssmap>', '<cssmap2>'],
+    }));
+    vi.mock(resolve(process.cwd(), './test/components/Datepicker'), () => ({
+      render: () => ({
+        head: '<head>',
+        css: { code: '<old>' },
+        html: '<div>DATEPICKER</div>',
       }),
-      { virtual: true },
-    );
+      _css: ['<css3>'],
+      _cssMap: ['<cssmap3>'],
+    }));
     // eslint-disable-next-line global-require
 
     const home = svelteComponent('Home', 'components');
@@ -241,7 +216,7 @@ describe('#svelteComponent', () => {
         svelteCss: [],
         componentsToHydrate: [],
         helpers: {
-          permalinks: jest.fn(),
+          permalinks: vi.fn(),
         },
         settings: {
           css: 'file',
@@ -255,7 +230,7 @@ describe('#svelteComponent', () => {
             },
             clientComponents: 'test/public/svelte',
             ssrComponents: 'test/___ELDER___/compiled',
-            findComponent: jest.fn((name, folder) => {
+            findComponent: vi.fn((name, folder) => {
               const str = path.resolve(process.cwd(), `./test/${folder}/${name}`);
               return {
                 ssr: str,
@@ -269,7 +244,7 @@ describe('#svelteComponent', () => {
       props: {},
     };
     // @ts-expect-error
-    expect(home(props)).toEqual(
+    expect(await home(props)).toEqual(
       `<div class="svelte-datepicker"><div class="datepicker-component" id="datepicker-ejs-SwrzsrVDCd"><div>DATEPICKER</div></div></div>`,
     );
     expect(props.page.svelteCss).toEqual([]);

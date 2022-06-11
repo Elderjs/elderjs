@@ -1,3 +1,4 @@
+import { test, expect } from 'vitest';
 import createReadOnlyProxy from '../createReadOnlyProxy.js';
 
 test('#createReadOnlyProxy', () => {
@@ -7,13 +8,10 @@ test('#createReadOnlyProxy', () => {
   };
   const proxy = createReadOnlyProxy(readOnly, 'readOnly', 'createReadOnlyProxy.spec.ts');
   try {
-    // @ts-ignore
     proxy.doNotMutateMe = 55;
   } catch (e) {
     // expected
   }
-  // @ts-ignore
   expect(proxy.doNotMutateMe).toBe(42);
-  // @ts-ignore
   expect(proxy.name).toBe(readOnly.name);
 });

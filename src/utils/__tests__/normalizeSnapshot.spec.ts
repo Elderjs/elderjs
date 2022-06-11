@@ -1,4 +1,5 @@
 import normalizeSnapshot from '../normalizeSnapshot.js';
+import { describe, it, expect } from 'vitest';
 
 describe('#normalizeSnapshot', () => {
   const obj = {

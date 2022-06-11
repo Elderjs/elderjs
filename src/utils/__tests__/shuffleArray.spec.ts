@@ -2,6 +2,16 @@ import shuffleArray from '../shuffleArray.js';
 
 const mockMath = Object.create(global.Math);
 
+import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest';
+
+beforeAll(() => {
+  vi.resetModules();
+});
+
+beforeEach(() => {
+  vi.resetModules();
+});
+
 describe('#shuffleArray', () => {
   it('works when Math.random returns 0', () => {
     mockMath.random = () => 0;

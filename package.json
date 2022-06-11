@@ -12,9 +12,9 @@
     "build": "rimraf ./build && tsc",
     "dev": "tsc -w",
     "prepare": "npm run build",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --collect-coverage",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "eslint": "eslint --ext .ts .",
     "eslint:fix": "eslint --fix --ext .ts ."
   },
@@ -52,10 +52,10 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.8",
-    "@types/jest": "^26.0.20",
     "@types/node": "^14.14.33",
     "@typescript-eslint/eslint-plugin": "^5.27.1",
     "@typescript-eslint/parser": "^5.27.1",
+    "c8": "^7.11.3",
     "eslint": "^7.21.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-config-prettier": "^6.11.0",
@@ -63,13 +63,11 @@
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jest": "^24.2.1",
     "eslint-plugin-prettier": "^3.1.4",
-    "jest": "^28.1.1",
-    "locate-character": "^2.0.5",
     "prettier": "^2.3.2",
     "rimraf": "^3.0.2",
-    "ts-jest": "^28.0.4",
     "ts-node": "^10.8.1",
-    "typescript": "^4.7.3"
+    "typescript": "^4.7.3",
+    "vitest": "^0.14.2"
   },
   "description": "Elder.js is an opinionated static site generator and web framework built with SEO in mind.",
   "repository": {

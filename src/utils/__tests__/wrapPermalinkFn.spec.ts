@@ -1,14 +1,12 @@
 import wrapPermalinkFn from '../wrapPermalinkFn.js';
+import { describe, it, expect, vi } from 'vitest';
+import getConfig from '../getConfig.js';
 
-const payload = { request: { slug: 'test' } };
-const settings = {
-  debug: {
-    automagic: false,
-  },
-};
+const payload = { request: { slug: 'test', route: 'test', type: 'server' } };
+const settings = getConfig({ css: 'inline' });
 
 describe('#wrapPermalinkFn', () => {
-  const warn = jest.fn();
+  const warn = vi.fn();
   console.warn = warn;
 
   it('works on valid permalinks', () => {

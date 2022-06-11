@@ -1,8 +1,9 @@
 import asyncForEach from '../asyncForEach.js';
+import { vi, test, expect } from 'vitest';
 
 test('#asyncForEach', async () => {
   const timeouts = [50, 10, 20];
-  const counter = jest.fn();
+  const counter = vi.fn();
   const cb = async (_, i) => {
     await new Promise((resolve) => setTimeout(resolve, timeouts[i]));
     counter(i);

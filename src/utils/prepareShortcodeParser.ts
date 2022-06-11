@@ -1,5 +1,6 @@
 import ShortcodeParser from '@elderjs/shortcodes';
 import createReadOnlyProxy from './createReadOnlyProxy.js';
+
 // TODO: Needs TS magic.
 
 function prepareShortcodeParser({

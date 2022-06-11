@@ -1,6 +1,31 @@
-import { replaceSpecialCharacters } from '../mountComponentsInHtml.js';
+import mountComponentsInHtml, { replaceSpecialCharacters } from '../mountComponentsInHtml.js';
 import { escapeHtml } from '../inlineSvelteComponent';
-import mountComponentsInHtml from '../mountComponentsInHtml';
+
+import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest';
+
+let hydrated = [];
+
+vi.mock('../../utils/svelteComponent.ts', () => ({
+  default:
+    (name) =>
+    ({ props, hydrateOptions }) =>
+      hydrated.push(`${JSON.stringify({ name, props, hydrateOptions })}`),
+}));
+
+beforeAll(() => {
+  vi.resetModules();
+});
+
+beforeEach(() => {
+  vi.resetModules();
+  hydrated = [];
+  vi.mock('../../utils/svelteComponent.ts', () => ({
+    default:
+      (name) =>
+      ({ props, hydrateOptions }) =>
+        hydrated.push(`${JSON.stringify({ name, props, hydrateOptions })}`),
+  }));
+});
 
 const page = {
   settings: {
@@ -13,15 +38,6 @@ const page = {
 };
 
 describe('#mountComponentsInHtml', () => {
-  let hydrated = [];
-  const mockHydrate =
-    (name) =>
-    ({ props, hydrateOptions }) =>
-      hydrated.push(`${JSON.stringify({ name, props, hydrateOptions })}`);
-
-  jest.mock('../../utils/svelteComponent.ts', () => mockHydrate);
-  beforeAll(() => '');
-
   it('#replaceSpecialCharacters', () => {
     // eslint-disable-next-line global-require
     expect(replaceSpecialCharacters('{&quot;nh_count&quot;:15966,&quot;classes&quot;:&quot;mt-3&quot;}')).toEqual(
@@ -384,11 +400,11 @@ describe('#mountComponentsInHtml', () => {
     }
   });
 
-  it('mounts a single component in HTML correctly', () => {
+  it('mounts a single component in HTML correctly', async () => {
     hydrated = [];
     // eslint-disable-next-line global-require
 
-    mountComponentsInHtml({
+    await mountComponentsInHtml({
       page,
       html: `<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Datepicker" data-ejs-props="{ &quot;a&quot;: &quot;b&quot; }" data-ejs-options="{ &quot;loading&quot;: &quot;lazy&quot; }"></div></div>`,
       hydrateOptions: undefined,
@@ -396,13 +412,17 @@ describe('#mountComponentsInHtml', () => {
     expect(hydrated).toEqual(['{"name":"Datepicker","props":{"a":"b"},"hydrateOptions":{"loading":"lazy"}}']);
   });
 
-  it('mounts multiple components within the same html correctly', () => {
+  it('mounts multiple components within the same html correctly', async () => {
     hydrated = [];
     // eslint-disable-next-line global-require
 
-    mountComponentsInHtml({
+    await mountComponentsInHtml({
       page,
-      html: `<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Picker" data-ejs-props="{ &quot;a&quot;: &quot;b&quot; }" data-ejs-options="{ &quot;loading&quot;: &quot;lazy&quot; }"></div><div class="ejs-component" data-ejs-component="Picker" data-ejs-props="{ &quot;a&quot;: &quot;b&quot; }" data-ejs-options="{ &quot;loading&quot;: &quot;eager&quot; }"></div></div>`,
+      html: `
+      <div class="svelte-datepicker">
+        <div class="ejs-component" data-ejs-component="Picker" data-ejs-props="{ &quot;a&quot;: &quot;b&quot; }" data-ejs-options="{ &quot;loading&quot;: &quot;lazy&quot; }"></div>
+        <div class="ejs-component" data-ejs-component="Picker" data-ejs-props="{ &quot;a&quot;: &quot;b&quot; }" data-ejs-options="{ &quot;loading&quot;: &quot;eager&quot; }"></div>
+      </div>`,
       hydrateOptions: undefined,
     });
     expect(hydrated).toEqual([
@@ -411,11 +431,11 @@ describe('#mountComponentsInHtml', () => {
     ]);
   });
 
-  it('mounts 3 components within the same html correctly', () => {
+  it('mounts 3 components within the same html correctly', async () => {
     hydrated = [];
     // eslint-disable-next-line global-require
 
-    mountComponentsInHtml({
+    await mountComponentsInHtml({
       page,
       html: `<div class="svelte-datepicker"><div class="ejs-component" data-ejs-component="Sicker" data-ejs-props="{ &quot;a&quot;: &quot;b&quot; }" data-ejs-options="{ &quot;loading&quot;: &quot;lazy&quot; }"></div><div class="ejs-component" data-ejs-component="Picker" data-ejs-props="{ &quot;a&quot;: &quot;b&quot; }" data-ejs-options="{ &quot;loading&quot;: &quot;eager&quot; }"></div><div class="ejs-component" data-ejs-component="Ricker" data-ejs-props="{ &quot;a&quot;: &quot;b&quot; }" data-ejs-options="{ &quot;loading&quot;: &quot;lazy&quot; }"></div>`,
       hydrateOptions: undefined,
@@ -427,11 +447,11 @@ describe('#mountComponentsInHtml', () => {
     ]);
   });
 
-  it('Extracts from Alock, Block, Clock', () => {
+  it('Extracts from Alock, Block, Clock', async () => {
     hydrated = [];
     // eslint-disable-next-line global-require
 
-    mountComponentsInHtml({
+    await mountComponentsInHtml({
       page,
       html: `<div class="problem">
       <div class="ejs-component" data-ejs-component="Clock" data-ejs-props="{}" data-ejs-options="{&quot;loading&quot;:&quot;eager&quot;,&quot;preload&quot;:true}"></div>

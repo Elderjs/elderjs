@@ -1,4 +1,5 @@
 import normalizePrefix from '../normalizePrefix.js';
+import { describe, it, expect } from 'vitest';
 
 describe('#normalizePrefix', () => {
   const correctPrefix = '/testing';

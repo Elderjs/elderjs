@@ -1,4 +1,5 @@
 import fixCircularJson from '../fixCircularJson.js';
+import { describe, it, expect } from 'vitest';
 
 describe('#fixCircularJson', () => {
   it('Handles circular', () => {

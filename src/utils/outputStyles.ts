@@ -1,7 +1,7 @@
 import Page from './Page.js';
 import notProduction from './notProduction.js';
 
-export default function outputStyles(page: Page): string {
+export default function outputStyles(page: Pick<Page, 'cssString' | 'svelteCss' | 'request'>): string {
   let svelteCssStrings = '';
   if (notProduction() && page.request.type !== 'build') {
     svelteCssStrings = page.svelteCss.reduce((out, cv) => `${out}<style>${cv.css}${cv.cssMap}</style>`, '');

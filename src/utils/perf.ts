@@ -67,13 +67,13 @@ function perf(page: Page | Elder, force = false) {
     obs.observe({ entryTypes: ['measure'] });
   } else {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const placeholder = (label: string) => {};
+    const placeholder = (label: string) => '';
     // eslint-disable-next-line no-param-reassign
     page.perf = {
       timings: [],
       start: placeholder,
       end: placeholder,
-      stop: () => {},
+      stop: () => '',
       prefix: (): PerfPayload => ({ start: placeholder, end: placeholder }),
     };
   }

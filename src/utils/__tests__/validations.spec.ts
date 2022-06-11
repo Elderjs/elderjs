@@ -10,12 +10,22 @@ import {
 } from '../validations';
 import normalizeSnapshot from '../normalizeSnapshot.js';
 
+import { describe, test, expect, vi, beforeAll, beforeEach } from 'vitest';
+
+beforeAll(() => {
+  vi.resetModules();
+});
+
+beforeEach(() => {
+  vi.resetModules();
+});
+
 describe('#validations', () => {
   const validHook = {
     hook: 'customizeHooks',
     name: 'test hook',
     description: 'just for testing',
-    run: jest.fn(),
+    run: vi.fn(),
     $$meta: {
       type: 'hooks.js',
       addedBy: 'validations.spec.ts',
@@ -80,7 +90,7 @@ describe('#validations', () => {
       validateRoute(
         {
           template: 'Home.svelte',
-          permalink: jest.fn(),
+          permalink: vi.fn(),
         },
         'invalid',
       ),
@@ -88,8 +98,8 @@ describe('#validations', () => {
     const validRoute = {
       layout: 'Layout.svelte',
       template: 'Home.svelte',
-      all: jest.fn(),
-      permalink: jest.fn(),
+      all: vi.fn(),
+      permalink: vi.fn(),
       hooks: [],
       data: {},
       name: 'home',
@@ -110,7 +120,7 @@ describe('#validations', () => {
     const validPlugin = {
       name: 'test plugin',
       description: 'just for testing',
-      init: jest.fn(), // FIXME: init should be required or test should allow not defined
+      init: vi.fn(), // FIXME: init should be required or test should allow not defined
       hooks: [1, 2, 3], // TODO: nested hook validation?
       shortcodes: [],
     };

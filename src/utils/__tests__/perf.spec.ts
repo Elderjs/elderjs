@@ -1,20 +1,14 @@
 import normalizeSnapshot from '../normalizeSnapshot.js';
+import perf from '../perf';
+import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest';
 
-class PerformanceObserverMock {
-  cb: (any) => void;
+beforeAll(() => {
+  vi.resetModules();
+});
 
-  constructor(cb) {
-    this.cb = cb;
-  }
-
-  observe() {
-    this.cb({ getEntries: () => [{ name: 'Page-xxxxxxxx', duration: 0.05 }] });
-  }
-
-  disconnect() {
-    this.cb = null;
-  }
-}
+beforeEach(() => {
+  vi.resetModules();
+});
 
 describe('#perf', () => {
   it('works in performance and mocks', () => {
@@ -27,18 +21,8 @@ describe('#perf', () => {
         },
       };
     }
-    const calls = [];
-    jest.mock('perf_hooks', () => ({
-      PerformanceObserver: PerformanceObserverMock,
-      performance: {
-        mark: (i) => calls.push(`mark ${i}`),
-        measure: (i) => calls.push(`measure ${i}`),
-        clearMarks: (i) => calls.push(`clearMarks ${i}`),
-      },
-    }));
+
     const mockPage = new MockPage();
-    // eslint-disable-next-line global-require
-    const perf = await import('../perf').default;
 
     // mutate
     perf(mockPage);
@@ -53,16 +37,8 @@ describe('#perf', () => {
 
     mockPage.perf.stop();
 
-    expect(normalizeSnapshot(mockPage)).toMatchSnapshot();
-    expect(calls).toEqual([
-      'clearMarks Page-xxxxxxxx',
-      'mark test-start-xxxxxxxx',
-      'mark test-end-xxxxxxxx',
-      'measure test-xxxxxxxx',
-      'mark prefix.prefix-start-xxxxxxxx',
-      'mark prefix.prefix-end-xxxxxxxx',
-      'measure prefix.prefix-xxxxxxxx',
-    ]);
+    expect(normalizeSnapshot(mockPage.perf.timings[0].name)).toBe('test');
+    expect(normalizeSnapshot(mockPage.perf.timings[1].name)).toBe('prefix.prefix');
   });
 
   it('works in non performance', () => {
@@ -75,18 +51,8 @@ describe('#perf', () => {
         },
       };
     }
-    const calls = [];
-    jest.mock('perf_hooks', () => ({
-      PerformanceObserver: PerformanceObserverMock,
-      performance: {
-        mark: (i) => calls.push(`mark ${i}`),
-        measure: (i) => calls.push(`measure ${i}`),
-        clearMarks: (i) => calls.push(`clearMarks ${i}`),
-      },
-    }));
+
     const mockPage = new MockPage();
-    // eslint-disable-next-line global-require
-    const perf = await import('../perf').default;
 
     // mutate
     perf(mockPage);
@@ -95,6 +61,6 @@ describe('#perf', () => {
     mockPage.perf.end('test');
     mockPage.perf.stop();
 
-    expect(calls).toEqual([]);
+    expect(mockPage.perf.timings).toEqual([]);
   });
 });

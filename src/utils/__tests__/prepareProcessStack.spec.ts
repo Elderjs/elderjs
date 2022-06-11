@@ -1,7 +1,17 @@
 import { Elder } from '../../Elder.js';
 import Page from '../Page.js';
 
-const elder = new Elder({ context: 'server' });
+import { test, expect, vi, beforeAll, beforeEach } from 'vitest';
+
+beforeAll(() => {
+  vi.resetModules();
+});
+
+beforeEach(() => {
+  vi.resetModules();
+});
+
+const elder = new Elder({ context: 'test' });
 
 const request = { permalink: '/foo/', route: 'test', type: 'test' };
 

@@ -59,13 +59,15 @@ const svelteComponent =
         id,
       });
 
-      return `<${
+      const componentHtml = `<${
         hydrateOptions.element
       } class="${cleanComponentName.toLowerCase()}-component" id="${uniqueComponentName}">${innerHtml}</${
         hydrateOptions.element
       }>`;
+
+      return componentHtml;
     } catch (e) {
-      // console.log(e);
+      console.log(e);
       page.errors.push(e);
     }
     return '';

@@ -1,5 +1,12 @@
 import * as utils from '..';
+import { test, expect, vi, beforeAll, beforeEach } from 'vitest';
+beforeAll(() => {
+  vi.resetModules();
+});
 
+beforeEach(() => {
+  vi.resetModules();
+});
 test('includes all', () => {
   expect(Object.keys(utils)).toEqual([
     'asyncForEach',
