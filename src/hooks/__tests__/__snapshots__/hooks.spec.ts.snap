@@ -1,21 +1,20 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1
 
-exports[`#hooks elderAddExternalHelpers 1`] = `
-Object {
-  "helpers": Object {
+exports[`#hooks > elderAddExternalHelpers 1`] = `
+{
+  "helpers": {
     "inlineSvelteComponent": [Function],
-    "old": [MockFunction],
-    "permalink": [MockFunction],
-    "permalinks": Object {},
+    "old": [Function],
+    "permalinks": {},
     "shortcode": [Function],
   },
 }
 `;
 
-exports[`#hooks elderAddMetaCharsetToHead 1`] = `
-Object {
-  "headStack": Array [
-    Object {
+exports[`#hooks > elderAddMetaCharsetToHead 1`] = `
+{
+  "headStack": [
+    {
       "priority": 100,
       "source": "elderAddMetaCharsetToHead",
       "string": "<meta charset=\\"UTF-8\\" />",
@@ -24,10 +23,10 @@ Object {
 }
 `;
 
-exports[`#hooks elderAddMetaViewportToHead 1`] = `
-Object {
-  "headStack": Array [
-    Object {
+exports[`#hooks > elderAddMetaViewportToHead 1`] = `
+{
+  "headStack": [
+    {
       "priority": 90,
       "source": "elderAddMetaViewportToHead",
       "string": "<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\" />",
@@ -36,9 +35,9 @@ Object {
 }
 `;
 
-exports[`#hooks elderWriteBuildErrors 1`] = `
-Object {
-  "$$meta": Object {
+exports[`#hooks > elderWriteBuildErrors 1`] = `
+{
+  "$$meta": {
     "addedBy": "elder.js",
     "type": "internal",
   },
@@ -50,86 +49,86 @@ Object {
 }
 `;
 
-exports[`#hooks matchesSnapshot 1`] = `
-Array [
-  Object {
+exports[`#hooks > matchesSnapshot 1`] = `
+[
+  {
     "description": "Adds external helpers to helpers object",
     "hook": "bootstrap",
     "name": "elderAddExternalHelpers",
     "priority": 1,
     "run": [Function],
   },
-  Object {
+  {
     "description": "An express like middleware so requests can be served by Elder.js",
     "hook": "middleware",
     "name": "elderExpressLikeMiddleware",
     "priority": 1,
     "run": [Function],
   },
-  Object {
+  {
     "description": "Builds the shortcode parser, parses shortcodes from the html returned by the route's html and appends anything needed to the stacks.",
     "hook": "shortcodes",
     "name": "elderProcessShortcodes",
     "priority": 50,
     "run": [Function],
   },
-  Object {
+  {
     "description": "Adds <meta charset=\\"UTF-8\\" /> to the head.",
     "hook": "stacks",
     "name": "elderAddMetaCharsetToHead",
     "priority": 100,
     "run": [Function],
   },
-  Object {
+  {
     "description": "Adds <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\" /> to the head.",
     "hook": "stacks",
     "name": "elderAddMetaViewportToHead",
     "priority": 90,
     "run": [Function],
   },
-  Object {
+  {
     "description": "Adds the css found in the svelte files to the head if 'css' in your 'elder.config.js' file is set to 'file'.",
     "hook": "stacks",
     "name": "elderAddCssFileToHead",
     "priority": 100,
     "run": [Function],
   },
-  Object {
+  {
     "description": "Creates an HTML string out of the Svelte layout and stacks.",
     "hook": "compileHtml",
     "name": "elderCompileHtml",
     "priority": 50,
     "run": [Function],
   },
-  Object {
+  {
     "description": "Log any errors to the console.",
     "hook": "error",
     "name": "elderConsoleLogErrors",
     "priority": 1,
     "run": [Function],
   },
-  Object {
+  {
     "description": "Write the html output to public.",
     "hook": "requestComplete",
     "name": "elderWriteHtmlFileToPublic",
     "priority": 1,
     "run": [Function],
   },
-  Object {
+  {
     "description": "Page generating timings and logging.",
     "hook": "requestComplete",
     "name": "elderDisplayRequestTime",
     "priority": 50,
     "run": [Function],
   },
-  Object {
+  {
     "description": "A breakdown of the average times of different stages of the build.",
     "hook": "buildComplete",
     "name": "elderShowParsedBuildTimes",
     "priority": 50,
     "run": [Function],
   },
-  Object {
+  {
     "description": "Writes out any errors of a build to a JSON file in the ___ELDER___ folder.",
     "hook": "buildComplete",
     "name": "elderWriteBuildErrors",

@@ -1,4 +1,4 @@
-import glob from 'glob';
+import { sync } from 'glob';
 import path from 'path';
 import { SvelteComponentFiles } from '../utils/types.js';
 import windowsPathFix from '../utils/windowsPathFix.js';
@@ -16,10 +16,10 @@ export const removeHash = (pathWithHash) => {
 const prepareFindSvelteComponent = ({ ssrFolder, rootDir, clientComponents: clientFolder, distDir, srcDir }) => {
   const relSrcDir = windowsPathFix(path.relative(rootDir, srcDir));
   const rootDirFixed = windowsPathFix(rootDir);
-  const ssrComponents = glob.sync(`${ssrFolder}/**/*.js`).map(windowsPathFix);
-  const clientComponents = glob
-    .sync(`${clientFolder}/**/*.js`)
-    .map((c) => windowsPathFix(`${path.sep}${path.relative(distDir, c)}`));
+  const ssrComponents = sync(`${ssrFolder}/**/*.js`).map(windowsPathFix);
+  const clientComponents = sync(`${clientFolder}/**/*.js`).map((c) =>
+    windowsPathFix(`${path.sep}${path.relative(distDir, c)}`),
+  );
 
   const cache = new Map();
 

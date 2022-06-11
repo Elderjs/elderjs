@@ -1,4 +1,5 @@
 import path from 'path';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import prepareFindSvelteComponent, { removeHash } from '../prepareFindSvelteComponent.js';
 import normalizeSnapshot from '../../utils/normalizeSnapshot.js';
 import windowsPathFix from '../../utils/windowsPathFix.js';
@@ -252,11 +253,11 @@ const clientGlob = [
 ];
 
 beforeEach(() => {
-  jest.resetModules();
+  vi.resetModules();
 });
 
-jest.mock('glob', () => ({
-  sync: jest
+vi.mock('glob', () => ({
+  sync: vi
     .fn()
     .mockImplementationOnce(() => ssrGlob)
     .mockImplementationOnce(() => clientGlob)
@@ -267,7 +268,7 @@ jest.mock('glob', () => ({
 describe('#prepareFindSvelteComponent', () => {
   beforeEach(() => {
     // needed to reinitialize the import with empty results
-    jest.resetModules();
+    vi.resetModules();
   });
 
   describe('#removeHash', () => {

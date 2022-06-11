@@ -1,4 +1,4 @@
-import fs from 'fs-extra';
+import { mkdirSync, writeFile, writeFileSync, existsSync } from 'fs-extra';
 import path from 'path';
 
 import { Page } from '../utils/index.js';
@@ -154,13 +154,13 @@ export default (page: Page) => {
           `./props/ejs-${hashCode(component.prepared.propsString)}.json`,
         );
 
-        if (!fs.existsSync(propPath)) {
-          if (!fs.existsSync(path.resolve(page.settings.$$internal.distElder, `./props/`))) {
-            fs.mkdirSync(path.resolve(page.settings.$$internal.distElder, `./props/`), { recursive: true });
+        if (!existsSync(propPath)) {
+          if (!existsSync(path.resolve(page.settings.$$internal.distElder, `./props/`))) {
+            mkdirSync(path.resolve(page.settings.$$internal.distElder, `./props/`), { recursive: true });
           }
 
           // eslint-disable-next-line no-await-in-loop
-          fs.writeFileSync(propPath, component.prepared.propsString);
+          writeFileSync(propPath, component.prepared.propsString);
         }
 
         component.prepared.clientPropsUrl = windowsPathFix(`/${path.relative(page.settings.distDir, propPath)}`);

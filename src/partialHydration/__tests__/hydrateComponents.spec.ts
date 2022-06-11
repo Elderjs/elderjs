@@ -1,12 +1,13 @@
 import hydrateComponents, { hashCode, howManyBytes } from '../hydrateComponents.js';
 import largeProp from '../__fixtures__/largeProp.json';
+import { test, describe, expect, vi } from 'vitest';
 
 let counts = {
   mkdirSync: 0,
   writeFile: 0,
   existsSync: 0,
 };
-jest.mock('fs-extra', () => ({
+vi.mock('fs-extra', () => ({
   mkdirSync: () => {
     counts.existsSync += 1;
     return true;

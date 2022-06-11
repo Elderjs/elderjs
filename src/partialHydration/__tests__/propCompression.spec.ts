@@ -7,6 +7,8 @@ import {
   isPrimitive,
 } from '../propCompression';
 
+import { describe, it, expect } from 'vitest';
+
 const testObj = {
   a: 'b',
   b: 'c',

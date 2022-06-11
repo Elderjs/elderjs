@@ -177,7 +177,7 @@ export interface RollupDevOptions {
 
 export interface RollupSettings {
   svelteConfig?: any;
-  replacements?: Object;
+  replacements?: Record<string, unknown>;
   dev?: RollupDevOptions;
 }
 

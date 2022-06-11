@@ -1,5 +1,6 @@
 import { hookEntityDefinitions } from '../hookEntityDefinitions.js';
 import hookInterface from '../hookInterface.js';
+import { test, expect } from 'vitest';
 
 test('#hookEntityDefinitions', async () => {
   const entities = [...new Set(hookInterface.reduce((out, hook) => [...out, ...hook.props, ...hook.mutable], []))];

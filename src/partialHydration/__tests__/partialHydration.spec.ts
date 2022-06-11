@@ -1,4 +1,5 @@
 import partialHydration from '../partialHydration.js';
+import { describe, it, expect } from 'vitest';
 
 describe('#partialHydration', () => {
   it('replaces as expected', async () => {

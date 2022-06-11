@@ -1,5 +1,7 @@
-/* eslint-disable no-shadow */
-/* eslint-disable no-param-reassign */
+/* eslint-disable eslint-comments/disable-enable-pair */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+import { describe, it, expect, vi } from 'vitest';
+
 import path from 'path';
 
 import fsExtra from 'fs-extra';
@@ -19,7 +21,7 @@ import elderjsRollup, {
   getDependencyCache,
 } from '../rollupPlugin';
 
-jest.mock('del');
+vi.mock('del', () => ({ default: { sync: vi.fn() } }));
 
 describe('#rollupPlugin', () => {
   const cfs = fsExtra.copyFileSync;
@@ -27,15 +29,15 @@ describe('#rollupPlugin', () => {
   const eds = fsExtra.ensureDirSync;
 
   // @ts-ignore
-  fsExtra.copyFileSync = jest.fn(cfs);
+  fsExtra.copyFileSync = vi.fn(cfs);
   // @ts-ignore
   fsExtra.copyFileSync.mockImplementation(() => 'copied');
   // @ts-ignore
-  fsExtra.readdirSync = jest.fn(rds);
+  fsExtra.readdirSync = vi.fn(rds);
   // @ts-ignore
   fsExtra.readdirSync.mockImplementation(() => ['style.css', 'style.css.map']);
   // @ts-ignore
-  fsExtra.ensureDirSync = jest.fn(eds);
+  fsExtra.ensureDirSync = vi.fn(eds);
   // @ts-ignore
   fsExtra.ensureDirSync.mockImplementation(console.log);
   // @ts-ignore
@@ -442,18 +444,18 @@ describe('#rollupPlugin', () => {
         type: 'client',
       });
 
-      // non crappy mocks: https://gist.githubusercontent.com/rickhanlonii/c695cbc51ae6ffd81c46f46509171650/raw/a0b7f851be704b739be76b2543deff577b449fee/mock_jest_spyOn_sugar.js
+      // non crappy mocks: https://gist.githubusercontent.com/rickhanlonii/c695cbc51ae6ffd81c46f46509171650/raw/a0b7f851be704b739be76b2543deff577b449fee/mock_vi_spyOn_sugar.js
 
       describe('#watchChange', () => {
         describe('#buildStart', () => {
           const delsync = del.sync;
           // @ts-ignore
-          del.sync = jest.fn(delsync).mockImplementation((pay) => pay);
+          del.sync = vi.fn(delsync).mockImplementation((pay) => pay);
           del.sync = delsync;
           it('tests ssr functionality', () => {
             const t = {
               values: [],
-              emitFile: jest.fn((pay) => {
+              emitFile: vi.fn((pay) => {
                 t.values.push(pay);
                 return pay.name;
               }),
@@ -471,7 +473,7 @@ describe('#rollupPlugin', () => {
           it('tests client functionality', () => {
             const t = {
               values: [],
-              emitFile: jest.fn((pay) => {
+              emitFile: vi.fn((pay) => {
                 t.values.push(pay);
               }),
             };
@@ -489,63 +491,52 @@ describe('#rollupPlugin', () => {
           it(`doesn't resolve anything not in node_modules`, async () => {
             expect(
               // @ts-ignore
-              ssrPlugin.resolveId('../components/Header/Header.svelte', '/test/src/layouts/Layout.svelte'),
+              await ssrPlugin.resolveId('../components/Header/Header.svelte', '/test/src/layouts/Layout.svelte'),
             ).toBeNull();
           });
 
           it(`Resolves a node_module that uses svelte in their package.json`, async () => {
-            jest.mock(
-              path.resolve('./node_modules/uses-export/package.json'),
-              () => ({
-                svelte: windowsPathFix('src/Component.svelte'),
-              }),
-              { virtual: true },
-            );
+            vi.mock(path.resolve('./node_modules/uses-export/package.json'), () => ({
+              svelte: windowsPathFix('src/Component.svelte'),
+            }));
             // @ts-ignore
-            expect(ssrPlugin.resolveId('uses-export', path.resolve('./test/src/layouts/Layout.svelte'))).toEqual(
+            expect(await ssrPlugin.resolveId('uses-export', path.resolve('./test/src/layouts/Layout.svelte'))).toEqual(
               path.resolve('./node_modules/uses-export/src/Component.svelte'),
             );
           });
 
           it(`Resolves a node_module that uses svelte and exports their package.json`, async () => {
-            jest.mock(
-              path.resolve('./node_modules/package-exports/package.json'),
-              () => ({
-                main: './main.js',
-                svelte: windowsPathFix('src/Exported.svelte'),
-                exports: {
-                  '.': './main.js',
-                  './package.json': './package.json',
-                },
-              }),
-              { virtual: true },
-            );
-            // @ts-ignore
-            expect(ssrPlugin.resolveId('package-exports', path.resolve('./test/src/layouts/Layout.svelte'))).toEqual(
-              path.resolve('./node_modules/package-exports/src/Exported.svelte'),
-            );
+            vi.mock(path.resolve('./node_modules/package-exports/package.json'), () => ({
+              main: './main.js',
+              svelte: windowsPathFix('src/Exported.svelte'),
+              exports: {
+                '.': './main.js',
+                './package.json': './package.json',
+              },
+            }));
+
+            expect(
+              // @ts-ignore
+              await ssrPlugin.resolveId('package-exports', path.resolve('./test/src/layouts/Layout.svelte')),
+            ).toEqual(path.resolve('./node_modules/package-exports/src/Exported.svelte'));
           });
 
           it(`Does not resolve a module that doesn't use svelte in package.json`, async () => {
-            jest.mock(
-              path.resolve('./node_modules/no-svelte/package.json'),
-              () => ({
-                main: windowsPathFix('./main.js'),
-                exports: {
-                  '.': './main.js',
-                  './package.json': './package.json',
-                },
-              }),
-              { virtual: true },
-            );
+            vi.mock(path.resolve('./node_modules/no-svelte/package.json'), () => ({
+              main: windowsPathFix('./main.js'),
+              exports: {
+                '.': './main.js',
+                './package.json': './package.json',
+              },
+            }));
             // @ts-ignore
-            expect(ssrPlugin.resolveId('no-svelte', path.resolve('./test/src/layouts/Layout.svelte'))).toBeNull();
+            expect(await ssrPlugin.resolveId('no-svelte', path.resolve('./test/src/layouts/Layout.svelte'))).toBeNull();
           });
         });
         describe('#transform', () => {
           it('compiles a svelte component and sets the css while adding to watch files', async () => {
             const t = {
-              addWatchFile: jest.fn(() => ''),
+              addWatchFile: vi.fn(() => ''),
             };
             const bound = ssrPlugin.transform.bind(t);
 
@@ -562,17 +553,17 @@ describe('#rollupPlugin', () => {
           it('Creates appropriate folders.', () => {
             const t = {
               cache: {
-                set: jest.fn(() => ({})),
+                set: vi.fn(() => ({})),
               },
             };
             const ssrBound = ssrPlugin.writeBundle.bind(t);
 
             // @ts-ignore
-            fsExtra.copyFileSync = jest.fn(cfs).mockImplementation(() => 'copied');
+            fsExtra.copyFileSync = vi.fn(cfs).mockImplementation(() => 'copied');
             // @ts-ignore
-            fsExtra.readdirSync = jest.fn(rds).mockImplementation(() => ['style.css', 'style.css.map']);
+            fsExtra.readdirSync = vi.fn(rds).mockImplementation(() => ['style.css', 'style.css.map']);
             // @ts-ignore
-            fsExtra.ensureDirSync = jest.fn(eds).mockImplementation();
+            fsExtra.ensureDirSync = vi.fn(eds).mockImplementation();
             ssrBound();
 
             expect(fsExtra.ensureDirSync).toHaveBeenCalledTimes(1);
@@ -583,17 +574,17 @@ describe('#rollupPlugin', () => {
           it('tests copying assets to client', async () => {
             const t = {
               cache: {
-                set: jest.fn(() => ({})),
+                set: vi.fn(() => ({})),
               },
             };
             const ssrBound = ssrPlugin.writeBundle.bind(t);
 
             // @ts-ignore
-            fsExtra.copyFileSync = jest.fn(cfs).mockImplementation(() => 'copied');
+            fsExtra.copyFileSync = vi.fn(cfs).mockImplementation(() => 'copied');
             // @ts-ignore
-            fsExtra.readdirSync = jest.fn(rds).mockImplementation(() => ['style.css', 'style.css.map']);
+            fsExtra.readdirSync = vi.fn(rds).mockImplementation(() => ['style.css', 'style.css.map']);
             // @ts-ignore
-            fsExtra.ensureDirSync = jest.fn(eds).mockImplementation();
+            fsExtra.ensureDirSync = vi.fn(eds).mockImplementation();
             // @ts-ignore
             await ssrBound({}, {}, true);
 

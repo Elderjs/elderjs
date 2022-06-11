@@ -1,5 +1,5 @@
 import path from 'path';
-import fs from 'fs-extra';
+import { outputFileSync, writeJSONSync } from 'fs-extra';
 import { parseBuildPerf } from '../utils/index.js';
 import externalHelpers from '../externalHelpers.js';
 import { HooksArray } from './types.js';
@@ -194,7 +194,7 @@ const hooks: HooksArray = [
       if (settings.build) {
         const file = path.resolve(settings.distDir, `.${request.permalink}/index.html`);
         try {
-          fs.outputFileSync(file, htmlString);
+          outputFileSync(file, htmlString);
         } catch (e) {
           console.log(e);
           return {
@@ -244,7 +244,7 @@ const hooks: HooksArray = [
         console.log(
           `Errors during Elder.js build. Writing details on the ${errors.length} build errors to: ${buildOutputLocation}`,
         );
-        fs.writeJSONSync(buildOutputLocation, { settings, buildErrors: errors });
+        writeJSONSync(buildOutputLocation, { settings, buildErrors: errors });
 
         errors.forEach((error) => {
           console.error(error);

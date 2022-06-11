@@ -1,16 +1,16 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { workers } from 'cluster';
 import build, { getWorkerCounts } from '../build.js';
 
 let calledHooks = [];
 
-jest.mock('cosmiconfig', () => ({
+vi.mock('cosmiconfig', () => ({
   cosmiconfigSync: () => ({ search: () => null }),
 }));
 
-jest.mock('cli-progress');
+vi.mock('cli-progress');
 
-jest.mock('../../utils/getConfig', () => () => ({
+vi.mock('../../utils/getConfig', () => () => ({
   debug: {
     build: true,
   },
@@ -19,7 +19,7 @@ jest.mock('../../utils/getConfig', () => () => ({
   },
 }));
 
-jest.mock('../../Elder', () => ({
+vi.mock('../../Elder', () => ({
   Elder: class ElderMock {
     errors: [];
 
@@ -50,7 +50,7 @@ jest.mock('../../Elder', () => ({
   },
 }));
 
-jest.mock('os', () => ({
+vi.mock('os', () => ({
   release: () => '',
   cpus: () => [
     {
@@ -114,7 +114,7 @@ class WorkerMock {
 
 describe('#build', () => {
   beforeEach(() => {
-    jest.resetModules();
+    vi.resetModules();
     calledHooks = [];
   });
 
@@ -128,7 +128,7 @@ describe('#build', () => {
   });
 
   it('build works - slave node', async () => {
-    jest.mock('cluster', () => ({
+    vi.mock('cluster', () => ({
       isMaster: false,
     }));
 
@@ -136,6 +136,7 @@ describe('#build', () => {
     const sent = [];
 
     global.process = {
+      ...process,
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
       on: (event, cb) => {
@@ -155,16 +156,16 @@ describe('#build', () => {
   });
 
   it('build works - master node, 5 workers', async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
     process.env = {};
 
-    jest.mock('cluster', () => ({
+    vi.mock('cluster', () => ({
       isMaster: true,
-      fork: jest.fn(),
+      fork: vi.fn(),
       workers: [new WorkerMock(0), new WorkerMock(1), new WorkerMock(2), new WorkerMock(3), new WorkerMock(4)],
     }));
 
-    const dateNowStub = jest
+    const dateNowStub = vi
       .fn()
       .mockImplementationOnce(() => 1530518207007)
       .mockImplementationOnce(() => 1530528207007)
@@ -181,7 +182,7 @@ describe('#build', () => {
 
     expect(calledHooks).toEqual([]);
     await build();
-    jest.advanceTimersByTime(1000); // not all intervalls are cleared
+    vi.advanceTimersByTime(1000); // not all intervalls are cleared
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     expect(workers.map((w) => w.killed)).toEqual([true, true, true, true, true]);
@@ -190,7 +191,7 @@ describe('#build', () => {
   });
 
   it('build fails - different settings, 2 workers', async () => {
-    jest.mock('../../Elder', () => ({
+    vi.mock('../../Elder', () => ({
       Elder: class ElderMock {
         errors: string[];
 
@@ -229,18 +230,18 @@ describe('#build', () => {
         },
       }),
     }));
-    jest.useFakeTimers();
+    vi.useFakeTimers();
     process.env = {
       ELDER_BUILD_NUMBER_OF_WORKERS: '2',
     };
 
-    jest.mock('cluster', () => ({
+    vi.mock('cluster', () => ({
       isMaster: true,
-      fork: jest.fn(),
+      fork: vi.fn(),
       workers: [new WorkerMock(0), new WorkerMock(1, true)],
     }));
 
-    const dateNowStub = jest
+    const dateNowStub = vi
       .fn()
       .mockImplementationOnce(() => 1530518257007)
       .mockImplementationOnce(() => 1530518257008)
@@ -256,7 +257,7 @@ describe('#build', () => {
     global.Date.now = dateNowStub;
 
     const realProcess = process;
-    const exitMock = jest.fn();
+    const exitMock = vi.fn();
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-expect-error
@@ -264,7 +265,7 @@ describe('#build', () => {
 
     expect(calledHooks).toEqual([]);
     await build();
-    jest.advanceTimersByTime(1000); // not all intervalls are cleared
+    vi.advanceTimersByTime(1000); // not all intervalls are cleared
     expect(exitMock).toHaveBeenCalled();
 
     console.log(workers);

@@ -1,4 +1,5 @@
 import parseBuildPerf from '../parseBuildPerf.js';
+import { test, expect } from 'vitest';
 
 test('#parseBuildPerf', async () => {
   expect(parseBuildPerf([])).toEqual({});

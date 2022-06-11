@@ -479,11 +479,14 @@ export default function elderjsRollup({
           const trackedDeps = getDependencies(chunk.facadeModuleId);
 
           const cssOutput = await minifyCss(trackedDeps, elderConfig);
-          code += `\nmodule.exports._css = ${cssOutput.styles};`;
-          code += `\nmodule.exports._cssMap = ${encodeSourceMap(cssOutput.sourceMap)};`;
-          code += `\nmodule.exports._cssIncluded = ${JSON.stringify(
+          // eslint-disable-next-line no-param-reassign
+          code += `\nexport const _css = \`${cssOutput.styles};\``;
+          // eslint-disable-next-line no-param-reassign
+          code += `\nexport const _cssMap = \`${encodeSourceMap(cssOutput.sourceMap)};\``;
+          // eslint-disable-next-line no-param-reassign
+          code += `\nexport const _cssIncluded = ${JSON.stringify(
             cssOutput.included.map((d) => path.relative(elderConfig.rootDir, d)),
-          )}`;
+          )};`;
 
           return { code, map: null };
         }

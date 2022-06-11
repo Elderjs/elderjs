@@ -7,6 +7,11 @@ import {
   requestFromDynamicRoute,
 } from '../prepareRouter';
 
+import { describe, it, expect } from 'vitest';
+import getConfig from '../../utils/getConfig';
+
+const settings = getConfig({ css: 'inline' });
+
 describe('#prepareRouter', () => {
   const dynamicRoutes = [
     {
@@ -15,6 +20,7 @@ describe('#prepareRouter', () => {
       template: 'Reports.svelte',
       layout: 'Report.svelte',
       name: 'reports',
+      all: () => [],
       $$meta: {
         type: 'dynamic',
         addedBy: 'routes.js',
@@ -32,6 +38,7 @@ describe('#prepareRouter', () => {
       template: 'Reports.svelte',
       layout: 'Report.svelte',
       name: 'example',
+      all: () => [],
       $$meta: {
         type: 'dynamic',
         addedBy: 'routes.js',
@@ -91,26 +98,35 @@ describe('#prepareRouter', () => {
   });
   describe('#findPrebuiltRequest', () => {
     const serverLookupObject = {
-      '/': { name: 'root' },
-      '/test/': { name: 'test' },
+      '/': { name: 'root', route: 'root', slug: 'root', type: 'server' },
+      '/test/': { name: 'test', route: 'test', slug: 'test', type: 'server' },
     };
 
     it('Finds root', () => {
       expect(findPrebuiltRequest({ req: { path: '/' }, serverLookupObject })).toEqual({
         name: 'root',
         req: { path: '/', query: undefined, search: undefined },
+        route: 'root',
+        slug: 'root',
+        type: 'server',
       });
     });
     it('Finds finds a request it should', () => {
       expect(findPrebuiltRequest({ req: { path: '/test/' }, serverLookupObject })).toEqual({
         name: 'test',
         req: { path: '/test/', query: undefined, search: undefined },
+        route: 'test',
+        slug: 'test',
+        type: 'server',
       });
     });
     it('Finds finds a request with missing trailing slash', () => {
       expect(findPrebuiltRequest({ req: { path: '/test' }, serverLookupObject })).toEqual({
         name: 'test',
         req: { path: '/test', query: undefined, search: undefined },
+        route: 'test',
+        slug: 'test',
+        type: 'server',
       });
     });
     it('Misses a request it should', () => {
@@ -139,6 +155,7 @@ describe('#prepareRouter', () => {
       expect(initialRequestIsWellFormed({ permalink: '/true', type: 'server', route: 'foo' })).toBeTruthy();
     });
     it('Is not a well formed request', () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       expect(initialRequestIsWellFormed({ permalink: '/true', type: 'server' })).toBeFalsy();
     });
@@ -146,20 +163,21 @@ describe('#prepareRouter', () => {
   describe('#requestFromDynamicRoute', () => {
     const requestCache = new Map();
     it('Parses a dynamic route into a request properly and populates cache', () => {
-      expect(requestFromDynamicRoute({ req: { path: '/dev/reports/hereitis/' }, requestCache, dynamicRoutes })).toEqual(
-        {
-          permalink: '',
-          report: 'hereitis',
-          req: { path: '/dev/reports/hereitis/', query: undefined, search: undefined },
-          route: 'reports',
-          type: 'server',
-        },
-      );
+      expect(
+        requestFromDynamicRoute({ settings, req: { path: '/dev/reports/hereitis/' }, requestCache, dynamicRoutes }),
+      ).toEqual({
+        permalink: '',
+        report: 'hereitis',
+        req: { path: '/dev/reports/hereitis/', query: undefined, search: undefined },
+        route: 'reports',
+        type: 'server',
+      });
       expect(requestCache.has('/dev/reports/hereitis/')).toBeTruthy();
     });
     it('Parses a dynamic route into a request properly and skips the cache', () => {
       expect(
         requestFromDynamicRoute({
+          settings,
           req: { path: '/dev/reports/without-cache/' },
           requestCache: undefined,
           dynamicRoutes,
@@ -176,6 +194,7 @@ describe('#prepareRouter', () => {
     it('correctly adds in different search and query params', () => {
       expect(
         requestFromDynamicRoute({
+          settings,
           req: { path: '/dev/reports/somethingnew/', query: { foo: 'bar' }, search: '?foo=bar' },
           requestCache,
           dynamicRoutes,

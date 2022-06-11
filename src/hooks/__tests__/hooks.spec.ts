@@ -13,36 +13,43 @@ import {
 import normalizeSnapshot from '../../utils/normalizeSnapshot.js';
 import { Elder } from '../../Elder.js';
 
-jest.mock('../../externalHelpers', () => () => Promise.resolve({ permalink: jest.fn() }));
+import { describe, test, expect, vi, beforeAll, beforeEach } from 'vitest';
 
-jest.mock('../../utils/prepareShortcodeParser', () => ({ customJsStack, cssStack, headStack }) => ({
-  parse: (templateHtml) => {
-    customJsStack.push('console.log("test");');
-    cssStack.push('body{display:none;}');
-    headStack.push('<title>Hello</title>');
-    return Promise.resolve(`..${templateHtml}..`);
-  },
+vi.mock('../../externalHelpers', () => () => Promise.resolve({ permalink: vi.fn() }));
+
+vi.mock('../../utils/prepareShortcodeParser', () => ({
+  default: ({ customJsStack, cssStack, headStack }) => ({
+    parse: (templateHtml) => {
+      customJsStack.push('console.log("test");');
+      cssStack.push('body{display:none;}');
+      headStack.push('<title>Hello</title>');
+      return Promise.resolve(`..${templateHtml}..`);
+    },
+  }),
 }));
 
-jest.mock('../../utils/Page', () => {
-  return jest.fn(() => ({
-    html: () => Promise.resolve(`<html>new page</html>`),
-  }));
+vi.mock('../../utils/Page', () => {
+  return {
+    default: vi.fn(() => ({
+      html: () => Promise.resolve(`<html>new page</html>`),
+    })),
+  };
 });
 
-jest.mock('fs-extra', () => ({
-  ensureDirSync: jest.fn(),
-  writeJSONSync: jest.fn(),
-  readdirSync: jest.fn(() => []),
-  outputFileSync: jest
-    .fn()
-    .mockImplementationOnce(() => {})
+vi.mock('fs-extra', () => ({
+  existsSync: vi.fn(() => false),
+  ensureDirSync: vi.fn(() => ''),
+  writeJSONSync: vi.fn(() => ''),
+  readdirSync: vi.fn(() => []),
+  outputFileSync: vi
+    .fn(() => '')
+    .mockImplementationOnce(() => '')
     .mockImplementationOnce(() => {
       throw new Error('Failed to write');
     }),
 }));
 
-const elder = new Elder({ context: 'server' });
+const elder = new Elder({ context: 'test' });
 
 let stacks = {
   bodyAttributesStack: [],
@@ -80,21 +87,21 @@ beforeEach(() => {
 });
 
 describe('#hooks', () => {
-  it('has valid priority', () => {
+  test('has valid priority', () => {
     expect(hooks.filter((h) => h.priority < 1 && h.priority > 100)).toEqual([]);
   });
-  it('matchesSnapshot', () => {
+  test('matchesSnapshot', () => {
     expect(normalizeSnapshot(hooks)).toMatchSnapshot();
   });
-  it('elderAddExternalHelpers', async () => {
+  test('elderAddExternalHelpers', async () => {
     await elder;
     const hook = elder.hooks
       .filter((h) => h.hook === 'bootstrap')
       .find((h) => h.name === 'elderAddExternalHelpers') as ProcessedHook<IBootstrapHook>;
-    const c = await hook.run({ ...elder, helpers: { old: jest.fn(), ...elder.helpers } });
+    const c = await hook.run({ ...elder, helpers: { old: vi.fn(), ...elder.helpers } });
     expect(normalizeSnapshot(c)).toMatchSnapshot();
   });
-  it('elderExpressLikeMiddleware', async () => {
+  test('elderExpressLikeMiddleware', async () => {
     await elder;
     const hook = elder.hooks.find((h) => h.name === 'elderExpressLikeMiddleware') as ProcessedHook<IMiddlewareHook>;
     const router = () => 'router() was called';
@@ -104,12 +111,12 @@ describe('#hooks', () => {
         router,
         req: {},
         res: {},
-        next: () => {},
+        next: () => '',
         request,
       }),
     ).toBe('router() was called');
   });
-  it('elderProcessShortcodes', async () => {
+  test('elderProcessShortcodes', async () => {
     await elder;
     const hook = elder.hooks.find((h) => h.name === 'elderProcessShortcodes') as ProcessedHook<IShortcodeHook>;
     const headStack = [];
@@ -133,17 +140,17 @@ describe('#hooks', () => {
       layoutHtml: '..<html>hi</html>..',
     });
   });
-  it('elderAddMetaCharsetToHead', async () => {
+  test('elderAddMetaCharsetToHead', async () => {
     await elder;
     const hook = elder.hooks.find((h) => h.name === 'elderAddMetaCharsetToHead') as ProcessedHook<IStacksHook>;
     expect(normalizeSnapshot(await hook.run({ ...elder, ...stacks, request, headStack: [] }))).toMatchSnapshot();
   });
-  it('elderAddMetaViewportToHead', async () => {
+  test('elderAddMetaViewportToHead', async () => {
     await elder;
     const hook = elder.hooks.find((h) => h.name === 'elderAddMetaViewportToHead') as ProcessedHook<IStacksHook>;
     expect(normalizeSnapshot(await hook.run({ ...elder, ...stacks, request, headStack: [] }))).toMatchSnapshot();
   });
-  it('elderCompileHtml', async () => {
+  test('elderCompileHtml', async () => {
     await elder;
     const hook = elder.hooks.find((h) => h.name === 'elderCompileHtml') as ProcessedHook<ICompileHtmlHook>;
     expect(
@@ -162,14 +169,14 @@ describe('#hooks', () => {
     });
   });
 
-  it('elderConsoleLogErrors', async () => {
+  test('elderConsoleLogErrors', async () => {
     await elder;
     const hook = elder.hooks.find((h) => h.name === 'elderConsoleLogErrors') as ProcessedHook<IErrorHook>;
     expect(
       await hook.run({ ...elder, settings: { ...elder.settings, worker: false }, request, errors: ['foo', 'bar'] }),
     ).toBeUndefined();
   });
-  it('elderWriteHtmlFileToPublic', async () => {
+  test('elderWriteHtmlFileToPublic', async () => {
     await elder;
     const hook = elder.hooks.find(
       (h) => h.name === 'elderWriteHtmlFileToPublic',
@@ -213,7 +220,7 @@ describe('#hooks', () => {
       }),
     ).toEqual({ errors: [new Error('Failed to write')] });
   });
-  it('elderDisplayRequestTime', async () => {
+  test('elderDisplayRequestTime', async () => {
     await elder;
     const hook = elder.hooks.find((h) => h.name === 'elderDisplayRequestTime') as ProcessedHook<IRequestCompleteHook>;
     expect(
@@ -240,7 +247,7 @@ describe('#hooks', () => {
       }),
     ).toBeUndefined();
   });
-  it('elderShowParsedBuildTimes', async () => {
+  test('elderShowParsedBuildTimes', async () => {
     await elder;
     const hook = elder.hooks.find((h) => h.name === 'elderShowParsedBuildTimes') as ProcessedHook<IBuildCompleteHook>;
     expect(
@@ -271,14 +278,14 @@ describe('#hooks', () => {
       }),
     ).toBeUndefined();
   });
-  it('elderWriteBuildErrors', async () => {
+  test('elderWriteBuildErrors', async () => {
     await elder;
     const hook = elder.hooks.find((h) => h.name === 'elderWriteBuildErrors');
     expect(normalizeSnapshot(hook)).toMatchSnapshot();
   });
 
   describe('#elderAddCssFileToHead', () => {
-    it('respects settings.css = file', async () => {
+    test('respects settings.css = file', async () => {
       await elder;
       const hook = elder.hooks.find((h) => h.name === 'elderAddCssFileToHead') as ProcessedHook<IStacksHook>;
       expect(
@@ -309,7 +316,7 @@ describe('#hooks', () => {
     });
 
     describe('#elderAddCssFileToHead', () => {
-      it('respects settings.css = lazy', async () => {
+      test('respects settings.css = lazy', async () => {
         await elder;
         const hook = elder.hooks.find((h) => h.name === 'elderAddCssFileToHead') as ProcessedHook<IStacksHook>;
         expect(
@@ -340,7 +347,7 @@ describe('#hooks', () => {
       });
     });
 
-    it('respects settings.css = inline', async () => {
+    test('respects settings.css = inline', async () => {
       await elder;
       const hook = elder.hooks.find((h) => h.name === 'elderAddCssFileToHead') as ProcessedHook<IStacksHook>;
       expect(
@@ -357,7 +364,7 @@ describe('#hooks', () => {
         }),
       ).toBeUndefined();
     });
-    it('respects settings.css = none', async () => {
+    test('respects settings.css = none', async () => {
       await elder;
       const hook = elder.hooks.find((h) => h.name === 'elderAddCssFileToHead') as ProcessedHook<IStacksHook>;
       expect(
