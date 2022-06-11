@@ -1,4 +1,4 @@
-/* eslint-disable global-require */
+import { it, beforeEach, describe, expect, vi } from 'vitest';
 import multiInput from 'rollup-plugin-multi-input';
 import path from 'path';
 import { createBrowserConfig, createSSRConfig } from '../getRollupConfig.js';
@@ -6,16 +6,16 @@ import getConfig from '../../utils/getConfig.js';
 
 // TODO: test replace
 
-jest.mock('fs-extra', () => {
+vi.mock('fs-extra', () => {
   return {
-    ensureDirSync: () => {},
+    ensureDirSync: () => '',
     readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
   };
 });
 
 describe('#getRollupConfig', () => {
   beforeEach(() => {
-    jest.resetModules();
+    vi.resetModules();
   });
 
   const elderConfig = getConfig();
@@ -152,39 +152,43 @@ describe('#getRollupConfig', () => {
     ).toEqual(['replace', 'json', 'rollup-plugin-elder', 'node-resolve', 'commonjs', 'terser']);
   });
 
-  it('getRollupConfig as a whole works - default options', () => {
-    jest.mock('../../utils/validations.ts', () => ({
+  it('getRollupConfig as a whole works - default options', async () => {
+    vi.mock('../../utils/validations.ts', () => ({
       getDefaultRollup: () => ({
         replacements: {},
         dev: { splitComponents: false },
         svelteConfig: {},
       }),
     }));
-    jest.mock('../../utils/getPluginLocations', () => () => ({
-      paths: ['/src/plugins/elderjs-plugin-reload/'],
-      files: [
-        '/src/plugins/elderjs-plugin-reload/SimplePlugin.svelte',
-        '/src/plugins/elderjs-plugin-reload/Test.svelte',
-      ],
+    vi.mock('../../utils/getPluginLocations', () => ({
+      default: () => ({
+        paths: ['/src/plugins/elderjs-plugin-reload/'],
+        files: [
+          '/src/plugins/elderjs-plugin-reload/SimplePlugin.svelte',
+          '/src/plugins/elderjs-plugin-reload/Test.svelte',
+        ],
+      }),
     }));
     // getElderConfig() mock
-    jest.mock('../../utils/getConfig', () => () => ({
-      $$internal: {
-        clientComponents: 'test/public/svelte',
-        ssrComponents: 'test/___ELDER___/compiled',
-      },
-      distDir: './dist',
-      srcDir: './src',
-      rootDir: './',
-      plugins: {
-        pluginA: {},
-        pluginB: {},
-      },
+    vi.mock('../../utils/getConfig', () => ({
+      default: () => ({
+        $$internal: {
+          clientComponents: 'test/public/svelte',
+          ssrComponents: 'test/___ELDER___/compiled',
+        },
+        distDir: './dist',
+        srcDir: './src',
+        rootDir: './',
+        plugins: {
+          pluginA: {},
+          pluginB: {},
+        },
+      }),
     }));
 
-    jest.mock('del');
-    jest.mock('fs-extra', () => ({
-      existsSync: jest.fn().mockImplementation(() => true),
+    vi.mock('del');
+    vi.mock('fs-extra', () => ({
+      existsSync: vi.fn().mockImplementation(() => true),
     }));
 
     const svelteConfig = {
@@ -198,7 +202,7 @@ describe('#getRollupConfig', () => {
     };
 
     // would be nice to mock getPluginPaths if it's extracted to separate file
-    const configs = await import('../getRollupConfig').default({ svelteConfig });
+    const configs = (await import('../getRollupConfig')).default({ svelteConfig });
     expect(configs).toHaveLength(2);
   });
 });

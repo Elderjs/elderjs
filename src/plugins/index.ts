@@ -1,4 +1,4 @@
-import fs from 'fs-extra';
+import { existsSync, readJsonSync } from 'fs-extra';
 import defaultsDeep from 'lodash.defaultsdeep';
 import path from 'path';
 import { parse as toRegExp } from 'regexparam';
@@ -63,18 +63,16 @@ async function plugins(elder: Elder) {
     const pluginPath = `./plugins/${pluginName}/index.js`;
     const srcPlugin = path.resolve(elder.settings.srcDir, pluginPath);
 
-    if (fs.existsSync(srcPlugin)) {
+    if (existsSync(srcPlugin)) {
       const pluginReq = await import(srcPlugin);
       plugin = pluginReq.default || pluginReq;
     }
 
-    console.log(plugin, srcPlugin, fs.existsSync(''));
-
     if (!plugin) {
       const pkgPath = path.resolve(elder.settings.rootDir, './node_modules/', pluginName);
-      if (fs.existsSync(pkgPath)) {
+      if (existsSync(pkgPath)) {
         usesNodeModulesFolder = true;
-        const pluginPackageJson = fs.readJsonSync(path.resolve(pkgPath, './package.json'));
+        const pluginPackageJson = readJsonSync(path.resolve(pkgPath, './package.json'));
         const pluginPkgPath = path.resolve(
           pkgPath,
           pluginPackageJson.main.startsWith('/') ? `.${pluginPackageJson.main}` : pluginPackageJson.main,
@@ -245,7 +243,7 @@ async function plugins(elder: Elder) {
               usesNodeModulesFolder ? 'node_modules' : 'plugins',
             );
 
-            if (!template.ssr && !fs.existsSync(ssrComponent)) {
+            if (!template.ssr && !existsSync(ssrComponent)) {
               console.warn(
                 `Plugin Route: ${routeName} added by plugin ${pluginName} has an error. No SSR svelte component found ${templateName}. This may cause unexpected outcomes. If you believe this should be working, make sure rollup has run before this file is initialized. If the issue persists, please contact the plugin author. Expected location \`${ssrComponent}\``,
               );
@@ -277,7 +275,7 @@ async function plugins(elder: Elder) {
               usesNodeModulesFolder ? 'node_modules' : 'plugins',
             );
 
-            if (!layout.ssr && !fs.existsSync(ssrComponent)) {
+            if (!layout.ssr && !existsSync(ssrComponent)) {
               console.warn(
                 `Plugin Route: ${routeName} added by plugin ${pluginName} has an error. No SSR svelte component found ${layoutName}. This may cause unexpected outcomes. If you believe this should be working, make sure rollup has run before this file is initialized. If the issue persists, please contact the plugin author. Expected location \`${ssrComponent}\``,
               );
@@ -290,7 +288,7 @@ async function plugins(elder: Elder) {
             processedRoute.layout = 'Layout.svelte';
             const ssrComponent = path.resolve(elder.settings.$$internal.ssrComponents, `./layouts/Layout.js`);
 
-            if (!fs.existsSync(ssrComponent)) {
+            if (!existsSync(ssrComponent)) {
               console.error(
                 `Plugin Route: ${routeName} added by plugin ${pluginName} requires a /src/layouts/Layout.svelte to be compiled at ${ssrComponent}. Disabling this route.`,
               );

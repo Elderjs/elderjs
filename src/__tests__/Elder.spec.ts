@@ -16,35 +16,37 @@ vi.mock(`../routes/routes`, () => () => ({
   'test-b': { hooks: [] },
 }));
 
-vi.mock(`../utils/getConfig`, () => () => ({
-  $$internal: {
-    clientComponents: `test/public/svelte`,
-    ssrComponents: `test/___ELDER___/compiled`,
-    findComponent: () => ({ ssr: true, client: true, iife: undefined }),
-  },
-  debug: {
-    automagic: true,
-  },
-  distDir: `test/public`,
-  rootDir: 'test',
-  srcDir: `test/src`,
-  server: {
-    prefix: `/dev`,
-  },
-  build: {
-    shuffleRequests: false,
-    numberOfWorkers: 4,
-  },
-  plugins: {
-    'elder-plugin-upload-s3': {
-      dataBucket: 'elderguide.com',
-      htmlBucket: 'elderguide.com',
-      deployId: '11111111',
+vi.mock(`../utils/getConfig`, () => ({
+  default: () => ({
+    $$internal: {
+      clientComponents: `test/public/svelte`,
+      ssrComponents: `test/___ELDER___/compiled`,
+      findComponent: () => ({ ssr: true, client: true, iife: undefined }),
     },
-  },
-  hooks: {
-    disable: ['randomHook'],
-  },
+    debug: {
+      automagic: true,
+    },
+    distDir: `test/public`,
+    rootDir: 'test',
+    srcDir: `test/src`,
+    server: {
+      prefix: `/dev`,
+    },
+    build: {
+      shuffleRequests: false,
+      numberOfWorkers: 4,
+    },
+    plugins: {
+      'elder-plugin-upload-s3': {
+        dataBucket: 'elderguide.com',
+        htmlBucket: 'elderguide.com',
+        deployId: '11111111',
+      },
+    },
+    hooks: {
+      disable: ['randomHook'],
+    },
+  }),
 }));
 
 vi.mock(`../workerBuild`);
@@ -112,9 +114,7 @@ describe('#Elder', () => {
       validateRoute: (i) => i,
       validateShortcode: (i) => i,
     }));
-    vi.mock('fs-extra', () => ({
-      existsSync: () => true,
-    }));
+
     vi.mock(`${process.cwd()}/test/___ELDER___/compiled/fakepath/Test.js`, () => () => ({}));
     vi.mock(`${process.cwd()}/test/src/hooks.js`, () => ({
       default: [
