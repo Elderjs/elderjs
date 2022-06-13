@@ -22,19 +22,23 @@ export type Perf = PerfPayload & {
   timings: PerfTimings;
   stop: () => void;
   prefix: (label: string) => PerfPayload;
+  reset: () => void;
 };
+
+function getPerformanceObserver(page) {
+  return new PerformanceObserver((items) => {
+    items.getEntries().forEach((entry) => {
+      if (entry.name.includes(page.uid)) {
+        page.perf.timings.push({ name: entry.name.replace(`-${page.uid}`, ''), duration: entry.duration });
+        performance.clearMarks(entry.name);
+      }
+    });
+  });
+}
 
 function perf(page: Page | Elder, force = false) {
   if (page.settings.debug.performance || force) {
-    let obs = new PerformanceObserver((items) => {
-      items.getEntries().forEach((entry) => {
-        if (entry.name.includes(page.uid)) {
-          page.perf.timings.push({ name: entry.name.replace(`-${page.uid}`, ''), duration: entry.duration });
-          performance.clearMarks(entry.name);
-        }
-      });
-    });
-
+    let obs = getPerformanceObserver(page);
     // eslint-disable-next-line no-param-reassign
     page.perf = {
       timings: [],
@@ -62,6 +66,13 @@ function perf(page: Page | Elder, force = false) {
       prefix: (pre): PerfPayload => {
         return { start: (name) => page.perf.start(`${pre}.${name}`), end: (name) => page.perf.end(`${pre}.${name}`) };
       },
+      reset: () => {
+        page.perf.timings = [];
+        if (!obs) {
+          obs = getPerformanceObserver(page);
+          obs.observe({ entryTypes: ['measure'] });
+        }
+      },
     };
 
     obs.observe({ entryTypes: ['measure'] });
@@ -75,6 +86,7 @@ function perf(page: Page | Elder, force = false) {
       end: placeholder,
       stop: () => '',
       prefix: (): PerfPayload => ({ start: placeholder, end: placeholder }),
+      reset: () => {},
     };
   }
 }

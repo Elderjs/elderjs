@@ -1,7 +1,7 @@
 import routeSort from 'route-sort';
 import Page from '../utils/Page.js';
-import { RequestObject, ServerOptions, SettingsOptions, TServerLookupObject } from '../utils/types.js';
-import { ProcessedRouteOptions } from './types.js';
+import { RequestObject, ServerOptions, SettingsOptions, ServerLookupObject } from '../utils/types.js';
+import { ProcessedRouteOptions, ProcessedRoutesObject } from './types.js';
 import fixCircularJson from '../utils/fixCircularJson.js';
 import { Elder as ElderClass } from '../core/Elder.js';
 
@@ -38,7 +38,7 @@ type Req = {
 
 interface IGetSpecialRequest {
   req: Req;
-  serverLookupObject: TServerLookupObject;
+  serverLookupObject: ServerLookupObject;
   server: ServerOptions;
 }
 
@@ -76,7 +76,7 @@ export const getSpecialRequest = ({ req, server, serverLookupObject }: IGetSpeci
 
 interface IFindPrebuildRequest {
   req: Req;
-  serverLookupObject: TServerLookupObject;
+  serverLookupObject: ServerLookupObject;
 }
 
 export const findPrebuiltRequest = ({ req, serverLookupObject }: IFindPrebuildRequest): RequestObject | false => {
@@ -112,14 +112,14 @@ export const initialRequestIsWellFormed = (request: RequestObject) => !!(request
 
 interface IRequestFromDynamicRoute {
   req: Req;
-  dynamicRoutes: ProcessedRouteOptions[];
+  routes: ProcessedRoutesObject;
   requestCache: Map<string, RequestObject> | undefined;
   settings: SettingsOptions;
 }
 
 export function requestFromDynamicRoute({
   req,
-  dynamicRoutes,
+  routes,
   requestCache,
   settings,
 }: IRequestFromDynamicRoute): RequestObject | false {
@@ -128,6 +128,13 @@ export function requestFromDynamicRoute({
     request.req = req;
     return request;
   }
+
+  // sort the routes in order of specificity
+  const routesPresort = Object.keys(routes).filter(
+    (cv) => routes[cv] && routes[cv].$$meta && routes[cv].$$meta.type === 'dynamic',
+  );
+  const dynamicRoutes: ProcessedRouteOptions[] = routeSort(routesPresort).map((cv) => routes[cv]);
+
   const route = getDynamicRoute({ path: req.path, dynamicRoutes });
   if (route) {
     const params = extractDynamicRouteParams({ path: req.path, $$meta: route.$$meta });
@@ -146,21 +153,12 @@ export function requestFromDynamicRoute({
   return false;
 }
 
-function prepareRouter(Elder: ElderClass) {
-  const { routes, serverLookupObject, settings, ...elder } = Elder;
-  const requestCache = settings.server && settings.server.cacheRequests ? new Map() : undefined;
-
-  // sort the routes in order of specificity
-  const routesPresort = Object.keys(routes).filter(
-    (cv) => routes[cv] && routes[cv].$$meta && routes[cv].$$meta.type === 'dynamic',
-  );
-  const dynamicRoutes: ProcessedRouteOptions[] = routeSort(routesPresort).map((cv) => routes[cv]);
-
-  const prefix = settings.$$internal.serverPrefix;
+function prepareRouter(elder: ElderClass) {
+  const requestCache = elder.settings.server && elder.settings.server.cacheRequests ? new Map() : undefined;
 
   const forPage = {
-    settings,
-    routes,
+    settings: elder.settings,
+    routes: elder.routes,
     query: elder.query,
     helpers: elder.helpers,
     data: elder.data,
@@ -172,8 +170,13 @@ function prepareRouter(Elder: ElderClass) {
 
   async function handleRequest({ res, next, request, dynamic = false, type = '' }) {
     if (!request.route || typeof request.route !== 'string') return next();
-    if (!routes[request.route]) return next();
-    const page = new Page({ ...forPage, request, next: dynamic ? next : undefined, route: routes[request.route] });
+    if (!elder.routes[request.route]) return next();
+    const page = new Page({
+      ...forPage,
+      request,
+      next: dynamic ? next : undefined,
+      route: elder.routes[request.route],
+    });
     const { htmlString: html, data, allRequests } = await page.build();
 
     if (type === 'data' && data) {
@@ -205,21 +208,26 @@ function prepareRouter(Elder: ElderClass) {
       try {
         // initial request may be well formed if it is modified via a hook BEFORE the router runs.
         if (initialRequestIsWellFormed(initialRequest)) return handleRequest({ res, next, request: initialRequest });
-        if (!needsElderRequest({ req, prefix })) return next();
+        if (!needsElderRequest({ req, prefix: elder.settings.$$internal.serverPrefix })) return next();
         const { request: specialRequest, type } = getSpecialRequest({
           req,
-          server: settings.server as ServerOptions,
-          serverLookupObject,
+          server: elder.settings.server as ServerOptions,
+          serverLookupObject: elder.serverLookupObject,
         });
         if (specialRequest) {
           return handleRequest({ res, next, request: { ...specialRequest, ...initialRequest }, type });
         }
         const request = findPrebuiltRequest({
           req,
-          serverLookupObject,
+          serverLookupObject: elder.serverLookupObject,
         });
         if (request) return handleRequest({ res, next, request: { ...request, ...initialRequest } });
-        const dynamicRequest = requestFromDynamicRoute({ req, dynamicRoutes, requestCache, settings });
+        const dynamicRequest = requestFromDynamicRoute({
+          req,
+          routes: elder.routes,
+          requestCache,
+          settings: elder.settings,
+        });
         if (dynamicRequest)
           return handleRequest({ res, next, request: { ...dynamicRequest, ...initialRequest }, dynamic: true });
         return next();

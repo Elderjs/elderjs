@@ -37,6 +37,7 @@ export default function getFilesAndWatcher(settings: TGetFilesAndWatcher): {
     `${settings.ssrComponents}/**/*.js`,
     `${settings.clientComponents}/**/*.js`,
     `${settings.srcDir}/**/*.svelte`,
+    `${settings.srcDir}/elder.config.cjs`,
 
     // FIXME: other paths to watch... for instance md files. if they are inside a route, we refresh the route.
   ];
@@ -59,21 +60,19 @@ export default function getFilesAndWatcher(settings: TGetFilesAndWatcher): {
     function handleChange(file: string, stat: Stats) {
       const f = path.relative(settings.srcDir, file);
       if (f.startsWith('routes')) {
-        watcher.emit('route', f);
+        watcher.emit('route', hashUrl(file));
       } else if (f === 'hooks.js') {
-        watcher.emit('hooks', f);
+        watcher.emit('hooks', hashUrl(file));
       } else if (f === 'shortcodes.js') {
-        watcher.emit('shortcodes', f);
+        watcher.emit('shortcodes', hashUrl(file));
       } else if (file.includes(settings.ssrComponents)) {
-        const ef = path.relative(settings.ssrComponents, file);
-        watcher.emit('ssr', ef);
-
+        watcher.emit('ssr', hashUrl(file));
         const idx = server.findIndex((f) => f.includes(file));
         server[idx] = hashUrl(windowsPathFix(file));
       } else if (file.includes(settings.clientComponents)) {
-        const ef = path.relative(settings.clientComponents, file);
-        watcher.emit('client', ef);
-        console.log('client', ef);
+        watcher.emit('client', hashUrl(file));
+      } else if (file.endsWith(`elder.config.js`)) {
+        watcher.emit('elder.config', hashUrl(file));
       }
       all = [...chokFiles.keys()];
     }

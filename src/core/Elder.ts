@@ -1,6 +1,6 @@
 import path from 'path';
 
-import routes from '../routes/routes.js';
+import routes, { prepareRoute } from '../routes/routes.js';
 import plugins from '../plugins/index.js';
 import elderJsShortcodes from '../shortcodes/index.js';
 import { hookInterface } from '../hooks/hookInterface.js';
@@ -19,18 +19,20 @@ import {
   getConfig,
   prepareInlineShortcode,
 } from '../utils/index.js';
-import { ProcessedRouteOptions, ProcessedRoutesObject } from '../routes/types.js';
+import { ProcessedRouteOptions, ProcessedRoutesObject, RoutesObject } from '../routes/types.js';
 import { HooksArray, ProcessedHook, ProcessedHooksArray, TRunHook } from '../hooks/types.js';
 import { ShortcodeDefinitions } from '../shortcodes/types.js';
 import {
   SettingsOptions,
   QueryOptions,
   RequestObject,
-  TServerLookupObject,
+  ServerLookupObject,
   ExcludesFalse,
   InitializationOptions,
   THelpers,
   TErrors,
+  AllRequests,
+  DebugOptions,
 } from '../utils/types';
 import createReadOnlyProxy from '../utils/createReadOnlyProxy.js';
 import workerBuild from '../workerBuild.js';
@@ -59,7 +61,7 @@ class Elder {
 
   allRequests: Array<RequestObject>;
 
-  serverLookupObject: TServerLookupObject;
+  serverLookupObject: ServerLookupObject;
 
   errors: TErrors;
 
@@ -93,10 +95,6 @@ class Elder {
     this.settings.server = initialOptions.context === 'server' && this.settings.server;
     this.settings.build = initialOptions.context === 'build' && this.settings.build;
     this.settings.worker = !!initialOptions.worker;
-
-    if (this.settings.context === 'build') {
-      this.settings.debug.automagic = false;
-    }
 
     if (this.settings.context === 'server') {
       this.server = prepareServer({ bootstrapComplete: this.bootstrapComplete });
@@ -142,7 +140,8 @@ class Elder {
 
         // merge shortcodes
         let shortcodesJs: ShortcodeDefinitions = await getUserShortcodes(this.settings.$$internal.files.shortcodes);
-        this.shortcodes = [...elderJsShortcodes, ...pluginShortcodes, ...shortcodesJs];
+        // user shortcodes first
+        this.shortcodes = [...shortcodesJs, ...elderJsShortcodes, ...pluginShortcodes];
 
         /**
          *
@@ -178,33 +177,19 @@ class Elder {
 
         await this.runHook('bootstrap', this);
 
-        // collect all of our requests
+        /** get all of the requests */
         this.perf.start('startup.routes');
-        for (const route of Object.values(this.routes)) {
-          const routeRequests = await runAllRequestOnRoute({ route, ...this });
-          this.allRequests = this.allRequests.concat(routeRequests);
-        }
-
+        this.allRequests = await getAllRequestsFromRoutes(this);
         this.perf.end(`startup.routes`);
 
         await this.runHook('allRequests', this);
 
+        /** setup permalinks and server lookup object */
         this.perf.start(`startup.setPermalinks`);
-
-        for (const request of this.allRequests) {
-          request.type = this.settings.context;
-          request.permalink = await addPermalinkToRequest({
-            request,
-            route: this.routes[request.route],
-            settings: this.settings,
-            helpers: this.helpers,
-          });
-
-          if (this.settings.context === 'server') {
-            this.serverLookupObject[request.permalink] = request;
-          }
+        this.allRequests = await completeRequests(this);
+        if (this.settings.context === 'server') {
+          this.serverLookupObject = makeServerLookupObject(this.allRequests);
         }
-
         this.perf.end(`startup.setPermalinks`);
 
         this.perf.start(`startup.validatePermalinks`);
@@ -216,21 +201,103 @@ class Elder {
         this.perf.end(`startup.prepareRouter`);
 
         this.perf.end('startup');
+
         this.perf.stop();
 
-        const t = this.perf.timings.slice(-1)[0] && Math.round(this.perf.timings.slice(-1)[0].duration * 10) / 10;
-        if (t && t > 0) {
-          console.log(
-            `Elder.js Startup: ${t}ms. ${t > 5000 ? `For details set debug.performance: true in elder.config.js` : ''}`,
-          );
-          if (this.settings.debug.performance) {
-            displayPerfTimings([...this.perf.timings]);
-          }
-        }
+        displayElderPerfTimings('Elder.js Startup', this);
 
         this.markBootstrapComplete(this);
 
-        // watcher stuff!
+        this.settings.$$internal.watcher.on('route', async (file) => {
+          console.log(`route`, file);
+          this.perf.reset();
+          this.perf.start('routeRefresh');
+          /**
+           * Route Change:
+           * when a route changes, it needs to reload the route... then:
+           * update the routes object
+           * needs to rebuild helpers.permalinks
+           * need to run the bootstrap hook
+           * run the route's all function
+           * filter out prior requests from allRequests... and replace with new requests
+           * needs to rerun the allRequests hook
+           * need to rebuild all permalinks
+           * needs to rebuild the server lookup object.
+           * need to check for duplicate permalinks.
+           * rebuild the router
+           */
+
+          const newRoute = await prepareRoute({ file, settings: this.settings });
+          if (newRoute) {
+            console.log(this.routes[newRoute.name]);
+            this.routes = {
+              ...this.routes,
+              [newRoute.name]: newRoute,
+            };
+
+            this.routes[newRoute.name] = newRoute;
+            this.helpers = makeElderjsHelpers(this.routes, this.settings);
+
+            await this.runHook('bootstrap', this);
+
+            const newRequests = await runAllRequestOnRoute({ route: newRoute, ...this });
+
+            this.allRequests = [
+              ...this.allRequests.filter((r) => !(r.route === newRoute.name && r.source === 'routejs')),
+              ...newRequests,
+            ];
+
+            await this.runHook('allRequests', this);
+
+            this.allRequests = await completeRequests(this);
+
+            this.serverLookupObject = makeServerLookupObject(this.allRequests);
+
+            this.router = prepareRouter(this);
+            console.log(this.serverLookupObject);
+
+            this.perf.end('routeRefresh');
+
+            displayElderPerfTimings(`Refreshed ${newRoute.name} route`, this);
+          }
+        });
+        this.settings.$$internal.watcher.on('hooks', async (file) => {
+          console.log(`hooks`, file);
+
+          const currentHooks = this.hooks.filter((h) => h.$$meta.addedBy === 'hooks.js');
+
+          const newHooks = await getUserHooks(file);
+
+          for (const hook of newHooks) {
+          }
+
+          /// hook files
+          /// load and validate hooks
+          /// wipe data object.
+          /// redefine runHook
+          /// rerun hooks.
+          // option 1:
+          /// hash the individual hook definitions for "allRequests", "bootstrap", "customizeHooks"
+          /// if the hash is different, then rerun the hooks
+          /// option 2: just rerun everything from customizeHooks
+        });
+        this.settings.$$internal.watcher.on('shortcodes', async (file) => {
+          const newShortcodes = await getUserShortcodes(file);
+
+          // user shortcodes should always go first.
+          this.shortcodes = [...newShortcodes, ...this.shortcodes.filter((s) => s.$$meta.addedBy !== 'shortcodes.js')];
+        });
+        this.settings.$$internal.watcher.on('ssr', async (file) => {
+          console.log(`ssr`, file);
+          // updates findSvelteComponent... probably clearing the cache.
+        });
+        this.settings.$$internal.watcher.on('plugin', async (file) => {
+          console.log('plugin', file);
+        });
+
+        this.settings.$$internal.watcher.on('elder.config', async (file) => {
+          console.log(`elder.config`, file);
+        });
       });
     });
   }
@@ -253,7 +320,7 @@ export function checkForDuplicatePermalinks(allRequests) {
           throw new Error(
             `Duplicate permalinks detected. Here are the relevant requests: ${JSON.stringify(
               allRequests[i],
-            )} and ${JSON.stringify(this.allRequests[ii])}`,
+            )} and ${JSON.stringify(allRequests[ii])}`,
           );
         }
       }
@@ -326,7 +393,6 @@ export async function runAllRequestOnRoute({
   perf.start(`startup.routes.${route.name}`);
   let allRequestsForRoute = [];
   if (typeof route.all === 'function') {
-    perf.start(`startup.routes.${route.name}.all`);
     allRequestsForRoute = await route.all({
       settings: createReadOnlyProxy(settings, 'settings', `${route.name} all function`),
       query: createReadOnlyProxy(query, 'query', `${route.name} all function`),
@@ -334,7 +400,6 @@ export async function runAllRequestOnRoute({
       data: createReadOnlyProxy(data, 'data', `${route.name} all function`),
       perf: perf.prefix(`startup.routes.${route.name}.all`),
     });
-    perf.end(`startup.routes.${route.name}.all`);
   } else if (Array.isArray(route.all)) {
     allRequestsForRoute = route.all;
   }
@@ -349,10 +414,21 @@ export async function runAllRequestOnRoute({
 
 export function makeElderjsHelpers(routes: ProcessedRoutesObject, settings: SettingsOptions) {
   return {
-    permalinks: permalinks({ routes: routes, settings: settings }),
+    permalinks: permalinks({ routes, settings: settings }),
     inlineSvelteComponent,
     shortcode: prepareInlineShortcode({ settings: settings }),
   };
+}
+
+export async function getAllRequestsFromRoutes(
+  elder: Pick<Elder, 'routes' | 'data' | 'perf' | 'helpers' | 'settings' | 'query' | 'allRequests'>,
+) {
+  let allRequests = [];
+  for (const route of Object.values(elder.routes)) {
+    const routeRequests = await runAllRequestOnRoute({ route, ...elder });
+    allRequests.push(...routeRequests);
+  }
+  return allRequests;
 }
 
 export async function addPermalinkToRequest({
@@ -385,6 +461,40 @@ export async function addPermalinkToRequest({
   });
 
   return permalink;
+}
+
+export async function completeRequests(elder: Pick<Elder, 'allRequests' | 'settings' | 'helpers' | 'routes'>) {
+  const requests = [];
+  for (const request of elder.allRequests) {
+    request.source = 'routejs';
+    request.type = elder.settings.context;
+    request.permalink = await addPermalinkToRequest({
+      request,
+      route: elder.routes[request.route],
+      settings: elder.settings,
+      helpers: elder.helpers,
+    });
+    requests.push(request);
+  }
+  return requests;
+}
+
+export function makeServerLookupObject(allRequests: AllRequests): ServerLookupObject {
+  const lookup = {};
+  for (const request of allRequests) {
+    lookup[request.permalink] = request;
+  }
+  return lookup;
+}
+
+function displayElderPerfTimings(msg: string, elder: Pick<Elder, 'perf'> & { settings: { debug: DebugOptions } }) {
+  const t = elder.perf.timings.slice(-1)[0] && Math.round(elder.perf.timings.slice(-1)[0].duration * 10) / 10;
+  if (t && t > 0) {
+    console.log(`${msg}: ${t}ms. ${t > 5000 ? `For details set debug.performance: true in elder.config.js` : ''}`);
+    if (elder.settings.debug.performance) {
+      displayPerfTimings([...elder.perf.timings]);
+    }
+  }
 }
 
 export { Elder, build, partialHydration };

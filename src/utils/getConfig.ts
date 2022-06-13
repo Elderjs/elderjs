@@ -76,6 +76,8 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
     ssrComponents,
   });
 
+  console.log(watcher);
+
   config.$$internal = {
     production: !notProduction(),
     ssrComponents,

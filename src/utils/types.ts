@@ -51,7 +51,7 @@ type Internal = {
   watcher: EventEmitter;
 };
 
-type DebugOptions = {
+export type DebugOptions = {
   stacks: boolean;
   hooks: boolean;
   performance: boolean;
@@ -136,11 +136,12 @@ export type RequestObject = {
   type: string;
   permalink?: string;
   req?: ReqDetails;
+  source?: string;
 } & {
   [x: string]: any | { [y: string]: any };
 };
 
-export type TServerLookupObject = {
+export type ServerLookupObject = {
   [name: string]: RequestObject;
 };
 

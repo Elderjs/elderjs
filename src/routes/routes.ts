@@ -21,10 +21,10 @@ export async function prepareRoute({
 }: {
   file: string;
   settings: SettingsOptions;
-}): Promise<RouteOptions | false> {
+}): Promise<ProcessedRouteOptions | false> {
   const file = unhashUrl(hashedFile);
   const routeName = file.replace('/route.js', '').split('/').pop();
-  const route: RouteOptions = await requireFile(file);
+  const route: RouteOptions = await requireFile(hashedFile);
   route.$$meta = {
     type: 'file',
     addedBy: file,
@@ -125,7 +125,7 @@ export async function prepareRoute({
   route.templateComponent = svelteComponent(route.template, 'routes');
   route.layoutComponent = svelteComponent(route.layout, 'layouts');
 
-  return validateRoute(route) && route;
+  return validateRoute(route) && (route as ProcessedRouteOptions);
 }
 
 async function prepareRoutes(settings: SettingsOptions): Promise<ProcessedRoutesObject> {

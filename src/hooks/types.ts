@@ -8,7 +8,7 @@ import {
   SettingsOptions,
   Stack,
   TErrors,
-  TServerLookupObject,
+  ServerLookupObject,
   TUserHelpers,
   AllRequests,
 } from '../utils/types';
@@ -109,7 +109,7 @@ export interface IMiddlewareHook extends IHookBase {
     req: any;
     next: any;
     res: any;
-    serverLookupObject: TServerLookupObject;
+    serverLookupObject: ServerLookupObject;
     runHook: TRunHook;
     shortcodes: ShortcodeDefinitions;
     request: RequestObject;
@@ -127,7 +127,7 @@ export interface IMiddlewareHook extends IHookBase {
     next?: any;
     res?: any;
     request?: RequestObject;
-    serverLookupObject?: TServerLookupObject;
+    serverLookupObject?: ServerLookupObject;
   }>;
 }
 
