@@ -1,4 +1,4 @@
-import { Elder } from '../Elder.js';
+import { Elder } from '../core/Elder.js';
 
 function prepareServer({ bootstrapComplete }: { bootstrapComplete: Promise<Elder> }) {
   // eslint-disable-next-line consistent-return

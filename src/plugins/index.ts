@@ -12,7 +12,7 @@ import {
   TProcessedHook,
   TProcessedHooksArray,
 } from '../index.js';
-import { Elder } from '../Elder.js';
+import { Elder } from '../core/Elder.js';
 import { ProcessedRouteOptions, ProcessedRoutesObject } from '../routes/types.js';
 import createReadOnlyProxy from '../utils/createReadOnlyProxy.js';
 import wrapPermalinkFn from '../utils/wrapPermalinkFn.js';

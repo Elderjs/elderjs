@@ -2,6 +2,7 @@ import Page from './Page.js';
 import { inlineSvelteComponent } from '../partialHydration/inlineSvelteComponent.js';
 import prepareInlineShortcode from './prepareInlineShortcode.js';
 import permalinks from './permalinks.js';
+import EventEmitter from 'events';
 
 export type ServerOptions = {
   prefix: string;
@@ -23,7 +24,6 @@ type BuildOptions = {
 export interface SvelteComponentFiles {
   ssr: string | undefined;
   client: string | undefined;
-  iife: string | undefined;
 }
 
 export interface FindSvelteComponent {
@@ -37,8 +37,14 @@ type Internal = {
   distElder: string;
   logPrefix: string;
   serverPrefix: string;
-  findComponent: FindSvelteComponent;
+  findComponent?: FindSvelteComponent;
   publicCssFile?: string;
+  production: boolean;
+  files: {
+    client: string[];
+    server: string[];
+  };
+  watcher: EventEmitter;
 };
 
 type DebugOptions = {

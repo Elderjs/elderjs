@@ -1,11 +1,13 @@
 import { cosmiconfigSync } from 'cosmiconfig';
 import defaultsDeep from 'lodash.defaultsdeep';
 import path from 'path';
-import { readJSONSync, ensureDirSync, readdirSync, existsSync } from 'fs-extra';
+import fs from 'fs-extra';
 import { SettingsOptions, InitializationOptions } from './types.js';
 import { getDefaultConfig } from './validations.js';
 import prepareFindSvelteComponent from '../partialHydration/prepareFindSvelteComponent.js';
 import normalizePrefix from './normalizePrefix.js';
+import notProduction from './notProduction.js';
+import getFilesAndWatcher from '../core/getFilesAndWatcher.js';
 
 type TCheckCssFiles = {
   cssFiles: string[];
@@ -43,8 +45,8 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
 
   const ejsPkg = path.resolve(`./node_modules/@elderjs/elderjs/package.json`);
   let pkgJson;
-  if (existsSync(ejsPkg)) {
-    pkgJson = readJSONSync(ejsPkg);
+  if (fs.existsSync(ejsPkg)) {
+    pkgJson = fs.readJSONSync(ejsPkg);
   } else {
     pkgJson = { version: 'unknown' };
   }
@@ -64,28 +66,40 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
   const ssrComponents = path.resolve(config.rootDir, './___ELDER___/compiled/');
   const clientComponents = path.resolve(config.distDir, `.${serverPrefix}/_elderjs/svelte/`);
   const distElder = path.resolve(config.distDir, `.${serverPrefix}/_elderjs/`);
-  ensureDirSync(path.resolve(distElder));
-  ensureDirSync(path.resolve(clientComponents));
+  fs.ensureDirSync(path.resolve(distElder));
+  fs.ensureDirSync(path.resolve(clientComponents));
+
+  const { server, client, watcher } = getFilesAndWatcher({
+    ...config,
+    production: !notProduction(),
+    clientComponents,
+    ssrComponents,
+  });
 
   config.$$internal = {
+    production: !notProduction(),
     ssrComponents,
     clientComponents,
     distElder,
     logPrefix: `[Elder.js]:`,
     serverPrefix,
     findComponent: prepareFindSvelteComponent({
-      ssrFolder: ssrComponents,
+      clientComponents: client,
+      ssrComponents: server,
       rootDir,
-      clientComponents,
-      distDir: config.distDir,
       srcDir: config.srcDir,
     }),
+    files: {
+      server,
+      client,
+    },
+    watcher,
   };
 
   if ((config.css === 'file' || config.css === 'lazy') && initializationOptions.context !== 'test') {
     const assetPath = path.resolve(distElder, `.${path.sep}assets`);
-    ensureDirSync(path.resolve(assetPath));
-    const cssFiles = readdirSync(assetPath).filter((f) => f.endsWith('.css'));
+    fs.ensureDirSync(path.resolve(assetPath));
+    const cssFiles = fs.readdirSync(assetPath).filter((f) => f.endsWith('.css'));
     config.$$internal.publicCssFile = getCssFile({ cssFiles, serverPrefix, config, assetPath });
   }
 

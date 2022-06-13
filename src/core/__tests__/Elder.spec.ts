@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { resolve } from 'path';
-import normalizeSnapshot from '../utils/normalizeSnapshot.js';
+import normalizeSnapshot from '../../utils/normalizeSnapshot.js';
 
 vi.mock(`../routes/routes`, () => () => ({
   'route-a': {
@@ -99,7 +99,7 @@ describe('#Elder', () => {
       description: 'test',
       init: vi.fn(),
     }));
-    const { Elder } = await import(`../index`);
+    const { Elder } = await import(`../../index`);
     const elder = await new Elder({ context: 'server', worker: false });
     await elder.bootstrap();
     await elder.worker([]);
@@ -174,7 +174,7 @@ describe('#Elder', () => {
       init: vi.fn().mockImplementation((p) => p),
     }));
 
-    const { Elder } = await import(`../index`);
+    const { Elder } = await import(`../../index`);
     const elder = await new Elder({ context: 'server', worker: false });
     await elder.bootstrap();
 

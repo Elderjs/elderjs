@@ -4,7 +4,7 @@ import os from 'os';
 import cluster from 'cluster';
 
 import getElderConfig from '../utils/getConfig.js';
-import { Elder } from '../Elder.js';
+import { Elder } from '../core/Elder.js';
 import shuffleArray from '../utils/shuffleArray.js';
 import { BuildResult, InitializationOptions } from '../utils/types.js';
 

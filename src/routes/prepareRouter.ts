@@ -3,7 +3,7 @@ import Page from '../utils/Page.js';
 import { RequestObject, ServerOptions, SettingsOptions, TServerLookupObject } from '../utils/types.js';
 import { ProcessedRouteOptions } from './types.js';
 import fixCircularJson from '../utils/fixCircularJson.js';
-import { Elder as ElderClass } from '../Elder.js';
+import { Elder as ElderClass } from '../core/Elder.js';
 
 export function extractDynamicRouteParams({ path, $$meta }) {
   let i = 0;

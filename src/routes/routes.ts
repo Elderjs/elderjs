@@ -1,4 +1,4 @@
-import { sync } from 'glob';
+import glob from 'fast-glob';
 import kebabcase from 'lodash.kebabcase';
 import { parse as toRegExp } from 'regexparam';
 import path from 'path';
@@ -19,7 +19,7 @@ async function prepareRoutes(settings: SettingsOptions): Promise<ProcessedRoutes
   try {
     const { ssrComponents: ssrFolder, serverPrefix = '' } = settings.$$internal;
 
-    const files = sync(`${settings.srcDir}/routes/*/+(*.js|*.svelte)`).map((p) => windowsPathFix(p));
+    const files = glob.sync(`${settings.srcDir}/routes/*/+(*.js|*.svelte)`).map((p) => windowsPathFix(p));
     const routejsFiles: string[] = files.filter((f) => f.endsWith('/route.js'));
 
     const routes: ProcessedRoutesObject = {};
@@ -104,7 +104,7 @@ async function prepareRoutes(settings: SettingsOptions): Promise<ProcessedRoutes
       routes[routeName] = route as ProcessedRouteOptions;
     }
 
-    const ssrComponents = sync(`${ssrFolder}/**/*.js`).map((p) => windowsPathFix(p));
+    const ssrComponents = glob.sync(`${ssrFolder}/**/*.js`).map((p) => windowsPathFix(p));
     Object.keys(routes).forEach((routeName) => {
       const ssrTemplate = ssrComponents.find((f) => {
         const suffix = routes[routeName].template

@@ -1,5 +1,5 @@
 import { performance, PerformanceObserver } from 'perf_hooks';
-import { Elder } from '../Elder.js';
+import { Elder } from '../core/Elder.js';
 import Page from './Page.js';
 /**
  * A little helper around perf_hooks.

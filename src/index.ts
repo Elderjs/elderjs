@@ -5,7 +5,7 @@ export { default as partialHydration, preprocessSvelteContent } from './partialH
 export { default as esbuildBundler } from './esbuild/esbuildBundler.js';
 
 export { configSchema, hookSchema, routeSchema, pluginSchema, shortcodeSchema } from './utils/validations.js';
-export { Elder, build } from './Elder.js';
+export { Elder, build } from './core/Elder.js';
 export * from './utils/types.js';
 export * from './utils/index.js';
 export * from './routes/routes.js';

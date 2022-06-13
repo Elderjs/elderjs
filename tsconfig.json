@@ -13,7 +13,8 @@
     // "noImplicitAny": true,
     "esModuleInterop": false,
     "declaration": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true
   },
   "include": ["src"],
   "exclude": ["node_modules", "**/__tests__/**", "dist"],
