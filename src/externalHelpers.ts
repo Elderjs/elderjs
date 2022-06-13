@@ -31,13 +31,7 @@ async function externalHelpers({
         }
         cache = userHelpers;
       } catch (err) {
-        if (err.code === 'ENOENT') {
-          if (settings.debug.automagic) {
-            console.log(
-              `debug.automagic:: We attempted to automatically add in helpers, but we couldn't find the file at ${srcHelpers}.`,
-            );
-          }
-        }
+        // silence, helpers are optional
       }
     } else {
       userHelpers = cache;

@@ -76,11 +76,6 @@ const configSchema = yup.object({
         .default(false)
         .label('Outputs a detailed speed report on each pageload.'),
       build: yup.boolean().notRequired().default(false).label('Displays detailed build information for each worker.'),
-      automagic: yup
-        .boolean()
-        .notRequired()
-        .default(false)
-        .label('Displays settings or actions that are automagically done to help with debugging.'),
     })
     .label('Offers various levels of debug logging.'),
   hooks: yup.object({

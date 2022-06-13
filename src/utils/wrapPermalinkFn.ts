@@ -22,19 +22,17 @@ const wrapPermalinkFn =
 
     if (permalink !== '/') {
       if (permalink[0] !== '/') {
-        if (settings.debug.automagic) {
-          console.warn(
-            `The permalink function for route "${routeName}" does not return a string with a beginning slash. One has been added. To disable this warning, fix the function's return value to include a beginning slash.`,
-          );
-        }
+        console.warn(
+          `The permalink function for route "${routeName}" does not return a string with a beginning slash. One has been added. To disable this warning, fix the function's return value to include a beginning slash.`,
+        );
+
         permalink = `/${permalink}`;
       }
       if (permalink.slice(-1) !== '/') {
-        if (settings.debug.automagic) {
-          console.warn(
-            `The permalink function for route "${routeName}" does not return a string with a ending slash. One has been added. To disable this warning, fix the function's return value to include a ending slash.`,
-          );
-        }
+        console.warn(
+          `The permalink function for route "${routeName}" does not return a string with a ending slash. One has been added. To disable this warning, fix the function's return value to include a ending slash.`,
+        );
+
         permalink = `${permalink}/`;
       }
     }

@@ -56,7 +56,6 @@ type DebugOptions = {
   hooks: boolean;
   performance: boolean;
   build: boolean;
-  automagic: boolean;
   shortcodes: boolean;
   props: boolean;
 };
