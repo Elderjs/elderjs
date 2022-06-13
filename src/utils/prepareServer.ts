@@ -5,10 +5,9 @@ function prepareServer({ bootstrapComplete }: { bootstrapComplete: Promise<Elder
   return async function prepServer(req, res, next) {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { runHook, ...bootstrap } = await bootstrapComplete;
-      await runHook('middleware', {
-        ...bootstrap,
-        runHook,
+      const elder = await bootstrapComplete;
+      await elder.runHook('middleware', {
+        ...elder,
         req,
         next,
         res,

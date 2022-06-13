@@ -33,23 +33,25 @@ export default function getFilesAndWatcher(settings: TGetFilesAndWatcher): {
 } {
   const watcher = new EventEmitter();
   const paths = [
-    `${settings.srcDir}/**/*.js`,
+    `${settings.srcDir}/**/*`,
+    // `${settings.srcDir}/**/*.js`,
     `${settings.ssrComponents}/**/*.js`,
     `${settings.clientComponents}/**/*.js`,
-    `${settings.srcDir}/**/*.svelte`,
+    // `${settings.srcDir}/**/*.svelte`,
     `${settings.srcDir}/elder.config.cjs`,
-
-    // FIXME: other paths to watch... for instance md files. if they are inside a route, we refresh the route.
   ];
 
-  const initialFiles = fg.sync(paths).map(windowsPathFix);
+  let all: string[] = fg.sync(paths).map(windowsPathFix);
 
-  let server: string[] = [];
-  let client: string[] = [];
-  let routes: string[] = [];
-  let hooks: string;
-  let shortcodes: string;
-  let all: string[] = initialFiles;
+  let server: string[] = all.filter((f) => f.includes(settings.ssrComponents)).map(hashUrl);
+  let routes: string[] = all
+    .filter((f) => f.includes(path.join(settings.srcDir, './routes/')) && f.toLowerCase().endsWith('route.js'))
+    .map(hashUrl);
+  let hooks: string = hashUrl(all.find((f) => f === path.join(settings.srcDir, './hooks.js')));
+  let shortcodes: string = hashUrl(all.find((f) => f === path.join(settings.srcDir, './shortcodes.js')));
+
+  // already hashed
+  let client: string[] = all.filter((f) => f.includes(settings.clientComponents));
 
   if (!settings.production && settings.server) {
     // todo: add in plugin folders for Elder.js
@@ -60,7 +62,17 @@ export default function getFilesAndWatcher(settings: TGetFilesAndWatcher): {
     function handleChange(file: string, stat: Stats) {
       const f = path.relative(settings.srcDir, file);
       if (f.startsWith('routes')) {
-        watcher.emit('route', hashUrl(file));
+        if (f.endsWith('route.js')) {
+          if (!routes.includes(file)) routes.push(file);
+          watcher.emit('route', hashUrl(file));
+        } else {
+          // find nearest route.
+          const routePaths = routes.map((r) => unhashUrl(r).replace('route.js', ''));
+          const found = routePaths.find((r) => file.includes(r));
+
+          console.log(found, file, routePaths, hashUrl(`${found}route.js`));
+          watcher.emit('route', hashUrl(`${found}route.js`));
+        }
       } else if (f === 'hooks.js') {
         watcher.emit('hooks', hashUrl(file));
       } else if (f === 'shortcodes.js') {
@@ -100,18 +112,6 @@ export default function getFilesAndWatcher(settings: TGetFilesAndWatcher): {
       initialScanComplete = true;
     });
   }
-
-  console.log(initialFiles);
-  // hashed already
-  client = initialFiles.filter((f) => f.includes(settings.clientComponents));
-
-  // hashed to invalidate server side cache
-  server = initialFiles.filter((f) => f.includes(settings.ssrComponents)).map(hashUrl);
-  shortcodes = hashUrl(initialFiles.find((f) => f === path.join(settings.srcDir, './shortcodes.js')));
-  hooks = hashUrl(initialFiles.find((f) => f === path.join(settings.srcDir, './hooks.js')));
-  routes = initialFiles
-    .filter((f) => f.includes(path.join(settings.srcDir, './routes/')) && f.toLowerCase().endsWith('route.js'))
-    .map(hashUrl);
 
   return { server, client, watcher, hooks, shortcodes, routes, all };
 }

@@ -1,7 +1,7 @@
 import ShortcodeParser from '@elderjs/shortcodes';
+import { Page } from '../index.js';
 import createReadOnlyProxy from './createReadOnlyProxy.js';
-
-// TODO: Needs TS magic.
+import { PerfPayload } from './perf.js';
 
 function prepareShortcodeParser({
   shortcodes,
@@ -15,7 +15,20 @@ function prepareShortcodeParser({
   headStack,
   customJsStack,
   perf,
-}) {
+}: Pick<
+  Page,
+  | 'shortcodes'
+  | 'helpers'
+  | 'data'
+  | 'settings'
+  | 'request'
+  | 'query'
+  | 'allRequests'
+  | 'cssStack'
+  | 'cssStack'
+  | 'headStack'
+  | 'customJsStack'
+> & { perf: PerfPayload }) {
   const { openPattern, closePattern } = settings.shortcodes;
   const shortcodeParser = ShortcodeParser({ openPattern, closePattern });
 
@@ -26,6 +39,8 @@ function prepareShortcodeParser({
       throw new Error(
         `Shortcodes must have a shortcode property to define their usage. Problem code: ${JSON.stringify(shortcode)}`,
       );
+
+    console.log(shortcode.run.toString());
 
     shortcodeParser.add(shortcode.shortcode, async (props, content) => {
       perf.start(shortcode.shortcode);

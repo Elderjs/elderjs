@@ -156,23 +156,19 @@ export function requestFromDynamicRoute({
 function prepareRouter(elder: ElderClass) {
   const requestCache = elder.settings.server && elder.settings.server.cacheRequests ? new Map() : undefined;
 
-  const forPage = {
-    settings: elder.settings,
-    routes: elder.routes,
-    query: elder.query,
-    helpers: elder.helpers,
-    data: elder.data,
-    runHook: elder.runHook,
-    allRequests: elder.allRequests,
-    errors: elder.errors,
-    shortcodes: elder.shortcodes,
-  };
-
   async function handleRequest({ res, next, request, dynamic = false, type = '' }) {
     if (!request.route || typeof request.route !== 'string') return next();
     if (!elder.routes[request.route]) return next();
     const page = new Page({
-      ...forPage,
+      settings: elder.settings,
+      routes: elder.routes,
+      query: elder.query,
+      helpers: elder.helpers,
+      data: elder.data,
+      runHook: elder.runHook,
+      allRequests: elder.allRequests,
+      errors: elder.errors,
+      shortcodes: elder.shortcodes,
       request,
       next: dynamic ? next : undefined,
       route: elder.routes[request.route],

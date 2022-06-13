@@ -171,7 +171,7 @@ class Elder {
         // we need to rebuild runHook with these customizations.
         this.runHook = prepareRunHook({
           hooks: this.hooks,
-          allSupportedHooks: hookInterface,
+          allSupportedHooks: this.hookInterface,
           settings: this.settings,
         });
 
@@ -208,16 +208,18 @@ class Elder {
 
         this.markBootstrapComplete(this);
 
+        /**
+         * Below handles reloading internal state as needed.
+         */
         this.settings.$$internal.watcher.on('route', async (file) => {
-          console.log(`route`, file);
           this.perf.reset();
-          this.perf.start('routeRefresh');
+          this.perf.start('stateRefresh');
           /**
-           * Route Change:
+           * Route Change: As of 6/13/2022:
            * when a route changes, it needs to reload the route... then:
            * update the routes object
            * needs to rebuild helpers.permalinks
-           * need to run the bootstrap hook
+           * need to wipe out the data object, then run the bootstrap hook
            * run the route's all function
            * filter out prior requests from allRequests... and replace with new requests
            * needs to rerun the allRequests hook
@@ -229,7 +231,6 @@ class Elder {
 
           const newRoute = await prepareRoute({ file, settings: this.settings });
           if (newRoute) {
-            console.log(this.routes[newRoute.name]);
             this.routes = {
               ...this.routes,
               [newRoute.name]: newRoute,
@@ -238,6 +239,7 @@ class Elder {
             this.routes[newRoute.name] = newRoute;
             this.helpers = makeElderjsHelpers(this.routes, this.settings);
 
+            this.data = {};
             await this.runHook('bootstrap', this);
 
             const newRequests = await runAllRequestOnRoute({ route: newRoute, ...this });
@@ -254,38 +256,77 @@ class Elder {
             this.serverLookupObject = makeServerLookupObject(this.allRequests);
 
             this.router = prepareRouter(this);
-            console.log(this.serverLookupObject);
 
-            this.perf.end('routeRefresh');
-
+            this.perf.end('stateRefresh');
             displayElderPerfTimings(`Refreshed ${newRoute.name} route`, this);
           }
         });
         this.settings.$$internal.watcher.on('hooks', async (file) => {
-          console.log(`hooks`, file);
+          this.perf.reset();
+          this.perf.start('stateRefresh');
+
+          /**
+           * When a hooks.js file changes we want to:
+           * load the new file
+           * look for any hooks that have changed by comparing the hook.run.toString()s
+           * For the ones that changed, track the hooks that need to be rerun.
+           * If customize hooks, bootstrap, or allRequests need to be rerun, do so in that order.
+           *
+           * customizeHooks
+           * There are some edge cases around customizeHooks it can manipulate the hookInterface
+           * We don't want plugins running this hook so we have to filter them out.
+           *
+           * bootstrap
+           * Bootstrap is the start of the data lifecylce so we need to destroy the data object before running it.
+           *
+           */
 
           const currentHooks = this.hooks.filter((h) => h.$$meta.addedBy === 'hooks.js');
 
           const newHooks = await getUserHooks(file);
 
+          const hooksToRun = new Set<string>();
           for (const hook of newHooks) {
+            const found = currentHooks.find((ch) => ch.name === hook.name && ch.run.toString() === hook.run.toString());
+            if (!found) hooksToRun.add(hook.hook);
           }
 
-          /// hook files
-          /// load and validate hooks
-          /// wipe data object.
-          /// redefine runHook
-          /// rerun hooks.
-          // option 1:
-          /// hash the individual hook definitions for "allRequests", "bootstrap", "customizeHooks"
-          /// if the hash is different, then rerun the hooks
-          /// option 2: just rerun everything from customizeHooks
+          if (hooksToRun.has('customizeHooks')) {
+            // customizeHooks should not be used by plugins. Plugins should use their own closure to manage data and be side effect free.
+            const hooksMinusPlugins = this.hooks.filter((h) => h.$$meta.type !== 'plugin');
+            this.runHook = prepareRunHook({
+              hooks: hooksMinusPlugins,
+              allSupportedHooks: hookInterface,
+              settings: this.settings,
+            });
+
+            this.runHook('customizeHooks', this);
+
+            this.runHook = prepareRunHook({
+              hooks: this.hooks,
+              allSupportedHooks: this.hookInterface,
+              settings: this.settings,
+            });
+          }
+          if (hooksToRun.has('bootstrap')) {
+            this.data = {};
+            this.runHook('bootstrap', this);
+          }
+          if (hooksToRun.has('allRequests')) this.runHook('allRequests', this);
+
+          this.perf.end('stateRefresh');
+          displayElderPerfTimings(`Refreshed hooks.js`, this);
         });
         this.settings.$$internal.watcher.on('shortcodes', async (file) => {
+          this.perf.reset();
+          this.perf.start('stateRefresh');
           const newShortcodes = await getUserShortcodes(file);
 
           // user shortcodes should always go first.
           this.shortcodes = [...newShortcodes, ...this.shortcodes.filter((s) => s.$$meta.addedBy !== 'shortcodes.js')];
+
+          this.perf.end('stateRefresh');
+          displayElderPerfTimings(`Refreshed shortcodes.js`, this);
         });
         this.settings.$$internal.watcher.on('ssr', async (file) => {
           console.log(`ssr`, file);
