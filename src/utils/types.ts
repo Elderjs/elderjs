@@ -43,6 +43,10 @@ type Internal = {
   files: {
     client: string[];
     server: string[];
+    routes: string[];
+    hooks: string;
+    all: string[];
+    shortcodes: string;
   };
   watcher: EventEmitter;
 };

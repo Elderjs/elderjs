@@ -12,6 +12,10 @@ export function hashUrl(url: string) {
   return `${url}?hash=${getUniqueId()}`;
 }
 
+export function unhashUrl(url: string) {
+  return url.split('?')[0];
+}
+
 type TGetFilesAndWatcher = {
   clientComponents: string;
   ssrComponents: string;
@@ -21,6 +25,10 @@ type TGetFilesAndWatcher = {
 export default function getFilesAndWatcher(settings: TGetFilesAndWatcher): {
   client: string[];
   server: string[];
+  routes: string[];
+  all: string[];
+  hooks: string;
+  shortcodes: string;
   watcher: EventEmitter;
 } {
   const watcher = new EventEmitter();
@@ -28,12 +36,19 @@ export default function getFilesAndWatcher(settings: TGetFilesAndWatcher): {
     `${settings.srcDir}/**/*.js`,
     `${settings.ssrComponents}/**/*.js`,
     `${settings.clientComponents}/**/*.js`,
+    `${settings.srcDir}/**/*.svelte`,
+
+    // FIXME: other paths to watch... for instance md files. if they are inside a route, we refresh the route.
   ];
 
-  const initialFiles = fg.sync(paths);
+  const initialFiles = fg.sync(paths).map(windowsPathFix);
 
   let server: string[] = [];
   let client: string[] = [];
+  let routes: string[] = [];
+  let hooks: string;
+  let shortcodes: string;
+  let all: string[] = initialFiles;
 
   if (!settings.production && settings.server) {
     // todo: add in plugin folders for Elder.js
@@ -60,6 +75,7 @@ export default function getFilesAndWatcher(settings: TGetFilesAndWatcher): {
         watcher.emit('client', ef);
         console.log('client', ef);
       }
+      all = [...chokFiles.keys()];
     }
 
     let initialScanComplete = false;
@@ -87,11 +103,16 @@ export default function getFilesAndWatcher(settings: TGetFilesAndWatcher): {
   }
 
   console.log(initialFiles);
-  server = initialFiles
-    .filter((f) => f.includes(settings.ssrComponents))
-    .map(hashUrl)
-    .map(windowsPathFix);
-  client = initialFiles.filter((f) => f.includes(settings.clientComponents)).map(windowsPathFix);
+  // hashed already
+  client = initialFiles.filter((f) => f.includes(settings.clientComponents));
 
-  return { server, client, watcher };
+  // hashed to invalidate server side cache
+  server = initialFiles.filter((f) => f.includes(settings.ssrComponents)).map(hashUrl);
+  shortcodes = hashUrl(initialFiles.find((f) => f === path.join(settings.srcDir, './shortcodes.js')));
+  hooks = hashUrl(initialFiles.find((f) => f === path.join(settings.srcDir, './hooks.js')));
+  routes = initialFiles
+    .filter((f) => f.includes(path.join(settings.srcDir, './routes/')) && f.toLowerCase().endsWith('route.js'))
+    .map(hashUrl);
+
+  return { server, client, watcher, hooks, shortcodes, routes, all };
 }

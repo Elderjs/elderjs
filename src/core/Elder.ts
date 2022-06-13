@@ -127,7 +127,7 @@ class Elder {
         collectedRouteNames.forEach((collectedRouteName) => {
           const collectedRoute = collectedRoutes[collectedRouteName];
 
-          const validated = validateRoute(collectedRoute, collectedRouteName);
+          const validated = validateRoute(collectedRoute);
           if (validated) {
             validatedRoutes[collectedRouteName] = validated;
           }

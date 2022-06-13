@@ -25,11 +25,13 @@ const prepareFindSvelteComponent = ({
   ssrComponents,
   rootDir,
   srcDir,
+  production,
 }: {
   clientComponents: string[];
   ssrComponents: string[];
   rootDir: string;
   srcDir: string;
+  production: boolean;
 }) => {
   const relSrcDir = windowsPathFix(path.relative(rootDir, srcDir));
   const rootDirFixed = windowsPathFix(rootDir);
@@ -39,12 +41,14 @@ const prepareFindSvelteComponent = ({
   const findComponent = (name, folder): SvelteComponentFiles => {
     const nameFixed = windowsPathFix(name);
 
-    // // todo: production only caching
-    // const cacheKey = JSON.stringify({ name, folder });
-    // if (cache.has(cacheKey)) return cache.get(cacheKey);
+    let cacheKey;
+
+    if (production) {
+      cacheKey = JSON.stringify({ name, folder });
+      if (cache.has(cacheKey)) return cache.get(cacheKey);
+    }
 
     // abs path first
-
     if (nameFixed.includes(rootDirFixed)) {
       const rel = windowsPathFix(path.relative(path.join(rootDirFixed, relSrcDir), name))
         .replace('.svelte', '.js')
@@ -54,7 +58,7 @@ const prepareFindSvelteComponent = ({
       const client = windowsPathFix(clientComponents.find((c) => removeHash(c).toLowerCase().endsWith(rel)));
 
       const out = { ssr, client };
-      // cache.set(cacheKey, out);
+      if (production) cache.set(cacheKey, out);
       return out;
     }
 
@@ -69,7 +73,7 @@ const prepareFindSvelteComponent = ({
     );
 
     const out = { ssr, client };
-    // cache.set(cacheKey, out);
+    if (production) cache.set(cacheKey, out);
     return out;
   };
   return findComponent;

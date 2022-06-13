@@ -294,14 +294,14 @@ function getDefaultConfig(): SettingsOptions {
   return configSchema.cast();
 }
 
-function validateRoute(route, routeName: string): RouteOptions | false {
+function validateRoute(route: RouteOptions): RouteOptions | false {
   try {
     routeSchema.validateSync(route);
     const validated = routeSchema.cast(route);
     return validated;
   } catch (err) {
     console.error(
-      `Route "${routeName}" does not have the required fields and is disabled. Please let the author know`,
+      `Route "${route.name}" does not have the required fields and is disabled. Please let the author know`,
       err.errors,
       err.value,
     );

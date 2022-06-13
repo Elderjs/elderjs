@@ -69,7 +69,7 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
   fs.ensureDirSync(path.resolve(distElder));
   fs.ensureDirSync(path.resolve(clientComponents));
 
-  const { server, client, watcher } = getFilesAndWatcher({
+  const { server, client, watcher, hooks, routes, shortcodes, all } = getFilesAndWatcher({
     ...config,
     production: !notProduction(),
     clientComponents,
@@ -88,10 +88,15 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
       ssrComponents: server,
       rootDir,
       srcDir: config.srcDir,
+      production: !notProduction(),
     }),
     files: {
       server,
       client,
+      all,
+      hooks,
+      routes,
+      shortcodes,
     },
     watcher,
   };
