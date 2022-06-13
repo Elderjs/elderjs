@@ -63,7 +63,7 @@ export interface IBootstrapHook extends IHookBase {
     data: any;
     settings: SettingsOptions;
     routes: ProcessedRoutesObject;
-    hooks: TProcessedHooksArray;
+    hooks: ProcessedHooksArray;
     query: any;
   }) => TGenericHookReturn<{
     plugin?: PluginClosure;
@@ -397,4 +397,4 @@ export type TProcessedHook =
   | ProcessedHook<IRequestCompleteHook>
   | ProcessedHook<IErrorHook>
   | ProcessedHook<IBuildCompleteHook>;
-export type TProcessedHooksArray = Array<TProcessedHook>;
+export type ProcessedHooksArray = Array<TProcessedHook>;

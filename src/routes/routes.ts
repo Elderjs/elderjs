@@ -105,7 +105,7 @@ export async function prepareRoute({
       `No SSR template found for ${routeName}. Expected at ${route.template.replace(
         '.svelte',
         '.js',
-      )}. Make sure rollup finished running.`,
+      )}. Make sure bundling has finished`,
     );
   }
 
@@ -118,7 +118,7 @@ export async function prepareRoute({
       `No SSR Layout found for ${routeName}. Expected at ${route.layout.replace(
         '.svelte',
         '.js',
-      )}. Make sure rollup finished running.`,
+      )}. Make sure bundling has finished`,
     );
   }
 

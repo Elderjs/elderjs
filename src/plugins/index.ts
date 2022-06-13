@@ -10,13 +10,15 @@ import {
   svelteComponent,
   PluginOptions,
   TProcessedHook,
-  TProcessedHooksArray,
+  ProcessedHooksArray,
+  ExcludesFalse,
 } from '../index.js';
 import { Elder } from '../core/Elder.js';
 import { ProcessedRouteOptions, ProcessedRoutesObject } from '../routes/types.js';
 import createReadOnlyProxy from '../utils/createReadOnlyProxy.js';
 import wrapPermalinkFn from '../utils/wrapPermalinkFn.js';
 import makeDynamicPermalinkFn from '../routes/makeDynamicPermalinkFn.js';
+import { validateRoute, validateShortcode } from '../utils/validations.js';
 
 export const pluginVersionCheck = (elderVersion: string, pluginVersion: string): boolean => {
   const eSplit = elderVersion.split('.');
@@ -46,7 +48,7 @@ async function plugins(elder: Elder) {
    * * Add plugin object and helpers to all plugin hook functions.
    */
   let pluginRoutes: ProcessedRoutesObject = {};
-  const pluginHooks: TProcessedHooksArray = [];
+  const pluginHooks: ProcessedHooksArray = [];
   const pluginShortcodes: ShortcodeDefinitions = [];
 
   const pluginNames = Object.keys(elder.settings.plugins);
@@ -77,8 +79,6 @@ async function plugins(elder: Elder) {
           pkgPath,
           pluginPackageJson.main.startsWith('/') ? `.${pluginPackageJson.main}` : pluginPackageJson.main,
         );
-
-        console.log(pluginPkgPath);
 
         const nmPluginReq = await import(pluginPkgPath);
         plugin = nmPluginReq.default || nmPluginReq;
@@ -130,38 +130,42 @@ async function plugins(elder: Elder) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { init, ...sanitizedPlugin } = plugin;
 
-      pluginHooksArray = pluginHooksArray.map((hook): TProcessedHook => {
-        return {
-          priority: 50,
-          ...hook,
-          $$meta: {
-            type: 'plugin',
-            addedBy: pluginName,
-          },
-          run: async (payload) => {
-            // pass the plugin definition into the closure of every hook.
-            let pluginDefinition = sanitizedPlugin;
+      pluginHooksArray = pluginHooksArray
+        .map((hook): TProcessedHook => {
+          return {
+            priority: 50,
+            ...hook,
+            $$meta: {
+              type: 'plugin',
+              addedBy: pluginName,
+            },
+            run: async (payload) => {
+              // pass the plugin definition into the closure of every hook.
+              let pluginDefinition = sanitizedPlugin;
 
-            // eslint-disable-next-line no-param-reassign
-            payload.plugin = pluginDefinition;
+              // eslint-disable-next-line no-param-reassign
+              payload.plugin = pluginDefinition;
 
-            const pluginResp = await hook.run(payload);
-            if (pluginResp) {
-              if (pluginResp.plugin) {
-                const { plugin: newPluginDef, ...rest } = pluginResp;
-                // while objects are pass by reference, the pattern we encourage is to return the mutation of state.
-                // if users followed this pattern for plugins, we may not be mutating the plugin definition, so this is added.
-                pluginDefinition = newPluginDef;
-                return rest;
+              const pluginResp = await hook.run(payload);
+              if (pluginResp) {
+                if (pluginResp.plugin) {
+                  const { plugin: newPluginDef, ...rest } = pluginResp;
+                  // while objects are pass by reference, the pattern we encourage is to return the mutation of state.
+                  // if users followed this pattern for plugins, we may not be mutating the plugin definition, so this is added.
+                  pluginDefinition = newPluginDef;
+                  return rest;
+                }
+                return pluginResp;
               }
-              return pluginResp;
-            }
 
-            // make sure something is returned
-            return {};
-          },
-        };
-      });
+              // make sure something is returned
+              return {};
+            },
+          };
+        })
+        .map((hook) => validateHook(hook))
+        .filter((v) => v)
+        .filter(Boolean as any as ExcludesFalse); // ts hack to force it to realize this is only items that are true
 
       pluginHooksArray.forEach((hook) => {
         const validatedHook = validateHook(hook);
@@ -299,24 +303,30 @@ async function plugins(elder: Elder) {
           }
 
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const sanitizedRouteDeets = processedRoute as ProcessedRouteOptions;
-          const sanitizedRoute: ProcessedRoutesObject = {
-            [routeName]: { ...sanitizedRouteDeets, $$meta: { type: 'plugin', addedBy: pluginName } },
-          };
 
-          pluginRoutes = { ...pluginRoutes, ...sanitizedRoute };
+          const sanitizedRouteDeets = processedRoute as ProcessedRouteOptions;
+          if (validateRoute(sanitizedRouteDeets)) {
+            const sanitizedRoute: ProcessedRoutesObject = {
+              [routeName]: { ...sanitizedRouteDeets, $$meta: { type: 'plugin', addedBy: pluginName } },
+            };
+            pluginRoutes = { ...pluginRoutes, ...sanitizedRoute };
+          }
         }
       }
 
       if (plugin.shortcodes && plugin.shortcodes.length > 0) {
-        plugin.shortcodes.forEach((shortcode) => {
-          shortcode.$$meta = {
-            type: 'plugin',
-            addedBy: pluginName,
-          };
-          shortcode.plugin = sanitizedPlugin;
-          pluginShortcodes.push(shortcode);
-        });
+        plugin.shortcodes
+          .map(validateShortcode)
+          .filter((v) => v)
+          .filter(Boolean as any as ExcludesFalse) // ts hack to force it to realize this is only items that are true
+          .forEach((shortcode) => {
+            shortcode.$$meta = {
+              type: 'plugin',
+              addedBy: pluginName,
+            };
+            shortcode.plugin = sanitizedPlugin;
+            pluginShortcodes.push(shortcode);
+          });
       }
     }
 

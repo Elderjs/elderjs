@@ -19,8 +19,8 @@ import {
   getConfig,
   prepareInlineShortcode,
 } from '../utils/index.js';
-import { ProcessedRoutesObject } from '../routes/types.js';
-import { HooksArray, TProcessedHooksArray, TRunHook } from '../hooks/types.js';
+import { ProcessedRouteOptions, ProcessedRoutesObject } from '../routes/types.js';
+import { HooksArray, ProcessedHook, ProcessedHooksArray, TRunHook } from '../hooks/types.js';
 import { ShortcodeDefinitions } from '../shortcodes/types.js';
 import {
   SettingsOptions,
@@ -49,7 +49,7 @@ class Elder {
 
   routes: ProcessedRoutesObject;
 
-  hooks: TProcessedHooksArray;
+  hooks: ProcessedHooksArray;
 
   data: Record<string, unknown>;
 
@@ -109,63 +109,15 @@ class Elder {
     startup(this.settings).then(() => {
       // plugins are run first as they have routes, hooks, and shortcodes.
       plugins(this).then(async ({ pluginRoutes, pluginHooks, pluginShortcodes }) => {
-        this.perf.start('startup.validations');
-        /**
-         * Finalize Routes
-         * Add in user routes
-         * Add in plugin routes
-         * Validate them
-         */
-
         // add meta to routes and collect hooks from routes
         const userRoutesJsFile = await routes(this.settings);
 
         // plugins should never overwrite user routes.
-        const collectedRoutes: ProcessedRoutesObject = { ...pluginRoutes, ...userRoutesJsFile };
-        const validatedRoutes = {};
-        const collectedRouteNames = Object.keys(collectedRoutes);
-        collectedRouteNames.forEach((collectedRouteName) => {
-          const collectedRoute = collectedRoutes[collectedRouteName];
+        this.routes = { ...pluginRoutes, ...userRoutesJsFile };
 
-          const validated = validateRoute(collectedRoute);
-          if (validated) {
-            validatedRoutes[collectedRouteName] = validated;
-          }
-        });
-
-        this.routes = validatedRoutes;
-
-        /**
-         * Finalize hooks
-         * Import User Hooks.js
-         * Validate Hooks
-         * Filter out hooks that are disabled.
-         */
-
-        let hooksJs: TProcessedHooksArray = [];
-        const hookSrcPath = path.resolve(this.settings.srcDir, './hooks.js');
-
-        try {
-          const hooksReq = await import(hookSrcPath);
-          const hookSrcFile: HooksArray = hooksReq.default || hooksReq;
-          hooksJs = hookSrcFile.map((hook) => ({
-            priority: 50,
-            ...hook,
-            $$meta: {
-              type: 'hooks.js',
-              addedBy: 'hooks.js',
-            },
-          }));
-        } catch (err) {
-          if (err.code === 'MODULE_NOT_FOUND') {
-            console.error(`Could not load hooks file from ${hookSrcPath}.`);
-          } else {
-            console.error(err);
-          }
-        }
-
-        // validate hooks
-        const elderJsHooks: TProcessedHooksArray = internalHooks.map((hook) => ({
+        // merge hooks arrays
+        let hooksJs: ProcessedHooksArray = await getUserHooks(this.settings.$$internal.files.hooks);
+        const elderJsHooks: ProcessedHooksArray = internalHooks.map((hook) => ({
           priority: 50,
           ...hook,
           $$meta: {
@@ -174,58 +126,23 @@ class Elder {
           },
         }));
 
-        // validate hooks
-        this.hooks = [...elderJsHooks, ...pluginHooks, ...hooksJs]
-          .map((hook) => validateHook(hook))
-          .filter(Boolean as any as ExcludesFalse)
-          .map((hook) => ({
+        // merge hooks
+        // hooks can be turned off for plugins, user, and elderjs by the elder.config.js
+        this.hooks = filterHooks(
+          this.settings.hooks.disable,
+          [...elderJsHooks, ...pluginHooks, ...hooksJs].map((hook) => ({
+            $$meta: {
+              type: 'unknown',
+              addedBy: 'unknown',
+            },
             priority: 50,
-            $$meta: {
-              type: 'internal',
-              addedBy: 'elder.js',
-            },
             ...hook,
-          }));
+          })),
+        );
 
-        if (this.settings.hooks.disable && this.settings.hooks.disable.length > 0) {
-          this.hooks = this.hooks.filter((h) => !this.settings.hooks.disable.includes(h.name));
-        }
-
-        /**
-         * Finalize Shortcodes
-         * Import User Shortcodes.js
-         * Validate Shortcodes
-         */
-
-        let shortcodesJs: ShortcodeDefinitions = [];
-        const shortcodeSrcPath = path.resolve(this.settings.srcDir, './shortcodes.js');
-
-        try {
-          const shortcodeReq = await import(shortcodeSrcPath);
-          const shortcodes: ShortcodeDefinitions = shortcodeReq.default || shortcodeReq;
-          shortcodesJs = shortcodes.map((shortcode) => ({
-            ...shortcode,
-            $$meta: {
-              type: 'shortcodes.js',
-              addedBy: 'shortcodes.js',
-            },
-          }));
-        } catch (err) {
-          if (err.code === 'MODULE_NOT_FOUND') {
-            console.error(
-              `Could not load shortcodes file from ${shortcodeSrcPath}. They are not required, but could be useful.`,
-            );
-          } else {
-            console.error(err);
-          }
-        }
-
-        // validate shortcodes
-        this.shortcodes = [...elderJsShortcodes, ...pluginShortcodes, ...shortcodesJs]
-          .map((shortcode) => validateShortcode(shortcode))
-          .filter(Boolean as any as ExcludesFalse);
-
-        this.perf.end('startup.validations');
+        // merge shortcodes
+        let shortcodesJs: ShortcodeDefinitions = await getUserShortcodes(this.settings.$$internal.files.shortcodes);
+        this.shortcodes = [...elderJsShortcodes, ...pluginShortcodes, ...shortcodesJs];
 
         /**
          *
@@ -240,11 +157,7 @@ class Elder {
         this.errors = [];
         this.hookInterface = hookInterface;
 
-        this.helpers = {
-          permalinks: permalinks({ routes: this.routes, settings: this.settings }),
-          inlineSvelteComponent,
-          shortcode: prepareInlineShortcode({ settings: this.settings }),
-        };
+        this.helpers = makeElderjsHelpers(this.routes, this.settings);
 
         // customizeHooks should not be used by plugins. Plugins should use their own closure to manage data and be side effect free.
         const hooksMinusPlugins = this.hooks.filter((h) => h.$$meta.type !== 'plugin');
@@ -254,114 +167,70 @@ class Elder {
           settings: this.settings,
         });
 
-        this.runHook('customizeHooks', this).then(async () => {
-          // we now have any customizations to the hookInterface.
-          // we need to rebuild runHook with these customizations.
-          this.runHook = prepareRunHook({
-            hooks: this.hooks,
-            allSupportedHooks: hookInterface,
-            settings: this.settings,
-          });
-
-          await this.runHook('bootstrap', this);
-
-          // collect all of our requests
-          this.perf.start('startup.routes');
-          await asyncForEach(Object.keys(this.routes), async (routeName) => {
-            this.perf.start(`startup.routes.${routeName}`);
-            const route = this.routes[routeName];
-            let allRequestsForRoute = [];
-            if (typeof route.all === 'function') {
-              this.perf.start(`startup.routes.${routeName}.all`);
-              allRequestsForRoute = await route.all({
-                settings: createReadOnlyProxy(this.settings, 'settings', `${routeName} all function`),
-                query: createReadOnlyProxy(this.query, 'query', `${routeName} all function`),
-                helpers: createReadOnlyProxy(this.helpers, 'helpers', `${routeName} all function`),
-                data: createReadOnlyProxy(this.data, 'data', `${routeName} all function`),
-                perf: this.perf.prefix(`startup.routes.${routeName}.all`),
-              });
-              this.perf.end(`startup.routes.${routeName}.all`);
-            } else if (Array.isArray(route.all)) {
-              allRequestsForRoute = route.all;
-            }
-
-            if (!Array.isArray(allRequestsForRoute)) {
-              throw new Error(`${routeName}'s all() function isn't returning an array`);
-            }
-
-            allRequestsForRoute = allRequestsForRoute.reduce((out, cv) => {
-              // copy the obj so we don't have pass by reference issues.
-              const copy = JSON.parse(JSON.stringify(cv));
-              // add in routeName
-              copy.route = routeName;
-              out.push(copy);
-              return out;
-            }, []);
-            this.allRequests = this.allRequests.concat(allRequestsForRoute);
-            this.perf.end(`startup.routes.${routeName}`);
-          });
-
-          this.perf.end(`startup.routes`);
-
-          await this.runHook('allRequests', this);
-
-          this.perf.start(`startup.setPermalinks`);
-          await asyncForEach(this.allRequests, async (request) => {
-            if (!this.routes[request.route] || !this.routes[request.route].permalink) {
-              if (!request.route) {
-                console.error(
-                  `Request is missing a 'route' key. This usually happens when request objects have been added to the allRequests array via a hook or plugin. ${JSON.stringify(
-                    request,
-                  )}`,
-                );
-              } else {
-                console.error(
-                  `Request missing permalink but has request.route defined. This shouldn't be an Elder.js issue but if you believe it could be please create an issue. ${JSON.stringify(
-                    request,
-                  )}`,
-                );
-              }
-            }
-
-            request.type = this.settings.context;
-
-            request.permalink = await this.routes[request.route].permalink({
-              request,
-              settings: createReadOnlyProxy(this.settings, 'settings', `${request.route} permalink function`),
-              helpers: createReadOnlyProxy(this.helpers, 'helpers', `${request.route} permalink function`),
-            });
-
-            if (this.settings.context === 'server') {
-              this.serverLookupObject[request.permalink] = request;
-            }
-          });
-          this.perf.end(`startup.setPermalinks`);
-
-          this.perf.start(`startup.validatePermalinks`);
-          checkForDuplicatePermalinks(this.allRequests);
-          this.perf.end(`startup.validatePermalinks`);
-
-          this.perf.start(`startup.prepareRouter`);
-          this.router = prepareRouter(this);
-          this.perf.end(`startup.prepareRouter`);
-
-          this.perf.end('startup');
-          this.perf.stop();
-
-          const t = this.perf.timings.slice(-1)[0] && Math.round(this.perf.timings.slice(-1)[0].duration * 10) / 10;
-          if (t && t > 0) {
-            console.log(
-              `Elder.js Startup: ${t}ms. ${
-                t > 5000 ? `For details set debug.performance: true in elder.config.js` : ''
-              }`,
-            );
-            if (this.settings.debug.performance) {
-              displayPerfTimings([...this.perf.timings]);
-            }
-          }
-
-          this.markBootstrapComplete(this);
+        await this.runHook('customizeHooks', this);
+        // we now have any customizations to the hookInterface.
+        // we need to rebuild runHook with these customizations.
+        this.runHook = prepareRunHook({
+          hooks: this.hooks,
+          allSupportedHooks: hookInterface,
+          settings: this.settings,
         });
+
+        await this.runHook('bootstrap', this);
+
+        // collect all of our requests
+        this.perf.start('startup.routes');
+        for (const route of Object.values(this.routes)) {
+          const routeRequests = await runAllRequestOnRoute({ route, ...this });
+          this.allRequests = this.allRequests.concat(routeRequests);
+        }
+
+        this.perf.end(`startup.routes`);
+
+        await this.runHook('allRequests', this);
+
+        this.perf.start(`startup.setPermalinks`);
+
+        for (const request of this.allRequests) {
+          request.type = this.settings.context;
+          request.permalink = await addPermalinkToRequest({
+            request,
+            route: this.routes[request.route],
+            settings: this.settings,
+            helpers: this.helpers,
+          });
+
+          if (this.settings.context === 'server') {
+            this.serverLookupObject[request.permalink] = request;
+          }
+        }
+
+        this.perf.end(`startup.setPermalinks`);
+
+        this.perf.start(`startup.validatePermalinks`);
+        checkForDuplicatePermalinks(this.allRequests);
+        this.perf.end(`startup.validatePermalinks`);
+
+        this.perf.start(`startup.prepareRouter`);
+        this.router = prepareRouter(this);
+        this.perf.end(`startup.prepareRouter`);
+
+        this.perf.end('startup');
+        this.perf.stop();
+
+        const t = this.perf.timings.slice(-1)[0] && Math.round(this.perf.timings.slice(-1)[0].duration * 10) / 10;
+        if (t && t > 0) {
+          console.log(
+            `Elder.js Startup: ${t}ms. ${t > 5000 ? `For details set debug.performance: true in elder.config.js` : ''}`,
+          );
+          if (this.settings.debug.performance) {
+            displayPerfTimings([...this.perf.timings]);
+          }
+        }
+
+        this.markBootstrapComplete(this);
+
+        // watcher stuff!
       });
     });
   }
@@ -390,6 +259,132 @@ export function checkForDuplicatePermalinks(allRequests) {
       }
     }
   }
+}
+
+export async function getUserHooks(file) {
+  try {
+    const hooksReq = await import(file);
+    const hookSrcFile: HooksArray = hooksReq.default || hooksReq;
+    return hookSrcFile.map((hook) => ({
+      priority: 50,
+      ...hook,
+      $$meta: {
+        type: 'hooks.js',
+        addedBy: 'hooks.js',
+      },
+    }));
+  } catch (err) {
+    if (err.code === 'MODULE_NOT_FOUND') {
+      console.error(`Could not load hooks file from ${this.settings.$$internal.files.hooks}.`);
+    } else {
+      console.error(err);
+    }
+    return [];
+  }
+}
+
+export async function getUserShortcodes(file) {
+  try {
+    const shortcodeReq = await import(file);
+    const shortcodes: ShortcodeDefinitions = shortcodeReq.default || shortcodeReq;
+    return shortcodes
+      .map((shortcode) => ({
+        ...shortcode,
+        $$meta: {
+          type: 'shortcodes.js',
+          addedBy: 'shortcodes.js',
+        },
+      }))
+      .map(validateShortcode)
+      .filter((v) => v)
+      .filter(Boolean as any as ExcludesFalse); // ts hack to force it to realize this is only items that are true
+  } catch (err) {
+    if (err.code === 'MODULE_NOT_FOUND') {
+      console.error(`Could not load shortcodes file from ${file}. They are not required, but could be useful.`);
+    } else {
+      console.error(err);
+    }
+    return [];
+  }
+}
+
+export function filterHooks(disable: undefined | false | string[], hooks: ProcessedHooksArray) {
+  if (disable && disable.length > 0) {
+    hooks = hooks.filter((h) => !disable.includes(h.name));
+  }
+  return hooks;
+}
+
+export async function runAllRequestOnRoute({
+  route,
+  settings,
+  query,
+  helpers,
+  data,
+  perf,
+}: Pick<Elder, 'settings' | 'query' | 'data' | 'helpers' | 'perf'> & { route: ProcessedRouteOptions }) {
+  perf.start(`startup.routes.${route.name}`);
+  let allRequestsForRoute = [];
+  if (typeof route.all === 'function') {
+    perf.start(`startup.routes.${route.name}.all`);
+    allRequestsForRoute = await route.all({
+      settings: createReadOnlyProxy(settings, 'settings', `${route.name} all function`),
+      query: createReadOnlyProxy(query, 'query', `${route.name} all function`),
+      helpers: createReadOnlyProxy(helpers, 'helpers', `${route.name} all function`),
+      data: createReadOnlyProxy(data, 'data', `${route.name} all function`),
+      perf: perf.prefix(`startup.routes.${route.name}.all`),
+    });
+    perf.end(`startup.routes.${route.name}.all`);
+  } else if (Array.isArray(route.all)) {
+    allRequestsForRoute = route.all;
+  }
+
+  if (!Array.isArray(allRequestsForRoute)) {
+    throw new Error(`${route.name}'s all() function isn't returning an array`);
+  }
+
+  perf.end(`startup.routes.${route.name}`);
+  return allRequestsForRoute.map((r) => ({ ...r, route: route.name }));
+}
+
+export function makeElderjsHelpers(routes: ProcessedRoutesObject, settings: SettingsOptions) {
+  return {
+    permalinks: permalinks({ routes: routes, settings: settings }),
+    inlineSvelteComponent,
+    shortcode: prepareInlineShortcode({ settings: settings }),
+  };
+}
+
+export async function addPermalinkToRequest({
+  request,
+  route,
+  settings,
+  helpers,
+}: { request: RequestObject; route: ProcessedRouteOptions } & Pick<Elder, 'settings' | 'helpers'>) {
+  if (!route || !route.permalink) {
+    console.log(request);
+    if (!request.route) {
+      console.error(
+        `Request is missing a 'route' key. This usually happens when request objects have been added to the allRequests array via a hook or plugin. ${JSON.stringify(
+          request,
+        )}`,
+      );
+    } else {
+      console.error(
+        `Request missing permalink but has request.route defined. This shouldn't be an Elder.js issue but if you believe it could be please create an issue. ${JSON.stringify(
+          request,
+        )}`,
+      );
+    }
+  }
+
+  const permalink = await route.permalink({
+    request,
+    settings: createReadOnlyProxy(settings, 'settings', `${request.route} permalink function`),
+    helpers: createReadOnlyProxy(helpers, 'helpers', `${request.route} permalink function`),
+  });
+
+  return permalink;
 }
 
 export { Elder, build, partialHydration };

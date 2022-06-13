@@ -358,7 +358,7 @@ function validateShortcode(shortcode): ShortcodeDefinition | false {
         err.value,
       );
     } else {
-      console.error(`Hook ignored due to error(s).`, err.errors, err.value);
+      console.error(`Shortcode ignored due to error(s).`, err.errors, err.value);
     }
     return false;
   }
