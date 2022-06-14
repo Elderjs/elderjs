@@ -5,35 +5,39 @@ import { Page } from '../utils/index.js';
 import { walkAndCount, prepareSubstitutions, walkAndSubstitute } from './propCompression.js';
 import windowsPathFix from '../utils/windowsPathFix.js';
 
-const defaultElderHelpers = (decompressCode, prefix, generateLazy) => `
+const elderInitComponent = (prefix: string) => `
+const prefix = '${prefix}';
+const initComponent = (target, component) => {
+  if(!!CustomEvent && target.id){
+    const split = target.id.split('-ejs-');
+    document.dispatchEvent(new CustomEvent('ejs', {
+      detail: {
+        category: 'elderjs',
+        action: 'hydrate',
+        target: target,
+        label: split[0] || target.id
+      }
+    }));
+  }
+
+  const propProm = ((typeof component.props === 'string') ? fetch(prefix+'/props/'+ component.props).then(p => p.json()).then(r => $ejs(r)) : new Promise((resolve) => resolve($ejs(component.props))));
+  const compProm = import(prefix + '/svelte/components/' + component.component);
+
+  Promise.all([compProm,propProm]).then(([comp,props])=>{
+    new comp.default({ 
+      target: target,
+      props: props,
+      hydrate: true
+    });
+  });
+};
+`;
+
+const defaultElderHelpers = (decompressCode: string, prefix: string, generateLazy: boolean) => `
 const $$ejs = (par,eager)=>{
   ${decompressCode}
-  const prefix = '${prefix}';
-  const initComponent = (target, component) => {
-
-    if(!!CustomEvent && target.id){
-      const split = target.id.split('-ejs-');
-      document.dispatchEvent(new CustomEvent('ejs', {
-        detail: {
-          category: 'elderjs',
-          action: 'hydrate',
-          target: target,
-          label: split[0] || target.id
-        }
-      }));
-    }
-
-    const propProm = ((typeof component.props === 'string') ? fetch(prefix+'/props/'+ component.props).then(p => p.json()).then(r => $ejs(r)) : new Promise((resolve) => resolve($ejs(component.props))));
-    const compProm = import(prefix + '/svelte/components/' + component.component);
-
-    Promise.all([compProm,propProm]).then(([comp,props])=>{
-      new comp.default({ 
-        target: target,
-        props: props,
-        hydrate: true
-      });
-    });
-  };
+  
+  ${elderInitComponent(prefix)}
   ${
     generateLazy
       ? `const IO = ('IntersectionObserver' in window) ? new IntersectionObserver((entries, observer) => {
@@ -242,4 +246,77 @@ export default (page: Page) => {
       }</script>`,
     });
   }
+
+  if (page.settings.$$internal.websocket && !page.settings.$$internal.production) {
+    if (typeof page.settings.$$internal.websocket.wss.address() !== 'string') {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      /// @ts-expect-error
+      const port = page.settings.$$internal.websocket.wss.address().port;
+      page.hydrateStack.push({
+        source: 'hydrateComponents',
+        priority: 1,
+        string: `
+        <script type="module">
+        ${decompressCode}
+        ${elderInitComponent(relPrefix)}
+
+        const devComponents = {
+        ${eagerString}
+        ${deferString}
+        }
+
+        function swapComponents(file){
+          console.log('swap', file);
+          const componentName = file.split('.')[0];
+          let targetComponent;
+          let targetEl;
+          
+          Object.entries(devComponents).forEach(([el, component])=>{
+            if(component.component.split(".")[0] === componentName && file !== component.component){
+              targetEl = el;
+              targetComponent = component
+            } 
+          })
+
+          if(targetComponent && targetEl){
+            // update file
+            targetComponent.component = file;
+
+            const el = document.getElementById(targetEl);
+            // remove old component
+            while(el.firstChild){
+              el.removeChild(el.firstChild)
+            }
+            initComponent(el, targetComponent);
+          }
+        }
+
+
+        const ejsWs = new WebSocket("ws://localhost:${port}");
+        ejsWs.onmessage = function (event) {
+          const data = JSON.parse(event.data);
+          if(data.type === 'reload'){
+            location.reload();
+            return false;
+          } else if (data.type === 'componentChange'){
+            swapComponents(data.file)
+          } else if (data.type === 'publicCssChange){
+            console.log(data.file)
+          } else {
+            console.log(event)
+          }
+        }
+      </script>`,
+      });
+    }
+  }
 };
+
+// remove svelte child
+// while (temp0.firstChild) {
+//   temp0.removeChild(temp0.firstChild);
+// }
+
+// remount component with decompressed props.
+
+// remove style add updated stylesheet.

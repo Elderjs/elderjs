@@ -131,7 +131,7 @@ const hooks: HooksArray = [
             ...headStack,
             {
               source: 'elderAddCssFileToHead',
-              string: `<link rel="stylesheet" href="${settings.$$internal.files.publicCssFile}" media="all" />`,
+              string: `<link id="ejs-public-css" rel="stylesheet" href="${settings.$$internal.files.publicCssFile}" media="all" />`,
               priority: 30,
             },
           ],
@@ -143,7 +143,7 @@ const hooks: HooksArray = [
             ...headStack,
             {
               source: 'elderAddCssFileToHead',
-              string: `<link rel="preload" href="${settings.$$internal.files.publicCssFile}" as="style" /><link rel="stylesheet" href="${settings.$$internal.files.publicCssFile}" media="print" onload="this.media='all'" /><noscript><link rel="stylesheet" href="${settings.$$internal.files.publicCssFile}" media="all" /></noscript>`,
+              string: `<link id="ejs-public-css" rel="preload" href="${settings.$$internal.files.publicCssFile}" as="style" /><link rel="stylesheet" href="${settings.$$internal.files.publicCssFile}" media="print" onload="this.media='all'" /><noscript><link rel="stylesheet" href="${settings.$$internal.files.publicCssFile}" media="all" /></noscript>`,
               priority: 30,
             },
           ],

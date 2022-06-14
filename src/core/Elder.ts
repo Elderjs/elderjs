@@ -36,6 +36,8 @@ import { inlineSvelteComponent } from '../partialHydration/inlineSvelteComponent
 import prepareRouter from '../routes/prepareRouter.js';
 import perf, { displayPerfTimings, Perf } from '../utils/perf.js';
 import forkWorker from './forkWorker.js';
+import windowsPathFix from '../utils/windowsPathFix.js';
+import path from 'path';
 
 class Elder {
   bootstrapComplete: Promise<Elder>;
@@ -325,12 +327,20 @@ class Elder {
         displayElderPerfTimings(`Refreshed shortcodes.js`, this);
         this.settings.$$internal.websocket.send({ type: 'reload' });
       });
-      // this.settings.$$internal.watcher.on('ssr', async (file) => {
-      //   console.log(`ssr`, file);
-      //   // updates findSvelteComponent... probably clearing the cache.
-      // });
+      this.settings.$$internal.watcher.on('ssr', async (file) => {
+        // console.log(`ssr`, file);
+      });
       this.settings.$$internal.watcher.on('plugin', async (file) => {
         console.log('plugin', file);
+      });
+      this.settings.$$internal.watcher.on('publicCssChange', async (file) => {
+        this.settings.$$internal.websocket.send({ type: 'publicCssChange', file });
+      });
+      this.settings.$$internal.watcher.on('client', async (file) => {
+        if (file.includes('components')) {
+          const relPrefix = windowsPathFix(`${path.join(this.settings.$$internal.distElder, '/svelte/components/')}`);
+          this.settings.$$internal.websocket.send({ type: 'componentChange', file: file.replace(relPrefix, '') });
+        }
       });
 
       this.settings.$$internal.watcher.on('elder.config', async (file) => {

@@ -4,6 +4,7 @@ import prepareInlineShortcode from './prepareInlineShortcode.js';
 import permalinks from './permalinks.js';
 import EventEmitter from 'events';
 import { WebSocketServer } from 'ws';
+import { WSData } from '../core/getWebsocket.js';
 
 export type ServerOptions = {
   prefix: string;
@@ -52,7 +53,7 @@ type Internal = {
   watcher: EventEmitter;
   websocket?: {
     wss: WebSocketServer;
-    send: (data: any) => void;
+    send: (data: WSData) => void;
   };
 };
 

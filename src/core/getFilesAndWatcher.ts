@@ -74,12 +74,14 @@ export default function getFilesAndWatcher(settings: TGetFilesAndWatcher): {
     // todo: add in plugin folders for Elder.js
     const chok = chokidar.watch(paths, { alwaysStat: true, usePolling: true });
 
+    // these are unhashed.
     const chokFiles: Map<string, Stats> = new Map();
 
     // eslint-disable-next-line no-inner-declarations
     function handleChange(file: string) {
+      const fixedFile = windowsPathFix(file);
       const f = path.relative(settings.srcDir, file);
-      if (f.startsWith('routes')) {
+      if (f.startsWith('routes') && !f.endsWith('svelte')) {
         if (f.endsWith('route.js')) {
           if (!files.routes.includes(file)) files.routes.push(file);
           watcher.emit('route', hashUrl(file));
@@ -94,20 +96,24 @@ export default function getFilesAndWatcher(settings: TGetFilesAndWatcher): {
           file,
           distElder: settings.distDir,
         });
-        console.log(`new public`, files.publicCssFile);
+        watcher.emit('publicCssFile', files.publicCssFile);
       } else if (f === 'hooks.js') {
         watcher.emit('hooks', hashUrl(file));
       } else if (f === 'shortcodes.js') {
         watcher.emit('shortcodes', hashUrl(file));
       } else if (file.includes(settings.ssrComponents)) {
-        watcher.emit('ssr', hashUrl(file));
-        const idx = files.server.findIndex((f) => f.includes(file));
-        files.server[idx] = hashUrl(windowsPathFix(file));
+        const idx = files.server.findIndex((f) => f.includes(fixedFile));
+        files.server[idx] = hashUrl(fixedFile);
+        watcher.emit('ssr', hashUrl(fixedFile));
       } else if (file.includes(settings.clientComponents)) {
-        watcher.emit('client', hashUrl(file));
+        const withoutHash = fixedFile.split('.')[0];
+        const idx = files.client.findIndex((f) => f.includes(withoutHash));
+        files.client[idx] = fixedFile;
+        watcher.emit('client', fixedFile);
       } else if (file.endsWith(`elder.config.js`)) {
         watcher.emit('elder.config', hashUrl(file));
       }
+
       files.all = [...chokFiles.keys()];
     }
 

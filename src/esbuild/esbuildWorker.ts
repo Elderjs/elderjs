@@ -5,8 +5,7 @@
 import esbuildBundler from './esbuildBundler.js';
 
 esbuildBundler({})
-  .then((complete) => {
-    console.log(complete);
+  .then(() => {
     process.send('complete');
   })
   .catch(console.error);
