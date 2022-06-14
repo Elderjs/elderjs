@@ -36,7 +36,6 @@ const hooks: HooksArray = [
     description: 'An express like middleware so requests can be served by Elder.js',
     priority: 1,
     run: async ({ req, next, res, request, router }) => {
-      console.log('middleware hook has request');
       return router({ req, res, next, request });
     },
   },

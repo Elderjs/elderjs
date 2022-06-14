@@ -253,7 +253,9 @@ class Elder {
           this.router = prepareRouter(this);
 
           this.perf.end('stateRefresh');
+
           displayElderPerfTimings(`Refreshed ${newRoute.name} route`, this);
+          this.settings.$$internal.websocket.send({ type: 'reload' });
         }
       });
       this.settings.$$internal.watcher.on('hooks', async (file) => {
@@ -267,9 +269,6 @@ class Elder {
          * For the ones that changed, track the hooks that need to be rerun.
          * If customize hooks, bootstrap, or allRequests need to be rerun, do so in that order.
          *
-         * customizeHooks
-         * There are some edge cases around customizeHooks it can manipulate the hookInterface
-         * We don't want plugins running this hook so we have to filter them out.
          *
          * bootstrap
          * Bootstrap is the start of the data lifecylce so we need to destroy the data object before running it.
@@ -277,7 +276,6 @@ class Elder {
          */
 
         const newHooks = await getUserHooks(file);
-        console.log(newHooks);
 
         const hooksToRun = new Set<string>();
         for (const hook of newHooks) {
@@ -288,30 +286,16 @@ class Elder {
           if (idx !== -1) {
             const [spliced] = this.hooks.splice(idx, 1, hook);
             hooksToRun.add(spliced.hook);
-
-            console.log(hook, hook.hook, 'changed', spliced.hook, spliced.name);
           }
         }
 
-        // if (hooksToRun.has('customizeHooks')) {
-        //   // customizeHooks should not be used by plugins. Plugins should use their own closure to manage data and be side effect free.
-        //   const hooksMinusPlugins = this.hooks.filter((h) => h.$$meta.type !== 'plugin');
-        //   this.runHook = prepareRunHook({
-        //     hooks: hooksMinusPlugins,
-        //     allSupportedHooks: hookInterface,
-        //     settings: this.settings,
-        //   });
-
-        //   this.runHook('customizeHooks', this);
-        // }
-
-        // this.hooks = newHooks;
-
-        // this.runHook = prepareRunHook({
-        //   hooks: this.hooks,
-        //   allSupportedHooks: this.hookInterface,
-        //   settings: this.settings,
-        // });
+        if (hooksToRun.has('customizeHooks')) {
+          console.log(
+            `customizeHooks definitions can't be live reloaded. You'll need to restart the server or submit a PR.`,
+          );
+          // note: the issue is that all of this works with pass by reference and we can't reassign the hookInterface or it breaks
+          // runHook
+        }
 
         if (hooksToRun.has('bootstrap')) {
           this.runHook('bootstrap', this);
@@ -327,6 +311,7 @@ class Elder {
 
         this.perf.end('stateRefresh');
         displayElderPerfTimings(`Refreshed hooks.js`, this);
+        this.settings.$$internal.websocket.send({ type: 'reload' });
       });
       this.settings.$$internal.watcher.on('shortcodes', async (file) => {
         this.perf.reset();
@@ -338,6 +323,7 @@ class Elder {
 
         this.perf.end('stateRefresh');
         displayElderPerfTimings(`Refreshed shortcodes.js`, this);
+        this.settings.$$internal.websocket.send({ type: 'reload' });
       });
       // this.settings.$$internal.watcher.on('ssr', async (file) => {
       //   console.log(`ssr`, file);

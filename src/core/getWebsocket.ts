@@ -1,7 +1,12 @@
 import { createServer } from 'http';
 import WebSocket, { WebSocketServer } from 'ws';
 
-export default function getWebsocket(port = 8080) {
+export type WSData = {
+  type: 'refresh';
+  [x: string]: unknown;
+};
+
+export default function getWebsocket() {
   const server = createServer();
   const wss = new WebSocketServer({ server });
 
@@ -9,19 +14,19 @@ export default function getWebsocket(port = 8080) {
     ws.on('open', () => {
       ws.send('hi');
     });
-    ws.on('message', function message(data) {
-      console.log('received: %s', data);
-    });
+    // ws.on('message', function message(data) {
+    // console.log('received: %s', data);
+    // });
   });
 
   server.listen(0);
 
   console.log('address', wss.address());
   return {
-    send: function sendData(data) {
+    send: function sendData(data: WSData) {
       wss.clients.forEach((client) => {
         if (client.readyState === WebSocket.OPEN) {
-          client.send(data);
+          client.send(JSON.stringify(data));
         }
       });
     },
