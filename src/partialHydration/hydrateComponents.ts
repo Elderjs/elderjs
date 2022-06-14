@@ -40,7 +40,7 @@ const $$ejs = (par,eager)=>{
   ${elderInitComponent(prefix)}
   ${
     generateLazy
-      ? `const IO = ('IntersectionObserver' in window) ? new IntersectionObserver((entries, observer) => {
+      ? `window.ejsIO = ('IntersectionObserver' in window) ? new IntersectionObserver((entries, observer) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         observer.unobserve(entry.target);
@@ -53,8 +53,8 @@ const $$ejs = (par,eager)=>{
   }
   Object.keys(par).forEach(k => {
     const el = document.getElementById(k);
-    if (${generateLazy ? '!eager && IO' : 'false'}) {
-        IO.observe(el);
+    if (${generateLazy ? '!eager && window.ejsIO' : 'false'}) {
+        window.ejsIO.observe(el);
     } else {
         initComponent(el,par[k]);
     }
@@ -281,17 +281,21 @@ export default (page: Page) => {
           if(targetComponent && targetEl){
             // update file
             targetComponent.component = file;
-
             const el = document.getElementById(targetEl);
             // remove old component
             while(el.firstChild){
               el.removeChild(el.firstChild)
             }
+            if(window.ejsIO){
+              window.ejsIO.unobserve(el);
+            }
+
             initComponent(el, targetComponent);
           }
         }
 
         let currentCssId = "ejs-public-css";
+
 
         const ejsWs = new WebSocket("ws://localhost:${port}");
         ejsWs.onmessage = function (event) {
@@ -318,10 +322,6 @@ export default (page: Page) => {
             document.head.appendChild(link);
           
             currentCssId = newCssId;
-
-
-
-
 
           } else {
             console.log(event)
