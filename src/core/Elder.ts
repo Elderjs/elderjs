@@ -257,7 +257,7 @@ class Elder {
           this.perf.end('stateRefresh');
 
           displayElderPerfTimings(`Refreshed ${newRoute.name} route`, this);
-          this.settings.$$internal.websocket.send({ type: 'reload' });
+          this.settings.$$internal.websocket.send({ type: 'reload', file });
         }
       });
       this.settings.$$internal.watcher.on('hooks', async (file) => {
@@ -313,7 +313,7 @@ class Elder {
 
         this.perf.end('stateRefresh');
         displayElderPerfTimings(`Refreshed hooks.js`, this);
-        this.settings.$$internal.websocket.send({ type: 'reload' });
+        this.settings.$$internal.websocket.send({ type: 'reload', file });
       });
       this.settings.$$internal.watcher.on('shortcodes', async (file) => {
         this.perf.reset();
@@ -325,10 +325,10 @@ class Elder {
 
         this.perf.end('stateRefresh');
         displayElderPerfTimings(`Refreshed shortcodes.js`, this);
-        this.settings.$$internal.websocket.send({ type: 'reload' });
+        this.settings.$$internal.websocket.send({ type: 'reload', file });
       });
       this.settings.$$internal.watcher.on('ssr', async (file) => {
-        this.settings.$$internal.websocket.send({ type: 'reload' });
+        this.settings.$$internal.websocket.send({ type: 'reload', file });
       });
       this.settings.$$internal.watcher.on('plugin', async (file) => {
         console.log('plugin', file);

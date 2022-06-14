@@ -3,6 +3,7 @@ import WebSocket, { WebSocketServer } from 'ws';
 
 type Reload = {
   type: 'reload';
+  file: string;
 };
 
 type ComponentChange = {

@@ -301,6 +301,7 @@ export default (page: Page) => {
         ejsWs.onmessage = function (event) {
           const data = JSON.parse(event.data);
           if(data.type === 'reload'){
+            console.log('reloading')
             location.reload();
             return false;
           } else if (data.type === 'componentChange'){
@@ -318,13 +319,12 @@ export default (page: Page) => {
             link.rel = "stylesheet";
             link.href = data.file;
             link.id = newCssId;
-            console.log(link);
             document.head.appendChild(link);
           
             currentCssId = newCssId;
 
           } else {
-            console.log(event)
+            console.log('unknown elderjs event', event)
           }
         }
       </script>`,
