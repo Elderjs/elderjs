@@ -8,6 +8,7 @@ import prepareFindSvelteComponent from '../partialHydration/prepareFindSvelteCom
 import normalizePrefix from './normalizePrefix.js';
 import notProduction from './notProduction.js';
 import getFilesAndWatcher from '../core/getFilesAndWatcher.js';
+import getWebsocket from '../core/getWebsocket.js';
 
 type TCheckCssFiles = {
   cssFiles: string[];
@@ -69,16 +70,18 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
   fs.ensureDirSync(path.resolve(distElder));
   fs.ensureDirSync(path.resolve(clientComponents));
 
+  const production = !notProduction();
+
   const { files, watcher } = getFilesAndWatcher({
     ...config,
-    production: !notProduction(),
+    production,
     clientComponents,
     ssrComponents,
     distElder,
   });
 
   config.$$internal = {
-    production: !notProduction(),
+    production,
     ssrComponents,
     clientComponents,
     distElder,
@@ -89,11 +92,12 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
       ssrComponents: files.server,
       rootDir,
       srcDir: config.srcDir,
-      production: !notProduction(),
+      production,
       distDir: config.distDir,
     }),
     files,
     watcher,
+    websocket: !production && config.context === 'server' ? getWebsocket() : undefined,
   };
 
   if ((config.css === 'file' || config.css === 'lazy') && initializationOptions.context !== 'test') {

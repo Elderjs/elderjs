@@ -3,6 +3,7 @@ import { inlineSvelteComponent } from '../partialHydration/inlineSvelteComponent
 import prepareInlineShortcode from './prepareInlineShortcode.js';
 import permalinks from './permalinks.js';
 import EventEmitter from 'events';
+import { WebSocketServer } from 'ws';
 
 export type ServerOptions = {
   prefix: string;
@@ -49,6 +50,10 @@ type Internal = {
     publicCssFile: string;
   };
   watcher: EventEmitter;
+  websocket?: {
+    wss: WebSocketServer;
+    send: (data: any) => void;
+  };
 };
 
 export type DebugOptions = {

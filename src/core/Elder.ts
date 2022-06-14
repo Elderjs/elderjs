@@ -276,38 +276,54 @@ class Elder {
          *
          */
 
-        const currentHooks = this.hooks.filter((h) => h.$$meta.addedBy === 'hooks.js');
-
         const newHooks = await getUserHooks(file);
+        console.log(newHooks);
 
         const hooksToRun = new Set<string>();
         for (const hook of newHooks) {
-          const found = currentHooks.find((ch) => ch.name === hook.name && ch.run.toString() === hook.run.toString());
-          if (!found) hooksToRun.add(hook.hook);
+          const idx = this.hooks.findIndex(
+            (ch) =>
+              ch.$$meta.addedBy === 'hooks.js' && ch.hook === hook.hook && ch.run.toString() !== hook.run.toString(),
+          );
+          if (idx !== -1) {
+            const [spliced] = this.hooks.splice(idx, 1, hook);
+            hooksToRun.add(spliced.hook);
+
+            console.log(hook, hook.hook, 'changed', spliced.hook, spliced.name);
+          }
         }
 
-        if (hooksToRun.has('customizeHooks')) {
-          // customizeHooks should not be used by plugins. Plugins should use their own closure to manage data and be side effect free.
-          const hooksMinusPlugins = this.hooks.filter((h) => h.$$meta.type !== 'plugin');
-          this.runHook = prepareRunHook({
-            hooks: hooksMinusPlugins,
-            allSupportedHooks: hookInterface,
-            settings: this.settings,
-          });
+        // if (hooksToRun.has('customizeHooks')) {
+        //   // customizeHooks should not be used by plugins. Plugins should use their own closure to manage data and be side effect free.
+        //   const hooksMinusPlugins = this.hooks.filter((h) => h.$$meta.type !== 'plugin');
+        //   this.runHook = prepareRunHook({
+        //     hooks: hooksMinusPlugins,
+        //     allSupportedHooks: hookInterface,
+        //     settings: this.settings,
+        //   });
 
-          this.runHook('customizeHooks', this);
+        //   this.runHook('customizeHooks', this);
+        // }
 
-          this.runHook = prepareRunHook({
-            hooks: this.hooks,
-            allSupportedHooks: this.hookInterface,
-            settings: this.settings,
-          });
-        }
+        // this.hooks = newHooks;
+
+        // this.runHook = prepareRunHook({
+        //   hooks: this.hooks,
+        //   allSupportedHooks: this.hookInterface,
+        //   settings: this.settings,
+        // });
+
         if (hooksToRun.has('bootstrap')) {
-          this.data = {};
           this.runHook('bootstrap', this);
+          this.data = {};
         }
         if (hooksToRun.has('allRequests')) this.runHook('allRequests', this);
+
+        this.allRequests = await completeRequests(this);
+
+        this.serverLookupObject = makeServerLookupObject(this.allRequests);
+
+        this.router = prepareRouter(this);
 
         this.perf.end('stateRefresh');
         displayElderPerfTimings(`Refreshed hooks.js`, this);
@@ -323,10 +339,10 @@ class Elder {
         this.perf.end('stateRefresh');
         displayElderPerfTimings(`Refreshed shortcodes.js`, this);
       });
-      this.settings.$$internal.watcher.on('ssr', async (file) => {
-        console.log(`ssr`, file);
-        // updates findSvelteComponent... probably clearing the cache.
-      });
+      // this.settings.$$internal.watcher.on('ssr', async (file) => {
+      //   console.log(`ssr`, file);
+      //   // updates findSvelteComponent... probably clearing the cache.
+      // });
       this.settings.$$internal.watcher.on('plugin', async (file) => {
         console.log('plugin', file);
       });

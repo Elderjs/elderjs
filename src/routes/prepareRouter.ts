@@ -199,6 +199,7 @@ function prepareRouter(elder: ElderClass) {
   }
 
   return async ({ req, res, next, request: initialRequest }) => {
+    console.log('have request');
     // if a prior middleware hook has already returned.
     if (!res.headerSent && !res.headersSent) {
       try {

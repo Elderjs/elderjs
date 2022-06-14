@@ -11,7 +11,6 @@ export default function forkWorker() {
     const forked = fork(path.join(__dirname, '../esbuild/esbuildWorker.js'));
 
     forked.on('message', (msg) => {
-      console.log('message on parent', msg);
       if (msg === 'complete') resolve(true);
     });
   });

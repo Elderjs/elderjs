@@ -3,6 +3,8 @@ import createReadOnlyProxy from './createReadOnlyProxy.js';
 
 // TODO: How do we get types to the user when they are writing plugins, etc?
 function prepareRunHook({ hooks, allSupportedHooks, settings }) {
+  const d = Date.now();
+  console.log('runhook defined at', d);
   // eslint-disable-next-line consistent-return
   return async function processHook(hookName, props: any = {}) {
     if (props.perf) props.perf.start(`hook.${hookName}`);
@@ -45,6 +47,8 @@ function prepareRunHook({ hooks, allSupportedHooks, settings }) {
       // loop through the hooks, updating the output and the props in order
       await hookList.reduce((p, hook) => {
         return p.then(async () => {
+          if (hook.hook === 'middleware') console.log('executing hooks based on definition defined at', d);
+
           if (props.perf) props.perf.start(`hook.${hookName}.${hook.name}`);
           try {
             let hookResponse = await hook.run({

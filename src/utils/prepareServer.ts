@@ -1,13 +1,23 @@
 import { Elder } from '../core/Elder.js';
 
 function prepareServer({ bootstrapComplete }: { bootstrapComplete: Promise<Elder> }) {
-  // eslint-disable-next-line consistent-return
-  return async function prepServer(req, res, next) {
+  return async function middleware(req, res, next) {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const elder = await bootstrapComplete;
+
       await elder.runHook('middleware', {
-        ...elder,
+        perf: elder.perf,
+        errors: elder.errors,
+        query: elder.query,
+        helpers: elder.helpers,
+        data: elder.data,
+        settings: elder.settings,
+        allRequests: elder.allRequests,
+        routes: elder.routes,
+        serverLookupObject: elder.serverLookupObject,
+        runHook: elder.runHook,
+        shortcodes: elder.shortcodes,
+        router: elder.router,
         req,
         next,
         res,
