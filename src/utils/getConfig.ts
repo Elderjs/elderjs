@@ -69,14 +69,13 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
   fs.ensureDirSync(path.resolve(distElder));
   fs.ensureDirSync(path.resolve(clientComponents));
 
-  const { server, client, watcher, hooks, routes, shortcodes, all } = getFilesAndWatcher({
+  const { files, watcher } = getFilesAndWatcher({
     ...config,
     production: !notProduction(),
     clientComponents,
     ssrComponents,
+    distElder,
   });
-
-  console.log(watcher);
 
   config.$$internal = {
     production: !notProduction(),
@@ -86,28 +85,20 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
     logPrefix: `[Elder.js]:`,
     serverPrefix,
     findComponent: prepareFindSvelteComponent({
-      clientComponents: client,
-      ssrComponents: server,
+      clientComponents: files.client,
+      ssrComponents: files.server,
       rootDir,
       srcDir: config.srcDir,
       production: !notProduction(),
+      distDir: config.distDir,
     }),
-    files: {
-      server,
-      client,
-      all,
-      hooks,
-      routes,
-      shortcodes,
-    },
+    files,
     watcher,
   };
 
   if ((config.css === 'file' || config.css === 'lazy') && initializationOptions.context !== 'test') {
     const assetPath = path.resolve(distElder, `.${path.sep}assets`);
     fs.ensureDirSync(path.resolve(assetPath));
-    const cssFiles = fs.readdirSync(assetPath).filter((f) => f.endsWith('.css'));
-    config.$$internal.publicCssFile = getCssFile({ cssFiles, serverPrefix, config, assetPath });
   }
 
   if (config.origin === '' || config.origin === 'https://example.com') {

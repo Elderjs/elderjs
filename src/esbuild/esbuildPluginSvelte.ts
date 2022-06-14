@@ -38,7 +38,7 @@ function convertWarning(source, { message, filename, start, end }, level) {
   return { text: message, location };
 }
 
-export type cssCacheObj = {
+export type CssCacheObj = {
   code: string;
   map: string;
   time: number;
@@ -48,7 +48,7 @@ export type TCache = Map<
   string,
   {
     contents: string;
-    css?: cssCacheObj;
+    css?: CssCacheObj;
     warnings: PartialMessage[];
     time: number;
     priority?: number;
@@ -165,9 +165,9 @@ function esbuildPluginSvelte({ type, svelteConfig, elderConfig, sveltePackages =
 
         build.onEnd(async () => {
           if (type === 'ssr') {
-            const s = Date.now();
+            // const s = Date.now();
             const r = await minifyCss('all', elderConfig);
-            console.log(`>>>> minifying css and adding sourcemaps took ${Date.now() - s}ms`);
+            // console.log(`>>>> minifying css and adding sourcemaps took ${Date.now() - s}ms`);
             const hash = md5(r.styles);
 
             const svelteCss = resolve(elderConfig.$$internal.distElder, `.${sep}assets${sep}svelte-${hash}.css`);

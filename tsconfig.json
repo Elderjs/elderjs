@@ -14,10 +14,11 @@
     "esModuleInterop": false,
     "declaration": true,
     "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "incremental": false
   },
   "include": ["src"],
   "exclude": ["node_modules", "**/__tests__/**", "dist"],
-  "types": ["jest", "node", "@types/jest"],
+  "types": ["jest", "node"],
   "typeRoots": ["node_modules/@types", "src/types", "node_modules/svelte/types"]
 }

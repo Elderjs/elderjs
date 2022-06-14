@@ -26,15 +26,22 @@ const prepareFindSvelteComponent = ({
   rootDir,
   srcDir,
   production,
+  distDir,
 }: {
   clientComponents: string[];
   ssrComponents: string[];
   rootDir: string;
   srcDir: string;
   production: boolean;
+  distDir: string;
 }) => {
   const relSrcDir = windowsPathFix(path.relative(rootDir, srcDir));
   const rootDirFixed = windowsPathFix(rootDir);
+
+  function relative(file: string | undefined): string {
+    if (file) return `/${path.relative(distDir, file)}`;
+    return '';
+  }
 
   const cache = new Map();
 
@@ -57,7 +64,7 @@ const prepareFindSvelteComponent = ({
       const ssr = ssrComponents.find((c) => c.toLowerCase().includes(rel));
       const client = windowsPathFix(clientComponents.find((c) => removeHash(c).toLowerCase().endsWith(rel)));
 
-      const out = { ssr, client };
+      const out = { ssr, client: relative(client) };
       if (production) cache.set(cacheKey, out);
       return out;
     }
@@ -72,7 +79,7 @@ const prepareFindSvelteComponent = ({
         .find((c) => path.parse(removeHash(c)).name.toLowerCase() === name.replace('.svelte', '').toLowerCase()),
     );
 
-    const out = { ssr, client };
+    const out = { ssr, client: relative(client) };
     if (production) cache.set(cacheKey, out);
     return out;
   };

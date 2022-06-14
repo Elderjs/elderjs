@@ -14,7 +14,6 @@ const svelteComponent =
   (componentName: string, folder = 'components') =>
   async ({ page, props, hydrateOptions }: ComponentPayload): Promise<string> => {
     const { ssr, client } = page.settings.$$internal.findComponent(componentName, folder);
-
     const cleanComponentName = getComponentName(componentName);
 
     const ssrReq = await import(ssr);

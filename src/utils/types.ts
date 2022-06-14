@@ -31,14 +31,13 @@ export interface FindSvelteComponent {
 }
 
 type Internal = {
-  hashedComponents?: {};
   ssrComponents: string;
   clientComponents: string;
   distElder: string;
   logPrefix: string;
   serverPrefix: string;
   findComponent?: FindSvelteComponent;
-  publicCssFile?: string;
+
   production: boolean;
   files: {
     client: string[];
@@ -47,6 +46,7 @@ type Internal = {
     hooks: string;
     all: string[];
     shortcodes: string;
+    publicCssFile: string;
   };
   watcher: EventEmitter;
 };
