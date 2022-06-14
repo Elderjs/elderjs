@@ -40,8 +40,6 @@ function prepareShortcodeParser({
         `Shortcodes must have a shortcode property to define their usage. Problem code: ${JSON.stringify(shortcode)}`,
       );
 
-    console.log(shortcode.run.toString());
-
     shortcodeParser.add(shortcode.shortcode, async (props, content) => {
       perf.start(shortcode.shortcode);
 
