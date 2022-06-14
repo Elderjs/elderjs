@@ -291,6 +291,7 @@ export default (page: Page) => {
           }
         }
 
+        let currentCssId = "ejs-public-css";
 
         const ejsWs = new WebSocket("ws://localhost:${port}");
         ejsWs.onmessage = function (event) {
@@ -300,8 +301,28 @@ export default (page: Page) => {
             return false;
           } else if (data.type === 'componentChange'){
             swapComponents(data.file)
-          } else if (data.type === 'publicCssChange){
+          } else if (data.type === 'publicCssChange'){
             console.log(data.file)
+            const newCssId = "ejs-public-css-" + Date.now();
+            const oldCssId = currentCssId;
+            setTimeout(()=>{
+              document.getElementById(oldCssId).remove();
+            }, 100)
+
+            const link = document.createElement("link");          
+            link.type = "text/css";
+            link.rel = "stylesheet";
+            link.href = data.file;
+            link.id = newCssId;
+            console.log(link);
+            document.head.appendChild(link);
+          
+            currentCssId = newCssId;
+
+
+
+
+
           } else {
             console.log(event)
           }

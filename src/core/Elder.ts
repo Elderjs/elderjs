@@ -328,12 +328,12 @@ class Elder {
         this.settings.$$internal.websocket.send({ type: 'reload' });
       });
       this.settings.$$internal.watcher.on('ssr', async (file) => {
-        // console.log(`ssr`, file);
+        this.settings.$$internal.websocket.send({ type: 'reload' });
       });
       this.settings.$$internal.watcher.on('plugin', async (file) => {
         console.log('plugin', file);
       });
-      this.settings.$$internal.watcher.on('publicCssChange', async (file) => {
+      this.settings.$$internal.watcher.on('publicCssFile', async (file) => {
         this.settings.$$internal.websocket.send({ type: 'publicCssChange', file });
       });
       this.settings.$$internal.watcher.on('client', async (file) => {

@@ -167,10 +167,12 @@ function esbuildPluginSvelte({ type, svelteConfig, elderConfig, sveltePackages =
           if (type === 'ssr') {
             // const s = Date.now();
             const r = await minifyCss('all', elderConfig);
-            // console.log(`>>>> minifying css and adding sourcemaps took ${Date.now() - s}ms`);
+
             const hash = md5(r.styles);
 
             const svelteCss = resolve(elderConfig.$$internal.distElder, `.${sep}assets${sep}svelte-${hash}.css`);
+
+            // console.log(`>>>> css ${Date.now() - s}ms > ${svelteCss}`);
 
             if (process.env.NODE_ENV !== 'production' || process.env.NODE_ENV !== 'production') {
               const sourceMapFileRel = `/${relative(
