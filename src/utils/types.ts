@@ -96,30 +96,38 @@ export type InitializationOptions = {
   css?: 'inline' | 'lazy' | 'file';
 };
 
-interface ISettingsOptionsBase {
-  version: string;
-  prefix: string;
-  distDir: string;
-  srcDir: string;
-  rootDir: string;
-  origin: string;
-  lang: string;
-  server: ServerOptions | false;
-  build: BuildOptions | false;
-  debug: DebugOptions;
-  plugins?: any;
+export interface UserOptions {
+  css: 'none' | 'file' | 'inline' | 'lazy';
+  plugins?: {
+    [key: string]: any;
+  };
   props: PropOptions;
   hooks: {
     disable?: string[];
   };
+  debug: DebugOptions;
+  server: ServerOptions;
+  build: BuildOptions;
+  lang: string;
+  prefix?: string;
+  distDir: string;
+  srcDir: string;
+  rootDir: string;
+  origin: string;
   shortcodes: {
     openPattern: string;
     closePattern: string;
   };
+}
+
+interface ISettingsOptionsBase extends UserOptions {
+  version: string;
+
+  prefix: string;
+
   $$internal: Internal;
   context?: string;
   worker?: boolean;
-  css: 'none' | 'file' | 'inline' | 'lazy';
 }
 
 export interface SettingsOptions extends ISettingsOptionsBase {
