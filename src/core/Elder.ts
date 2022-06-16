@@ -1,19 +1,9 @@
-import routes, { prepareRoute } from '../routes/routes.js';
-import plugins from '../plugins/index.js';
-import elderJsShortcodes from '../shortcodes/index.js';
 import { hookInterface } from '../hooks/hookInterface.js';
-import internalHooks from '../hooks/index.js';
+
 import build from '../build/build.js';
 import partialHydration from '../partialHydration/partialHydration.js';
 
-import {
-  prepareRunHook,
-  prepareServer,
-  validateShortcode,
-  permalinks,
-  getConfig,
-  prepareInlineShortcode,
-} from '../utils/index.js';
+import { prepareServer, validateShortcode, permalinks, getConfig, prepareInlineShortcode } from '../utils/index.js';
 import { ProcessedRouteOptions, ProcessedRoutesObject } from '../routes/types.js';
 import { HooksArray, ProcessedHooksArray, TRunHook } from '../hooks/types.js';
 import { ShortcodeDefinitions } from '../shortcodes/types.js';
@@ -36,8 +26,8 @@ import { inlineSvelteComponent } from '../partialHydration/inlineSvelteComponent
 import prepareRouter from '../routes/prepareRouter.js';
 import perf, { displayPerfTimings, Perf } from '../utils/perf.js';
 import bundle from './bundle.js';
-import windowsPathFix from '../utils/windowsPathFix.js';
-import path from 'path';
+import bootstrap from './bootstrap.js';
+import configureWatcher from './configureWatcher.js';
 
 class Elder {
   bootstrapComplete: Promise<Elder>;
@@ -81,303 +71,36 @@ class Elder {
   router: ReturnType<typeof prepareRouter>;
 
   constructor(initializationOptions: InitializationOptions = {}) {
-    try {
-      const initialOptions = { ...initializationOptions };
-      this.bootstrapComplete = new Promise((resolve) => {
-        this.markBootstrapComplete = resolve;
-      });
+    this.bootstrapComplete = new Promise((resolve) => {
+      this.markBootstrapComplete = resolve;
+    });
 
-      this.settingsComplete = new Promise((resolve) => {
-        this.markSettingsComplete = resolve;
-      });
+    this.settingsComplete = new Promise((resolve) => {
+      this.markSettingsComplete = resolve;
+    });
 
-      this.uid = 'startup';
+    this.uid = 'startup';
 
-      // merge the given config with the project and defaults;
-      this.settings = getConfig(initializationOptions);
+    // merge the given config with the project and defaults;
+    this.settings = getConfig(initializationOptions);
 
-      this.markSettingsComplete(this.settings);
+    this.markSettingsComplete(this.settings);
 
-      // overwrite anything that needs to be overwritten for legacy reasons based on the initialConfig
-      // todo: this can be refactored into getConfig.
-      this.settings.context = typeof initialOptions.context !== 'undefined' ? initialOptions.context : 'unknown';
-      this.settings.server = initialOptions.context === 'server' && this.settings.server;
-      this.settings.build = initialOptions.context === 'build' && this.settings.build;
-      this.settings.worker = !!initialOptions.worker;
-
-      if (this.settings.context === 'server') {
-        this.server = prepareServer({ bootstrapComplete: this.bootstrapComplete });
-      }
-
-      perf(this, true);
-
-      this.perf.start('startup');
-    } catch (e) {
-      console.error(e);
+    if (this.settings.context === 'server') {
+      this.server = prepareServer({ bootstrapComplete: this.bootstrapComplete });
     }
 
-    bundle(this.settings).then(async () => {
-      // plugins are run first as they have routes, hooks, and shortcodes.
-      const { pluginRoutes, pluginHooks, pluginShortcodes } = await plugins(this);
-      // add meta to routes and collect hooks from routes
-      const userRoutesJsFile = await routes(this.settings);
+    perf(this, true);
 
-      // plugins should never overwrite user routes.
-      this.routes = { ...pluginRoutes, ...userRoutesJsFile };
-
-      // merge hooks arrays
-      const hooksJs: ProcessedHooksArray = await getUserHooks(this.settings.$$internal.files.hooks);
-      const elderJsHooks: ProcessedHooksArray = internalHooks.map((hook) => ({
-        priority: 50,
-        ...hook,
-        $$meta: {
-          type: 'internal',
-          addedBy: 'elder.js',
-        },
-      }));
-
-      // merge hooks
-      // hooks can be turned off for plugins, user, and elderjs by the elder.config.js
-      this.hooks = filterHooks(
-        this.settings.hooks.disable,
-        [...elderJsHooks, ...pluginHooks, ...hooksJs].map((hook) => ({
-          $$meta: {
-            type: 'unknown',
-            addedBy: 'unknown',
-          },
-          priority: 50,
-          ...hook,
-        })),
-      );
-
-      // merge shortcodes
-      const shortcodesJs: ShortcodeDefinitions = await getUserShortcodes(this.settings.$$internal.files.shortcodes);
-      // user shortcodes first
-      this.shortcodes = [...shortcodesJs, ...elderJsShortcodes, ...pluginShortcodes];
-
-      /**
-       *
-       * Almost ready for customize hooks and bootstrap
-       * Just wire up the last few things.
-       */
-
-      this.data = {};
-      this.query = {};
-      this.allRequests = [];
-      this.serverLookupObject = {};
-      this.errors = [];
-      this.hookInterface = hookInterface;
-
-      this.helpers = makeElderjsHelpers(this.routes, this.settings);
-
-      // customizeHooks should not be used by plugins. Plugins should use their own closure to manage data and be side effect free.
-      const hooksMinusPlugins = this.hooks.filter((h) => h.$$meta.type !== 'plugin');
-      this.runHook = prepareRunHook({
-        hooks: hooksMinusPlugins,
-        allSupportedHooks: hookInterface,
-        settings: this.settings,
-      });
-
-      await this.runHook('customizeHooks', this);
-      // we now have any customizations to the hookInterface.
-      // we need to rebuild runHook with these customizations.
-      this.runHook = prepareRunHook({
-        hooks: this.hooks,
-        allSupportedHooks: this.hookInterface,
-        settings: this.settings,
-      });
-
-      await this.runHook('bootstrap', this);
-
-      /** get all of the requests */
-      this.perf.start('startup.routes');
-      this.allRequests = await getAllRequestsFromRoutes(this);
-      this.perf.end(`startup.routes`);
-
-      await this.runHook('allRequests', this);
-
-      /** setup permalinks and server lookup object */
-      this.perf.start(`startup.setPermalinks`);
-      this.allRequests = await completeRequests(this);
-      if (this.settings.context === 'server') {
-        this.serverLookupObject = makeServerLookupObject(this.allRequests);
-      }
-      this.perf.end(`startup.setPermalinks`);
-
-      this.perf.start(`startup.validatePermalinks`);
-      checkForDuplicatePermalinks(this.allRequests);
-      this.perf.end(`startup.validatePermalinks`);
-
-      this.perf.start(`startup.prepareRouter`);
-      this.router = prepareRouter(this);
-      this.perf.end(`startup.prepareRouter`);
-
-      this.perf.end('startup');
-
-      this.perf.stop();
-
-      displayElderPerfTimings('Elder.js Startup', this);
-
-      this.markBootstrapComplete(this);
-
-      /**
-       * Below handles reloading internal state as needed.
-       */
-      this.settings.$$internal.watcher.on('route', async (file) => {
-        this.perf.reset();
-        this.perf.start('stateRefresh');
-        /**
-         * Route Change: As of 6/13/2022:
-         * when a route changes, it needs to reload the route... then:
-         * update the routes object
-         * needs to rebuild helpers.permalinks
-         * need to wipe out the data object, then run the bootstrap hook
-         * run the route's all function
-         * filter out prior requests from allRequests... and replace with new requests
-         * needs to rerun the allRequests hook
-         * need to rebuild all permalinks
-         * needs to rebuild the server lookup object.
-         * need to check for duplicate permalinks.
-         * rebuild the router
-         */
-
-        const newRoute = await prepareRoute({ file, settings: this.settings });
-        if (newRoute) {
-          this.routes = {
-            ...this.routes,
-            [newRoute.name]: newRoute,
-          };
-
-          this.routes[newRoute.name] = newRoute;
-          this.helpers = makeElderjsHelpers(this.routes, this.settings);
-
-          this.data = {};
-          await this.runHook('bootstrap', this);
-
-          const newRequests = await runAllRequestOnRoute({ route: newRoute, ...this });
-
-          this.allRequests = [
-            ...this.allRequests.filter((r) => !(r.route === newRoute.name && r.source === 'routejs')),
-            ...newRequests,
-          ];
-
-          await this.runHook('allRequests', this);
-
-          this.allRequests = await completeRequests(this);
-
-          this.serverLookupObject = makeServerLookupObject(this.allRequests);
-
-          this.router = prepareRouter(this);
-
-          this.perf.end('stateRefresh');
-
-          displayElderPerfTimings(`Refreshed ${newRoute.name} route`, this);
-          this.settings.$$internal.websocket.send({ type: 'reload', file });
-        }
-      });
-      this.settings.$$internal.watcher.on('hooks', async (file) => {
-        this.perf.reset();
-        this.perf.start('stateRefresh');
-
-        /**
-         * PASS BY REFERENCE! MUST MUTATE THE this.hooks array... not reassign.
-         * When a hooks.js file changes we want to:
-         * load the new file
-         * look for any hooks that have changed by comparing the hook.run.toString()s
-         * For the ones that changed, track the hooks that need to be rerun.
-         * If customize hooks, bootstrap, or allRequests need to be rerun, do so in that order.
-         *
-         *
-         * bootstrap
-         * Bootstrap is the start of the data lifecylce so we need to destroy the data object before running it.
-         *
-         */
-
-        const newHooks = await getUserHooks(file);
-
-        const hooksToRun = new Set<string>();
-
-        // loop through the existing hooks to collect those that haven't changed.
-        const foundNewHooks = [];
-        for (let i = 0; i < this.hooks.length; i++) {
-          const hook = this.hooks[i];
-          const idx = newHooks.findIndex(
-            (h) => h.$$meta.addedBy === 'hooks.js' && h.hook === hook.hook && h.run.toString() === hook.run.toString(),
-          );
-          foundNewHooks.push(idx);
-          if (idx < 0 && hook.$$meta.addedBy === 'hooks.js') {
-            const [old] = this.hooks.splice(i, 1);
-            hooksToRun.add(old.hook);
-          }
-        }
-
-        for (let i = 0; i < newHooks.length; i++) {
-          if (foundNewHooks.includes(i)) continue;
-          this.hooks.unshift(newHooks[i]);
-          hooksToRun.add(newHooks[i].hook);
-        }
-
-        if (hooksToRun.has('customizeHooks')) {
-          console.log(
-            `customizeHooks definitions can't be live reloaded. You'll need to restart the server or submit a PR.`,
-          );
-          // note: the issue is that all of this works with pass by reference and we can't reassign the hookInterface or it breaks
-          // runHook
-        }
-
-        if (hooksToRun.has('bootstrap')) {
-          this.data = {};
-          this.runHook('bootstrap', this);
-        }
-        if (hooksToRun.has('allRequests')) this.runHook('allRequests', this);
-
-        this.allRequests = await completeRequests(this);
-
-        this.serverLookupObject = makeServerLookupObject(this.allRequests);
-
-        this.router = prepareRouter(this);
-
-        this.perf.end('stateRefresh');
-
-        displayElderPerfTimings(`Refreshed hooks.js`, this);
-        this.settings.$$internal.websocket.send({ type: 'reload', file });
-      });
-      this.settings.$$internal.watcher.on('shortcodes', async (file) => {
-        this.perf.reset();
-        this.perf.start('stateRefresh');
-        const newShortcodes = await getUserShortcodes(file);
-
-        // user shortcodes should always go first.
-        this.shortcodes = [...newShortcodes, ...this.shortcodes.filter((s) => s.$$meta.addedBy !== 'shortcodes.js')];
-
-        this.perf.end('stateRefresh');
-        displayElderPerfTimings(`Refreshed shortcodes.js`, this);
-        this.settings.$$internal.websocket.send({ type: 'reload', file });
-      });
-      this.settings.$$internal.watcher.on('ssr', async (file) => {
-        this.settings.$$internal.websocket.send({ type: 'reload', file });
-      });
-      this.settings.$$internal.watcher.on('plugin', async (file) => {
-        console.log('plugin', file);
-      });
-      this.settings.$$internal.watcher.on('publicCssFile', async (file) => {
-        this.settings.$$internal.websocket.send({ type: 'publicCssChange', file });
-      });
-      this.settings.$$internal.watcher.on('client', async (file) => {
-        if (file.includes('components')) {
-          const relPrefix = windowsPathFix(`${path.join(this.settings.$$internal.distElder, '/svelte/components/')}`);
-          this.settings.$$internal.websocket.send({ type: 'componentChange', file: file.replace(relPrefix, '') });
-        }
-      });
-
-      this.settings.$$internal.watcher.on('otherCssFile', async (file) => {
-        this.settings.$$internal.websocket.send({ type: 'otherCssFile', file });
-      });
-
-      this.settings.$$internal.watcher.on('elder.config', async (file) => {
-        console.log(`elder.config`, file);
+    bundle(this.settings).then(() => {
+      bootstrap(this).catch((error) => {
+        console.error(error);
+        this.settings.$$internal.status = 'errored';
+        console.log(`Awaiting change to try and recover. \n\n\n`);
       });
     });
+
+    configureWatcher(this);
   }
 
   bootstrap() {
@@ -569,7 +292,10 @@ export function makeServerLookupObject(allRequests: AllRequests): ServerLookupOb
   return lookup;
 }
 
-function displayElderPerfTimings(msg: string, elder: Pick<Elder, 'perf'> & { settings: { debug: DebugOptions } }) {
+export function displayElderPerfTimings(
+  msg: string,
+  elder: Pick<Elder, 'perf'> & { settings: { debug: DebugOptions } },
+) {
   const t = elder.perf.timings.slice(-1)[0] && Math.round(elder.perf.timings.slice(-1)[0].duration * 10) / 10;
   if (t && t > 0) {
     console.log(`${msg}: ${t}ms. ${t > 5000 ? `For details set debug.performance: true in elder.config.js` : ''}`);

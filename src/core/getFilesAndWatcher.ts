@@ -117,6 +117,10 @@ export default function getFilesAndWatcher(settings: TGetFilesAndWatcher): {
         // console.log(file);
       }
 
+      if (file.includes(settings.srcDir)) {
+        watcher.emit('srcChange', file);
+      }
+
       files.all = [...chokFiles.keys()];
     }
 

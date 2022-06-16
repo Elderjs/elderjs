@@ -55,6 +55,8 @@ type Internal = {
     wss: WebSocketServer;
     send: (data: WSData) => void;
   };
+
+  status: 'bootstrapped' | 'errored' | 'bootstrapping';
 };
 
 export type DebugOptions = {

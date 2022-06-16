@@ -98,6 +98,7 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
     files,
     watcher,
     websocket: !production && config.context === 'server' ? getWebsocket() : undefined,
+    status: 'bootstrapping',
   };
 
   if ((config.css === 'file' || config.css === 'lazy') && initializationOptions.context !== 'test') {
