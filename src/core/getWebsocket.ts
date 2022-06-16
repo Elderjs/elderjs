@@ -16,11 +16,22 @@ type PublicCssChange = {
   file: string;
 };
 
-export type WSData = Reload | ComponentChange | PublicCssChange;
+type OtherCssFile = {
+  type: 'otherCssFile';
+  file: string;
+};
+
+export type WSData = Reload | ComponentChange | PublicCssChange | OtherCssFile;
 
 export default function getWebsocket() {
   const server = createServer();
   const wss = new WebSocketServer({ server });
+  wss.on('connection', function connection(ws) {
+    ws.on('message', function message(data) {
+      console.log('> (client) %s', data);
+    });
+  });
+
   server.listen(0);
 
   return {
