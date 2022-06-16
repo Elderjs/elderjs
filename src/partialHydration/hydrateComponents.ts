@@ -302,17 +302,17 @@ export default (page: Page) => {
           const data = JSON.parse(event.data);
           if(data.type === 'reload'){
             console.log('reloading');
+            ejsWs.send(\`reloading \${window.document.location}\`);
             location.reload();
             return false;
           } else if (data.type === 'componentChange'){
             swapComponents(data.file);
           } else if (data.type === 'publicCssChange'){
-            console.log(data.file);
             const newCssId = "ejs-public-css-" + Date.now();
             const oldCssId = currentCssId;
             setTimeout(()=>{
               document.getElementById(oldCssId).remove();
-            }, 100)
+            }, 150)
 
             const link = document.createElement("link");          
             link.type = "text/css";
@@ -322,7 +322,19 @@ export default (page: Page) => {
             document.head.appendChild(link);
           
             currentCssId = newCssId;
-
+          } else if(data.type === 'otherCssFile'){
+            const exists = document.querySelector('link[href=" + data.file + "]');
+            if(exists){
+              setTimeout(()=>{
+                exists.remove();
+              }, 150);
+            } 
+            const link = document.createElement("link");          
+            link.type = "text/css";
+            link.rel = "stylesheet";
+            link.href = data.file + "?hash=" + Date.now();
+            document.head.appendChild(link);
+            console.log('added ' + data.file);
           } else {
             console.log('unknown elderjs event', event);
           }

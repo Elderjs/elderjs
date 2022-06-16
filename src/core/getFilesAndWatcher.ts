@@ -16,7 +16,7 @@ export function unhashUrl(url: string) {
   return url.split('?')[0];
 }
 
-export function makePublicCssRelative({ file, distElder }: { file: string; distElder: string }) {
+export function makeCssRelative({ file, distElder }: { file: string; distElder: string }) {
   return file ? `/${path.relative(distElder, file)}` : '';
 }
 
@@ -48,14 +48,14 @@ export default function getFilesAndWatcher(settings: TGetFilesAndWatcher): {
     `${settings.clientComponents}/**/*.js`,
     // `${settings.srcDir}/**/*.svelte`,
     `${settings.srcDir}/elder.config.cjs`,
-    `${settings.distElder}/assets/*.css`,
+    `${settings.distDir}/**/*.css`,
   ];
 
   const all = fg.sync(paths).map(windowsPathFix);
 
   const files = {
     all,
-    publicCssFile: makePublicCssRelative({
+    publicCssFile: makeCssRelative({
       file: all.find((p) => p.endsWith('.css')),
       distElder: settings.distDir,
     }),
@@ -68,7 +68,6 @@ export default function getFilesAndWatcher(settings: TGetFilesAndWatcher): {
     // already hashed
     client: all.filter((f) => f.includes(settings.clientComponents)),
   };
-  console.log(`initial public`, files.publicCssFile);
 
   if (!settings.production && settings.server) {
     // todo: add in plugin folders for Elder.js
@@ -91,8 +90,8 @@ export default function getFilesAndWatcher(settings: TGetFilesAndWatcher): {
           const found = routePaths.find((r) => file.includes(r));
           watcher.emit('route', hashUrl(`${found}route.js`));
         }
-      } else if (f.endsWith('.css')) {
-        files.publicCssFile = makePublicCssRelative({
+      } else if (f.endsWith('.css') && f.includes('svelte-')) {
+        files.publicCssFile = makeCssRelative({
           file,
           distElder: settings.distDir,
         });
@@ -112,6 +111,10 @@ export default function getFilesAndWatcher(settings: TGetFilesAndWatcher): {
         watcher.emit('client', fixedFile);
       } else if (file.endsWith(`elder.config.js`)) {
         watcher.emit('elder.config', hashUrl(file));
+      } else if (file.endsWith('.css')) {
+        watcher.emit('otherCssFile', makeCssRelative({ file, distElder: settings.distDir }));
+      } else {
+        // console.log(file);
       }
 
       files.all = [...chokFiles.keys()];
