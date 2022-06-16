@@ -35,7 +35,7 @@ import { inlineSvelteComponent } from '../partialHydration/inlineSvelteComponent
 
 import prepareRouter from '../routes/prepareRouter.js';
 import perf, { displayPerfTimings, Perf } from '../utils/perf.js';
-import forkWorker from './forkWorker.js';
+import bundle from './bundle.js';
 import windowsPathFix from '../utils/windowsPathFix.js';
 import path from 'path';
 
@@ -43,6 +43,10 @@ class Elder {
   bootstrapComplete: Promise<Elder>;
 
   markBootstrapComplete: (e: Elder | PromiseLike<Elder>) => void;
+
+  settingsComplete: Promise<SettingsOptions>;
+
+  markSettingsComplete: (e: SettingsOptions | PromiseLike<SettingsOptions>) => void;
 
   settings: SettingsOptions;
 
@@ -77,31 +81,42 @@ class Elder {
   router: ReturnType<typeof prepareRouter>;
 
   constructor(initializationOptions: InitializationOptions = {}) {
-    const initialOptions = { ...initializationOptions };
-    this.bootstrapComplete = new Promise((resolve) => {
-      this.markBootstrapComplete = resolve;
-    });
-    this.uid = 'startup';
+    try {
+      const initialOptions = { ...initializationOptions };
+      this.bootstrapComplete = new Promise((resolve) => {
+        this.markBootstrapComplete = resolve;
+      });
 
-    // merge the given config with the project and defaults;
-    this.settings = getConfig(initializationOptions);
+      this.settingsComplete = new Promise((resolve) => {
+        this.markSettingsComplete = resolve;
+      });
 
-    // overwrite anything that needs to be overwritten for legacy reasons based on the initialConfig
-    // todo: this can be refactored into getConfig.
-    this.settings.context = typeof initialOptions.context !== 'undefined' ? initialOptions.context : 'unknown';
-    this.settings.server = initialOptions.context === 'server' && this.settings.server;
-    this.settings.build = initialOptions.context === 'build' && this.settings.build;
-    this.settings.worker = !!initialOptions.worker;
+      this.uid = 'startup';
 
-    if (this.settings.context === 'server') {
-      this.server = prepareServer({ bootstrapComplete: this.bootstrapComplete });
+      // merge the given config with the project and defaults;
+      this.settings = getConfig(initializationOptions);
+
+      this.markSettingsComplete(this.settings);
+
+      // overwrite anything that needs to be overwritten for legacy reasons based on the initialConfig
+      // todo: this can be refactored into getConfig.
+      this.settings.context = typeof initialOptions.context !== 'undefined' ? initialOptions.context : 'unknown';
+      this.settings.server = initialOptions.context === 'server' && this.settings.server;
+      this.settings.build = initialOptions.context === 'build' && this.settings.build;
+      this.settings.worker = !!initialOptions.worker;
+
+      if (this.settings.context === 'server') {
+        this.server = prepareServer({ bootstrapComplete: this.bootstrapComplete });
+      }
+
+      perf(this, true);
+
+      this.perf.start('startup');
+    } catch (e) {
+      console.error(e);
     }
 
-    perf(this, true);
-
-    this.perf.start('startup');
-
-    forkWorker().then(async () => {
+    bundle(this.settings).then(async () => {
       // plugins are run first as they have routes, hooks, and shortcodes.
       const { pluginRoutes, pluginHooks, pluginShortcodes } = await plugins(this);
       // add meta to routes and collect hooks from routes
@@ -265,6 +280,7 @@ class Elder {
         this.perf.start('stateRefresh');
 
         /**
+         * PASS BY REFERENCE! MUST MUTATE THE this.hooks array... not reassign.
          * When a hooks.js file changes we want to:
          * load the new file
          * look for any hooks that have changed by comparing the hook.run.toString()s
@@ -280,15 +296,25 @@ class Elder {
         const newHooks = await getUserHooks(file);
 
         const hooksToRun = new Set<string>();
-        for (const hook of newHooks) {
-          const idx = this.hooks.findIndex(
-            (ch) =>
-              ch.$$meta.addedBy === 'hooks.js' && ch.hook === hook.hook && ch.run.toString() !== hook.run.toString(),
+
+        // loop through the existing hooks to collect those that haven't changed.
+        const foundNewHooks = [];
+        for (let i = 0; i < this.hooks.length; i++) {
+          const hook = this.hooks[i];
+          const idx = newHooks.findIndex(
+            (h) => h.$$meta.addedBy === 'hooks.js' && h.hook === hook.hook && h.run.toString() === hook.run.toString(),
           );
-          if (idx !== -1) {
-            const [spliced] = this.hooks.splice(idx, 1, hook);
-            hooksToRun.add(spliced.hook);
+          foundNewHooks.push(idx);
+          if (idx < 0 && hook.$$meta.addedBy === 'hooks.js') {
+            const [old] = this.hooks.splice(i, 1);
+            hooksToRun.add(old.hook);
           }
+        }
+
+        for (let i = 0; i < newHooks.length; i++) {
+          if (foundNewHooks.includes(i)) continue;
+          this.hooks.unshift(newHooks[i]);
+          hooksToRun.add(newHooks[i].hook);
         }
 
         if (hooksToRun.has('customizeHooks')) {
@@ -300,8 +326,8 @@ class Elder {
         }
 
         if (hooksToRun.has('bootstrap')) {
-          this.runHook('bootstrap', this);
           this.data = {};
+          this.runHook('bootstrap', this);
         }
         if (hooksToRun.has('allRequests')) this.runHook('allRequests', this);
 
@@ -312,6 +338,7 @@ class Elder {
         this.router = prepareRouter(this);
 
         this.perf.end('stateRefresh');
+
         displayElderPerfTimings(`Refreshed hooks.js`, this);
         this.settings.$$internal.websocket.send({ type: 'reload', file });
       });
@@ -343,6 +370,10 @@ class Elder {
         }
       });
 
+      this.settings.$$internal.watcher.on('otherCssFile', async (file) => {
+        this.settings.$$internal.websocket.send({ type: 'otherCssFile', file });
+      });
+
       this.settings.$$internal.watcher.on('elder.config', async (file) => {
         console.log(`elder.config`, file);
       });
@@ -351,6 +382,10 @@ class Elder {
 
   bootstrap() {
     return this.bootstrapComplete;
+  }
+
+  getSettings() {
+    return this.settingsComplete;
   }
 
   worker(workerRequests) {
@@ -424,7 +459,7 @@ export async function getUserShortcodes(file) {
 
 export function filterHooks(disable: undefined | false | string[], hooks: ProcessedHooksArray) {
   if (disable && disable.length > 0) {
-    hooks = hooks.filter((h) => !disable.includes(h.name));
+    return hooks.filter((h) => !disable.includes(h.name));
   }
   return hooks;
 }
