@@ -274,9 +274,9 @@ export default (page: Page) => {
           Object.entries(devComponents).forEach(([el, component])=>{
             if(component.component.split(".")[0] === componentName && file !== component.component){
               targetEl = el;
-              targetComponent = component
+              targetComponent = component;
             } 
-          })
+          });
 
           if(targetComponent && targetEl){
             // update file
@@ -284,7 +284,7 @@ export default (page: Page) => {
             const el = document.getElementById(targetEl);
             // remove old component
             while(el.firstChild){
-              el.removeChild(el.firstChild)
+              el.removeChild(el.firstChild);
             }
             if(window.ejsIO){
               window.ejsIO.unobserve(el);
@@ -301,13 +301,13 @@ export default (page: Page) => {
         ejsWs.onmessage = function (event) {
           const data = JSON.parse(event.data);
           if(data.type === 'reload'){
-            console.log('reloading')
+            console.log('reloading');
             location.reload();
             return false;
           } else if (data.type === 'componentChange'){
-            swapComponents(data.file)
+            swapComponents(data.file);
           } else if (data.type === 'publicCssChange'){
-            console.log(data.file)
+            console.log(data.file);
             const newCssId = "ejs-public-css-" + Date.now();
             const oldCssId = currentCssId;
             setTimeout(()=>{
@@ -324,9 +324,9 @@ export default (page: Page) => {
             currentCssId = newCssId;
 
           } else {
-            console.log('unknown elderjs event', event)
+            console.log('unknown elderjs event', event);
           }
-        }
+        };
       </script>`,
       });
     }
