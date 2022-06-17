@@ -5,7 +5,7 @@ import partialHydration from '../partialHydration/partialHydration.js';
 
 import { prepareServer, validateShortcode, permalinks, getConfig, prepareInlineShortcode } from '../utils/index.js';
 import { ProcessedRouteOptions, ProcessedRoutesObject } from '../routes/types.js';
-import { HooksArray, ProcessedHooksArray, TRunHook } from '../hooks/types.js';
+import { HooksArray, ProcessedHooksArray, THooks, TProcessedHook, TRunHook } from '../hooks/types.js';
 import { ShortcodeDefinitions } from '../shortcodes/types.js';
 import {
   SettingsOptions,
@@ -28,49 +28,50 @@ import perf, { displayPerfTimings, Perf } from '../utils/perf.js';
 import bundle from './bundle.js';
 import bootstrap from './bootstrap.js';
 import configureWatcher from './configureWatcher.js';
+import prepareRunHook from '../utils/prepareRunHook.js';
 
 class Elder {
   bootstrapComplete: Promise<Elder>;
-
   markBootstrapComplete: (e: Elder | PromiseLike<Elder>) => void;
-
   settingsComplete: Promise<SettingsOptions>;
-
   markSettingsComplete: (e: SettingsOptions | PromiseLike<SettingsOptions>) => void;
 
-  settings: SettingsOptions;
+  updateRunHookHookInterface: (any) => void;
+  updateRunHookHooks: (hooks: TProcessedHook[]) => void;
 
-  routes: ProcessedRoutesObject;
+  readonly settings: SettingsOptions;
+  readonly routes: ProcessedRoutesObject;
+  readonly hooks: ProcessedHooksArray;
+  readonly data: Record<string, unknown>;
+  readonly runHook: TRunHook;
+  readonly allRequests: Array<RequestObject>;
+  readonly serverLookupObject: ServerLookupObject;
+  readonly errors: TErrors;
 
-  hooks: ProcessedHooksArray;
+  readonly server: ReturnType<typeof prepareServer>;
+  readonly hookInterface: typeof hookInterface;
+  readonly shortcodes: ShortcodeDefinitions;
 
-  data: Record<string, unknown>;
-
-  runHook: TRunHook;
+  readonly router: ReturnType<typeof prepareRouter>;
 
   query: QueryOptions;
-
-  allRequests: Array<RequestObject>;
-
-  serverLookupObject: ServerLookupObject;
-
-  errors: TErrors;
-
+  uid: string;
   helpers: THelpers;
-
-  server: ReturnType<typeof prepareServer>;
-
-  hookInterface: typeof hookInterface;
-
-  shortcodes: ShortcodeDefinitions;
-
   perf: Perf;
 
-  uid: string;
-
-  router: ReturnType<typeof prepareRouter>;
-
   constructor(initializationOptions: InitializationOptions = {}) {
+    this.routes = {};
+    this.data = {};
+    this.query = {};
+    this.allRequests = [];
+    this.serverLookupObject = {};
+    this.errors = [];
+    this.hookInterface = hookInterface;
+    this.hooks = [];
+    this.shortcodes = [];
+    this.allRequests = [];
+    this.serverLookupObject = {};
+
     this.bootstrapComplete = new Promise((resolve) => {
       this.markBootstrapComplete = resolve;
     });
@@ -84,11 +85,22 @@ class Elder {
     // merge the given config with the project and defaults;
     this.settings = getConfig(initializationOptions);
 
+    const { runHook, updateRunHookHookInterface, updateRunHookHooks } = prepareRunHook({
+      hooks: this.hooks,
+      hookInterface: this.hookInterface,
+      settings: this.settings,
+    });
+
+    this.runHook = runHook;
+    this.updateRunHookHookInterface = updateRunHookHookInterface;
+    this.updateRunHookHooks = updateRunHookHooks;
+
     this.markSettingsComplete(this.settings);
 
     if (this.settings.context === 'server') {
       this.server = prepareServer({ bootstrapComplete: this.bootstrapComplete });
     }
+    this.router = prepareRouter(this);
 
     perf(this, true);
 
@@ -269,7 +281,6 @@ export async function addPermalinkToRequest({
 }
 
 export async function completeRequests(elder: Pick<Elder, 'allRequests' | 'settings' | 'helpers' | 'routes'>) {
-  const requests = [];
   for (const request of elder.allRequests) {
     request.source = 'routejs';
     request.type = elder.settings.context;
@@ -279,9 +290,7 @@ export async function completeRequests(elder: Pick<Elder, 'allRequests' | 'setti
       settings: elder.settings,
       helpers: elder.helpers,
     });
-    requests.push(request);
   }
-  return requests;
 }
 
 export function makeServerLookupObject(allRequests: AllRequests): ServerLookupObject {

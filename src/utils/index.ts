@@ -7,7 +7,7 @@ import perf from './perf.js';
 import permalinks from './permalinks.js';
 
 import svelteComponent from './svelteComponent.js';
-import prepareRunHook from './prepareRunHook.js';
+
 import shuffleArray from './shuffleArray.js';
 import { prepareServer } from './prepareServer.js';
 
@@ -27,7 +27,6 @@ export {
   parseBuildPerf,
   perf,
   permalinks,
-  prepareRunHook,
   validateHook,
   validateRoute,
   validatePlugin,

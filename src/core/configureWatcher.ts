@@ -13,6 +13,7 @@ import {
   getUserHooks,
   getUserShortcodes,
 } from './Elder.js';
+import { pbrEmptyObject, pbrReplaceArray, pbrReplaceObject } from './passByReferenceUtils.js';
 
 export default function configureWatcher(elder: Elder) {
   elder.settings.$$internal.watcher.on('route', async (file) => {
@@ -36,31 +37,31 @@ export default function configureWatcher(elder: Elder) {
 
     const newRoute = await prepareRoute({ file, settings: elder.settings });
     if (newRoute) {
-      elder.routes = {
-        ...elder.routes,
-        [newRoute.name]: newRoute,
-      };
-
       elder.routes[newRoute.name] = newRoute;
       elder.helpers = makeElderjsHelpers(elder.routes, elder.settings);
 
-      elder.data = {};
+      pbrEmptyObject(elder.data);
       await elder.runHook('bootstrap', elder);
 
-      const newRequests = await runAllRequestOnRoute({ route: newRoute, ...elder });
+      const newRequests = await runAllRequestOnRoute({
+        route: newRoute,
+        settings: elder.settings,
+        query: elder.query,
+        helpers: elder.helpers,
+        data: elder.data,
+        perf: elder.perf,
+      });
 
-      elder.allRequests = [
+      pbrReplaceArray(elder.allRequests, [
         ...elder.allRequests.filter((r) => !(r.route === newRoute.name && r.source === 'routejs')),
         ...newRequests,
-      ];
+      ]);
 
       await elder.runHook('allRequests', elder);
 
-      elder.allRequests = await completeRequests(elder);
+      await completeRequests(elder);
 
-      elder.serverLookupObject = makeServerLookupObject(elder.allRequests);
-
-      elder.router = prepareRouter(elder);
+      pbrReplaceObject(elder.serverLookupObject, makeServerLookupObject(elder.allRequests));
 
       elder.perf.end('stateRefresh');
 
@@ -112,24 +113,19 @@ export default function configureWatcher(elder: Elder) {
     }
 
     if (hooksToRun.has('customizeHooks')) {
-      console.log(
-        `customizeHooks definitions can't be live reloaded. You'll need to restart the server or submit a PR.`,
-      );
-      // note: the issue is that all of elder works with pass by reference and we can't reassign the hookInterface or it breaks
-      // runHook
+      await elder.runHook('customizeHooks', elder);
+      elder.updateRunHookHookInterface(elder.hookInterface);
     }
 
     if (hooksToRun.has('bootstrap')) {
-      elder.data = {};
+      pbrEmptyObject(elder.data);
       elder.runHook('bootstrap', elder);
     }
     if (hooksToRun.has('allRequests')) elder.runHook('allRequests', elder);
 
-    elder.allRequests = await completeRequests(elder);
+    await completeRequests(elder);
 
-    elder.serverLookupObject = makeServerLookupObject(elder.allRequests);
-
-    elder.router = prepareRouter(elder);
+    pbrReplaceObject(elder.serverLookupObject, makeServerLookupObject(elder.allRequests));
 
     elder.perf.end('stateRefresh');
 
@@ -143,7 +139,10 @@ export default function configureWatcher(elder: Elder) {
     const newShortcodes = await getUserShortcodes(file);
 
     // user shortcodes should always go first.
-    elder.shortcodes = [...newShortcodes, ...elder.shortcodes.filter((s) => s.$$meta.addedBy !== 'shortcodes.js')];
+    pbrReplaceArray(elder.shortcodes, [
+      ...newShortcodes,
+      ...elder.shortcodes.filter((s) => s.$$meta.addedBy !== 'shortcodes.js'),
+    ]);
 
     elder.perf.end('stateRefresh');
     displayElderPerfTimings(`Refreshed shortcodes.js`, elder);
@@ -155,7 +154,7 @@ export default function configureWatcher(elder: Elder) {
   });
   elder.settings.$$internal.watcher.on('plugin', async (file) => {
     if (elder.settings.$$internal.status !== 'bootstrapped') return;
-    console.log('plugin', file);
+    console.log('Todo: Implement plugin reload. Please open PR if interested in handling.', file);
   });
   elder.settings.$$internal.watcher.on('publicCssFile', async (file) => {
     if (elder.settings.$$internal.status !== 'bootstrapped') return;

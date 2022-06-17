@@ -344,3 +344,19 @@ export const hookInterface = [
 export default hookInterface;
 
 export type THookInterface = typeof hookInterface;
+
+export type SingleHookDefinition =
+  | typeof customizeHooks
+  | typeof bootstrapHook
+  | typeof allRequestsHook
+  | typeof middlewareHook
+  | typeof requestHook
+  | typeof dataHook
+  | typeof shortcodeHook
+  | typeof stacksHook
+  | typeof headHook
+  | typeof compileHtmlHook
+  | typeof htmlHook
+  | typeof requestCompleteHook
+  | typeof errorHook
+  | typeof buildCompleteHook;

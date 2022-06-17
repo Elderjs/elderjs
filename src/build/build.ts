@@ -1,11 +1,10 @@
 import cliProgress from 'cli-progress';
 import os from 'os';
 import cluster from 'cluster';
-
-import getElderConfig from '../utils/getConfig.js';
 import { Elder } from '../core/Elder.js';
 import shuffleArray from '../utils/shuffleArray.js';
 import { BuildResult, InitializationOptions, RequestObject, SettingsOptions } from '../utils/types.js';
+import { pbrReplaceArray } from '../core/passByReferenceUtils.js';
 
 export function getWorkerCounts(counts) {
   return Object.keys(counts).reduce(
@@ -244,7 +243,8 @@ async function build(initializationOptions: InitializationOptions = {}): Promise
 
       let success = true;
 
-      mElder.errors = [...mElder.errors, ...errors];
+      pbrReplaceArray(mElder.errors, [...mElder.errors, ...errors]);
+
       if (mElder.errors.length > 0) {
         success = false;
       }

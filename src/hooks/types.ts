@@ -39,7 +39,7 @@ interface IHookBase {
   hook: THookName;
   name: string;
   description: string;
-  priority?: Number;
+  priority?: number;
 }
 
 type TVoidOrUndefined = undefined | null | void | never;
@@ -375,7 +375,7 @@ export type THooks =
 export type HooksArray = Array<THooks>;
 
 export type ProcessedHook<T> = T & {
-  priority: Number;
+  priority: number;
   $$meta: {
     type: string;
     addedBy: string;

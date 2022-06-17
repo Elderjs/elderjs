@@ -1,10 +1,7 @@
-import hookInterface from '../hooks/hookInterface.js';
 import { ProcessedHooksArray } from '../hooks/types.js';
 import plugins from '../plugins/index.js';
-import prepareRouter from '../routes/prepareRouter.js';
 import routes from '../routes/routes.js';
 import { ShortcodeDefinitions } from '../shortcodes/types.js';
-import { prepareRunHook } from '../utils/index.js';
 
 import {
   checkForDuplicatePermalinks,
@@ -21,6 +18,7 @@ import {
 import internalHooks from '../hooks/index.js';
 
 import elderJsShortcodes from '../shortcodes/index.js';
+import { pbrReplaceArray, pbrReplaceObject } from './passByReferenceUtils.js';
 
 export default async function bootstrap(elder: Elder) {
   elder.perf.start('startup');
@@ -32,7 +30,7 @@ export default async function bootstrap(elder: Elder) {
   const userRoutesJsFile = await routes(elder.settings);
 
   // plugins should never overwrite user routes.
-  elder.routes = { ...pluginRoutes, ...userRoutesJsFile };
+  pbrReplaceObject(elder.routes, { ...pluginRoutes, ...userRoutesJsFile });
 
   // merge hooks arrays
   const hooksJs: ProcessedHooksArray = await getUserHooks(elder.settings.$$internal.files.hooks);
@@ -45,81 +43,62 @@ export default async function bootstrap(elder: Elder) {
     },
   }));
 
-  // merge hooks
+  // PASS BY REFERENCE!
   // hooks can be turned off for plugins, user, and elderjs by the elder.config.js
-  elder.hooks = filterHooks(
-    elder.settings.hooks.disable,
-    [...elderJsHooks, ...pluginHooks, ...hooksJs].map((hook) => ({
-      $$meta: {
-        type: 'unknown',
-        addedBy: 'unknown',
-      },
-      priority: 50,
-      ...hook,
-    })),
+  pbrReplaceArray(
+    elder.hooks,
+    filterHooks(
+      elder.settings.hooks.disable,
+      [...elderJsHooks, ...pluginHooks, ...hooksJs].map((hook) => ({
+        $$meta: {
+          type: 'unknown',
+          addedBy: 'unknown',
+        },
+        priority: 50,
+        ...hook,
+      })),
+    ),
   );
 
   // merge shortcodes
   const shortcodesJs: ShortcodeDefinitions = await getUserShortcodes(elder.settings.$$internal.files.shortcodes);
   // user shortcodes first
-  elder.shortcodes = [...shortcodesJs, ...elderJsShortcodes, ...pluginShortcodes];
-
-  /**
-   *
-   * Almost ready for customize hooks and bootstrap
-   * Just wire up the last few things.
-   */
-
-  elder.data = {};
-  elder.query = {};
-  elder.allRequests = [];
-  elder.serverLookupObject = {};
-  elder.errors = [];
-  elder.hookInterface = hookInterface;
+  pbrReplaceArray(elder.shortcodes, [...shortcodesJs, ...elderJsShortcodes, ...pluginShortcodes]);
 
   elder.helpers = makeElderjsHelpers(elder.routes, elder.settings);
 
   // customizeHooks should not be used by plugins. Plugins should use their own closure to manage data and be side effect free.
   const hooksMinusPlugins = elder.hooks.filter((h) => h.$$meta.type !== 'plugin');
-  elder.runHook = prepareRunHook({
-    hooks: hooksMinusPlugins,
-    allSupportedHooks: hookInterface,
-    settings: elder.settings,
-  });
+
+  elder.updateRunHookHooks(hooksMinusPlugins);
 
   await elder.runHook('customizeHooks', elder);
   // we now have any customizations to the hookInterface.
   // we need to rebuild runHook with these customizations.
-  elder.runHook = prepareRunHook({
-    hooks: elder.hooks,
-    allSupportedHooks: elder.hookInterface,
-    settings: elder.settings,
-  });
+  elder.updateRunHookHookInterface(elder.hookInterface);
+  elder.updateRunHookHooks(elder.hooks);
 
   await elder.runHook('bootstrap', elder);
 
   /** get all of the requests */
   elder.perf.start('startup.routes');
-  elder.allRequests = await getAllRequestsFromRoutes(elder);
+  const newRequests = await getAllRequestsFromRoutes(elder);
+  pbrReplaceArray(elder.allRequests, newRequests);
   elder.perf.end(`startup.routes`);
 
   await elder.runHook('allRequests', elder);
 
   /** setup permalinks and server lookup object */
   elder.perf.start(`startup.setPermalinks`);
-  elder.allRequests = await completeRequests(elder);
+  await completeRequests(elder);
   if (elder.settings.context === 'server') {
-    elder.serverLookupObject = makeServerLookupObject(elder.allRequests);
+    pbrReplaceObject(elder.serverLookupObject, makeServerLookupObject(elder.allRequests));
   }
   elder.perf.end(`startup.setPermalinks`);
 
   elder.perf.start(`startup.validatePermalinks`);
   checkForDuplicatePermalinks(elder.allRequests);
   elder.perf.end(`startup.validatePermalinks`);
-
-  elder.perf.start(`startup.prepareRouter`);
-  elder.router = prepareRouter(elder);
-  elder.perf.end(`startup.prepareRouter`);
 
   elder.perf.end('startup');
 
