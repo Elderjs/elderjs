@@ -1,6 +1,5 @@
 import path from 'path';
 import { Elder } from '../index.js';
-import prepareRouter from '../routes/prepareRouter.js';
 import { prepareRoute } from '../routes/routes.js';
 import windowsPathFix from '../utils/windowsPathFix.js';
 import bootstrap from './bootstrap.js';
@@ -173,9 +172,31 @@ export default function configureWatcher(elder: Elder) {
     elder.settings.$$internal.websocket.send({ type: 'otherCssFile', file });
   });
 
-  elder.settings.$$internal.watcher.on('elder.config', async (file) => {
+  elder.settings.$$internal.watcher.on('elder.config', async () => {
     if (elder.settings.$$internal.status !== 'bootstrapped') return;
-    console.log(`elder.config`, file);
+    console.log(
+      `\n\n\n======== elder.config.js change =========\n\nYou need to restart Elder.js to pick up elder.config.js changes\n\n=========================================\n\n\n`,
+    );
+    process.exit(0);
+  });
+
+  elder.settings.$$internal.watcher.on('helpers', async (file) => {
+    elder.perf.reset();
+    elder.perf.start('stateRefresh');
+
+    pbrEmptyObject(elder.data);
+    await elder.runHook('bootstrap', elder);
+
+    await elder.runHook('allRequests', elder);
+
+    await completeRequests(elder);
+
+    pbrReplaceObject(elder.serverLookupObject, makeServerLookupObject(elder.allRequests));
+
+    elder.perf.end('stateRefresh');
+
+    displayElderPerfTimings(`Refreshed helpers in`, elder);
+    elder.settings.$$internal.websocket.send({ type: 'reload', file });
   });
 
   // error reloading...

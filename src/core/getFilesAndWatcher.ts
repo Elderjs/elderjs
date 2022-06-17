@@ -47,7 +47,8 @@ export default function getFilesAndWatcher(settings: TGetFilesAndWatcher): {
     `${settings.ssrComponents}/**/*.js`,
     `${settings.clientComponents}/**/*.js`,
     // `${settings.srcDir}/**/*.svelte`,
-    `${settings.srcDir}/elder.config.cjs`,
+    `${settings.rootDir}/elder.config.cjs`,
+    `${settings.rootDir}/elder.config.js`,
     `${settings.distDir}/**/*.css`,
   ];
 
@@ -109,10 +110,12 @@ export default function getFilesAndWatcher(settings: TGetFilesAndWatcher): {
         const idx = files.client.findIndex((f) => f.includes(withoutHash));
         files.client[idx] = fixedFile;
         watcher.emit('client', fixedFile);
-      } else if (file.endsWith(`elder.config.js`)) {
+      } else if (file.endsWith(`elder.config.js`) || file.endsWith(`elder.config.cjs`)) {
         watcher.emit('elder.config', hashUrl(file));
       } else if (file.endsWith('.css')) {
         watcher.emit('otherCssFile', makeCssRelative({ file, distElder: settings.distDir }));
+      } else if (file.endsWith(`${settings.srcDir}/helpers/index.js`)) {
+        watcher.emit('helpers', hashUrl(file));
       } else {
         // console.log(file);
       }
