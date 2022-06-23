@@ -28,6 +28,10 @@ async function externalHelpers({
             userHelpers = await userHelpers({ settings, query, helpers });
           }
 
+          if (userHelpers.default) {
+            userHelpers = userHelpers.default;
+          }
+
           cache = userHelpers;
         } catch (err) {
           console.error(err);
