@@ -23,7 +23,7 @@ export type DataFnPayload = {
   next: () => any;
 };
 
-export type DataFn = (payload: DataFnPayload) => PromiseLike<{ [key: string]: any }> | { [key: string]: any };
+export type DataFn = (payload: DataFnPayload) => PromiseLike<{ [key: string]: any }> | { [key: string]: any } | void;
 
 interface IBaseRouteOptions {
   template?: string;

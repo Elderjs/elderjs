@@ -11,6 +11,7 @@ export * from './utils/index.js';
 export * from './routes/routes.js';
 export * from './routes/types.js';
 export * from './hooks/types.js';
+export * from './shortcodes/types.js';
 export * from './plugins/types.js';
 export { hookInterface } from './hooks/hookInterface.js';
 export { hookEntityDefinitions } from './hooks/hookEntityDefinitions.js';
