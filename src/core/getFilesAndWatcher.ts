@@ -43,10 +43,8 @@ export default function getFilesAndWatcher(settings: TGetFilesAndWatcher): {
   const watcher = new EventEmitter();
   const paths = [
     `${settings.srcDir}/**/*`,
-    // `${settings.srcDir}/**/*.js`,
     `${settings.ssrComponents}/**/*.js`,
     `${settings.clientComponents}/**/*.js`,
-    // `${settings.srcDir}/**/*.svelte`,
     `${settings.rootDir}/elder.config.cjs`,
     `${settings.rootDir}/elder.config.js`,
     `${settings.distDir}/**/*.css`,
@@ -89,14 +87,16 @@ export default function getFilesAndWatcher(settings: TGetFilesAndWatcher): {
           // find nearest route.
           const routePaths = files.routes.map((r) => unhashUrl(r).replace('route.js', ''));
           const found = routePaths.find((r) => file.includes(r));
-          watcher.emit('route', hashUrl(`${found}route.js`));
+          if (found) {
+            watcher.emit('route', hashUrl(`${found}route.js`));
+          }
         }
       } else if (f.endsWith('.css') && f.includes('svelte-')) {
-        files.publicCssFile = makeCssRelative({
-          file,
-          distElder: settings.distDir,
-        });
-        watcher.emit('publicCssFile', files.publicCssFile);
+        // files.publicCssFile = makeCssRelative({
+        //   file,
+        //   distElder: settings.distDir,
+        // });
+        // watcher.emit('publicCssFile', files.publicCssFile);
       } else if (f === 'hooks.js') {
         watcher.emit('hooks', hashUrl(file));
       } else if (f === 'shortcodes.js') {
@@ -112,12 +112,12 @@ export default function getFilesAndWatcher(settings: TGetFilesAndWatcher): {
         watcher.emit('client', fixedFile);
       } else if (file.endsWith(`elder.config.js`) || file.endsWith(`elder.config.cjs`)) {
         watcher.emit('elder.config', hashUrl(file));
-      } else if (file.endsWith('.css')) {
-        watcher.emit('otherCssFile', makeCssRelative({ file, distElder: settings.distDir }));
+        // } else if (file.endsWith('.css')) {
+        // watcher.emit('otherCssFile', makeCssRelative({ file, distElder: settings.distDir }));
       } else if (file.endsWith(`${settings.srcDir}/helpers/index.js`)) {
         watcher.emit('helpers', hashUrl(file));
       } else {
-        // console.log(file);
+        // console.log('other file', file);
       }
 
       if (file.includes(settings.srcDir)) {
