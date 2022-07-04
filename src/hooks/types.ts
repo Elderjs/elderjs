@@ -1,4 +1,3 @@
-/* eslint-disable no-use-before-define */
 import { PerfPayload, PerfTimings } from '../utils/perf.js';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

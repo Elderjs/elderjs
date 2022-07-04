@@ -2,13 +2,14 @@ import kebabcase from 'lodash.kebabcase';
 import { parse as toRegExp } from 'regexparam';
 import path from 'path';
 
-import { svelteComponent, validateRoute } from '../utils/index.js';
+import { validateRoute } from '../utils/index.js';
 import { SettingsOptions } from '../utils/types.js';
 import wrapPermalinkFn from '../utils/wrapPermalinkFn.js';
 import windowsPathFix from '../utils/windowsPathFix.js';
 import makeDynamicPermalinkFn from './makeDynamicPermalinkFn.js';
 import { ProcessedRouteOptions, RouteOptions, ProcessedRoutesObject } from './types.js';
 import { unhashUrl } from '../core/getFilesAndWatcher.js';
+import svelteComponent from '../partialHydration/svelteComponent.js';
 
 const requireFile = async (file: string) => {
   const dataReq = await import(file);

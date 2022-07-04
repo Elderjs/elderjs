@@ -49,5 +49,4 @@ const hookEntityDefinitions = {
   perf: `Includes two functions: perf.start('thingToTrack') and perf.end('thingToTrack') which allows easily adding tracking to Elder.js' perf reporting which can be toggled under debug.performance in your elder.config.js file.`,
 } as const;
 
-// eslint-disable-next-line import/prefer-default-export
 export { hookEntityDefinitions };

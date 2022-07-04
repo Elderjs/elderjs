@@ -1,4 +1,3 @@
-/* eslint-disable jest/no-try-expect */
 import partialHydration from '../partialHydration.js';
 import { describe, it, expect } from 'vitest';
 
@@ -98,7 +97,6 @@ describe('#partialHydration', () => {
         content: `<Clock hydrate-client={{}} /><Clock hydrate-client={{}}>Test</Clock>`,
       });
     } catch (e) {
-      // eslint-disable-next-line jest/no-conditional-expect
       expect(e.message).toBe(
         `Elder.js only supports self-closing syntax on hydrated components. This means <Foo /> not <Foo></Foo> or <Foo>Something</Foo>. Offending component: <Clock hydrate-client={{}}>Test</Clock>. Slots and child components aren't supported during hydration as it would result in huge HTML payloads. If you need this functionality try wrapping the offending component in a parent component without slots or child components and hydrate the parent component.`,
       );

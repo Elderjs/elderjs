@@ -5,7 +5,7 @@ import partialHydration from '../partialHydration/partialHydration.js';
 
 import { prepareServer, validateShortcode, permalinks, getConfig, prepareInlineShortcode } from '../utils/index.js';
 import { ProcessedRouteOptions, ProcessedRoutesObject } from '../routes/types.js';
-import { HooksArray, ProcessedHooksArray, THooks, TProcessedHook, TRunHook } from '../hooks/types.js';
+import { HooksArray, ProcessedHooksArray, TRunHook, TProcessedHook } from '../hooks/types.js';
 import { ShortcodeDefinitions } from '../shortcodes/types.js';
 import {
   SettingsOptions,

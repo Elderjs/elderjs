@@ -6,8 +6,6 @@ import parseBuildPerf from '../build/parseBuildPerf.js';
 import perf from './perf.js';
 import permalinks from './permalinks.js';
 
-import svelteComponent from './svelteComponent.js';
-
 import shuffleArray from './shuffleArray.js';
 import { prepareServer } from './prepareServer.js';
 
@@ -20,7 +18,6 @@ import prepareInlineShortcode from './prepareInlineShortcode.js';
 export {
   asyncForEach,
   capitalizeFirstLetter,
-  svelteComponent,
   getUniqueId,
   validateShortcode,
   Page,

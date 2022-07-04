@@ -220,7 +220,9 @@ describe('#Page', () => {
     runHook,
     shortcodes: [],
     perf: {
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       start: () => {},
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       stop: () => {},
     },
   };

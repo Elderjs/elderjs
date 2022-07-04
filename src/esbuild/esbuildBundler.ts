@@ -4,7 +4,7 @@
 // reload can also be called after esbuild finishes the rebuild.
 // the file watcher should restart the entire esbuild process when a new svelte file is seen. This includes clearing caches.
 
-import { build, BuildResult } from 'esbuild';
+import { build } from 'esbuild';
 import glob from 'glob';
 import path from 'path';
 
@@ -14,7 +14,6 @@ import { PreprocessorGroup } from 'svelte/types/compiler/preprocess/types';
 import esbuildPluginSvelte from './esbuildPluginSvelte.js';
 import { InitializationOptions, SettingsOptions } from '../utils/types.js';
 import getConfig from '../utils/getConfig.js';
-import { devServer } from '../rollup/rollupPlugin.js';
 import getPluginLocations from '../utils/getPluginLocations.js';
 
 const production = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'PRODUCTION';

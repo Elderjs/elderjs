@@ -4,21 +4,17 @@ import path from 'path';
 import { parse as toRegExp } from 'regexparam';
 
 import { ShortcodeDefinitions } from '../shortcodes/types.js';
-import {
-  validatePlugin,
-  validateHook,
-  svelteComponent,
-  PluginOptions,
-  TProcessedHook,
-  ProcessedHooksArray,
-  ExcludesFalse,
-} from '../index.js';
+
 import { Elder } from '../core/Elder.js';
 import { ProcessedRouteOptions, ProcessedRoutesObject } from '../routes/types.js';
 import createReadOnlyProxy from '../utils/createReadOnlyProxy.js';
 import wrapPermalinkFn from '../utils/wrapPermalinkFn.js';
 import makeDynamicPermalinkFn from '../routes/makeDynamicPermalinkFn.js';
-import { validateRoute, validateShortcode } from '../utils/validations.js';
+import { validateHook, validatePlugin, validateRoute, validateShortcode } from '../utils/validations.js';
+import svelteComponent from '../partialHydration/svelteComponent.js';
+import { ProcessedHooksArray, TProcessedHook } from '../hooks/types.js';
+import { ExcludesFalse } from '../index.js';
+import { PluginOptions } from './types.js';
 
 export const pluginVersionCheck = (elderVersion: string, pluginVersion: string): boolean => {
   const eSplit = elderVersion.split('.');

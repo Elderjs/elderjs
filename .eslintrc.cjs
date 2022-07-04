@@ -3,14 +3,11 @@ module.exports = {
   env: {
     browser: true,
     es2020: true,
-    'jest/globals': true,
   },
   extends: [
     'eslint:recommended',
     'plugin:eslint-comments/recommended',
     'plugin:@typescript-eslint/recommended',
-    'plugin:jest/style',
-    'plugin:jest/recommended',
     'plugin:import/typescript',
     'prettier',
     'prettier/@typescript-eslint',
@@ -28,7 +25,7 @@ module.exports = {
     ecmaVersion: 11,
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint', 'jest', 'prettier'],
+  plugins: ['@typescript-eslint', 'prettier'],
   rules: {
     'prettier/prettier': 'error',
 

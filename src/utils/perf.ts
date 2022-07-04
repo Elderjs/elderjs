@@ -86,6 +86,7 @@ function perf(page: Page | Elder, force = false) {
       end: placeholder,
       stop: () => '',
       prefix: (): PerfPayload => ({ start: placeholder, end: placeholder }),
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       reset: () => {},
     };
   }

@@ -1,4 +1,3 @@
-import glob from 'fast-glob';
 import path from 'path';
 import { SvelteComponentFiles } from '../utils/types.js';
 import windowsPathFix from '../utils/windowsPathFix.js';

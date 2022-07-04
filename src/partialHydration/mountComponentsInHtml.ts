@@ -1,4 +1,4 @@
-import svelteComponent from '../utils/svelteComponent.js';
+import svelteComponent from './svelteComponent.js';
 
 export function replaceSpecialCharacters(str: string): string {
   return str

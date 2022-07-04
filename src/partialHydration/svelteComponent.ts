@@ -1,6 +1,6 @@
-import { ComponentPayload } from './types.js';
-import mountComponentsInHtml from '../partialHydration/mountComponentsInHtml.js';
-import getUniqueId from './getUniqueId.js';
+import { ComponentPayload } from '../utils/types.js';
+import mountComponentsInHtml from './mountComponentsInHtml.js';
+import getUniqueId from '../utils/getUniqueId.js';
 
 export const getComponentName = (str: string) => {
   let out = str.replace('.svelte', '').replace('.js', '');
