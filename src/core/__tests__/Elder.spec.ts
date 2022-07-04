@@ -63,6 +63,7 @@ vi.mock(
       return null;
     },
 );
+
 beforeEach(() => {
   vi.resetModules();
 });
@@ -75,8 +76,13 @@ describe('#Elder', () => {
       validateRoute: (i) => i,
       validateShortcode: (i) => i,
     }));
+
     vi.mock('fs-extra', () => ({
-      existsSync: () => true,
+      default: {
+        existsSync: () => true,
+        readJSONSync: () => ({ version: '1.2.3' }),
+        ensureDirSync: () => '',
+      },
     }));
     vi.mock('test/___ELDER___/compiled/fakepath/Test.js', () => () => ({}));
     vi.mock('test/__ELDER__/hooks.js', () => ({
@@ -98,10 +104,11 @@ describe('#Elder', () => {
       init: vi.fn(),
     }));
     const { Elder } = await import(`../../index`);
-    const elder = await new Elder({ context: 'server', worker: false });
+    const elder = await new Elder({ context: 'server', worker: true });
     await elder.bootstrap();
     await elder.worker([]);
     delete elder.perf.timings;
+    delete elder.settings.$$internal.files;
     expect(normalizeSnapshot(elder)).toMatchSnapshot();
   });
 
@@ -173,7 +180,7 @@ describe('#Elder', () => {
     }));
 
     const { Elder } = await import(`../../index`);
-    const elder = await new Elder({ context: 'server', worker: false });
+    const elder = await new Elder({ context: 'server', worker: true });
     await elder.bootstrap();
 
     delete elder.perf.timings;

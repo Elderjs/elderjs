@@ -21,7 +21,7 @@ beforeEach(() => {
 //   };
 // });
 
-vi.mock('glob', () => {
+vi.mock('fast-glob', () => {
   return {
     default: {
       sync: vi
@@ -37,11 +37,13 @@ vi.mock('glob', () => {
 
 vi.mock('fs-extra', () => {
   return {
-    existsSync: vi
-      .fn(() => true)
-      .mockImplementationOnce(() => true) // first plugin from src
-      .mockImplementationOnce(() => false) // 2nd from node modules
-      .mockImplementationOnce(() => true),
+    default: {
+      existsSync: vi
+        .fn(() => true)
+        .mockImplementationOnce(() => true) // first plugin from src
+        .mockImplementationOnce(() => false) // 2nd from node modules
+        .mockImplementationOnce(() => true),
+    },
   };
 });
 

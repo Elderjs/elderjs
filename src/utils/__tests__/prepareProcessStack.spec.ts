@@ -1,7 +1,7 @@
-import { Elder } from '../../Elder.js';
 import Page from '../Page.js';
 
 import { test, expect, vi, beforeAll, beforeEach } from 'vitest';
+import { Elder } from '../../core/Elder.js';
 
 beforeAll(() => {
   vi.resetModules();

@@ -1,32 +1,28 @@
 // Vitest Snapshot v1
 
-exports[`#Elder hookSrcFile not found 1`] = `
-Object {
-  "allRequests": Array [],
+exports[`#Elder > hookSrcFile not found 1`] = `
+{
+  "allRequests": [],
   "bootstrapComplete": Promise {},
-  "data": Object {},
-  "errors": Array [],
-  "helpers": Object {
+  "data": {},
+  "errors": [],
+  "helpers": {
     "inlineSvelteComponent": [Function],
-    "permalinks": Object {
-      "route-a": [Function],
-      "test-a": [Function],
-      "test-b": [Function],
-    },
+    "permalinks": {},
     "shortcode": [Function],
   },
-  "hookInterface": Array [
-    Object {
+  "hookInterface": [
+    {
       "advanced": true,
       "context": "Used to modify what hooks can mutate which properties all hooks.",
       "experimental": true,
       "hook": "customizeHooks",
       "location": "Elder.ts",
-      "mutable": Array [
+      "mutable": [
         "hookInterface",
         "errors",
       ],
-      "props": Array [
+      "props": [
         "perf",
         "hookInterface",
         "errors",
@@ -34,20 +30,20 @@ Object {
       "use": "<p>This hook receives the hookInterface.ts file which defines all hook interactions. You can customize all 'props' and 'mutable' of
     all hooks by using this hook. This is a power user hook and unless you know Elder.js internals don't mess with it.</p>",
     },
-    Object {
+    {
       "advanced": false,
       "context": "Routes, plugins, and hooks have been collected and validated.",
       "experimental": false,
       "hook": "bootstrap",
       "location": "Elder.ts",
-      "mutable": Array [
+      "mutable": [
         "errors",
         "helpers",
         "data",
         "settings",
         "query",
       ],
-      "props": Array [
+      "props": [
         "perf",
         "helpers",
         "data",
@@ -63,17 +59,17 @@ Object {
   <li>Can be used to set information on the data object that is needed throughout the entire lifecycle. (sitewide settings)</li>
   </ul>",
     },
-    Object {
+    {
       "advanced": false,
       "context": "allRequests which represents all of the request objects have been collected from route and plugins. This makes the 'allRequests' array mutable.",
       "experimental": false,
       "hook": "allRequests",
       "location": "Elder.ts",
-      "mutable": Array [
+      "mutable": [
         "errors",
         "allRequests",
       ],
-      "props": Array [
+      "props": [
         "perf",
         "helpers",
         "data",
@@ -89,13 +85,13 @@ Object {
   <li>This hook is used by elderjs-plugin-markdown to register processed markdown files and their slugs Elder.js</li>
   </ul><p><strong>NOTE:</strong> If you are modifying 'allRequests' you <strong>must</strong> set 'request.route' key for each request.</p>",
     },
-    Object {
+    {
       "advanced": true,
       "context": "Fired upon a request that originates from the express/polka middleware version of Elder.js. The hook has access to \\"req\\" and \\"next\\" common in express like middleware.",
       "experimental": false,
       "hook": "middleware",
       "location": "prepareServer.ts",
-      "mutable": Array [
+      "mutable": [
         "errors",
         "query",
         "helpers",
@@ -109,7 +105,7 @@ Object {
         "request",
         "serverLookupObject",
       ],
-      "props": Array [
+      "props": [
         "perf",
         "errors",
         "query",
@@ -136,13 +132,13 @@ Object {
   <li>Anything you'd use an Express 'req' or 'next' for you can do and customize other parts of the Elder.js on this hook.</li>
   </ul>",
     },
-    Object {
+    {
       "advanced": false,
       "context": "This is executed at the beginning the request object being processed.",
       "experimental": false,
       "hook": "request",
       "location": "Page.ts",
-      "mutable": Array [
+      "mutable": [
         "errors",
         "helpers",
         "data",
@@ -150,7 +146,7 @@ Object {
         "request",
         "route",
       ],
-      "props": Array [
+      "props": [
         "perf",
         "helpers",
         "data",
@@ -171,13 +167,13 @@ Object {
   </ul>
   ",
     },
-    Object {
+    {
       "advanced": true,
       "context": "This hook is run after the route's \\"data\\" function has executed.",
       "experimental": false,
       "hook": "data",
       "location": "Page.ts",
-      "mutable": Array [
+      "mutable": [
         "errors",
         "data",
         "cssStack",
@@ -187,7 +183,7 @@ Object {
         "customJsStack",
         "footerStack",
       ],
-      "props": Array [
+      "props": [
         "perf",
         "data",
         "request",
@@ -216,20 +212,20 @@ Object {
   <p>Stacks are made available here so that strings can be added to the head or footer of the page easily.</p>
   ",
     },
-    Object {
+    {
       "advanced": true,
       "context": "Executed after the route's html has been compiled, but before the layout html has been compiled.",
       "experimental": false,
       "hook": "shortcodes",
       "location": "Page.ts",
-      "mutable": Array [
+      "mutable": [
         "errors",
         "layoutHtml",
         "cssStack",
         "headStack",
         "customJsStack",
       ],
-      "props": Array [
+      "props": [
         "perf",
         "helpers",
         "data",
@@ -247,13 +243,13 @@ Object {
       "use": "<p>Elder.js uses this hook to process shortcodes. The vast majority of users won't need to use this hook, but if you were so inclined you could write your own shortcode parser or if you'd like to disable shortcodes completely, you can add 'elderProcessShortcodes' to hooks.disable in your elder.config.js file.</p>
   <p><strong>NOTE:</strong> Don't use this hook for anything besides shortcodes.</p>",
     },
-    Object {
+    {
       "advanced": true,
       "context": "Executed just before processing all of the stacks into strings.",
       "experimental": false,
       "hook": "stacks",
       "location": "Page.ts",
-      "mutable": Array [
+      "mutable": [
         "errors",
         "cssStack",
         "htmlAttributesStack",
@@ -264,7 +260,7 @@ Object {
         "customJsStack",
         "footerStack",
       ],
-      "props": Array [
+      "props": [
         "perf",
         "helpers",
         "data",
@@ -293,17 +289,17 @@ Object {
         </ul>
     ",
     },
-    Object {
+    {
       "advanced": true,
       "context": "Executed just before writing the <head> tag to the page.",
       "experimental": false,
       "hook": "head",
       "location": "Page.ts",
-      "mutable": Array [
+      "mutable": [
         "errors",
         "headString",
       ],
-      "props": Array [
+      "props": [
         "perf",
         "helpers",
         "data",
@@ -316,17 +312,17 @@ Object {
       "use": "<p>This hook's headSting represents everything that will be written to &lt;head&gt; tag.</p>
      <p>There are many possible SEO uses to this hook, especially for plugins. That said, we recommend users who want to set common SEO elements such as tags &lt;title&gt; and meta descriptions programmatically to do it from within Svelte templates using the &lt;svelte:head&gt;&lt;/svelte:head&gt; tag. Chances are you won't need this field unless you're a power user and need access to the raw head.</p>",
     },
-    Object {
+    {
       "advanced": true,
       "context": "This is where Elder.js merges the html from the Svelte layout with stacks and wraps it in an <html> tag.",
       "experimental": false,
       "hook": "compileHtml",
       "location": "Page.ts",
-      "mutable": Array [
+      "mutable": [
         "errors",
         "htmlString",
       ],
-      "props": Array [
+      "props": [
         "perf",
         "helpers",
         "data",
@@ -341,17 +337,17 @@ Object {
       ],
       "use": "<p>This hook should only be used when you need to have full control over the &lt;html&gt; document. Make sure if you use this to add 'elderCompileHtml' to the 'hooks.disable' array in your elder.config.js or your template will be overwritten.</p>",
     },
-    Object {
+    {
       "advanced": false,
       "context": "Executed when all of the html has been compiled.",
       "experimental": false,
       "hook": "html",
       "location": "Page.ts",
-      "mutable": Array [
+      "mutable": [
         "errors",
         "htmlString",
       ],
-      "props": Array [
+      "props": [
         "perf",
         "helpers",
         "data",
@@ -368,16 +364,16 @@ Object {
   <li>If you need to modify the final html output, here is where you can do it.</li>
   </ul>",
     },
-    Object {
+    {
       "advanced": false,
       "context": "This hook marks the end of the request lifecycle.",
       "experimental": false,
       "hook": "requestComplete",
       "location": "Page.ts",
-      "mutable": Array [
+      "mutable": [
         "errors",
       ],
-      "props": Array [
+      "props": [
         "perf",
         "request",
         "htmlString",
@@ -396,14 +392,14 @@ Object {
   <li> By default Elder.js adds a hook here to all server requests that outputs how long the request took to generate. If you want to see detailed output from this hook set debug.speed = true in your config file.</li>
   </ul>",
     },
-    Object {
+    {
       "advanced": false,
       "context": "Executed only if the script has encountered errors and they are pushed to the errors array.",
       "experimental": false,
       "hook": "error",
       "location": "Page.ts, build.ts",
-      "mutable": Array [],
-      "props": Array [
+      "mutable": [],
+      "props": [
         "perf",
         "helpers",
         "data",
@@ -414,14 +410,14 @@ Object {
       ],
       "use": "<p>As the script encounters errors, they are collected and presented on this hook at the end of a request and the end of an entire build.</p>",
     },
-    Object {
+    {
       "advanced": false,
       "context": "Executed after a build is complete",
       "experimental": false,
       "hook": "buildComplete",
       "location": "build.ts",
-      "mutable": Array [],
-      "props": Array [
+      "mutable": [],
+      "props": [
         "perf",
         "helpers",
         "data",
@@ -437,9 +433,9 @@ Object {
     <p><strong>Plugins: </strong> Because builds are split across processes, a plugin doesn't not have a shared memory space across all processes.</p>",
     },
   ],
-  "hooks": Array [
-    Object {
-      "$$meta": Object {
+  "hooks": [
+    {
+      "$$meta": {
         "addedBy": "elder.js",
         "type": "internal",
       },
@@ -449,8 +445,8 @@ Object {
       "priority": 1,
       "run": [Function],
     },
-    Object {
-      "$$meta": Object {
+    {
+      "$$meta": {
         "addedBy": "elder.js",
         "type": "internal",
       },
@@ -460,8 +456,8 @@ Object {
       "priority": 1,
       "run": [Function],
     },
-    Object {
-      "$$meta": Object {
+    {
+      "$$meta": {
         "addedBy": "elder.js",
         "type": "internal",
       },
@@ -471,8 +467,8 @@ Object {
       "priority": 50,
       "run": [Function],
     },
-    Object {
-      "$$meta": Object {
+    {
+      "$$meta": {
         "addedBy": "elder.js",
         "type": "internal",
       },
@@ -482,8 +478,8 @@ Object {
       "priority": 100,
       "run": [Function],
     },
-    Object {
-      "$$meta": Object {
+    {
+      "$$meta": {
         "addedBy": "elder.js",
         "type": "internal",
       },
@@ -493,8 +489,8 @@ Object {
       "priority": 90,
       "run": [Function],
     },
-    Object {
-      "$$meta": Object {
+    {
+      "$$meta": {
         "addedBy": "elder.js",
         "type": "internal",
       },
@@ -504,8 +500,8 @@ Object {
       "priority": 100,
       "run": [Function],
     },
-    Object {
-      "$$meta": Object {
+    {
+      "$$meta": {
         "addedBy": "elder.js",
         "type": "internal",
       },
@@ -515,8 +511,8 @@ Object {
       "priority": 50,
       "run": [Function],
     },
-    Object {
-      "$$meta": Object {
+    {
+      "$$meta": {
         "addedBy": "elder.js",
         "type": "internal",
       },
@@ -526,8 +522,8 @@ Object {
       "priority": 1,
       "run": [Function],
     },
-    Object {
-      "$$meta": Object {
+    {
+      "$$meta": {
         "addedBy": "elder.js",
         "type": "internal",
       },
@@ -537,8 +533,8 @@ Object {
       "priority": 1,
       "run": [Function],
     },
-    Object {
-      "$$meta": Object {
+    {
+      "$$meta": {
         "addedBy": "elder.js",
         "type": "internal",
       },
@@ -548,8 +544,8 @@ Object {
       "priority": 50,
       "run": [Function],
     },
-    Object {
-      "$$meta": Object {
+    {
+      "$$meta": {
         "addedBy": "elder.js",
         "type": "internal",
       },
@@ -559,8 +555,8 @@ Object {
       "priority": 50,
       "run": [Function],
     },
-    Object {
-      "$$meta": Object {
+    {
+      "$$meta": {
         "addedBy": "elder.js",
         "type": "internal",
       },
@@ -572,79 +568,177 @@ Object {
     },
   ],
   "markBootstrapComplete": [Function],
-  "perf": Object {
+  "markSettingsComplete": [Function],
+  "perf": {
     "end": [Function],
     "prefix": [Function],
+    "reset": [Function],
     "start": [Function],
     "stop": [Function],
   },
-  "query": Object {},
+  "query": {},
   "router": [Function],
-  "routes": Object {
-    "route-a": Object {
-      "hooks": Array [
-        Object {
-          "description": "test",
-          "hook": "routeHook",
-          "name": "route hook",
-          "run": [MockFunction],
-        },
-      ],
-    },
-    "test-a": Object {
-      "$$meta": Object {
-        "addedBy": "elder-plugin-upload-s3",
-        "type": "plugin",
-      },
-      "all": Array [],
-      "data": [Function],
-      "layout": "Layout.svelte",
-      "layoutComponent": [Function],
-      "permalink": [Function],
-      "template": "fakepath/Test.svelte",
-      "templateComponent": [Function],
-    },
-    "test-b": Object {
-      "hooks": Array [],
-    },
-  },
+  "routes": {},
   "runHook": [Function],
   "server": [Function],
-  "serverLookupObject": Object {},
-  "settings": Object {
-    "$$internal": Object {
-      "clientComponents": "test/public/svelte",
+  "serverLookupObject": {},
+  "settings": {
+    "$$internal": {
+      "clientComponents": "/Users/nickreese/repos/elderjs/elderjs/public/_elderjs/svelte",
+      "distElder": "/Users/nickreese/repos/elderjs/elderjs/public/_elderjs",
       "findComponent": [Function],
-      "ssrComponents": "test/___ELDER___/compiled",
+      "logPrefix": "[Elder.js]:",
+      "production": false,
+      "serverPrefix": "",
+      "ssrComponents": "/Users/nickreese/repos/elderjs/elderjs/___ELDER___/compiled",
+      "status": "bootstrapped",
+      "watcher": {
+        "_events": {
+          "client": [Function],
+          "elder.config": [Function],
+          "helpers": [Function],
+          "hooks": [Function],
+          "otherCssFile": [Function],
+          "plugin": [Function],
+          "publicCssFile": [Function],
+          "route": [Function],
+          "shortcodes": [Function],
+          "srcChange": [Function],
+          "ssr": [Function],
+        },
+        "_eventsCount": 11,
+        "_maxListeners": undefined,
+      },
+      "websocket": {
+        "send": [Function],
+        "wss": {
+          "_events": {
+            "connection": [Function],
+          },
+          "_eventsCount": 1,
+          "_maxListeners": undefined,
+          "_removeListeners": [Function],
+          "_server": {
+            "_connectionKey": "6::::0",
+            "_connections": 0,
+            "_events": {
+              "connection": [Function],
+              "error": [Function],
+              "listening": [Function],
+              "upgrade": [Function],
+            },
+            "_eventsCount": 4,
+            "_handle": {
+              "onconnection": [Function],
+              "reading": false,
+            },
+            "_maxListeners": undefined,
+            "_unref": false,
+            "_usingWorkers": false,
+            "_workers": [],
+            "allowHalfOpen": true,
+            "headersTimeout": 60000,
+            "httpAllowHalfOpen": false,
+            "insecureHTTPParser": undefined,
+            "keepAliveTimeout": 5000,
+            "maxHeaderSize": undefined,
+            "maxHeadersCount": null,
+            "pauseOnConnect": false,
+            "requestTimeout": 0,
+            "timeout": 0,
+          },
+          "_shouldEmitClose": false,
+          "_state": 0,
+          "clients": Set {},
+          "options": {
+            "WebSocket": [Function],
+            "backlog": null,
+            "clientTracking": true,
+            "handleProtocols": null,
+            "host": null,
+            "maxPayload": 104857600,
+            "noServer": false,
+            "path": null,
+            "perMessageDeflate": false,
+            "port": null,
+            "server": {
+              "_connectionKey": "6::::0",
+              "_connections": 0,
+              "_events": {
+                "connection": [Function],
+                "error": [Function],
+                "listening": [Function],
+                "upgrade": [Function],
+              },
+              "_eventsCount": 4,
+              "_handle": {
+                "onconnection": [Function],
+                "reading": false,
+              },
+              "_maxListeners": undefined,
+              "_unref": false,
+              "_usingWorkers": false,
+              "_workers": [],
+              "allowHalfOpen": true,
+              "headersTimeout": 60000,
+              "httpAllowHalfOpen": false,
+              "insecureHTTPParser": undefined,
+              "keepAliveTimeout": 5000,
+              "maxHeaderSize": undefined,
+              "maxHeadersCount": null,
+              "pauseOnConnect": false,
+              "requestTimeout": 0,
+              "timeout": 0,
+            },
+            "skipUTF8Validation": false,
+            "verifyClient": null,
+          },
+        },
+      },
     },
     "build": false,
     "context": "server",
-    "debug": Object {
-      "automagic": true,
+    "css": "file",
+    "debug": {
+      "build": false,
+      "hooks": false,
+      "performance": false,
+      "props": false,
+      "shortcodes": false,
+      "stacks": false,
     },
-    "distDir": "test/public",
-    "hooks": Object {
-      "disable": Array [
-        "randomHook",
-      ],
+    "distDir": "/Users/nickreese/repos/elderjs/elderjs/public",
+    "hooks": {
+      "disable": [],
     },
-    "plugins": Object {
-      "elder-plugin-upload-s3": Object {
-        "dataBucket": "elderguide.com",
-        "deployId": "11111111",
-        "htmlBucket": "elderguide.com",
-      },
+    "lang": "en",
+    "origin": "",
+    "plugins": {},
+    "prefix": "",
+    "props": {
+      "compress": false,
+      "hydration": "hybrid",
+      "replacementChars": "$abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
     },
-    "rootDir": "test",
-    "server": Object {
-      "prefix": "/dev",
+    "rootDir": "/Users/nickreese/repos/elderjs/elderjs",
+    "server": {
+      "allRequestsRoute": false,
+      "cacheRequests": true,
+      "dataRoutes": false,
+      "prefix": "",
     },
-    "srcDir": "test/src",
-    "worker": false,
+    "shortcodes": {
+      "closePattern": "}}",
+      "openPattern": "{{",
+    },
+    "srcDir": "/Users/nickreese/repos/elderjs/elderjs/src",
+    "version": "1.2.3",
+    "worker": true,
   },
-  "shortcodes": Array [
-    Object {
-      "$$meta": Object {
+  "settingsComplete": Promise {},
+  "shortcodes": [
+    {
+      "$$meta": {
         "addedBy": "elder",
         "type": "elder",
       },
@@ -653,43 +747,34 @@ Object {
     },
   ],
   "uid": "startup",
+  "updateRunHookHookInterface": [Function],
+  "updateRunHookHooks": [Function],
 }
 `;
 
-exports[`#Elder srcPlugin found 1`] = `
-Object {
-  "allRequests": Array [
-    Object {
-      "permalink": "/",
-      "route": "test-a",
-      "slug": "/test",
-      "type": "server",
-    },
-  ],
+exports[`#Elder > srcPlugin found 1`] = `
+{
+  "allRequests": [],
   "bootstrapComplete": Promise {},
-  "data": Object {},
-  "errors": Array [],
-  "helpers": Object {
+  "data": {},
+  "errors": [],
+  "helpers": {
     "inlineSvelteComponent": [Function],
-    "permalinks": Object {
-      "route-a": [Function],
-      "test-a": [Function],
-      "test-b": [Function],
-    },
+    "permalinks": {},
     "shortcode": [Function],
   },
-  "hookInterface": Array [
-    Object {
+  "hookInterface": [
+    {
       "advanced": true,
       "context": "Used to modify what hooks can mutate which properties all hooks.",
       "experimental": true,
       "hook": "customizeHooks",
       "location": "Elder.ts",
-      "mutable": Array [
+      "mutable": [
         "hookInterface",
         "errors",
       ],
-      "props": Array [
+      "props": [
         "perf",
         "hookInterface",
         "errors",
@@ -697,20 +782,20 @@ Object {
       "use": "<p>This hook receives the hookInterface.ts file which defines all hook interactions. You can customize all 'props' and 'mutable' of
     all hooks by using this hook. This is a power user hook and unless you know Elder.js internals don't mess with it.</p>",
     },
-    Object {
+    {
       "advanced": false,
       "context": "Routes, plugins, and hooks have been collected and validated.",
       "experimental": false,
       "hook": "bootstrap",
       "location": "Elder.ts",
-      "mutable": Array [
+      "mutable": [
         "errors",
         "helpers",
         "data",
         "settings",
         "query",
       ],
-      "props": Array [
+      "props": [
         "perf",
         "helpers",
         "data",
@@ -726,17 +811,17 @@ Object {
   <li>Can be used to set information on the data object that is needed throughout the entire lifecycle. (sitewide settings)</li>
   </ul>",
     },
-    Object {
+    {
       "advanced": false,
       "context": "allRequests which represents all of the request objects have been collected from route and plugins. This makes the 'allRequests' array mutable.",
       "experimental": false,
       "hook": "allRequests",
       "location": "Elder.ts",
-      "mutable": Array [
+      "mutable": [
         "errors",
         "allRequests",
       ],
-      "props": Array [
+      "props": [
         "perf",
         "helpers",
         "data",
@@ -752,13 +837,13 @@ Object {
   <li>This hook is used by elderjs-plugin-markdown to register processed markdown files and their slugs Elder.js</li>
   </ul><p><strong>NOTE:</strong> If you are modifying 'allRequests' you <strong>must</strong> set 'request.route' key for each request.</p>",
     },
-    Object {
+    {
       "advanced": true,
       "context": "Fired upon a request that originates from the express/polka middleware version of Elder.js. The hook has access to \\"req\\" and \\"next\\" common in express like middleware.",
       "experimental": false,
       "hook": "middleware",
       "location": "prepareServer.ts",
-      "mutable": Array [
+      "mutable": [
         "errors",
         "query",
         "helpers",
@@ -772,7 +857,7 @@ Object {
         "request",
         "serverLookupObject",
       ],
-      "props": Array [
+      "props": [
         "perf",
         "errors",
         "query",
@@ -799,13 +884,13 @@ Object {
   <li>Anything you'd use an Express 'req' or 'next' for you can do and customize other parts of the Elder.js on this hook.</li>
   </ul>",
     },
-    Object {
+    {
       "advanced": false,
       "context": "This is executed at the beginning the request object being processed.",
       "experimental": false,
       "hook": "request",
       "location": "Page.ts",
-      "mutable": Array [
+      "mutable": [
         "errors",
         "helpers",
         "data",
@@ -813,7 +898,7 @@ Object {
         "request",
         "route",
       ],
-      "props": Array [
+      "props": [
         "perf",
         "helpers",
         "data",
@@ -834,13 +919,13 @@ Object {
   </ul>
   ",
     },
-    Object {
+    {
       "advanced": true,
       "context": "This hook is run after the route's \\"data\\" function has executed.",
       "experimental": false,
       "hook": "data",
       "location": "Page.ts",
-      "mutable": Array [
+      "mutable": [
         "errors",
         "data",
         "cssStack",
@@ -850,7 +935,7 @@ Object {
         "customJsStack",
         "footerStack",
       ],
-      "props": Array [
+      "props": [
         "perf",
         "data",
         "request",
@@ -879,20 +964,20 @@ Object {
   <p>Stacks are made available here so that strings can be added to the head or footer of the page easily.</p>
   ",
     },
-    Object {
+    {
       "advanced": true,
       "context": "Executed after the route's html has been compiled, but before the layout html has been compiled.",
       "experimental": false,
       "hook": "shortcodes",
       "location": "Page.ts",
-      "mutable": Array [
+      "mutable": [
         "errors",
         "layoutHtml",
         "cssStack",
         "headStack",
         "customJsStack",
       ],
-      "props": Array [
+      "props": [
         "perf",
         "helpers",
         "data",
@@ -910,13 +995,13 @@ Object {
       "use": "<p>Elder.js uses this hook to process shortcodes. The vast majority of users won't need to use this hook, but if you were so inclined you could write your own shortcode parser or if you'd like to disable shortcodes completely, you can add 'elderProcessShortcodes' to hooks.disable in your elder.config.js file.</p>
   <p><strong>NOTE:</strong> Don't use this hook for anything besides shortcodes.</p>",
     },
-    Object {
+    {
       "advanced": true,
       "context": "Executed just before processing all of the stacks into strings.",
       "experimental": false,
       "hook": "stacks",
       "location": "Page.ts",
-      "mutable": Array [
+      "mutable": [
         "errors",
         "cssStack",
         "htmlAttributesStack",
@@ -927,7 +1012,7 @@ Object {
         "customJsStack",
         "footerStack",
       ],
-      "props": Array [
+      "props": [
         "perf",
         "helpers",
         "data",
@@ -956,17 +1041,17 @@ Object {
         </ul>
     ",
     },
-    Object {
+    {
       "advanced": true,
       "context": "Executed just before writing the <head> tag to the page.",
       "experimental": false,
       "hook": "head",
       "location": "Page.ts",
-      "mutable": Array [
+      "mutable": [
         "errors",
         "headString",
       ],
-      "props": Array [
+      "props": [
         "perf",
         "helpers",
         "data",
@@ -979,17 +1064,17 @@ Object {
       "use": "<p>This hook's headSting represents everything that will be written to &lt;head&gt; tag.</p>
      <p>There are many possible SEO uses to this hook, especially for plugins. That said, we recommend users who want to set common SEO elements such as tags &lt;title&gt; and meta descriptions programmatically to do it from within Svelte templates using the &lt;svelte:head&gt;&lt;/svelte:head&gt; tag. Chances are you won't need this field unless you're a power user and need access to the raw head.</p>",
     },
-    Object {
+    {
       "advanced": true,
       "context": "This is where Elder.js merges the html from the Svelte layout with stacks and wraps it in an <html> tag.",
       "experimental": false,
       "hook": "compileHtml",
       "location": "Page.ts",
-      "mutable": Array [
+      "mutable": [
         "errors",
         "htmlString",
       ],
-      "props": Array [
+      "props": [
         "perf",
         "helpers",
         "data",
@@ -1004,17 +1089,17 @@ Object {
       ],
       "use": "<p>This hook should only be used when you need to have full control over the &lt;html&gt; document. Make sure if you use this to add 'elderCompileHtml' to the 'hooks.disable' array in your elder.config.js or your template will be overwritten.</p>",
     },
-    Object {
+    {
       "advanced": false,
       "context": "Executed when all of the html has been compiled.",
       "experimental": false,
       "hook": "html",
       "location": "Page.ts",
-      "mutable": Array [
+      "mutable": [
         "errors",
         "htmlString",
       ],
-      "props": Array [
+      "props": [
         "perf",
         "helpers",
         "data",
@@ -1031,16 +1116,16 @@ Object {
   <li>If you need to modify the final html output, here is where you can do it.</li>
   </ul>",
     },
-    Object {
+    {
       "advanced": false,
       "context": "This hook marks the end of the request lifecycle.",
       "experimental": false,
       "hook": "requestComplete",
       "location": "Page.ts",
-      "mutable": Array [
+      "mutable": [
         "errors",
       ],
-      "props": Array [
+      "props": [
         "perf",
         "request",
         "htmlString",
@@ -1059,14 +1144,14 @@ Object {
   <li> By default Elder.js adds a hook here to all server requests that outputs how long the request took to generate. If you want to see detailed output from this hook set debug.speed = true in your config file.</li>
   </ul>",
     },
-    Object {
+    {
       "advanced": false,
       "context": "Executed only if the script has encountered errors and they are pushed to the errors array.",
       "experimental": false,
       "hook": "error",
       "location": "Page.ts, build.ts",
-      "mutable": Array [],
-      "props": Array [
+      "mutable": [],
+      "props": [
         "perf",
         "helpers",
         "data",
@@ -1077,14 +1162,14 @@ Object {
       ],
       "use": "<p>As the script encounters errors, they are collected and presented on this hook at the end of a request and the end of an entire build.</p>",
     },
-    Object {
+    {
       "advanced": false,
       "context": "Executed after a build is complete",
       "experimental": false,
       "hook": "buildComplete",
       "location": "build.ts",
-      "mutable": Array [],
-      "props": Array [
+      "mutable": [],
+      "props": [
         "perf",
         "helpers",
         "data",
@@ -1100,9 +1185,9 @@ Object {
     <p><strong>Plugins: </strong> Because builds are split across processes, a plugin doesn't not have a shared memory space across all processes.</p>",
     },
   ],
-  "hooks": Array [
-    Object {
-      "$$meta": Object {
+  "hooks": [
+    {
+      "$$meta": {
         "addedBy": "elder.js",
         "type": "internal",
       },
@@ -1112,8 +1197,8 @@ Object {
       "priority": 1,
       "run": [Function],
     },
-    Object {
-      "$$meta": Object {
+    {
+      "$$meta": {
         "addedBy": "elder.js",
         "type": "internal",
       },
@@ -1123,8 +1208,8 @@ Object {
       "priority": 1,
       "run": [Function],
     },
-    Object {
-      "$$meta": Object {
+    {
+      "$$meta": {
         "addedBy": "elder.js",
         "type": "internal",
       },
@@ -1134,8 +1219,8 @@ Object {
       "priority": 50,
       "run": [Function],
     },
-    Object {
-      "$$meta": Object {
+    {
+      "$$meta": {
         "addedBy": "elder.js",
         "type": "internal",
       },
@@ -1145,8 +1230,8 @@ Object {
       "priority": 100,
       "run": [Function],
     },
-    Object {
-      "$$meta": Object {
+    {
+      "$$meta": {
         "addedBy": "elder.js",
         "type": "internal",
       },
@@ -1156,8 +1241,8 @@ Object {
       "priority": 90,
       "run": [Function],
     },
-    Object {
-      "$$meta": Object {
+    {
+      "$$meta": {
         "addedBy": "elder.js",
         "type": "internal",
       },
@@ -1167,8 +1252,8 @@ Object {
       "priority": 100,
       "run": [Function],
     },
-    Object {
-      "$$meta": Object {
+    {
+      "$$meta": {
         "addedBy": "elder.js",
         "type": "internal",
       },
@@ -1178,8 +1263,8 @@ Object {
       "priority": 50,
       "run": [Function],
     },
-    Object {
-      "$$meta": Object {
+    {
+      "$$meta": {
         "addedBy": "elder.js",
         "type": "internal",
       },
@@ -1189,8 +1274,8 @@ Object {
       "priority": 1,
       "run": [Function],
     },
-    Object {
-      "$$meta": Object {
+    {
+      "$$meta": {
         "addedBy": "elder.js",
         "type": "internal",
       },
@@ -1200,8 +1285,8 @@ Object {
       "priority": 1,
       "run": [Function],
     },
-    Object {
-      "$$meta": Object {
+    {
+      "$$meta": {
         "addedBy": "elder.js",
         "type": "internal",
       },
@@ -1211,8 +1296,8 @@ Object {
       "priority": 50,
       "run": [Function],
     },
-    Object {
-      "$$meta": Object {
+    {
+      "$$meta": {
         "addedBy": "elder.js",
         "type": "internal",
       },
@@ -1222,8 +1307,8 @@ Object {
       "priority": 50,
       "run": [Function],
     },
-    Object {
-      "$$meta": Object {
+    {
+      "$$meta": {
         "addedBy": "elder.js",
         "type": "internal",
       },
@@ -1233,121 +1318,191 @@ Object {
       "priority": 50,
       "run": [Function],
     },
-    Object {
-      "$$meta": Object {
-        "addedBy": "elder-plugin-upload-s3",
-        "type": "plugin",
-      },
-      "description": "just for testing",
-      "hook": "bootstrap",
-      "name": "test hook 2",
-      "priority": 50,
-      "run": [Function],
-    },
-    Object {
-      "$$meta": Object {
-        "addedBy": "elder-plugin-upload-s3",
-        "type": "plugin",
-      },
-      "description": "just for testing",
-      "hook": "bootstrap",
-      "name": "test hook 3",
-      "priority": 50,
-      "run": [Function],
-    },
-    Object {
-      "$$meta": Object {
-        "addedBy": "hooks.js",
-        "type": "hooks.js",
-      },
-      "description": "just for testing",
-      "hook": "bootstrap",
-      "name": "test hook from file",
-      "priority": 50,
-      "run": [Function],
-    },
   ],
   "markBootstrapComplete": [Function],
-  "perf": Object {
+  "markSettingsComplete": [Function],
+  "perf": {
     "end": [Function],
     "prefix": [Function],
+    "reset": [Function],
     "start": [Function],
     "stop": [Function],
   },
-  "query": Object {},
+  "query": {},
   "router": [Function],
-  "routes": Object {
-    "route-a": Object {
-      "hooks": Array [
-        Object {
-          "description": "test",
-          "hook": "routeHook",
-          "name": "route hook",
-          "run": [MockFunction],
-        },
-      ],
-    },
-    "test-a": Object {
-      "$$meta": Object {
-        "addedBy": "elder-plugin-upload-s3",
-        "type": "plugin",
-      },
-      "all": [Function],
-      "data": [Function],
-      "layout": "Layout.svelte",
-      "layoutComponent": [Function],
-      "permalink": [Function],
-      "template": "fakepath/Test.svelte",
-      "templateComponent": [Function],
-    },
-    "test-b": Object {
-      "hooks": Array [],
-    },
-  },
+  "routes": {},
   "runHook": [Function],
   "server": [Function],
-  "serverLookupObject": Object {
-    "/": Object {
-      "permalink": "/",
-      "route": "test-a",
-      "slug": "/test",
-      "type": "server",
-    },
-  },
-  "settings": Object {
-    "$$internal": Object {
-      "clientComponents": "test/public/svelte",
+  "serverLookupObject": {},
+  "settings": {
+    "$$internal": {
+      "clientComponents": "/Users/nickreese/repos/elderjs/elderjs/public/_elderjs/svelte",
+      "distElder": "/Users/nickreese/repos/elderjs/elderjs/public/_elderjs",
+      "files": {
+        "all": [
+          "/Users/nickreese/repos/elderjs/elderjs/src/index.ts",
+          "/Users/nickreese/repos/elderjs/elderjs/src/workerBuild.ts",
+        ],
+        "client": [],
+        "hooks": "",
+        "publicCssFile": "",
+        "routes": [],
+        "server": [],
+        "shortcodes": "",
+      },
       "findComponent": [Function],
-      "ssrComponents": "test/___ELDER___/compiled",
+      "logPrefix": "[Elder.js]:",
+      "production": false,
+      "serverPrefix": "",
+      "ssrComponents": "/Users/nickreese/repos/elderjs/elderjs/___ELDER___/compiled",
+      "status": "bootstrapped",
+      "watcher": {
+        "_events": {
+          "client": [Function],
+          "elder.config": [Function],
+          "helpers": [Function],
+          "hooks": [Function],
+          "otherCssFile": [Function],
+          "plugin": [Function],
+          "publicCssFile": [Function],
+          "route": [Function],
+          "shortcodes": [Function],
+          "srcChange": [Function],
+          "ssr": [Function],
+        },
+        "_eventsCount": 11,
+        "_maxListeners": undefined,
+      },
+      "websocket": {
+        "send": [Function],
+        "wss": {
+          "_events": {
+            "connection": [Function],
+          },
+          "_eventsCount": 1,
+          "_maxListeners": undefined,
+          "_removeListeners": [Function],
+          "_server": {
+            "_connectionKey": "6::::0",
+            "_connections": 0,
+            "_events": {
+              "connection": [Function],
+              "error": [Function],
+              "listening": [Function],
+              "upgrade": [Function],
+            },
+            "_eventsCount": 4,
+            "_handle": {
+              "onconnection": [Function],
+              "reading": false,
+            },
+            "_maxListeners": undefined,
+            "_unref": false,
+            "_usingWorkers": false,
+            "_workers": [],
+            "allowHalfOpen": true,
+            "headersTimeout": 60000,
+            "httpAllowHalfOpen": false,
+            "insecureHTTPParser": undefined,
+            "keepAliveTimeout": 5000,
+            "maxHeaderSize": undefined,
+            "maxHeadersCount": null,
+            "pauseOnConnect": false,
+            "requestTimeout": 0,
+            "timeout": 0,
+          },
+          "_shouldEmitClose": false,
+          "_state": 0,
+          "clients": Set {},
+          "options": {
+            "WebSocket": [Function],
+            "backlog": null,
+            "clientTracking": true,
+            "handleProtocols": null,
+            "host": null,
+            "maxPayload": 104857600,
+            "noServer": false,
+            "path": null,
+            "perMessageDeflate": false,
+            "port": null,
+            "server": {
+              "_connectionKey": "6::::0",
+              "_connections": 0,
+              "_events": {
+                "connection": [Function],
+                "error": [Function],
+                "listening": [Function],
+                "upgrade": [Function],
+              },
+              "_eventsCount": 4,
+              "_handle": {
+                "onconnection": [Function],
+                "reading": false,
+              },
+              "_maxListeners": undefined,
+              "_unref": false,
+              "_usingWorkers": false,
+              "_workers": [],
+              "allowHalfOpen": true,
+              "headersTimeout": 60000,
+              "httpAllowHalfOpen": false,
+              "insecureHTTPParser": undefined,
+              "keepAliveTimeout": 5000,
+              "maxHeaderSize": undefined,
+              "maxHeadersCount": null,
+              "pauseOnConnect": false,
+              "requestTimeout": 0,
+              "timeout": 0,
+            },
+            "skipUTF8Validation": false,
+            "verifyClient": null,
+          },
+        },
+      },
     },
     "build": false,
     "context": "server",
-    "debug": Object {
-      "automagic": true,
+    "css": "file",
+    "debug": {
+      "build": false,
+      "hooks": false,
+      "performance": false,
+      "props": false,
+      "shortcodes": false,
+      "stacks": false,
     },
-    "distDir": "test/public",
-    "hooks": Object {
-      "disable": Array [
-        "randomHook",
-      ],
+    "distDir": "/Users/nickreese/repos/elderjs/elderjs/public",
+    "hooks": {
+      "disable": [],
     },
-    "plugins": Object {
-      "elder-plugin-upload-s3": Object {
-        "dataBucket": "elderguide.com",
-        "deployId": "11111111",
-        "htmlBucket": "elderguide.com",
-      },
+    "lang": "en",
+    "origin": "",
+    "plugins": {},
+    "prefix": "",
+    "props": {
+      "compress": false,
+      "hydration": "hybrid",
+      "replacementChars": "$abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
     },
-    "rootDir": "test",
-    "server": Object {
-      "prefix": "/dev",
+    "rootDir": "/Users/nickreese/repos/elderjs/elderjs",
+    "server": {
+      "allRequestsRoute": false,
+      "cacheRequests": true,
+      "dataRoutes": false,
+      "prefix": "",
     },
-    "srcDir": "test/src",
-    "worker": false,
+    "shortcodes": {
+      "closePattern": "}}",
+      "openPattern": "{{",
+    },
+    "srcDir": "/Users/nickreese/repos/elderjs/elderjs/src",
+    "version": "1.2.3",
+    "worker": true,
   },
-  "shortcodes": Array [
-    Object {
-      "$$meta": Object {
+  "settingsComplete": Promise {},
+  "shortcodes": [
+    {
+      "$$meta": {
         "addedBy": "elder",
         "type": "elder",
       },
@@ -1356,5 +1511,7 @@ Object {
     },
   ],
   "uid": "startup",
+  "updateRunHookHookInterface": [Function],
+  "updateRunHookHooks": [Function],
 }
 `;

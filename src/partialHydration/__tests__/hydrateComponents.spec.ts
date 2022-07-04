@@ -8,21 +8,23 @@ let counts = {
   existsSync: 0,
 };
 vi.mock('fs-extra', () => ({
-  mkdirSync: () => {
-    counts.existsSync += 1;
-    return true;
-  },
-  writeFile: async () => {
-    counts.writeFile += 1;
-    return false;
-  },
-  writeFileSync: async () => {
-    counts.writeFile += 1;
-    return false;
-  },
-  existsSync: () => {
-    counts.existsSync += 1;
-    return false;
+  default: {
+    mkdirSync: () => {
+      counts.existsSync += 1;
+      return true;
+    },
+    writeFile: async () => {
+      counts.writeFile += 1;
+      return false;
+    },
+    writeFileSync: async () => {
+      counts.writeFile += 1;
+      return false;
+    },
+    existsSync: () => {
+      counts.existsSync += 1;
+      return false;
+    },
   },
 }));
 

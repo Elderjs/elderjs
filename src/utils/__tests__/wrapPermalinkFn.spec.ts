@@ -6,9 +6,6 @@ const payload = { request: { slug: 'test', route: 'test', type: 'server' } };
 const settings = getConfig({ css: 'inline' });
 
 describe('#wrapPermalinkFn', () => {
-  const warn = vi.fn();
-  console.warn = warn;
-
   it('works on valid permalinks', () => {
     const permalinkFn = ({ request }) => `/${request.slug}/`;
     const permalink = wrapPermalinkFn({ permalinkFn, routeName: 'test', settings })(payload);
@@ -51,13 +48,19 @@ describe('#wrapPermalinkFn', () => {
 
   it('warn when permalink returns an undefined due to missing prop', () => {
     const permalinkFn = ({ request }) => `/${request.nope}/`;
+    const warn = vi.fn();
+    console.warn = warn;
+
     wrapPermalinkFn({ permalinkFn, routeName: 'test', settings })(payload);
     expect(warn).toHaveBeenCalledTimes(1);
   });
 
   it('warn when permalink returns an null due to missing prop', () => {
+    const warn = vi.fn();
+    console.warn = warn;
+
     const permalinkFn = () => '/null/';
     wrapPermalinkFn({ permalinkFn, routeName: 'test', settings })(payload);
-    expect(warn).toHaveBeenCalledTimes(2);
+    expect(warn).toHaveBeenCalledTimes(1);
   });
 });

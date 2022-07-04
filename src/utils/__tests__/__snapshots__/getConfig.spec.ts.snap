@@ -125,7 +125,6 @@ exports[`#getConfig > it accepts custom initalization options > sets the expecte
         "/Users/nickreese/repos/elderjs/elderjs/src/hooks/__tests__/__snapshots__/hooks.spec.ts.snap",
         "/Users/nickreese/repos/elderjs/elderjs/src/utils/__tests__/__snapshots__/Page.spec.ts.snap",
         "/Users/nickreese/repos/elderjs/elderjs/src/utils/__tests__/__snapshots__/getConfig.spec.ts.snap",
-        "/Users/nickreese/repos/elderjs/elderjs/src/utils/__tests__/__snapshots__/perf.spec.ts.snap",
         "/Users/nickreese/repos/elderjs/elderjs/src/utils/__tests__/__snapshots__/validations.spec.ts.snap",
         "/Users/nickreese/repos/elderjs/elderjs/src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/package.json",
         "/Users/nickreese/repos/elderjs/elderjs/src/rollup/__tests__/__fixtures__/external/src/components/Component.svelte",

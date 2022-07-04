@@ -9,7 +9,7 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 export default function bundle(settings: SettingsOptions) {
   return new Promise((resolve) => {
-    if (settings.worker) {
+    if (settings.worker || settings.context === 'test') {
       resolve(true);
     } else {
       const forked = fork(path.join(__dirname, '../esbuild/esbuildWorker.js'));

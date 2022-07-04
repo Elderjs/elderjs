@@ -19,6 +19,7 @@ describe('#plugins', () => {
       validatePlugin: (i) => i,
       validateHook: () => ({ priority: 50 }),
       validateShortcode: (i) => i,
+      validateRoute: (i) => i,
     }));
     vi.mock('fs-extra', () => ({
       default: {

@@ -42,7 +42,7 @@ const componentProps = {
 };
 
 beforeAll(() => {
-  vi.mock('../getUniqueId', () => ({ default: () => 'SwrzsrVDCd' }));
+  vi.mock('../../utils/getUniqueId', () => ({ default: () => 'SwrzsrVDCd' }));
   vi.resetModules();
 });
 

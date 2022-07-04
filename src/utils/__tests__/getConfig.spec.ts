@@ -38,72 +38,12 @@ vi.mock('cosmiconfig', () => {
   };
 });
 
-const output = {
-  $$internal: {
-    ssrComponents: resolve(process.cwd(), './___ELDER___/compiled'),
-    clientComponents: resolve(process.cwd(), `./public/_elderjs/svelte`),
-    distElder: resolve(process.cwd(), `./public/_elderjs`),
-    // findComponent: () => {},
-    logPrefix: '[Elder.js]:',
-    serverPrefix: '',
-  },
-  build: false,
-  debug: {
-    build: false,
-    hooks: false,
-    performance: false,
-    shortcodes: false,
-    stacks: false,
-  },
-  distDir: resolve(process.cwd(), './public'),
-  rootDir: process.cwd(),
-  srcDir: resolve(process.cwd(), './src'),
-  server: false,
-  prefix: '',
-  shortcodes: {
-    closePattern: '}}',
-    openPattern: '{{',
-  },
-  hooks: {
-    disable: [],
-  },
-  origin: '',
-  plugins: {},
-  context: 'unknown',
-  worker: false,
-};
-
 describe('#getConfig', () => {
   beforeEach(() => {
     vi.resetModules();
   });
 
   describe('it accepts custom initalization options', () => {
-    test('sets the expected default', () => {
-      vi.mock('fs-extra', () => {
-        return {
-          default: {
-            readJSONSync: () => ({ version: '1.2.3' }),
-            ensureDirSync: () => '',
-            existsSync: () => true,
-            readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
-          },
-        };
-      });
-
-      expect(normalizeSnapshot(getConfig())).toMatchSnapshot();
-    });
-    vi.mock('fs-extra', () => {
-      return {
-        default: {
-          readJSONSync: () => ({ version: '1.2.3' }),
-          ensureDirSync: () => '',
-          existsSync: () => true,
-          readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
-        },
-      };
-    });
-
     const common = {
       distDir: resolve(process.cwd(), './t/public'),
       rootDir: resolve(process.cwd(), './t'),
@@ -394,30 +334,30 @@ describe('#getConfig', () => {
       });
     });
 
-    test('sets build with default', () => {
-      vi.mock('fs-extra', () => {
-        return {
-          default: {
-            readJSONSync: () => ({ version: '1.2.3' }),
-            ensureDirSync: () => '',
-            existsSync: () => true,
-            readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
-          },
-        };
-      });
-      const r = getConfig({ context: 'build', rootDir: 't' });
-      expect(r).toStrictEqual(
-        expect.objectContaining({
-          ...common,
-          context: 'build',
-          build: {
-            numberOfWorkers: -1,
-            shuffleRequests: false,
-          },
-        }),
-      );
-      expect(r.$$internal).toMatchObject(common$$Internal);
-    });
+    // test('sets build with default', () => {
+    //   vi.mock('fs-extra', () => {
+    //     return {
+    //       default: {
+    //         readJSONSync: () => ({ version: '1.2.3' }),
+    //         ensureDirSync: () => '',
+    //         existsSync: () => true,
+    //         readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+    //       },
+    //     };
+    //   });
+    //   const r = getConfig({ context: 'build', rootDir: 't' });
+    //   expect(r).toStrictEqual(
+    //     expect.objectContaining({
+    //       ...common,
+    //       context: 'build',
+    //       build: {
+    //         numberOfWorkers: -1,
+    //         shuffleRequests: false,
+    //       },
+    //     }),
+    //   );
+    //   expect(r.$$internal).toMatchObject(common$$Internal);
+    // });
   });
 });
 

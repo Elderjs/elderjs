@@ -68,14 +68,26 @@ describe('#prepareRunHook', () => {
     magicNumber: 42,
   };
   const perf = { start: vi.fn(), end: vi.fn(), prefix: () => '' };
-  let prepareRunHookFn = prepareRunHook({ hooks: [hooks[0], hooks[1]], allSupportedHooks, settings });
+  const {
+    runHook: prepareRunHookFn,
+    updateRunHookHookInterface,
+    updateRunHookHooks,
+  } = prepareRunHook({
+    hooks: [hooks[0], hooks[1]],
+    hookInterface: allSupportedHooks,
+    settings,
+  });
 
   it('throws for unknown hook', async () => {
-    await expect(prepareRunHookFn('unknown')).rejects.toThrow();
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    ///@ts-expect-error
+    await expect(prepareRunHookFn('unknown', {})).rejects.toThrow();
   });
 
   it('works for bootstrap hook', async () => {
     const errors = [];
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    ///@ts-expect-error
     await expect(await prepareRunHookFn('bootstrap', { settings, errors, perf })).toEqual({
       errors: ['something bad happened'],
     });
@@ -83,8 +95,11 @@ describe('#prepareRunHook', () => {
   });
 
   it('cannot mutate not mutable prop', async () => {
-    prepareRunHookFn = prepareRunHook({ hooks, allSupportedHooks, settings });
+    updateRunHookHookInterface(allSupportedHooks);
+    updateRunHookHooks(hooks);
     const errors = [];
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    ///@ts-expect-error
     await prepareRunHookFn('bootstrap', { settings, errors, perf });
     expect(errors).toHaveLength(2);
     expect(errors[1]).toEqual('something bad happened');

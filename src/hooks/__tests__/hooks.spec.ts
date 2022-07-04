@@ -11,7 +11,7 @@ import {
   ProcessedHook,
 } from '../types';
 import normalizeSnapshot from '../../utils/normalizeSnapshot.js';
-import { Elder } from '../../Elder.js';
+import { Elder } from '../../core/Elder.js';
 
 import { describe, test, expect, vi, beforeAll, beforeEach } from 'vitest';
 
@@ -37,16 +37,18 @@ vi.mock('../../utils/Page', () => {
 });
 
 vi.mock('fs-extra', () => ({
-  existsSync: vi.fn(() => false),
-  ensureDirSync: vi.fn(() => ''),
-  writeJSONSync: vi.fn(() => ''),
-  readdirSync: vi.fn(() => []),
-  outputFileSync: vi
-    .fn(() => '')
-    .mockImplementationOnce(() => '')
-    .mockImplementationOnce(() => {
-      throw new Error('Failed to write');
-    }),
+  default: {
+    existsSync: vi.fn(() => false),
+    ensureDirSync: vi.fn(() => ''),
+    writeJSONSync: vi.fn(() => ''),
+    readdirSync: vi.fn(() => []),
+    outputFileSync: vi
+      .fn(() => '')
+      .mockImplementationOnce(() => '')
+      .mockImplementationOnce(() => {
+        throw new Error('Failed to write');
+      }),
+  },
 }));
 
 const elder = new Elder({ context: 'test' });
@@ -329,7 +331,9 @@ describe('#hooks', () => {
               css: 'lazy',
               $$internal: {
                 ...elder.settings.$$internal,
-                publicCssFile: '/_elderjs/assets/svelte.123.js',
+                files: {
+                  publicCssFile: '/_elderjs/assets/svelte.123.js',
+                },
               },
             },
           }),
@@ -338,7 +342,7 @@ describe('#hooks', () => {
             {
               priority: 30,
               source: 'elderAddCssFileToHead',
-              string: `<link rel="preload" href="/_elderjs/assets/svelte.123.js" as="style" /><link rel="stylesheet" href="/_elderjs/assets/svelte.123.js" media="print" onload="this.media='all'" /><noscript><link rel="stylesheet" href="/_elderjs/assets/svelte.123.js" media="all" /></noscript>`,
+              string: `<link id="ejs-public-css" rel="preload" href="/_elderjs/assets/svelte.123.js" as="style" /><link rel="stylesheet" href="/_elderjs/assets/svelte.123.js" media="print" onload="this.media='all'" /><noscript><link rel="stylesheet" href="/_elderjs/assets/svelte.123.js" media="all" /></noscript>`,
             },
           ],
         });

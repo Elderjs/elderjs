@@ -16,7 +16,6 @@ test('includes all', () => {
     'parseBuildPerf',
     'perf',
     'permalinks',
-    'prepareRunHook',
     'validateHook',
     'validateRoute',
     'validatePlugin',

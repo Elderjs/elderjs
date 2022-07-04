@@ -21,8 +21,6 @@ describe('#prepareServer', () => {
       // @ts-ignore
       bootstrapComplete: Promise.resolve({
         runHook,
-        foo: 'bar',
-        bar: 'foo',
       }),
     });
     await prepServer(
@@ -39,8 +37,17 @@ describe('#prepareServer', () => {
         name: 'middleware',
         props: {
           runHook,
-          bar: 'foo',
-          foo: 'bar',
+          allRequests: undefined,
+          data: undefined,
+          errors: undefined,
+          helpers: undefined,
+          perf: undefined,
+          query: undefined,
+          serverLookupObject: undefined,
+          settings: undefined,
+          shortcodes: undefined,
+          router: undefined,
+          routes: undefined,
           next: nextMock,
           req: {
             desc: 'req',

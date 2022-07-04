@@ -1,8 +1,9 @@
 import permalinks from '../permalinks.js';
-import { Elder } from '../../Elder.js';
+
 import { ProcessedRouteOptions, ProcessedRoutesObject } from '../../routes/types.js';
 
 import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest';
+import { Elder } from '../../core/Elder.js';
 
 beforeAll(() => {
   vi.resetModules();

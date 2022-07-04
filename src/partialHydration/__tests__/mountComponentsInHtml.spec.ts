@@ -5,7 +5,7 @@ import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest';
 
 let hydrated = [];
 
-vi.mock('../../utils/svelteComponent.ts', () => ({
+vi.mock('../../partialHydration/svelteComponent.ts', () => ({
   default:
     (name) =>
     ({ props, hydrateOptions }) =>
@@ -19,7 +19,7 @@ beforeAll(() => {
 beforeEach(() => {
   vi.resetModules();
   hydrated = [];
-  vi.mock('../../utils/svelteComponent.ts', () => ({
+  vi.mock('../../partialHydration/svelteComponent.ts', () => ({
     default:
       (name) =>
       ({ props, hydrateOptions }) =>
@@ -30,10 +30,6 @@ beforeEach(() => {
 const page = {
   settings: {
     distDir: 'test',
-    $$internal: {
-      ssrComponents: {},
-      hashedComponents: {},
-    },
   },
 };
 

@@ -1,4 +1,4 @@
-import glob from 'glob';
+import glob from 'fast-glob';
 import { resolve } from 'path';
 import fs from 'fs-extra';
 import { SettingsOptions } from '../utils/types.js';
