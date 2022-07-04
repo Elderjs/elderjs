@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs-extra';
 
-import { QueryOptions, SettingsOptions, THelpers } from './utils/types.js';
+import { QueryOptions, SettingsOptions, THelpers } from './types.js';
 
 let userHelpers;
 

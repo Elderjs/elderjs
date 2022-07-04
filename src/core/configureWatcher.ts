@@ -153,7 +153,7 @@ export default function configureWatcher(elder: Elder) {
   });
   elder.settings.$$internal.watcher.on('plugin', async (file) => {
     if (elder.settings.$$internal.status !== 'bootstrapped') return;
-    console.log('Todo: Implement plugin reload. Please open PR if interested in handling.', file);
+    console.log('Elder.js TODO: Implement plugin reload. Please open PR if interested in handling.', file);
   });
   elder.settings.$$internal.watcher.on('publicCssFile', async (file) => {
     if (elder.settings.$$internal.status !== 'bootstrapped') return;

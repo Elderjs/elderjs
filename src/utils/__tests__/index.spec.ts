@@ -9,9 +9,7 @@ beforeEach(() => {
 });
 test('includes all', () => {
   expect(Object.keys(utils)).toEqual([
-    'asyncForEach',
     'capitalizeFirstLetter',
-    'svelteComponent',
     'getUniqueId',
     'validateShortcode',
     'Page',

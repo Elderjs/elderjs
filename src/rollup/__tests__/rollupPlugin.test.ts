@@ -78,7 +78,7 @@ describe('#rollupPlugin', () => {
     );
   });
 
-  it.todo('SSR: Properly imports an npm dependency', async () => {
+  it('SSR: Properly imports an npm dependency', async () => {
     const inputFiles = [
       path.resolve(`./src/rollup/__tests__/__fixtures__/external/src/layouts/External.svelte`),
       path.resolve(`./src/rollup/__tests__/__fixtures__/external/src/components/Component.svelte`),

@@ -1,4 +1,3 @@
-import asyncForEach from './asyncForEach.js';
 import capitalizeFirstLetter from './capitalizeFirstLetter.js';
 import getUniqueId from './getUniqueId.js';
 import Page from './Page.js';
@@ -16,7 +15,6 @@ import getRollupConfig from '../rollup/getRollupConfig.js';
 import prepareInlineShortcode from './prepareInlineShortcode.js';
 
 export {
-  asyncForEach,
   capitalizeFirstLetter,
   getUniqueId,
   validateShortcode,

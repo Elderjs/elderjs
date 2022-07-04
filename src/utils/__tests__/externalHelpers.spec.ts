@@ -1,7 +1,7 @@
 import { it, beforeEach, describe, expect, vi } from 'vitest';
 import { sep } from 'path';
-import normalizeSnapshot from '../utils/normalizeSnapshot.js';
-import getConfig from '../utils/getConfig.js';
+import normalizeSnapshot from '../normalizeSnapshot.js';
+import getConfig from '../getConfig.js';
 import externalHelpers from '../externalHelpers';
 
 // process.cwd = () => 'test';

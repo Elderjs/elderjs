@@ -1,3 +1,5 @@
+// eslint-disable-next-line eslint-comments/disable-enable-pair
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import {
   validateRoute,
   validatePlugin,
@@ -84,7 +86,9 @@ describe('#validations', () => {
     expect(validateHook({ ...validHook, hook: 'invalidHookName' })).toEqual(false);
   });
   test('validateRoute', () => {
+    /// @ts-expect-error
     expect(validateRoute({}, 'invalid')).toEqual(false);
+    /// @ts-expect-error
     expect(validateRoute(null, 'invalid')).toEqual(false);
     expect(
       validateRoute(
@@ -92,6 +96,7 @@ describe('#validations', () => {
           template: 'Home.svelte',
           permalink: vi.fn(),
         },
+        /// @ts-expect-error
         'invalid',
       ),
     ).toEqual(false);
@@ -105,10 +110,13 @@ describe('#validations', () => {
       name: 'home',
       dynamic: false,
     };
+    /// @ts-expect-error
     expect(validateRoute(validRoute, 'Home')).toEqual(validRoute);
     // works with valid hook
+    /// @ts-expect-error
     expect(validateRoute({ ...validRoute, hooks: [validHook] }, 'Home')).toEqual({ ...validRoute, hooks: [validHook] });
     // but also invalid hook
+    /// @ts-expect-error
     expect(validateRoute({ ...validRoute, hooks: ['a', 'b', 3] }, 'Home')).toEqual({
       ...validRoute,
       hooks: ['a', 'b', 3], // TODO: nested hook validation?

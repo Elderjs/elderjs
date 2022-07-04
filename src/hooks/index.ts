@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs-extra';
 
 import { parseBuildPerf } from '../utils/index.js';
-import externalHelpers from '../externalHelpers.js';
+import externalHelpers from '../utils/externalHelpers.js';
 import { HooksArray } from './types.js';
 import prepareShortcodeParser from '../utils/prepareShortcodeParser.js';
 import { displayPerfTimings } from '../utils/perf.js';
