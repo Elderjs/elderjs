@@ -326,9 +326,14 @@ describe('#prepareFindSvelteComponent', () => {
 
   describe('#findComponent', () => {
     const common = {
+      clientComponents: clientGlob,
+      ssrComponents: ssrGlob,
+
+      production: true,
+
       ssrFolder: path.resolve(`./test/___ELDER___/compiled`),
       rootDir: path.resolve(`./test/`),
-      clientComponents: path.resolve(`./test/public/_elderjs/svelte/`),
+
       distDir: path.resolve(`./test/public`),
       srcDir: path.resolve(`./test/src`),
     };
@@ -343,7 +348,6 @@ describe('#prepareFindSvelteComponent', () => {
         );
         expect(normalizeSnapshot(out)).toEqual({
           client: '/_elderjs/svelte/components/AutoComplete/AutoComplete.c3c8f64b.js',
-          iife: '/_elderjs/svelte/iife/AutoComplete.f85777e1.js',
           ssr: windowsPathFix(
             path.resolve(common.rootDir, `./___ELDER___/compiled/components/AutoComplete/AutoComplete.js`),
           ),
@@ -356,8 +360,7 @@ describe('#prepareFindSvelteComponent', () => {
           'routes',
         );
         expect(normalizeSnapshot(out)).toEqual({
-          client: undefined,
-          iife: undefined,
+          client: '',
           ssr: windowsPathFix(path.resolve(common.rootDir, `./___ELDER___/compiled/routes/content/article/Article.js`)),
         });
       });
@@ -365,8 +368,7 @@ describe('#prepareFindSvelteComponent', () => {
       it('finds a layout', () => {
         const out = findComponent(path.resolve(common.rootDir, `./src/layouts/Layout.svelte`), 'layouts');
         expect(normalizeSnapshot(out)).toEqual({
-          client: undefined,
-          iife: undefined,
+          client: '',
           ssr: windowsPathFix(path.resolve(common.rootDir, `./___ELDER___/compiled/layouts/Layout.js`)),
         });
       });
@@ -377,7 +379,6 @@ describe('#prepareFindSvelteComponent', () => {
         const out = findComponent(`AutoComplete`, 'component');
         expect(normalizeSnapshot(out)).toEqual({
           client: '/_elderjs/svelte/components/AutoComplete/AutoComplete.c3c8f64b.js',
-          iife: '/_elderjs/svelte/iife/AutoComplete.f85777e1.js',
           ssr: windowsPathFix(
             path.resolve(common.rootDir, `./___ELDER___/compiled/components/AutoComplete/AutoComplete.js`),
           ),
@@ -388,7 +389,6 @@ describe('#prepareFindSvelteComponent', () => {
         const out = findComponent(`AutoComplete.svelte`, 'component');
         expect(normalizeSnapshot(out)).toEqual({
           client: '/_elderjs/svelte/components/AutoComplete/AutoComplete.c3c8f64b.js',
-          iife: '/_elderjs/svelte/iife/AutoComplete.f85777e1.js',
           ssr: windowsPathFix(
             path.resolve(common.rootDir, `./___ELDER___/compiled/components/AutoComplete/AutoComplete.js`),
           ),
@@ -398,8 +398,7 @@ describe('#prepareFindSvelteComponent', () => {
       it('finds a route by name', () => {
         const out = findComponent(`Article.svelte`, 'routes');
         expect(normalizeSnapshot(out)).toEqual({
-          client: undefined,
-          iife: undefined,
+          client: '',
           ssr: windowsPathFix(path.resolve(common.rootDir, `./___ELDER___/compiled/routes/content/article/Article.js`)),
         });
       });
@@ -407,8 +406,7 @@ describe('#prepareFindSvelteComponent', () => {
       it('finds a layout by name', () => {
         const out = findComponent(`Layout.svelte`, 'layouts');
         expect(normalizeSnapshot(out)).toEqual({
-          client: undefined,
-          iife: undefined,
+          client: '',
           ssr: windowsPathFix(path.resolve(common.rootDir, `./___ELDER___/compiled/layouts/Layout.js`)),
         });
       });

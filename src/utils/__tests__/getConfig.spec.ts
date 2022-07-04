@@ -1,6 +1,7 @@
 import { describe, test, vi, expect, beforeEach } from 'vitest';
 import { resolve } from 'path';
 import getConfig, { getCssFile } from '../../utils/getConfig.js';
+import normalizeSnapshot from '../normalizeSnapshot.js';
 
 const defaultConfig = {
   debug: { build: false, hooks: false, performance: false, shortcodes: false, stacks: false },
@@ -81,29 +82,25 @@ describe('#getConfig', () => {
     test('sets the expected default', () => {
       vi.mock('fs-extra', () => {
         return {
+          default: {
+            readJSONSync: () => ({ version: '1.2.3' }),
+            ensureDirSync: () => '',
+            existsSync: () => true,
+            readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+          },
+        };
+      });
+
+      expect(normalizeSnapshot(getConfig())).toMatchSnapshot();
+    });
+    vi.mock('fs-extra', () => {
+      return {
+        default: {
           readJSONSync: () => ({ version: '1.2.3' }),
           ensureDirSync: () => '',
           existsSync: () => true,
           readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
-        };
-      });
-
-      expect(getConfig()).toStrictEqual(
-        expect.objectContaining({
-          ...output,
-          $$internal: {
-            ...output.$$internal,
-            findComponent: expect.anything(),
-          },
-        }),
-      );
-    });
-    vi.mock('fs-extra', () => {
-      return {
-        readJSONSync: () => ({ version: '1.2.3' }),
-        ensureDirSync: () => '',
-        existsSync: () => true,
-        readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+        },
       };
     });
 
@@ -123,10 +120,12 @@ describe('#getConfig', () => {
     test('gives back a custom context such as serverless', () => {
       vi.mock('fs-extra', () => {
         return {
-          readJSONSync: () => ({ version: '1.2.3' }),
-          ensureDirSync: () => '',
-          existsSync: () => true,
-          readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+          default: {
+            readJSONSync: () => ({ version: '1.2.3' }),
+            ensureDirSync: () => '',
+            existsSync: () => true,
+            readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+          },
         };
       });
       const r = getConfig({ context: 'serverless', rootDir: 't' });
@@ -142,10 +141,12 @@ describe('#getConfig', () => {
     test('sets a server without a prefix', () => {
       vi.mock('fs-extra', () => {
         return {
-          readJSONSync: () => ({ version: '1.2.3' }),
-          ensureDirSync: () => '',
-          existsSync: () => true,
-          readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+          default: {
+            readJSONSync: () => ({ version: '1.2.3' }),
+            ensureDirSync: () => '',
+            existsSync: () => true,
+            readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+          },
         };
       });
       const r = getConfig({ context: 'server', rootDir: 't' });
@@ -164,10 +165,12 @@ describe('#getConfig', () => {
     test('sets a server with a server.prefix without leading or trailing "/"', () => {
       vi.mock('fs-extra', () => {
         return {
-          readJSONSync: () => ({ version: '1.2.3' }),
-          ensureDirSync: () => '',
-          existsSync: () => true,
-          readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+          default: {
+            readJSONSync: () => ({ version: '1.2.3' }),
+            ensureDirSync: () => '',
+            existsSync: () => true,
+            readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+          },
         };
       });
       const r = getConfig({ context: 'server', server: { prefix: 'testing' }, rootDir: 't' });
@@ -191,10 +194,12 @@ describe('#getConfig', () => {
     test('sets a server with a server.prefix with a trailing "/"', () => {
       vi.mock('fs-extra', () => {
         return {
-          readJSONSync: () => ({ version: '1.2.3' }),
-          ensureDirSync: () => '',
-          existsSync: () => true,
-          readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+          default: {
+            readJSONSync: () => ({ version: '1.2.3' }),
+            ensureDirSync: () => '',
+            existsSync: () => true,
+            readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+          },
         };
       });
       const r = getConfig({ context: 'server', server: { prefix: 'testing/' }, rootDir: 't' });
@@ -218,10 +223,12 @@ describe('#getConfig', () => {
     test('sets a server with a server.prefix with a leading "/"', () => {
       vi.mock('fs-extra', () => {
         return {
-          readJSONSync: () => ({ version: '1.2.3' }),
-          ensureDirSync: () => '',
-          existsSync: () => true,
-          readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+          default: {
+            readJSONSync: () => ({ version: '1.2.3' }),
+            ensureDirSync: () => '',
+            existsSync: () => true,
+            readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+          },
         };
       });
       const r = getConfig({ context: 'server', server: { prefix: '/testing' }, rootDir: 't' });
@@ -245,10 +252,12 @@ describe('#getConfig', () => {
     test('sets a server with a server.prefix with a leading and trailing "/"', () => {
       vi.mock('fs-extra', () => {
         return {
-          readJSONSync: () => ({ version: '1.2.3' }),
-          ensureDirSync: () => '',
-          existsSync: () => true,
-          readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+          default: {
+            readJSONSync: () => ({ version: '1.2.3' }),
+            ensureDirSync: () => '',
+            existsSync: () => true,
+            readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+          },
         };
       });
       const r = getConfig({ context: 'server', server: { prefix: '/testing/' }, rootDir: 't' });
@@ -272,10 +281,12 @@ describe('#getConfig', () => {
     test('sets a server with a prefix without a leading or trailing "/"', () => {
       vi.mock('fs-extra', () => {
         return {
-          readJSONSync: () => ({ version: '1.2.3' }),
-          ensureDirSync: () => '',
-          existsSync: () => true,
-          readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+          default: {
+            readJSONSync: () => ({ version: '1.2.3' }),
+            ensureDirSync: () => '',
+            existsSync: () => true,
+            readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+          },
         };
       });
       const r = getConfig({ context: 'server', prefix: 'testing', rootDir: 't' });
@@ -299,10 +310,12 @@ describe('#getConfig', () => {
     test('sets a server with a prefix with a leading "/"', () => {
       vi.mock('fs-extra', () => {
         return {
-          readJSONSync: () => ({ version: '1.2.3' }),
-          ensureDirSync: () => '',
-          existsSync: () => true,
-          readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+          default: {
+            readJSONSync: () => ({ version: '1.2.3' }),
+            ensureDirSync: () => '',
+            existsSync: () => true,
+            readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+          },
         };
       });
       const r = getConfig({ context: 'server', prefix: '/testing', rootDir: 't' });
@@ -326,10 +339,12 @@ describe('#getConfig', () => {
     test('sets a server with a prefix with a trailing "/"', () => {
       vi.mock('fs-extra', () => {
         return {
-          readJSONSync: () => ({ version: '1.2.3' }),
-          ensureDirSync: () => '',
-          existsSync: () => true,
-          readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+          default: {
+            readJSONSync: () => ({ version: '1.2.3' }),
+            ensureDirSync: () => '',
+            existsSync: () => true,
+            readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+          },
         };
       });
       const r = getConfig({ context: 'server', prefix: '/testing/', rootDir: 't' });
@@ -353,10 +368,12 @@ describe('#getConfig', () => {
     test('sets a server with a prefix with a leading and trailing "/"', () => {
       vi.mock('fs-extra', () => {
         return {
-          readJSONSync: () => ({ version: '1.2.3' }),
-          ensureDirSync: () => '',
-          existsSync: () => true,
-          readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+          default: {
+            readJSONSync: () => ({ version: '1.2.3' }),
+            ensureDirSync: () => '',
+            existsSync: () => true,
+            readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+          },
         };
       });
       const r = getConfig({ context: 'server', prefix: '/testing/', rootDir: 't' });
@@ -380,10 +397,12 @@ describe('#getConfig', () => {
     test('sets build with default', () => {
       vi.mock('fs-extra', () => {
         return {
-          readJSONSync: () => ({ version: '1.2.3' }),
-          ensureDirSync: () => '',
-          existsSync: () => true,
-          readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+          default: {
+            readJSONSync: () => ({ version: '1.2.3' }),
+            ensureDirSync: () => '',
+            existsSync: () => true,
+            readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+          },
         };
       });
       const r = getConfig({ context: 'build', rootDir: 't' });
@@ -399,27 +418,6 @@ describe('#getConfig', () => {
       );
       expect(r.$$internal).toMatchObject(common$$Internal);
     });
-  });
-  test('sets the publicCssFile', () => {
-    vi.mock('fs-extra', () => {
-      return {
-        readJSONSync: () => ({ version: '1.2.3' }),
-        ensureDirSync: () => '',
-        existsSync: () => true,
-        readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
-      };
-    });
-
-    expect(getConfig({ css: 'file' })).toStrictEqual(
-      expect.objectContaining({
-        ...output,
-        $$internal: {
-          ...output.$$internal,
-          findComponent: expect.anything(),
-          publicCssFile: expect.stringContaining('svelte-3449427d.css'),
-        },
-      }),
-    );
   });
 });
 

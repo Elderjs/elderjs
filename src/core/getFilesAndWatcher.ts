@@ -52,6 +52,8 @@ export default function getFilesAndWatcher(settings: TGetFilesAndWatcher): {
 
   const all = fg.sync(paths).map(windowsPathFix);
 
+  const shortcodeFile = all.find((f) => f === path.join(settings.srcDir, './shortcodes.js'));
+  const hooksFile = all.find((f) => f === path.join(settings.srcDir, './hooks.js'));
   const files = {
     all,
     publicCssFile: makeCssRelative({
@@ -62,8 +64,8 @@ export default function getFilesAndWatcher(settings: TGetFilesAndWatcher): {
     routes: all
       .filter((f) => f.includes(path.join(settings.srcDir, './routes/')) && f.toLowerCase().endsWith('route.js'))
       .map(hashUrl),
-    hooks: hashUrl(all.find((f) => f === path.join(settings.srcDir, './hooks.js'))),
-    shortcodes: hashUrl(all.find((f) => f === path.join(settings.srcDir, './shortcodes.js'))),
+    hooks: hooksFile ? hashUrl(hooksFile) : '',
+    shortcodes: shortcodeFile ? hashUrl(shortcodeFile) : '',
     // already hashed
     client: all.filter((f) => f.includes(settings.clientComponents)),
   };
