@@ -9,12 +9,13 @@ import {
 
 import { describe, it, expect } from 'vitest';
 import getConfig from '../../utils/getConfig';
+import { ProcessedRoutesObject } from '../types';
 
 const settings = getConfig({ css: 'inline' });
 
 describe('#prepareRouter', () => {
-  const dynamicRoutes = [
-    {
+  const routes: ProcessedRoutesObject = {
+    reports: {
       data: {},
       permalink: () => '',
       template: 'Reports.svelte',
@@ -32,7 +33,7 @@ describe('#prepareRouter', () => {
       layoutComponent: () => '',
       dynamic: true,
     },
-    {
+    example: {
       data: {},
       permalink: () => '',
       template: 'Reports.svelte',
@@ -50,7 +51,7 @@ describe('#prepareRouter', () => {
       layoutComponent: () => '',
       dynamic: true,
     },
-  ];
+  };
   describe('#extractDynamicRouteParams', () => {
     it('Extracts 1 param', () => {
       expect(
@@ -85,13 +86,13 @@ describe('#prepareRouter', () => {
     it('Properly identifies dynamic routes', () => {
       const r = getDynamicRoute({
         path: `/dev/reports/test/`,
-        dynamicRoutes,
+        dynamicRoutes: Object.values(routes),
       });
       expect(r && r.name).toEqual('reports');
 
       const a = getDynamicRoute({
         path: `/dev/example/test/other/`,
-        dynamicRoutes,
+        dynamicRoutes: Object.values(routes),
       });
       expect(a && a.name).toEqual('example');
     });
@@ -164,7 +165,7 @@ describe('#prepareRouter', () => {
     const requestCache = new Map();
     it('Parses a dynamic route into a request properly and populates cache', () => {
       expect(
-        requestFromDynamicRoute({ settings, req: { path: '/dev/reports/hereitis/' }, requestCache, dynamicRoutes }),
+        requestFromDynamicRoute({ settings, req: { path: '/dev/reports/hereitis/' }, requestCache, routes }),
       ).toEqual({
         permalink: '',
         report: 'hereitis',
@@ -180,7 +181,7 @@ describe('#prepareRouter', () => {
           settings,
           req: { path: '/dev/reports/without-cache/' },
           requestCache: undefined,
-          dynamicRoutes,
+          routes,
         }),
       ).toEqual({
         permalink: '',
@@ -197,7 +198,7 @@ describe('#prepareRouter', () => {
           settings,
           req: { path: '/dev/reports/somethingnew/', query: { foo: 'bar' }, search: '?foo=bar' },
           requestCache,
-          dynamicRoutes,
+          routes,
         }),
       ).toEqual({
         permalink: '',

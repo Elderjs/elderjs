@@ -172,7 +172,6 @@ exports[`#validations > configSchema 1`] = `
       "_label": "Offers various levels of debug logging.",
       "_mutate": undefined,
       "_nodes": [
-        "automagic",
         "build",
         "performance",
         "shortcodes",
@@ -191,33 +190,6 @@ exports[`#validations > configSchema 1`] = `
         "refs": Map {},
       },
       "fields": {
-        "automagic": {
-          "_blacklist": {
-            "list": Set {},
-            "refs": Map {},
-          },
-          "_conditions": [],
-          "_default": false,
-          "_deps": [],
-          "_exclusive": {},
-          "_label": "Displays settings or actions that are automagically done to help with debugging.",
-          "_mutate": undefined,
-          "_options": {
-            "abortEarly": true,
-            "recursive": true,
-          },
-          "_type": "boolean",
-          "_typeError": [Function],
-          "_whitelist": {
-            "list": Set {},
-            "refs": Map {},
-          },
-          "tests": [],
-          "transforms": [
-            [Function],
-          ],
-          "type": "boolean",
-        },
         "build": {
           "_blacklist": {
             "list": Set {},
@@ -1997,7 +1969,6 @@ Object {
       "_label": "Offers various levels of debug logging.",
       "_mutate": undefined,
       "_nodes": Array [
-        "automagic",
         "build",
         "performance",
         "shortcodes",
@@ -2016,33 +1987,6 @@ Object {
         "refs": Map {},
       },
       "fields": Object {
-        "automagic": Object {
-          "_blacklist": Object {
-            "list": Set {},
-            "refs": Map {},
-          },
-          "_conditions": Array [],
-          "_default": false,
-          "_deps": Array [],
-          "_exclusive": Object {},
-          "_label": "Displays settings or actions that are automagically done to help with debugging.",
-          "_mutate": undefined,
-          "_options": Object {
-            "abortEarly": true,
-            "recursive": true,
-          },
-          "_type": "boolean",
-          "_typeError": [Function],
-          "_whitelist": Object {
-            "list": Set {},
-            "refs": Map {},
-          },
-          "tests": Array [],
-          "transforms": Array [
-            [Function],
-          ],
-          "type": "boolean",
-        },
         "build": Object {
           "_blacklist": Object {
             "list": Set {},

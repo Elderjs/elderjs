@@ -296,7 +296,9 @@ function validateRoute(route: RouteOptions): RouteOptions | false {
     return validated;
   } catch (err) {
     console.error(
-      `Route "${route.name}" does not have the required fields and is disabled. Please let the author know`,
+      `Route "${
+        route && route.name ? route.name : 'with no name'
+      }" does not have the required fields and is disabled. Please let the author know`,
       err.errors,
       err.value,
     );

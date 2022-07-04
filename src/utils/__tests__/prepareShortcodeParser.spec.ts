@@ -1,3 +1,5 @@
+// eslint-disable-next-line eslint-comments/disable-enable-pair
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import prepareShortcodeParser from '../prepareShortcodeParser.js';
 import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest';
 
@@ -49,13 +51,15 @@ describe('#prepareShortcodeParser', () => {
       ...args,
       shortcodes: [],
 
+      // @ts-expect-error
       settings: {
         debug: {
           stacks: true,
           hooks: true,
           build: true,
-          automagic: true,
           shortcodes: true,
+          performance: true,
+          props: true,
         },
         shortcodes: {
           openPattern: '\\[',
@@ -80,16 +84,19 @@ describe('#prepareShortcodeParser', () => {
         shortcodes: [
           {
             run: vi.fn(),
+            // @ts-expect-error
             foo: 'bar',
           },
         ],
+        // @ts-expect-error
         settings: {
           debug: {
             stacks: true,
             hooks: true,
             build: true,
-            automagic: true,
             shortcodes: true,
+            performance: true,
+            props: true,
           },
           shortcodes: {
             openPattern: '\\<',
@@ -107,17 +114,20 @@ describe('#prepareShortcodeParser', () => {
       prepareShortcodeParser({
         ...args,
         shortcodes: [
+          // @ts-expect-error
           {
             shortcode: 'svelteComponent',
           },
         ],
+        // @ts-expect-error
         settings: {
           debug: {
             stacks: true,
             hooks: true,
             build: true,
-            automagic: true,
             shortcodes: true,
+            performance: true,
+            props: true,
           },
           shortcodes: {
             openPattern: '\\<',
@@ -139,13 +149,15 @@ describe('#prepareShortcodeParser', () => {
           }),
         },
       ],
+      // @ts-expect-error
       settings: {
         debug: {
           stacks: true,
           hooks: true,
           build: true,
-          automagic: true,
           shortcodes: true,
+          performance: true,
+          props: true,
         },
         shortcodes: {
           openPattern: '\\👍',
@@ -182,13 +194,15 @@ describe('#prepareShortcodeParser', () => {
           }),
         },
       ],
+      // @ts-expect-error
       settings: {
         debug: {
           stacks: true,
           hooks: true,
           build: true,
-          automagic: true,
           shortcodes: true,
+          performance: true,
+          props: true,
         },
         shortcodes: {
           openPattern: '\\66',

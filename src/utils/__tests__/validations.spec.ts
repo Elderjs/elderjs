@@ -44,7 +44,6 @@ describe('#validations', () => {
     srcDir: 'src',
     distDir: 'public',
     debug: {
-      automagic: false,
       build: false,
       hooks: false,
       performance: false,

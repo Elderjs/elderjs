@@ -108,8 +108,8 @@ export interface UserOptions {
     disable?: string[];
   };
   debug: DebugOptions;
-  server: ServerOptions;
-  build: BuildOptions;
+  server?: ServerOptions;
+  build?: BuildOptions;
   lang: string;
   prefix?: string;
   distDir: string;

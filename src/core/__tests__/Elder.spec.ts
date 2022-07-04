@@ -23,9 +23,7 @@ vi.mock(`../utils/getConfig`, () => ({
       ssrComponents: `test/___ELDER___/compiled`,
       findComponent: () => ({ ssr: true, client: true, iife: undefined }),
     },
-    debug: {
-      automagic: true,
-    },
+    debug: {},
     distDir: `test/public`,
     rootDir: 'test',
     srcDir: `test/src`,

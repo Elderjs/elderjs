@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import normalizeSnapshot from '../../utils/normalizeSnapshot.js';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import EventEmitter from 'events';
 
 // process.cwd = () => 'test';
 
@@ -61,14 +62,11 @@ describe('#routes', () => {
       rootDir: '',
       origin: '',
       lang: '',
-      server: false,
-      build: false,
       debug: {
         stacks: false,
         hooks: false,
         performance: false,
         build: false,
-        automagic: false,
         shortcodes: false,
         props: false,
       },
@@ -85,14 +83,43 @@ describe('#routes', () => {
         closePattern: '',
       },
       $$internal: {
-        hashedComponents: undefined,
         ssrComponents: '',
         clientComponents: '',
         distElder: '',
         logPrefix: '',
         serverPrefix: '',
         findComponent: undefined,
-        publicCssFile: '',
+        production: false,
+        status: 'bootstrapped',
+        watcher: new EventEmitter(),
+        files: {
+          all: [
+            `test/src/routes/content/route.js`,
+            `test/src/routes/content/Default.svelte`,
+            `test/src/routes/home/Home.svelte`,
+            `test/src/routes/home/route.js`,
+            `test/src/routes/SomethingCamel/SomethingCamel.svelte`,
+            `test/src/routes/SomethingCamel/route.js`,
+            `test/src/routes/content/data.js`,
+            `test/src/routes/content/Layout.svelte`,
+          ],
+          client: [],
+          hooks: '',
+          publicCssFile: '',
+          routes: [
+            `test/src/routes/content/route.js`,
+            'test/src/routes/home/route.js',
+            'test/src/routes/SomethingCamel/route.js',
+          ],
+          server: [
+            `test/___ELDER___/compiled/routes/home/Home.js`,
+            `test/___ELDER___/compiled/components/AutoComplete.js`,
+            `test/___ELDER___/compiled/routes/content/Default.js`,
+            `test/___ELDER___/compiled/routes/content/Content.js`,
+            `test/___ELDER___/compiled/SomethingCamel.js`,
+          ],
+          shortcodes: '',
+        },
       },
       css: 'file',
     });

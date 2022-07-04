@@ -3,7 +3,7 @@ import { resolve } from 'path';
 import getConfig, { getCssFile } from '../../utils/getConfig.js';
 
 const defaultConfig = {
-  debug: { automagic: false, build: false, hooks: false, performance: false, shortcodes: false, stacks: false },
+  debug: { build: false, hooks: false, performance: false, shortcodes: false, stacks: false },
   distDir: 'public',
   srcDir: 'src',
   rootDir: process.cwd(),
@@ -48,7 +48,6 @@ const output = {
   },
   build: false,
   debug: {
-    automagic: false,
     build: false,
     hooks: false,
     performance: false,

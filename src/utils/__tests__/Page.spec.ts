@@ -103,7 +103,6 @@ const settings = {
     hooks: true,
     performance: false,
     build: false,
-    automagic: false,
   },
   props: {},
   hooks: {
