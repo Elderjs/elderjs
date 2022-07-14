@@ -17,11 +17,11 @@ import {
   logDependency,
   resetDependencyCache,
   getDependencyCache,
-} from '../rollupPlugin';
+} from '../bundleTools.js';
 
 vi.mock('del', () => ({ default: { sync: vi.fn() } }));
 
-describe('#rollupPlugin', () => {
+describe('#bundleTools', () => {
   const cfs = fsExtra.copyFileSync;
   const rds = fsExtra.readdirSync;
   const eds = fsExtra.ensureDirSync;
@@ -103,93 +103,95 @@ describe('#rollupPlugin', () => {
     it('Properly attributes external npm packages', () => {
       resetDependencyCache();
       logDependency(
-        path.resolve(`./src/rollup/__tests__/__fixtures__/external/src/layouts/External.svelte`),
+        path.resolve(`./src/esbuild/__tests__/__fixtures__/external/src/layouts/External.svelte`),
         undefined,
       );
 
       logDependency(
         `svelte/internal`,
-        path.resolve(`./src/rollup/__tests__/__fixtures__/external/src/layouts/External.svelte`),
+        path.resolve(`./src/esbuild/__tests__/__fixtures__/external/src/layouts/External.svelte`),
       );
 
       logDependency(
         `test-external-svelte-library`,
-        path.resolve(`./src/rollup/__tests__/__fixtures__/external/src/layouts/External.svelte`),
+        path.resolve(`./src/esbuild/__tests__/__fixtures__/external/src/layouts/External.svelte`),
       );
 
       logDependency(
         path.resolve(
-          `./src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/index.js`,
+          `./src/esbuild/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/index.js`,
         ),
         `test-external-svelte-library`,
       );
 
       logDependency(
         `../components/Component.svelte`,
-        path.resolve(`./src/rollup/__tests__/__fixtures__/external/src/layouts/External.svelte`),
+        path.resolve(`./src/esbuild/__tests__/__fixtures__/external/src/layouts/External.svelte`),
       );
 
       logDependency(
         `test-external-svelte-library/src/components/Button.svelte`,
         path.resolve(
-          `./src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/index.js`,
+          `./src/esbuild/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/index.js`,
         ),
       );
 
       logDependency(
         `svelte/internal`,
-        path.resolve(`./src/rollup/__tests__/__fixtures__/external/src/components/Component.svelte`),
+        path.resolve(`./src/esbuild/__tests__/__fixtures__/external/src/components/Component.svelte`),
       );
 
       logDependency(
         `svelte/internal`,
         path.resolve(
-          `./src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/components/Button.svelte`,
+          `./src/esbuild/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/components/Button.svelte`,
         ),
       );
 
       logDependency(
         `../components/Icon.svelte`,
         path.resolve(
-          `./src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/components/Button.svelte`,
+          `./src/esbuild/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/components/Button.svelte`,
         ),
       );
 
       logDependency(
         `svelte/internal`,
         path.resolve(
-          `./src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/components/Icon.svelte`,
+          `./src/esbuild/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/components/Icon.svelte`,
         ),
       );
 
       expect(
-        getDependencies(path.resolve(`./src/rollup/__tests__/__fixtures__/external/src/layouts/External.svelte`)),
+        getDependencies(path.resolve(`./src/esbuild/__tests__/__fixtures__/external/src/layouts/External.svelte`)),
       ).toEqual([
-        path.resolve(`./src/rollup/__tests__/__fixtures__/external/src/layouts/External.svelte`),
+        path.resolve(`./src/esbuild/__tests__/__fixtures__/external/src/layouts/External.svelte`),
         'test-external-svelte-library',
         path.resolve(
-          './src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/index.js',
+          './src/esbuild/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/index.js',
         ),
         path.resolve(
-          './src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/test-external-svelte-library/src/components/Button.svelte',
+          './src/esbuild/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/test-external-svelte-library/src/components/Button.svelte',
         ),
-        path.resolve(`./src/rollup/__tests__/__fixtures__/external/src/components/Component.svelte`),
+        path.resolve(`./src/esbuild/__tests__/__fixtures__/external/src/components/Component.svelte`),
       ]);
 
       const abs = {
-        './src/rollup/__tests__/__fixtures__/external/src/layouts/External.svelte': new Set([
+        './src/esbuild/__tests__/__fixtures__/external/src/layouts/External.svelte': new Set([
           'test-external-svelte-library',
-          './src/rollup/__tests__/__fixtures__/external/src/components/Component.svelte',
+          './src/esbuild/__tests__/__fixtures__/external/src/components/Component.svelte',
         ]),
         'test-external-svelte-library': new Set([
-          './src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/index.js',
+          './src/esbuild/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/index.js',
         ]),
-        './src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/index.js': new Set([
-          './src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/test-external-svelte-library/src/components/Button.svelte',
-        ]),
-        './src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/components/Button.svelte':
+        './src/esbuild/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/index.js': new Set(
+          [
+            './src/esbuild/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/test-external-svelte-library/src/components/Button.svelte',
+          ],
+        ),
+        './src/esbuild/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/components/Button.svelte':
           new Set([
-            './src/rollup/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/components/Icon.svelte',
+            './src/esbuild/__tests__/__fixtures__/external/node_modules/test-external-svelte-library/src/components/Icon.svelte',
           ]),
       };
 

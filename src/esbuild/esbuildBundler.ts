@@ -5,7 +5,7 @@
 // the file watcher should restart the entire esbuild process when a new svelte file is seen. This includes clearing caches.
 
 import { build } from 'esbuild';
-import glob from 'glob';
+import glob from 'fast-glob';
 import path from 'path';
 
 import fs from 'fs-extra';

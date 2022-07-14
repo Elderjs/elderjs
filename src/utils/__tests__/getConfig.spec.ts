@@ -1,3 +1,4 @@
+// eslint-disable-next-line eslint-comments/disable-enable-pair
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, test, vi, expect, beforeEach } from 'vitest';
 import { resolve } from 'path';

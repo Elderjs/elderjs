@@ -1,15 +1,11 @@
-import path, { sep } from 'path';
+import path from 'path';
 import CleanCSS from 'clean-css';
-import { Plugin } from 'rollup';
 import { compile, preprocess } from 'svelte/compiler';
 import sparkMd5 from 'spark-md5';
 import fs from 'fs-extra';
 import btoa from 'btoa';
 
 import { CompileOptions } from 'svelte/types/compiler/interfaces';
-import del from 'del';
-import { fork, ChildProcess } from 'child_process';
-import chokidar from 'chokidar';
 
 import partialHydration from '../partialHydration/partialHydration.js';
 import windowsPathFix from '../utils/windowsPathFix.js';
@@ -25,8 +21,6 @@ const cache = new Map();
 
 const isDev =
   process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'PRODUCTION' && !!process.env.ROLLUP_WATCH;
-
-let srcWatcher;
 
 const mapIntro = `/*# sourceMappingURL=data:application/json;charset=utf-8;base64,`;
 export const encodeSourceMap = (map) => {
