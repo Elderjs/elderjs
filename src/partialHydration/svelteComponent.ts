@@ -67,12 +67,15 @@ const svelteComponent =
 
         return componentHtml;
       } catch (e) {
+        console.error(' --- svelteComponentError --- ');
         console.log(e);
         page.errors.push(e);
+        return '';
       }
-      return '';
     } catch (e) {
       console.error(`Couldn't find the component for ${componentName} in ${folder}`);
+      page.errors.push(`Couldn't find the component for ${componentName} in ${folder}`, e);
+      return '';
     }
   };
 
