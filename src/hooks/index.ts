@@ -20,14 +20,13 @@ const hooks: HooksArray = [
       } catch (err) {
         console.error('--- helpers error --- ', err);
       }
-      if (additionalHelpers) {
-        return {
-          helpers: {
-            ...helpers,
-            ...additionalHelpers,
-          },
-        };
-      }
+
+      return {
+        helpers: {
+          ...helpers,
+          ...(additionalHelpers ? additionalHelpers : {}),
+        },
+      };
     },
   },
   {

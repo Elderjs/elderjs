@@ -12,8 +12,8 @@
     "build": "rimraf ./build && tsc",
     "dev": "tsc -w",
     "prepare": "npm run build",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "test": "vitest run --no-threads",
+    "test:watch": "vitest --no-threads",
     "test:coverage": "vitest run --coverage",
     "eslint": "eslint --ext .ts .",
     "eslint:fix": "eslint --fix --ext .ts ."

@@ -3,6 +3,7 @@
 exports[`#hooks > elderAddExternalHelpers 1`] = `
 {
   "helpers": {
+    "import": [Function],
     "inlineSvelteComponent": [Function],
     "old": [Function],
     "permalinks": {},

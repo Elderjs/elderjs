@@ -90,6 +90,8 @@ beforeEach(() => {
 
 describe('#hooks', () => {
   test('has valid priority', () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
     expect(hooks.filter((h) => h.priority < 1 && h.priority > 100)).toEqual([]);
   });
   test('matchesSnapshot', () => {
@@ -300,7 +302,10 @@ describe('#hooks', () => {
             css: 'file',
             $$internal: {
               ...elder.settings.$$internal,
-              publicCssFile: '/_elderjs/assets/svelte.123.js',
+              files: {
+                ...elder.settings.$$internal.files,
+                publicCssFile: '/_elderjs/assets/svelte.123.js',
+              },
             },
           },
         }),
@@ -309,7 +314,7 @@ describe('#hooks', () => {
           {
             priority: 30,
             source: 'elderAddCssFileToHead',
-            string: `<link rel="stylesheet" href="/_elderjs/assets/svelte.123.js" media="all" />`,
+            string: `<link id="ejs-public-css" rel="stylesheet" href="/_elderjs/assets/svelte.123.js" media="all" />`,
           },
         ],
       });
@@ -332,6 +337,7 @@ describe('#hooks', () => {
               $$internal: {
                 ...elder.settings.$$internal,
                 files: {
+                  ...elder.settings.$$internal.files,
                   publicCssFile: '/_elderjs/assets/svelte.123.js',
                 },
               },
