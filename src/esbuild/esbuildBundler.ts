@@ -12,8 +12,7 @@ import fs from 'fs-extra';
 
 import { PreprocessorGroup } from 'svelte/types/compiler/preprocess/types';
 import esbuildPluginSvelte from './esbuildPluginSvelte.js';
-import { InitializationOptions, SettingsOptions } from '../utils/types.js';
-import getConfig from '../utils/getConfig.js';
+import { SettingsOptions } from '../utils/types.js';
 import getPluginLocations from '../utils/getPluginLocations.js';
 
 const production = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'PRODUCTION';
@@ -63,7 +62,7 @@ export async function getPackagesWithSvelte(pkg, elderConfig: SettingsOptions) {
 }
 
 // eslint-disable-next-line consistent-return
-const svelteHandler = async ({ settings, svelteConfig }) => {
+const svelteHandler = async ({ settings, svelteConfig }: { settings: SettingsOptions; svelteConfig: any }) => {
   try {
     // eslint-disable-next-line global-require
     const pkg = fs.readJsonSync(path.resolve(settings.rootDir, './package.json'));
@@ -85,11 +84,14 @@ const svelteHandler = async ({ settings, svelteConfig }) => {
             svelteConfig,
           }),
         ],
-        watch: {
-          onRebuild(error) {
-            if (error) console.error('ssr watch build failed:', error);
-          },
-        },
+        watch:
+          !settings.$$internal.production && settings.server
+            ? {
+                onRebuild(error) {
+                  if (error) console.error('ssr watch build failed:', error);
+                },
+              }
+            : false,
         format: 'esm',
         target: ['es2020'],
         platform: 'node',
@@ -116,11 +118,14 @@ const svelteHandler = async ({ settings, svelteConfig }) => {
             svelteConfig,
           }),
         ],
-        watch: {
-          onRebuild(error) {
-            if (error) console.error('client watch build failed:', error);
-          },
-        },
+        watch:
+          !settings.$$internal.production && settings.server
+            ? {
+                onRebuild(error) {
+                  if (error) console.error('client watch build failed:', error);
+                },
+              }
+            : false,
         format: 'esm',
         target: ['es2020'],
         platform: 'browser',
@@ -138,7 +143,7 @@ const svelteHandler = async ({ settings, svelteConfig }) => {
       }),
     ]);
   } catch (e) {
-    console.error(e);
+    console.error('esbuildBundler.ts', e);
   }
 };
 
