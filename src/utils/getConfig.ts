@@ -9,6 +9,7 @@ import normalizePrefix from './normalizePrefix.js';
 import notProduction from './notProduction.js';
 import getFilesAndWatcher from '../core/getFilesAndWatcher.js';
 import getWebsocket from '../core/getWebsocket.js';
+import getUniqueId from './getUniqueId.js';
 
 type TCheckCssFiles = {
   cssFiles: string[];
@@ -81,6 +82,7 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
   });
 
   config.$$internal = {
+    reloadHash: getUniqueId(),
     production,
     ssrComponents,
     clientComponents,
@@ -97,9 +99,13 @@ function getConfig(initializationOptions: InitializationOptions = {}): SettingsO
     }),
     files,
     watcher,
-    websocket: !production && config.context === 'server' ? getWebsocket() : undefined,
+    websocket: undefined,
     status: 'bootstrapping',
   };
+
+  if (!production && config.context === 'server') {
+    config.$$internal.websocket = getWebsocket(config.$$internal, config.debug.reload);
+  }
 
   if ((config.css === 'file' || config.css === 'lazy') && initializationOptions.context !== 'test') {
     const assetPath = path.resolve(distElder, `.${path.sep}assets`);

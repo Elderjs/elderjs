@@ -5,6 +5,7 @@ import permalinks from './permalinks.js';
 import EventEmitter from 'events';
 import { WebSocketServer } from 'ws';
 import { WSData } from '../core/getWebsocket.js';
+import { makeImport } from '../core/Elder.js';
 
 export type ServerOptions = {
   prefix: string;
@@ -32,7 +33,8 @@ export interface FindSvelteComponent {
   (name: any, folder: any): SvelteComponentFiles;
 }
 
-type Internal = {
+export type Internal = {
+  reloadHash: string;
   ssrComponents: string;
   clientComponents: string;
   distElder: string;
@@ -66,6 +68,7 @@ export type DebugOptions = {
   build: boolean;
   shortcodes: boolean;
   props: boolean;
+  reload: boolean;
 };
 
 type PropOptions = {
@@ -207,13 +210,14 @@ export interface RollupSettings {
   dev?: RollupDevOptions;
 }
 
-export type THelpers = {
+export type Helpers = {
   permalinks: ReturnType<typeof permalinks>;
   inlineSvelteComponent: typeof inlineSvelteComponent;
   shortcode: ReturnType<typeof prepareInlineShortcode>;
+  import: ReturnType<typeof makeImport>;
 };
 
-export type TUserHelpers = THelpers & {
+export type TUserHelpers = Helpers & {
   [x: string]: any | { [y: string]: any };
 };
 

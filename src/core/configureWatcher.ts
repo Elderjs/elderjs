@@ -196,6 +196,8 @@ export default function configureWatcher(elder: Elder) {
     elder.perf.end('stateRefresh');
 
     displayElderPerfTimings(`Refreshed helpers in`, elder);
+
+    if (elder.settings.debug.reload) console.log(`Helpers keys: `, Object.keys(elder.helpers));
     elder.settings.$$internal.websocket.send({ type: 'reload', file });
   });
 

@@ -78,6 +78,7 @@ async function plugins(elder: Elder) {
 
         const nmPluginReq = await import(pluginPkgPath);
         plugin = nmPluginReq.default || nmPluginReq;
+        plugin = (plugin.default || plugin) as PluginOptions;
       }
     }
 

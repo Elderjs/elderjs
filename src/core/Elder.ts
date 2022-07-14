@@ -1,5 +1,7 @@
-import { hookInterface } from '../hooks/hookInterface.js';
+import { URL } from 'url';
 
+import { hookInterface } from '../hooks/hookInterface.js';
+import { isAbsolute } from 'path';
 import build from '../build/build.js';
 import partialHydration from '../partialHydration/partialHydration.js';
 
@@ -14,10 +16,11 @@ import {
   ServerLookupObject,
   ExcludesFalse,
   InitializationOptions,
-  THelpers,
+  Helpers,
   TErrors,
   AllRequests,
   DebugOptions,
+  Internal,
 } from '../utils/types';
 import createReadOnlyProxy from '../utils/createReadOnlyProxy.js';
 import workerBuild from '../workerBuild.js';
@@ -56,7 +59,7 @@ class Elder {
 
   query: QueryOptions;
   uid: string;
-  helpers: THelpers;
+  helpers: Helpers;
   perf: Perf;
 
   constructor(initializationOptions: InitializationOptions = {}) {
@@ -234,6 +237,7 @@ export function makeElderjsHelpers(routes: ProcessedRoutesObject, settings: Sett
     permalinks: permalinks({ routes, settings: settings }),
     inlineSvelteComponent,
     shortcode: prepareInlineShortcode({ settings: settings }),
+    import: makeImport(settings.$$internal),
   };
 }
 
@@ -312,6 +316,27 @@ export function displayElderPerfTimings(
       displayPerfTimings([...elder.perf.timings]);
     }
   }
+}
+
+export function makeImport($$internal: Pick<Internal, 'reloadHash' | 'production'>) {
+  return async function hotImport(toImport: string, metaUrl?: string): Promise<any> {
+    let fullImport = toImport;
+    if (!isAbsolute(toImport)) {
+      if (!metaUrl)
+        throw new Error(
+          'helpers.import requires a full path or for you to pass in the import.meta.url as the 2nd param.',
+        );
+      fullImport = new URL(toImport, metaUrl).toString();
+    }
+
+    if ($$internal.production) {
+      const imp = await import(fullImport);
+      return imp.default || imp;
+    } else {
+      const imp = await import(`${fullImport}?hash=${$$internal.reloadHash}`);
+      return imp.default || imp;
+    }
+  };
 }
 
 export { Elder, build, partialHydration };

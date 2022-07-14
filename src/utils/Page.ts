@@ -2,7 +2,7 @@ import getUniqueId from './getUniqueId.js';
 import perf, { Perf, PerfTimings } from './perf.js';
 import prepareProcessStack from './prepareProcessStack.js';
 import { ShortcodeDefinitions } from '../shortcodes/types.js';
-import { QueryOptions, Stack, RequestObject, SettingsOptions, HydrateOptions, TErrors, THelpers } from './types.js';
+import { QueryOptions, Stack, RequestObject, SettingsOptions, HydrateOptions, TErrors, Helpers } from './types.js';
 import { RouteOptions, ProcessedRoutesObject } from '../routes/types.js';
 import createReadOnlyProxy from './createReadOnlyProxy.js';
 import outputStyles from './outputStyles.js';
@@ -170,7 +170,7 @@ class Page {
 
   settings: SettingsOptions;
 
-  helpers: THelpers;
+  helpers: Helpers;
 
   data: Record<string, unknown>;
 

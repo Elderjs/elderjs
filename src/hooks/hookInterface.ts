@@ -279,7 +279,7 @@ export const htmlHook = {
   location: 'Page.ts',
   experimental: false,
   advanced: false,
-};
+} as const;
 
 export const requestCompleteHook = {
   hook: 'requestComplete',

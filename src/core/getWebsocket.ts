@@ -1,5 +1,7 @@
 import { createServer } from 'http';
 import WebSocket, { WebSocketServer } from 'ws';
+import getUniqueId from '../utils/getUniqueId.js';
+import { Internal } from '../utils/types';
 
 type Reload = {
   type: 'reload';
@@ -23,9 +25,10 @@ type OtherCssFile = {
 
 export type WSData = Reload | ComponentChange | PublicCssChange | OtherCssFile;
 
-export default function getWebsocket() {
+export default function getWebsocket($$internal: Pick<Internal, 'reloadHash'>, debug: boolean) {
   const server = createServer();
   const wss = new WebSocketServer({ server });
+
   wss.on('connection', function connection(ws) {
     ws.on('message', function message(data) {
       console.log('> (client) %s', data);
@@ -36,7 +39,8 @@ export default function getWebsocket() {
 
   return {
     send: function sendData(data: WSData) {
-      console.log('sending', data);
+      if (data.type === 'reload') $$internal.reloadHash = getUniqueId();
+      if (debug) console.log('sending data to client websocket', data);
       wss.clients.forEach((client) => {
         if (client.readyState === WebSocket.OPEN) {
           client.send(JSON.stringify(data));

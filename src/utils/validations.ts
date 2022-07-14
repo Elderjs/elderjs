@@ -62,6 +62,7 @@ const configSchema = yup.object({
   debug: yup
     .object()
     .shape({
+      reload: yup.boolean().notRequired().default(false).label('Adds debugging information for hot reloading'),
       props: yup.boolean().notRequired().default(false).label('Adds debugging information for prop compression'),
       stacks: yup.boolean().notRequired().default(false).label('Outputs details of stack processing in the console.'),
       hooks: yup.boolean().notRequired().default(false).label('Output details of hook execution in the console.'),
