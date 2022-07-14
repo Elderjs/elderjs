@@ -10,14 +10,16 @@ const prefix = '${prefix}';
 const initComponent = (target, component) => {
   if(!!CustomEvent && target.id){
     const split = target.id.split('-ejs-');
-    document.dispatchEvent(new CustomEvent('ejs', {
-      detail: {
-        category: 'elderjs',
-        action: 'hydrate',
-        target: target,
-        label: split[0] || target.id
-      }
-    }));
+    document.dispatchEvent(
+      new CustomEvent('ejs', {
+        detail: {
+          category: 'elderjs',
+          action: 'hydrate',
+          target: target,
+          label: split[0] || target.id
+        }
+      }),
+    );
   }
 
   const propProm = ((typeof component.props === 'string') ? fetch(prefix+'/props/'+ component.props).then(p => p.json()).then(r => $ejs(r)) : new Promise((resolve) => resolve($ejs(component.props))));
@@ -263,7 +265,7 @@ export default (page: Page) => {
         const devComponents = {
         ${eagerString}
         ${deferString}
-        }
+        };
 
         function swapComponents(file){
           console.log('swap', file);
@@ -279,10 +281,8 @@ export default (page: Page) => {
           });
 
           if(targetComponent && targetEl){
-            // update file
             targetComponent.component = file;
             const el = document.getElementById(targetEl);
-            // remove old component
             while(el.firstChild){
               el.removeChild(el.firstChild);
             }
@@ -312,7 +312,7 @@ export default (page: Page) => {
             const oldCssId = currentCssId;
             setTimeout(()=>{
               document.getElementById(oldCssId).remove();
-            }, 150)
+            }, 150);
 
             const link = document.createElement("link");          
             link.type = "text/css";
