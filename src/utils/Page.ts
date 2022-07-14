@@ -123,15 +123,14 @@ const buildPage = async (page: Page) => {
     page.timings = page.perf.timings;
 
     await page.runHook('requestComplete', page);
-
-    if (page.errors.length > 0) {
-      await page.runHook('error', page);
-    }
   } catch (err) {
-    console.log(err);
+    // console.error(err);
     page.errors.push(err);
+  }
+  if (page.errors.length > 0) {
     await page.runHook('error', page);
   }
+
   return page;
 };
 
