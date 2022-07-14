@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import chokidar from 'chokidar';
-import path from 'path';
+import path, { sep } from 'path';
 import fg from 'fast-glob';
 
 import { SettingsOptions } from '..';
@@ -57,7 +57,7 @@ export default function getFilesAndWatcher(settings: TGetFilesAndWatcher): {
   const files = {
     all,
     publicCssFile: makeCssRelative({
-      file: all.find((p) => p.endsWith('.css')),
+      file: all.find((p) => p.includes(`assets${sep}svelte`) && p.endsWith('.css')),
       distElder: settings.distDir,
     }),
     server: all.filter((f) => f.includes(settings.ssrComponents)).map(hashUrl),
@@ -94,11 +94,11 @@ export default function getFilesAndWatcher(settings: TGetFilesAndWatcher): {
           }
         }
       } else if (f.endsWith('.css') && f.includes('svelte-')) {
-        // files.publicCssFile = makeCssRelative({
-        //   file,
-        //   distElder: settings.distDir,
-        // });
-        // watcher.emit('publicCssFile', files.publicCssFile);
+        files.publicCssFile = makeCssRelative({
+          file,
+          distElder: settings.distDir,
+        });
+        watcher.emit('publicCssFile', files.publicCssFile);
       } else if (f === 'hooks.js') {
         watcher.emit('hooks', hashUrl(file));
       } else if (f === 'shortcodes.js') {
