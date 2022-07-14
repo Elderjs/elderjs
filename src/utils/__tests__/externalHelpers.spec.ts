@@ -2,25 +2,25 @@ import { it, beforeEach, describe, expect, vi } from 'vitest';
 import { sep } from 'path';
 import normalizeSnapshot from '../normalizeSnapshot.js';
 import getConfig from '../getConfig.js';
-import externalHelpers from '../externalHelpers';
+import externalHelpers from '../externalHelpers.js';
 
 // process.cwd = () => 'test';
 
-const query = {};
-
-const helpers = {
-  inlineSvelteComponent: () => `inlined`,
-  permalinks: { key: () => '' },
-  shortcode: () => '',
-};
-
 describe('#externalHelpers', () => {
   const settings = getConfig({ css: 'inline' });
+  const query = {};
+
+  const helpers = {
+    inlineSvelteComponent: () => `inlined`,
+    permalinks: { key: () => '' },
+    shortcode: () => '',
+    import: async () => '',
+  };
   beforeEach(() => {
     vi.resetModules();
   });
   it('throws', async () => {
-    vi.mock('fs', () => {
+    vi.doMock('fs', () => {
       class StatSyncError extends Error {
         code: 'ENOENT';
 
@@ -51,7 +51,7 @@ describe('#externalHelpers', () => {
     ).toBeUndefined();
   });
   it('returns undefined if file is not there', async () => {
-    vi.mock('fs', () => ({
+    vi.doMock('fs', () => ({
       statSync: vi.fn().mockImplementationOnce(() => {
         throw new Error('');
       }),
@@ -61,14 +61,14 @@ describe('#externalHelpers', () => {
     expect(await externalHelpers({ settings, query, helpers })).toBeUndefined();
   });
   it('works - userHelpers is not a function', async () => {
-    vi.mock(
+    vi.doMock(
       `src${sep}helpers${sep}index.js`,
 
       () => ({
         userHelper: () => 'something',
       }),
     );
-    vi.mock('fs', () => ({
+    vi.doMock('fs', () => ({
       statSync: vi.fn().mockImplementationOnce(() => ''),
     }));
 
@@ -80,14 +80,14 @@ describe('#externalHelpers', () => {
     expect(normalizeSnapshot(c2)).toMatchSnapshot();
   });
   it('works - userHelpers is a function', async () => {
-    vi.mock(
+    vi.doMock(
       `src${sep}helpers${sep}index.js`,
       () => () =>
         Promise.resolve({
           userHelper: () => 'something',
         }),
     );
-    vi.mock('fs', () => ({
+    vi.doMock('fs', () => ({
       statSync: vi.fn().mockImplementationOnce(() => ''),
     }));
     // eslint-disable-next-line global-require

@@ -1,0 +1,9 @@
+// Vitest Snapshot v1
+
+exports[`#externalHelpers > works - userHelpers is a function 1`] = `undefined`;
+
+exports[`#externalHelpers > works - userHelpers is a function 2`] = `undefined`;
+
+exports[`#externalHelpers > works - userHelpers is not a function 1`] = `undefined`;
+
+exports[`#externalHelpers > works - userHelpers is not a function 2`] = `undefined`;

@@ -14,6 +14,7 @@ exports[`#validations > configSchema 1`] = `
   "_mutate": undefined,
   "_nodes": [
     "css",
+    "replacements",
     "plugins",
     "shortcodes",
     "build",
@@ -178,6 +179,7 @@ exports[`#validations > configSchema 1`] = `
         "hooks",
         "stacks",
         "props",
+        "reload",
       ],
       "_options": {
         "abortEarly": true,
@@ -281,6 +283,33 @@ exports[`#validations > configSchema 1`] = `
           "_deps": [],
           "_exclusive": {},
           "_label": "Adds debugging information for prop compression",
+          "_mutate": undefined,
+          "_options": {
+            "abortEarly": true,
+            "recursive": true,
+          },
+          "_type": "boolean",
+          "_typeError": [Function],
+          "_whitelist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "tests": [],
+          "transforms": [
+            [Function],
+          ],
+          "type": "boolean",
+        },
+        "reload": {
+          "_blacklist": {
+            "list": Set {},
+            "refs": Map {},
+          },
+          "_conditions": [],
+          "_default": false,
+          "_deps": [],
+          "_exclusive": {},
+          "_label": "Adds debugging information for hot reloading",
           "_mutate": undefined,
           "_options": {
             "abortEarly": true,
@@ -716,6 +745,37 @@ exports[`#validations > configSchema 1`] = `
           "type": "string",
         },
       },
+      "tests": [],
+      "transforms": [
+        [Function],
+      ],
+      "type": "object",
+    },
+    "replacements": {
+      "_blacklist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "_conditions": [],
+      "_default": {},
+      "_defaultDefault": [Function],
+      "_deps": [],
+      "_excludedEdges": [],
+      "_exclusive": {},
+      "_label": "Values to be replaced during esbuild bundling. {key: \\"value\\"} format.",
+      "_mutate": undefined,
+      "_nodes": [],
+      "_options": {
+        "abortEarly": true,
+        "recursive": true,
+      },
+      "_type": "object",
+      "_typeError": [Function],
+      "_whitelist": {
+        "list": Set {},
+        "refs": Map {},
+      },
+      "fields": {},
       "tests": [],
       "transforms": [
         [Function],

@@ -114,6 +114,9 @@ describe('#Elder', () => {
     //@ts-ignore
 
     delete elder.settings.$$internal.files;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    delete elder.settings.$$internal.reloadHash;
     expect(normalizeSnapshot(elder)).toMatchSnapshot();
   });
 
@@ -184,7 +187,7 @@ describe('#Elder', () => {
       init: vi.fn().mockImplementation((p) => p),
     }));
 
-    const { Elder } = await import(`../../index`);
+    const { Elder } = await import(`../../index.js`);
     const elder = await new Elder({ context: 'server', worker: true });
     await elder.bootstrap();
 

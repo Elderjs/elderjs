@@ -38,7 +38,7 @@ function getPerformanceObserver(page) {
 
 function perf(page: Page | Elder, force = false) {
   if (page.settings.debug.performance || force) {
-    let obs = getPerformanceObserver(page);
+    let obs;
     // eslint-disable-next-line no-param-reassign
     page.perf = {
       timings: [],
@@ -74,6 +74,7 @@ function perf(page: Page | Elder, force = false) {
         }
       },
     };
+    obs = getPerformanceObserver(page);
 
     obs.observe({ entryTypes: ['measure'] });
   } else {

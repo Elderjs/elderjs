@@ -50,7 +50,9 @@ describe('#validations', () => {
       stacks: false,
       shortcodes: false,
       props: false,
+      reload: false,
     },
+    replacements: {},
     hooks: {
       disable: [],
     },
