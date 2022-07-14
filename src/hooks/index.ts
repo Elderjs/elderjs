@@ -18,7 +18,7 @@ const hooks: HooksArray = [
       try {
         additionalHelpers = await externalHelpers({ helpers, query, settings });
       } catch (err) {
-        console.error(err);
+        console.error('--- helpers error --- ', err);
       }
       if (additionalHelpers) {
         return {
