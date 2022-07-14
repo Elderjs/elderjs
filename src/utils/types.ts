@@ -123,6 +123,9 @@ export interface UserOptions {
     openPattern: string;
     closePattern: string;
   };
+  replacements: {
+    [x: string]: string;
+  };
 }
 
 interface ISettingsOptionsBase extends UserOptions {
