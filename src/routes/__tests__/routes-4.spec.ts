@@ -58,7 +58,9 @@ describe('#routes', () => {
         build: false,
         shortcodes: false,
         props: false,
+        reload: false,
       },
+      replacements: {},
       props: {
         compress: false,
         replacementChars: '',
@@ -72,6 +74,7 @@ describe('#routes', () => {
         closePattern: '',
       },
       $$internal: {
+        reloadHash: 'test',
         ssrComponents: '',
         clientComponents: '',
         distElder: '',

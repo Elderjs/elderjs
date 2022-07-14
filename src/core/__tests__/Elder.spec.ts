@@ -107,7 +107,12 @@ describe('#Elder', () => {
     const elder = await new Elder({ context: 'server', worker: true });
     await elder.bootstrap();
     await elder.worker([]);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
     delete elder.perf.timings;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+
     delete elder.settings.$$internal.files;
     expect(normalizeSnapshot(elder)).toMatchSnapshot();
   });
@@ -183,6 +188,8 @@ describe('#Elder', () => {
     const elder = await new Elder({ context: 'server', worker: true });
     await elder.bootstrap();
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
     delete elder.perf.timings;
     expect(normalizeSnapshot(elder)).toMatchSnapshot();
   });
