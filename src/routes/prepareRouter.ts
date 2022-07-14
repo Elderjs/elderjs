@@ -157,42 +157,47 @@ function prepareRouter(elder: ElderClass) {
   const requestCache = elder.settings.server && elder.settings.server.cacheRequests ? new Map() : undefined;
 
   async function handleRequest({ res, next, request, dynamic = false, type = '' }) {
-    if (!request.route || typeof request.route !== 'string') return next();
-    if (!elder.routes[request.route]) return next();
-    const page = new Page({
-      settings: elder.settings,
-      routes: elder.routes,
-      query: elder.query,
-      helpers: elder.helpers,
-      data: elder.data,
-      runHook: elder.runHook,
-      allRequests: elder.allRequests,
-      errors: elder.errors,
-      shortcodes: elder.shortcodes,
-      request,
-      next: dynamic ? next : undefined,
-      route: elder.routes[request.route],
-    });
-    const { htmlString: html, data, allRequests } = await page.build();
+    try {
+      if (!request.route || typeof request.route !== 'string') return next();
+      if (!elder.routes[request.route]) return next();
+      const page = new Page({
+        settings: elder.settings,
+        routes: elder.routes,
+        query: elder.query,
+        helpers: elder.helpers,
+        data: elder.data,
+        runHook: elder.runHook,
+        allRequests: elder.allRequests,
+        errors: elder.errors,
+        shortcodes: elder.shortcodes,
+        request,
+        next: dynamic ? next : undefined,
+        route: elder.routes[request.route],
+      });
 
-    if (type === 'data' && data) {
-      res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify(fixCircularJson(data)));
-      return undefined;
-    }
+      const { htmlString: html, data, allRequests } = await page.build();
 
-    if (type === 'allRequests' && allRequests) {
-      res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify(fixCircularJson(allRequests)));
-      return undefined;
-    }
+      if (type === 'data' && data) {
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(fixCircularJson(data)));
+        return undefined;
+      }
 
-    if (html && !res.headerSent && !res.headersSent) {
-      // note: html will be undefined if a dynamic route calls skip() as it aborts page building.
-      res.setHeader('Content-Type', 'text/html');
-      res.end(html);
+      if (type === 'allRequests' && allRequests) {
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(fixCircularJson(allRequests)));
+        return undefined;
+      }
 
-      return undefined;
+      if (html && !res.headerSent && !res.headersSent) {
+        // note: html will be undefined if a dynamic route calls skip() as it aborts page building.
+        res.setHeader('Content-Type', 'text/html');
+        res.end(html);
+
+        return undefined;
+      }
+    } catch (e) {
+      console.error(e);
     }
 
     return next();
@@ -228,7 +233,7 @@ function prepareRouter(elder: ElderClass) {
           return handleRequest({ res, next, request: { ...dynamicRequest, ...initialRequest }, dynamic: true });
         return next();
       } catch (e) {
-        console.error(e);
+        console.error('prepareRouter.ts', e);
         // should fall through to 404
         return next();
       }
