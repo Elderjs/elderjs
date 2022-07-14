@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, test, vi, expect, beforeEach } from 'vitest';
 import { resolve } from 'path';
 import getConfig, { getCssFile } from '../../utils/getConfig.js';
@@ -68,14 +69,11 @@ describe('#getConfig', () => {
           },
         };
       });
-      const r = getConfig({ context: 'serverless', rootDir: 't' });
-      expect(r).toStrictEqual(
-        expect.objectContaining({
-          ...common,
-          context: 'serverless',
-        }),
-      );
-      expect(r.$$internal).toMatchObject(common$$Internal);
+
+      const { $$internal, ...r } = getConfig({ context: 'serverless', rootDir: 't' });
+      const { reloadHash, watcher, ...internal } = $$internal;
+      expect(normalizeSnapshot(r)).toMatchSnapshot();
+      expect(normalizeSnapshot(internal)).toMatchSnapshot();
     });
 
     test('sets a server without a prefix', () => {
@@ -89,17 +87,11 @@ describe('#getConfig', () => {
           },
         };
       });
-      const r = getConfig({ context: 'server', rootDir: 't' });
-      expect(r).toStrictEqual(
-        expect.objectContaining({
-          ...common,
-          context: 'server',
-          server: {
-            prefix: '',
-          },
-        }),
-      );
-      expect(r.$$internal).toMatchObject(common$$Internal);
+
+      const { $$internal, ...r } = getConfig({ context: 'server', rootDir: 't' });
+      const { reloadHash, watcher, ...internal } = $$internal;
+      expect(normalizeSnapshot(r)).toMatchSnapshot();
+      expect(normalizeSnapshot(internal)).toMatchSnapshot();
     });
 
     test('sets a server with a server.prefix without leading or trailing "/"', () => {
@@ -113,22 +105,11 @@ describe('#getConfig', () => {
           },
         };
       });
-      const r = getConfig({ context: 'server', server: { prefix: 'testing' }, rootDir: 't' });
-      expect(r).toStrictEqual(
-        expect.objectContaining({
-          ...common,
-          context: 'server',
-          server: {
-            prefix: '/testing',
-          },
-          prefix: '/testing',
-        }),
-      );
-      expect(r.$$internal).toMatchObject({
-        ...common$$Internal,
-        clientComponents: resolve(process.cwd(), `./t/public/testing/_elderjs/svelte`),
-        distElder: resolve(process.cwd(), `./t/public/testing/_elderjs`),
-      });
+
+      const { $$internal, ...r } = getConfig({ context: 'server', server: { prefix: 'testing' }, rootDir: 't' });
+      const { reloadHash, watcher, ...internal } = $$internal;
+      expect(normalizeSnapshot(r)).toMatchSnapshot();
+      expect(normalizeSnapshot(internal)).toMatchSnapshot();
     });
 
     test('sets a server with a server.prefix with a trailing "/"', () => {
@@ -142,22 +123,11 @@ describe('#getConfig', () => {
           },
         };
       });
-      const r = getConfig({ context: 'server', server: { prefix: 'testing/' }, rootDir: 't' });
-      expect(r).toStrictEqual(
-        expect.objectContaining({
-          ...common,
-          context: 'server',
-          server: {
-            prefix: '/testing',
-          },
-          prefix: '/testing',
-        }),
-      );
-      expect(r.$$internal).toMatchObject({
-        ...common$$Internal,
-        clientComponents: resolve(process.cwd(), `./t/public/testing/_elderjs/svelte`),
-        distElder: resolve(process.cwd(), `./t/public/testing/_elderjs`),
-      });
+
+      const { $$internal, ...r } = getConfig({ context: 'server', server: { prefix: 'testing/' }, rootDir: 't' });
+      const { reloadHash, watcher, ...internal } = $$internal;
+      expect(normalizeSnapshot(r)).toMatchSnapshot();
+      expect(normalizeSnapshot(internal)).toMatchSnapshot();
     });
 
     test('sets a server with a server.prefix with a leading "/"', () => {
@@ -171,22 +141,11 @@ describe('#getConfig', () => {
           },
         };
       });
-      const r = getConfig({ context: 'server', server: { prefix: '/testing' }, rootDir: 't' });
-      expect(r).toStrictEqual(
-        expect.objectContaining({
-          ...common,
-          context: 'server',
-          server: {
-            prefix: '/testing',
-          },
-          prefix: '/testing',
-        }),
-      );
-      expect(r.$$internal).toMatchObject({
-        ...common$$Internal,
-        clientComponents: resolve(process.cwd(), `./t/public/testing/_elderjs/svelte`),
-        distElder: resolve(process.cwd(), `./t/public/testing/_elderjs`),
-      });
+
+      const { $$internal, ...r } = getConfig({ context: 'server', server: { prefix: '/testing' }, rootDir: 't' });
+      const { reloadHash, watcher, ...internal } = $$internal;
+      expect(normalizeSnapshot(r)).toMatchSnapshot();
+      expect(normalizeSnapshot(internal)).toMatchSnapshot();
     });
 
     test('sets a server with a server.prefix with a leading and trailing "/"', () => {
@@ -200,22 +159,12 @@ describe('#getConfig', () => {
           },
         };
       });
-      const r = getConfig({ context: 'server', server: { prefix: '/testing/' }, rootDir: 't' });
-      expect(r).toStrictEqual(
-        expect.objectContaining({
-          ...common,
-          context: 'server',
-          server: {
-            prefix: '/testing',
-          },
-          prefix: '/testing',
-        }),
-      );
-      expect(r.$$internal).toMatchObject({
-        ...common$$Internal,
-        clientComponents: resolve(process.cwd(), `./t/public/testing/_elderjs/svelte`),
-        distElder: resolve(process.cwd(), `./t/public/testing/_elderjs`),
-      });
+      const { $$internal, ...r } = getConfig({ context: 'server', server: { prefix: '/testing/' }, rootDir: 't' });
+
+      const { reloadHash, watcher, ...internal } = $$internal;
+
+      expect(normalizeSnapshot(r)).toMatchSnapshot();
+      expect(normalizeSnapshot(internal)).toMatchSnapshot();
     });
 
     test('sets a server with a prefix without a leading or trailing "/"', () => {
@@ -229,22 +178,11 @@ describe('#getConfig', () => {
           },
         };
       });
-      const r = getConfig({ context: 'server', prefix: 'testing', rootDir: 't' });
-      expect(r).toStrictEqual(
-        expect.objectContaining({
-          ...common,
-          context: 'server',
-          server: {
-            prefix: '/testing',
-          },
-          prefix: '/testing',
-        }),
-      );
-      expect(r.$$internal).toMatchObject({
-        ...common$$Internal,
-        clientComponents: resolve(process.cwd(), `./t/public/testing/_elderjs/svelte`),
-        distElder: resolve(process.cwd(), `./t/public/testing/_elderjs`),
-      });
+      const { $$internal, ...r } = getConfig({ context: 'server', prefix: 'testing', rootDir: 't' });
+      const { reloadHash, watcher, ...internal } = $$internal;
+
+      expect(normalizeSnapshot(r)).toMatchSnapshot();
+      expect(normalizeSnapshot(internal)).toMatchSnapshot();
     });
 
     test('sets a server with a prefix with a leading "/"', () => {
@@ -258,22 +196,26 @@ describe('#getConfig', () => {
           },
         };
       });
-      const r = getConfig({ context: 'server', prefix: '/testing', rootDir: 't' });
-      expect(r).toStrictEqual(
-        expect.objectContaining({
-          ...common,
-          context: 'server',
-          server: {
-            prefix: '/testing',
-          },
-          prefix: '/testing',
-        }),
-      );
-      expect(r.$$internal).toMatchObject({
-        ...common$$Internal,
-        clientComponents: resolve(process.cwd(), `./t/public/testing/_elderjs/svelte`),
-        distElder: resolve(process.cwd(), `./t/public/testing/_elderjs`),
-      });
+
+      const { $$internal, ...r } = getConfig({ context: 'server', prefix: '/testing', rootDir: 't' });
+      const { reloadHash, watcher, ...internal } = $$internal;
+      expect(normalizeSnapshot(r)).toMatchSnapshot();
+      expect(normalizeSnapshot(internal)).toMatchSnapshot();
+      // expect(r).toStrictEqual(
+      //   expect.objectContaining({
+      //     ...common,
+      //     context: 'server',
+      //     server: {
+      //       prefix: '/testing',
+      //     },
+      //     prefix: '/testing',
+      //   }),
+      // );
+      // expect(r.$$internal).toMatchObject({
+      //   ...common$$Internal,
+      //   clientComponents: resolve(process.cwd(), `./t/public/testing/_elderjs/svelte`),
+      //   distElder: resolve(process.cwd(), `./t/public/testing/_elderjs`),
+      // });
     });
 
     test('sets a server with a prefix with a trailing "/"', () => {
@@ -287,22 +229,26 @@ describe('#getConfig', () => {
           },
         };
       });
-      const r = getConfig({ context: 'server', prefix: '/testing/', rootDir: 't' });
-      expect(r).toStrictEqual(
-        expect.objectContaining({
-          ...common,
-          context: 'server',
-          server: {
-            prefix: '/testing',
-          },
-          prefix: '/testing',
-        }),
-      );
-      expect(r.$$internal).toMatchObject({
-        ...common$$Internal,
-        clientComponents: resolve(process.cwd(), `./t/public/testing/_elderjs/svelte`),
-        distElder: resolve(process.cwd(), `./t/public/testing/_elderjs`),
-      });
+
+      const { $$internal, ...r } = getConfig({ context: 'server', prefix: '/testing/', rootDir: 't' });
+      const { reloadHash, watcher, ...internal } = $$internal;
+      expect(normalizeSnapshot(r)).toMatchSnapshot();
+      expect(normalizeSnapshot(internal)).toMatchSnapshot();
+      // expect(r).toStrictEqual(
+      //   expect.objectContaining({
+      //     ...common,
+      //     context: 'server',
+      //     server: {
+      //       prefix: '/testing',
+      //     },
+      //     prefix: '/testing',
+      //   }),
+      // );
+      // expect(r.$$internal).toMatchObject({
+      //   ...common$$Internal,
+      //   clientComponents: resolve(process.cwd(), `./t/public/testing/_elderjs/svelte`),
+      //   distElder: resolve(process.cwd(), `./t/public/testing/_elderjs`),
+      // });
     });
 
     test('sets a server with a prefix with a leading and trailing "/"', () => {
@@ -316,48 +262,55 @@ describe('#getConfig', () => {
           },
         };
       });
-      const r = getConfig({ context: 'server', prefix: '/testing/', rootDir: 't' });
-      expect(r).toStrictEqual(
-        expect.objectContaining({
-          ...common,
-          context: 'server',
-          server: {
-            prefix: '/testing',
-          },
-          prefix: '/testing',
-        }),
-      );
-      expect(r.$$internal).toMatchObject({
-        ...common$$Internal,
-        clientComponents: resolve(process.cwd(), `./t/public/testing/_elderjs/svelte`),
-        distElder: resolve(process.cwd(), `./t/public/testing/_elderjs`),
-      });
+      const { $$internal, ...r } = getConfig({ context: 'server', prefix: '/testing/', rootDir: 't' });
+      const { reloadHash, watcher, ...internal } = $$internal;
+      expect(normalizeSnapshot(r)).toMatchSnapshot();
+      expect(normalizeSnapshot(internal)).toMatchSnapshot();
+      // expect(r).toStrictEqual(
+      //   expect.objectContaining({
+      //     ...common,
+      //     context: 'server',
+      //     server: {
+      //       prefix: '/testing',
+      //     },
+      //     prefix: '/testing',
+      //   }),
+      // );
+      // expect(r.$$internal).toMatchObject({
+      //   ...common$$Internal,
+      //   clientComponents: resolve(process.cwd(), `./t/public/testing/_elderjs/svelte`),
+      //   distElder: resolve(process.cwd(), `./t/public/testing/_elderjs`),
+      // });
     });
 
-    // test('sets build with default', () => {
-    //   vi.mock('fs-extra', () => {
-    //     return {
-    //       default: {
-    //         readJSONSync: () => ({ version: '1.2.3' }),
-    //         ensureDirSync: () => '',
-    //         existsSync: () => true,
-    //         readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
-    //       },
-    //     };
-    //   });
-    //   const r = getConfig({ context: 'build', rootDir: 't' });
-    //   expect(r).toStrictEqual(
-    //     expect.objectContaining({
-    //       ...common,
-    //       context: 'build',
-    //       build: {
-    //         numberOfWorkers: -1,
-    //         shuffleRequests: false,
-    //       },
-    //     }),
-    //   );
-    //   expect(r.$$internal).toMatchObject(common$$Internal);
-    // });
+    test('sets build with default', () => {
+      vi.mock('fs-extra', () => {
+        return {
+          default: {
+            readJSONSync: () => ({ version: '1.2.3' }),
+            ensureDirSync: () => '',
+            existsSync: () => true,
+            readdirSync: () => ['svelte-3449427d.css', 'svelte.css-0050caf1.map'],
+          },
+        };
+      });
+
+      const { $$internal, ...r } = getConfig({ context: 'build', rootDir: 't' });
+      const { reloadHash, watcher, ...internal } = $$internal;
+      expect(normalizeSnapshot(r)).toMatchSnapshot();
+      expect(normalizeSnapshot(internal)).toMatchSnapshot();
+      // expect(r).toStrictEqual(
+      //   expect.objectContaining({
+      //     ...common,
+      //     context: 'build',
+      //     build: {
+      //       numberOfWorkers: -1,
+      //       shuffleRequests: false,
+      //     },
+      //   }),
+      // );
+      // expect(r.$$internal).toMatchObject(common$$Internal);
+    });
   });
 });
 
