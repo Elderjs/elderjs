@@ -104,7 +104,9 @@ export default async function bootstrap(elder: Elder) {
 
   elder.perf.stop();
 
-  displayElderPerfTimings('Elder.js Startup', elder);
+  if (!elder.settings.worker) displayElderPerfTimings('Elder.js Startup', elder);
+
+  elder.perf.reset();
 
   elder.settings.$$internal.status = 'bootstrapped';
   elder.markBootstrapComplete(elder);
