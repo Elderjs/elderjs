@@ -63,25 +63,25 @@ export async function getPackagesWithSvelte(pkg, elderConfig: SettingsOptions) {
 }
 
 // eslint-disable-next-line consistent-return
-const svelteHandler = async ({ elderConfig, svelteConfig, replacements }) => {
+const svelteHandler = async ({ settings, svelteConfig }) => {
   try {
     // eslint-disable-next-line global-require
-    const pkg = fs.readJsonSync(path.resolve(elderConfig.rootDir, './package.json'));
-    const globPath = path.resolve(elderConfig.rootDir, `./src/**/*.svelte`);
+    const pkg = fs.readJsonSync(path.resolve(settings.rootDir, './package.json'));
+    const globPath = path.resolve(settings.rootDir, `./src/**/*.svelte`);
     const initialEntryPoints = glob.sync(globPath);
-    const sveltePackages = await getPackagesWithSvelte(pkg, elderConfig);
-    const elderPlugins = getPluginLocations(elderConfig);
+    const sveltePackages = await getPackagesWithSvelte(pkg, settings);
+    const elderPlugins = getPluginLocations(settings);
 
     return await Promise.all([
       build({
         entryPoints: [...initialEntryPoints, ...elderPlugins.files],
         bundle: true,
-        outdir: elderConfig.$$internal.ssrComponents,
+        outdir: settings.$$internal.ssrComponents,
         plugins: [
           esbuildPluginSvelte({
             type: 'ssr',
             sveltePackages,
-            elderConfig,
+            elderConfig: settings,
             svelteConfig,
           }),
         ],
@@ -100,19 +100,19 @@ const svelteHandler = async ({ elderConfig, svelteConfig, replacements }) => {
         define: {
           'process.env.componentType': "'server'",
           'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
-          ...replacements,
+          ...settings.replacements,
         },
       }),
       build({
         entryPoints: [...initialEntryPoints.filter((i) => i.includes('src/components')), ...elderPlugins.files],
         bundle: true,
-        outdir: elderConfig.$$internal.clientComponents,
+        outdir: settings.$$internal.clientComponents,
         entryNames: '[dir]/[name].[hash]',
         plugins: [
           esbuildPluginSvelte({
             type: 'client',
             sveltePackages,
-            elderConfig,
+            elderConfig: settings,
             svelteConfig,
           }),
         ],
@@ -133,7 +133,7 @@ const svelteHandler = async ({ elderConfig, svelteConfig, replacements }) => {
         define: {
           'process.env.componentType': "'browser'",
           'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
-          ...replacements,
+          ...settings.replacements,
         },
       }),
     ]);
@@ -142,18 +142,11 @@ const svelteHandler = async ({ elderConfig, svelteConfig, replacements }) => {
   }
 };
 
-type TEsbuildBundler = {
-  initializationOptions?: InitializationOptions;
-  replacements?: { [key: string]: string | boolean };
-};
-
-const esbuildBundler = async ({ replacements = {} }: TEsbuildBundler = {}) => {
-  const elderConfig = await getConfig();
-  const svelteConfig = await getSvelteConfig(elderConfig);
+const esbuildBundler = async (settings: SettingsOptions) => {
+  const svelteConfig = await getSvelteConfig(settings);
   return await svelteHandler({
-    elderConfig,
+    settings,
     svelteConfig,
-    replacements,
   });
 };
 export default esbuildBundler;

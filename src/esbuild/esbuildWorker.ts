@@ -4,8 +4,14 @@
 
 import esbuildBundler from './esbuildBundler.js';
 
-esbuildBundler({})
-  .then(() => {
-    process.send('complete');
-  })
-  .catch(console.error);
+process.send('ready');
+
+process.on('message', (msg) => {
+  if (msg[0] === 'start') {
+    esbuildBundler(msg[1])
+      .then(() => {
+        process.send('complete');
+      })
+      .catch(console.error);
+  }
+});

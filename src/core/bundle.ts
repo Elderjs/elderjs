@@ -16,6 +16,8 @@ export default function bundle(settings: SettingsOptions) {
       forked.on('message', (msg) => {
         if (msg === 'complete') {
           resolve(true);
+        } else if (msg === 'ready') {
+          forked.send(['start', settings]);
         }
       });
     }

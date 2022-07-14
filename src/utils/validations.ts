@@ -143,6 +143,7 @@ const configSchema = yup.object({
     closePattern: yup.string().default('}}').label('closing pattern for identifying shortcodes in html output.'),
   }),
   plugins: yup.object().default({}).label('Used to define Elder.js plugins.'),
+  replacements: yup.object().default({}).label('Values to be replaced during esbuild bundling. {key: "value"} format.'),
   css: yup
     .string()
     .required()
