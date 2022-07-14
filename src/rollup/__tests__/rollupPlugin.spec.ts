@@ -5,13 +5,11 @@ import { describe, it, expect, vi } from 'vitest';
 import path from 'path';
 
 import fsExtra from 'fs-extra';
-import del from 'del';
 
 import windowsPathFix from '../../utils/windowsPathFix.js';
 import normalizeSnapshot from '../../utils/normalizeSnapshot.js';
-import getConfig from '../../utils/getConfig.js';
 
-import elderjsRollup, {
+import {
   encodeSourceMap,
   getDependencies,
   cssFilePriority,
@@ -41,8 +39,6 @@ describe('#rollupPlugin', () => {
   // @ts-ignore
   fsExtra.ensureDirSync.mockImplementation(console.log);
   // @ts-ignore
-
-  const elderConfig = getConfig();
 
   fsExtra.copyFileSync = cfs;
   fsExtra.readdirSync = rds;
@@ -426,178 +422,6 @@ describe('#rollupPlugin', () => {
           ],
         ]),
       );
-    });
-
-    describe('#elderjsRollup', () => {
-      const shared = {
-        elderConfig,
-        svelteConfig: {},
-      };
-
-      const ssrPlugin = elderjsRollup({
-        ...shared,
-        type: 'ssr',
-      });
-
-      const clientPlugin = elderjsRollup({
-        ...shared,
-        type: 'client',
-      });
-
-      // non crappy mocks: https://gist.githubusercontent.com/rickhanlonii/c695cbc51ae6ffd81c46f46509171650/raw/a0b7f851be704b739be76b2543deff577b449fee/mock_vi_spyOn_sugar.js
-
-      describe('#watchChange', () => {
-        describe('#buildStart', () => {
-          const delsync = del.sync;
-          // @ts-ignore
-          del.sync = vi.fn(delsync).mockImplementation((pay) => pay);
-          del.sync = delsync;
-          it('tests ssr functionality', () => {
-            const t = {
-              values: [],
-              emitFile: vi.fn((pay) => {
-                t.values.push(pay);
-                return pay.name;
-              }),
-            };
-
-            const buildStartBound = ssrPlugin.buildStart.bind(t);
-
-            buildStartBound();
-
-            expect(t.values).toEqual([{ name: 'svelte.css', type: 'asset' }]);
-            expect(del.sync).toHaveBeenCalledTimes(3);
-            expect(del.sync).toHaveBeenCalledWith(elderConfig.$$internal.ssrComponents);
-            expect(del.sync).toHaveBeenCalledWith(path.join(elderConfig.$$internal.distElder, 'assets'));
-          });
-          it('tests client functionality', () => {
-            const t = {
-              values: [],
-              emitFile: vi.fn((pay) => {
-                t.values.push(pay);
-              }),
-            };
-            const buildStartBound = clientPlugin.buildStart.bind(t);
-            buildStartBound();
-            expect(t.values).toEqual([]);
-            expect(del.sync).toHaveBeenCalledTimes(4);
-            expect(del.sync).toHaveBeenCalledWith(elderConfig.$$internal.clientComponents);
-            expect(del.sync).toHaveBeenCalledWith(elderConfig.$$internal.ssrComponents);
-            expect(del.sync).toHaveBeenCalledWith(path.join(elderConfig.$$internal.distElder, 'assets'));
-          });
-        });
-
-        describe('#resolveId', () => {
-          it(`doesn't resolve anything not in node_modules`, async () => {
-            expect(
-              // @ts-ignore
-              await ssrPlugin.resolveId('../components/Header/Header.svelte', '/test/src/layouts/Layout.svelte'),
-            ).toBeNull();
-          });
-
-          it(`Resolves a node_module that uses svelte in their package.json`, async () => {
-            vi.mock(path.resolve('./node_modules/uses-export/package.json'), () => ({
-              svelte: windowsPathFix('src/Component.svelte'),
-            }));
-            // @ts-ignore
-            expect(await ssrPlugin.resolveId('uses-export', path.resolve('./test/src/layouts/Layout.svelte'))).toEqual(
-              path.resolve('./node_modules/uses-export/src/Component.svelte'),
-            );
-          });
-
-          it(`Resolves a node_module that uses svelte and exports their package.json`, async () => {
-            vi.mock(path.resolve('./node_modules/package-exports/package.json'), () => ({
-              main: './main.js',
-              svelte: windowsPathFix('src/Exported.svelte'),
-              exports: {
-                '.': './main.js',
-                './package.json': './package.json',
-              },
-            }));
-
-            expect(
-              // @ts-ignore
-              await ssrPlugin.resolveId('package-exports', path.resolve('./test/src/layouts/Layout.svelte')),
-            ).toEqual(path.resolve('./node_modules/package-exports/src/Exported.svelte'));
-          });
-
-          it(`Does not resolve a module that doesn't use svelte in package.json`, async () => {
-            vi.mock(path.resolve('./node_modules/no-svelte/package.json'), () => ({
-              main: windowsPathFix('./main.js'),
-              exports: {
-                '.': './main.js',
-                './package.json': './package.json',
-              },
-            }));
-            // @ts-ignore
-            expect(await ssrPlugin.resolveId('no-svelte', path.resolve('./test/src/layouts/Layout.svelte'))).toBeNull();
-          });
-        });
-        describe('#transform', () => {
-          it('compiles a svelte component and sets the css while adding to watch files', async () => {
-            const t = {
-              addWatchFile: vi.fn(() => ''),
-            };
-            const bound = ssrPlugin.transform.bind(t);
-
-            const component = `<script> let foo = 1; </script><style>.container{background: yellow}</style> <div class="container">something</div>`;
-            await bound(component, '/test/src/components/tester.svelte');
-            expect(t.addWatchFile).toHaveBeenCalledTimes(2);
-          });
-        });
-
-        describe('#writeBundle', () => {
-          const cfs = fsExtra.copyFileSync;
-          const rds = fsExtra.readdirSync;
-          const eds = fsExtra.ensureDirSync;
-          it('Creates appropriate folders.', () => {
-            const t = {
-              cache: {
-                set: vi.fn(() => ({})),
-              },
-            };
-            const ssrBound = ssrPlugin.writeBundle.bind(t);
-
-            // @ts-ignore
-            fsExtra.copyFileSync = vi.fn(cfs).mockImplementation(() => 'copied');
-            // @ts-ignore
-            fsExtra.readdirSync = vi.fn(rds).mockImplementation(() => ['style.css', 'style.css.map']);
-            // @ts-ignore
-            fsExtra.ensureDirSync = vi.fn(eds).mockImplementation();
-            ssrBound();
-
-            expect(fsExtra.ensureDirSync).toHaveBeenCalledTimes(1);
-            expect(fsExtra.copyFileSync).toHaveBeenCalledTimes(2);
-            expect(fsExtra.readdirSync).toHaveBeenCalledTimes(1);
-          });
-
-          it('tests copying assets to client', async () => {
-            const t = {
-              cache: {
-                set: vi.fn(() => ({})),
-              },
-            };
-            const ssrBound = ssrPlugin.writeBundle.bind(t);
-
-            // @ts-ignore
-            fsExtra.copyFileSync = vi.fn(cfs).mockImplementation(() => 'copied');
-            // @ts-ignore
-            fsExtra.readdirSync = vi.fn(rds).mockImplementation(() => ['style.css', 'style.css.map']);
-            // @ts-ignore
-            fsExtra.ensureDirSync = vi.fn(eds).mockImplementation();
-            // @ts-ignore
-            await ssrBound({}, {}, true);
-
-            expect(fsExtra.ensureDirSync).toHaveBeenCalledTimes(1);
-            expect(fsExtra.copyFileSync).toHaveBeenCalledTimes(2);
-            expect(fsExtra.readdirSync).toHaveBeenCalledTimes(1);
-
-            fsExtra.copyFileSync = cfs;
-            fsExtra.readdirSync = rds;
-            fsExtra.ensureDirSync = eds;
-          });
-        });
-      });
     });
   });
 });

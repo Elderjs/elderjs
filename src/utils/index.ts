@@ -11,7 +11,7 @@ import { prepareServer } from './prepareServer.js';
 import { validateHook, validateRoute, validatePlugin, validateShortcode } from './validations.js';
 import prepareProcessStack from './prepareProcessStack.js';
 import getConfig from './getConfig.js';
-import getRollupConfig from '../rollup/getRollupConfig.js';
+
 import prepareInlineShortcode from './prepareInlineShortcode.js';
 
 export {
@@ -29,6 +29,5 @@ export {
   prepareServer,
   prepareProcessStack,
   getConfig,
-  getRollupConfig,
   prepareInlineShortcode,
 };

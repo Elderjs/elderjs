@@ -23,7 +23,6 @@ test('includes all', () => {
     'prepareServer',
     'prepareProcessStack',
     'getConfig',
-    'getRollupConfig',
     'prepareInlineShortcode',
   ]);
 });
