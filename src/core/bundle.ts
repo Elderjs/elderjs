@@ -15,6 +15,7 @@ export default function bundle(settings: SettingsOptions) {
       const forked = fork(path.join(__dirname, '../esbuild/esbuildWorker.js'));
       forked.on('message', (msg) => {
         if (msg === 'complete') {
+          settings.$$internal.files.updateFiles();
           resolve(true);
         } else if (msg === 'ready') {
           forked.send(['start', settings]);

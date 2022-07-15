@@ -33,6 +33,16 @@ export interface FindSvelteComponent {
   (name: any, folder: any): SvelteComponentFiles;
 }
 
+export type InternalFiles = {
+  client: string[];
+  server: string[];
+  routes: string[];
+  all: string[];
+  hooks: string;
+  shortcodes: string;
+  publicCssFile: string;
+  updateFiles: () => void;
+};
 export type Internal = {
   reloadHash: string;
   ssrComponents: string;
@@ -43,15 +53,7 @@ export type Internal = {
   findComponent?: FindSvelteComponent;
 
   production: boolean;
-  files: {
-    client: string[];
-    server: string[];
-    routes: string[];
-    hooks: string;
-    all: string[];
-    shortcodes: string;
-    publicCssFile: string;
-  };
+  files: InternalFiles;
   watcher: EventEmitter;
   websocket?: {
     wss: WebSocketServer;
