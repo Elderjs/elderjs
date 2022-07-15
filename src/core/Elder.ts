@@ -111,7 +111,11 @@ class Elder {
       bootstrap(this).catch((error) => {
         console.error(error);
         this.settings.$$internal.status = 'errored';
-        console.log(`Awaiting change to try and recover. \n\n\n`);
+        if (this.settings.$$internal.production || this.settings.build) {
+          process.exit();
+        } else {
+          console.log(`Awaiting change to try and recover. \n\n\n`);
+        }
       });
     });
 
