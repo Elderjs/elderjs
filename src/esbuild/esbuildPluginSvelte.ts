@@ -8,7 +8,7 @@ import crypto from 'crypto';
 import fs from 'fs-extra';
 
 import { PreprocessorGroup } from 'svelte/types/compiler/preprocess/types';
-import { resolveFn, minifyCss, transformFn, loadCss } from './bundleTools';
+import { resolveFn, minifyCss, transformFn, loadCss } from './bundleTools.js';
 import { SettingsOptions } from '..';
 
 function md5(string) {

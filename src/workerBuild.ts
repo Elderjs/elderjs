@@ -74,7 +74,7 @@ async function workerBuild({
     }
     return { timings: bTimes, errors: bErrors };
   } catch (e) {
-    console.error(e);
+    console.error('worker error', e);
     return { timings: [], errors: [e] };
   }
 }

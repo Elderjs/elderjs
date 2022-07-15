@@ -67,8 +67,6 @@ const svelteComponent =
 
         return componentHtml;
       } catch (e) {
-        console.error(' --- svelteComponentError --- ');
-        console.log(e);
         page.errors.push(e);
         return '';
       }
