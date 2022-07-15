@@ -181,7 +181,10 @@ const hooks: HooksArray = [
     priority: 1,
     run: async ({ errors, request, settings }) => {
       if (!settings.worker) {
-        console.error(request.permalink, errors);
+        console.error(request.permalink);
+        errors.forEach((e) => {
+          console.error(e);
+        });
       }
     },
   },
