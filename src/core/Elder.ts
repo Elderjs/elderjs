@@ -42,20 +42,20 @@ class Elder {
   updateRunHookHookInterface: (any) => void;
   updateRunHookHooks: (hooks: TProcessedHook[]) => void;
 
-  readonly settings: SettingsOptions;
+  settings: SettingsOptions;
   readonly routes: ProcessedRoutesObject;
   readonly hooks: ProcessedHooksArray;
   readonly data: Record<string, unknown>;
-  readonly runHook: TRunHook;
+  runHook: TRunHook;
   readonly allRequests: Array<RequestObject>;
   readonly serverLookupObject: ServerLookupObject;
   readonly errors: TErrors;
 
-  readonly server: ReturnType<typeof prepareServer>;
+  server: ReturnType<typeof prepareServer>;
   readonly hookInterface: typeof hookInterface;
   readonly shortcodes: ShortcodeDefinitions;
 
-  readonly router: ReturnType<typeof prepareRouter>;
+  router: ReturnType<typeof prepareRouter>;
 
   query: QueryOptions;
   uid: string;
@@ -86,40 +86,41 @@ class Elder {
     this.uid = 'startup';
 
     // merge the given config with the project and defaults;
-    this.settings = getConfig(initializationOptions);
-
-    const { runHook, updateRunHookHookInterface, updateRunHookHooks } = prepareRunHook({
-      hooks: this.hooks,
-      hookInterface: this.hookInterface,
-      settings: this.settings,
-    });
-
-    this.runHook = runHook;
-    this.updateRunHookHookInterface = updateRunHookHookInterface;
-    this.updateRunHookHooks = updateRunHookHooks;
-
-    this.markSettingsComplete(this.settings);
-
-    if (this.settings.context === 'server') {
-      this.server = prepareServer({ bootstrapComplete: this.bootstrapComplete });
-    }
-    this.router = prepareRouter(this);
-
-    perf(this, true);
-
-    bundle(this.settings).then(() => {
-      bootstrap(this).catch((error) => {
-        console.error(error);
-        this.settings.$$internal.status = 'errored';
-        if (this.settings.$$internal.production || this.settings.build) {
-          process.exit();
-        } else {
-          console.log(`Awaiting change to try and recover. \n\n\n`);
-        }
+    getConfig(initializationOptions).then(async (settings) => {
+      this.settings = settings;
+      const { runHook, updateRunHookHookInterface, updateRunHookHooks } = prepareRunHook({
+        hooks: this.hooks,
+        hookInterface: this.hookInterface,
+        settings: this.settings,
       });
-    });
 
-    configureWatcher(this);
+      this.runHook = runHook;
+      this.updateRunHookHookInterface = updateRunHookHookInterface;
+      this.updateRunHookHooks = updateRunHookHooks;
+
+      this.markSettingsComplete(this.settings);
+
+      if (this.settings.context === 'server') {
+        this.server = prepareServer({ bootstrapComplete: this.bootstrapComplete });
+      }
+      this.router = prepareRouter(this);
+
+      perf(this, true);
+
+      bundle(this.settings).then(() => {
+        bootstrap(this).catch((error) => {
+          console.error(error);
+          this.settings.$$internal.status = 'errored';
+          if (this.settings.$$internal.production || this.settings.build) {
+            process.exit();
+          } else {
+            console.log(`Awaiting change to try and recover. \n\n\n`);
+          }
+        });
+      });
+
+      configureWatcher(this);
+    });
   }
 
   bootstrap() {

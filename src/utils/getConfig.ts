@@ -1,4 +1,3 @@
-import { cosmiconfigSync } from 'cosmiconfig';
 import defaultsDeep from 'lodash.defaultsdeep';
 import path from 'path';
 import fs from 'fs-extra';
@@ -11,31 +10,33 @@ import getFilesAndWatcher from '../core/getFilesAndWatcher.js';
 import getWebsocket from '../core/getWebsocket.js';
 import getUniqueId from './getUniqueId.js';
 
+import { loadConfig } from 'unconfig';
+
 type TCheckCssFiles = {
   cssFiles: string[];
   assetPath: string;
   config: Partial<SettingsOptions>;
   serverPrefix: string;
 };
-export function getCssFile({ cssFiles, serverPrefix, config, assetPath }: TCheckCssFiles): string {
-  if (cssFiles.length > 1) {
-    throw new Error(
-      `${config.$$internal.logPrefix} Race condition has caused multiple css files in ${assetPath}. If you keep seeing this delete the _elder and ___ELDER___  folders.`,
-    );
-  }
-  if (!cssFiles[0]) {
-    throw new Error(`CSS file not found in ${assetPath}`);
-  }
-  return `${serverPrefix}/_elderjs/assets/${cssFiles[0]}`;
+
+export async function getElderConfig(cwd = process.cwd()) {
+  const { config } = await loadConfig({
+    sources: [
+      {
+        files: 'elder.config',
+        // default extensions
+        extensions: ['ts', 'mts', 'cts', 'js', 'mjs', 'cjs', 'json', ''],
+      },
+    ],
+    cwd,
+    merge: true,
+  });
+  return config;
 }
 
-function getConfig(initializationOptions: InitializationOptions = {}): SettingsOptions {
-  let loadedConfig: InitializationOptions = {};
-  const explorerSync = cosmiconfigSync('elder');
-  const explorerSearch = explorerSync.search();
-  if (explorerSearch && explorerSearch.config) {
-    loadedConfig = explorerSearch.config;
-  }
+async function getConfig(initializationOptions: InitializationOptions = {}): Promise<SettingsOptions> {
+  let loadedConfig: InitializationOptions = (await getElderConfig()) || {};
+
   const config: SettingsOptions = defaultsDeep(initializationOptions, loadedConfig, getDefaultConfig());
 
   const serverPrefix = normalizePrefix(config.prefix || (config.server && config.server.prefix));

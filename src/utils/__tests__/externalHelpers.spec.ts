@@ -6,8 +6,8 @@ import externalHelpers from '../externalHelpers.js';
 
 // process.cwd = () => 'test';
 
-describe('#externalHelpers', () => {
-  const settings = getConfig({ css: 'inline' });
+describe('#externalHelpers', async () => {
+  const settings = await getConfig({ css: 'inline' });
   const query = {};
 
   const helpers = {

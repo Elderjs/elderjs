@@ -1,6 +1,6 @@
 // Vitest Snapshot v1
 
-exports[`#getConfig > it accepts custom initalization options > gives back a custom context such as serverless 1`] = `
+exports[`#getConfig > it accepts custom initialization options > gives back a custom context such as serverless 1`] = `
 {
   "build": false,
   "context": "serverless",
@@ -30,7 +30,7 @@ exports[`#getConfig > it accepts custom initalization options > gives back a cus
 }
 `;
 
-exports[`#getConfig > it accepts custom initalization options > gives back a custom context such as serverless 2`] = `
+exports[`#getConfig > it accepts custom initialization options > gives back a custom context such as serverless 2`] = `
 {
   "clientComponents": "/Users/nickreese/repos/elderjs/elderjs/t/public/_elderjs/svelte",
   "distElder": "/Users/nickreese/repos/elderjs/elderjs/t/public/_elderjs",
@@ -42,6 +42,7 @@ exports[`#getConfig > it accepts custom initalization options > gives back a cus
     "routes": [],
     "server": [],
     "shortcodes": "",
+    "updateFiles": [Function],
   },
   "findComponent": [Function],
   "logPrefix": "[Elder.js]:",
@@ -53,7 +54,7 @@ exports[`#getConfig > it accepts custom initalization options > gives back a cus
 }
 `;
 
-exports[`#getConfig > it accepts custom initalization options > sets a server with a prefix with a leading "/" 1`] = `
+exports[`#getConfig > it accepts custom initialization options > sets a server with a prefix with a leading "/" 1`] = `
 {
   "build": false,
   "context": "server",
@@ -85,7 +86,7 @@ exports[`#getConfig > it accepts custom initalization options > sets a server wi
 }
 `;
 
-exports[`#getConfig > it accepts custom initalization options > sets a server with a prefix with a leading "/" 2`] = `
+exports[`#getConfig > it accepts custom initialization options > sets a server with a prefix with a leading "/" 2`] = `
 {
   "clientComponents": "/Users/nickreese/repos/elderjs/elderjs/t/public/testing/_elderjs/svelte",
   "distElder": "/Users/nickreese/repos/elderjs/elderjs/t/public/testing/_elderjs",
@@ -97,6 +98,7 @@ exports[`#getConfig > it accepts custom initalization options > sets a server wi
     "routes": [],
     "server": [],
     "shortcodes": "",
+    "updateFiles": [Function],
   },
   "findComponent": [Function],
   "logPrefix": "[Elder.js]:",
@@ -193,7 +195,7 @@ exports[`#getConfig > it accepts custom initalization options > sets a server wi
 }
 `;
 
-exports[`#getConfig > it accepts custom initalization options > sets a server with a prefix with a leading and trailing "/" 1`] = `
+exports[`#getConfig > it accepts custom initialization options > sets a server with a prefix with a leading and trailing "/" 1`] = `
 {
   "build": false,
   "context": "server",
@@ -225,7 +227,7 @@ exports[`#getConfig > it accepts custom initalization options > sets a server wi
 }
 `;
 
-exports[`#getConfig > it accepts custom initalization options > sets a server with a prefix with a leading and trailing "/" 2`] = `
+exports[`#getConfig > it accepts custom initialization options > sets a server with a prefix with a leading and trailing "/" 2`] = `
 {
   "clientComponents": "/Users/nickreese/repos/elderjs/elderjs/t/public/testing/_elderjs/svelte",
   "distElder": "/Users/nickreese/repos/elderjs/elderjs/t/public/testing/_elderjs",
@@ -237,6 +239,7 @@ exports[`#getConfig > it accepts custom initalization options > sets a server wi
     "routes": [],
     "server": [],
     "shortcodes": "",
+    "updateFiles": [Function],
   },
   "findComponent": [Function],
   "logPrefix": "[Elder.js]:",
@@ -333,7 +336,7 @@ exports[`#getConfig > it accepts custom initalization options > sets a server wi
 }
 `;
 
-exports[`#getConfig > it accepts custom initalization options > sets a server with a prefix with a trailing "/" 1`] = `
+exports[`#getConfig > it accepts custom initialization options > sets a server with a prefix with a trailing "/" 1`] = `
 {
   "build": false,
   "context": "server",
@@ -365,7 +368,7 @@ exports[`#getConfig > it accepts custom initalization options > sets a server wi
 }
 `;
 
-exports[`#getConfig > it accepts custom initalization options > sets a server with a prefix with a trailing "/" 2`] = `
+exports[`#getConfig > it accepts custom initialization options > sets a server with a prefix with a trailing "/" 2`] = `
 {
   "clientComponents": "/Users/nickreese/repos/elderjs/elderjs/t/public/testing/_elderjs/svelte",
   "distElder": "/Users/nickreese/repos/elderjs/elderjs/t/public/testing/_elderjs",
@@ -377,6 +380,7 @@ exports[`#getConfig > it accepts custom initalization options > sets a server wi
     "routes": [],
     "server": [],
     "shortcodes": "",
+    "updateFiles": [Function],
   },
   "findComponent": [Function],
   "logPrefix": "[Elder.js]:",
@@ -473,7 +477,7 @@ exports[`#getConfig > it accepts custom initalization options > sets a server wi
 }
 `;
 
-exports[`#getConfig > it accepts custom initalization options > sets a server with a prefix without a leading or trailing "/" 1`] = `
+exports[`#getConfig > it accepts custom initialization options > sets a server with a prefix without a leading or trailing "/" 1`] = `
 {
   "build": false,
   "context": "server",
@@ -505,7 +509,7 @@ exports[`#getConfig > it accepts custom initalization options > sets a server wi
 }
 `;
 
-exports[`#getConfig > it accepts custom initalization options > sets a server with a prefix without a leading or trailing "/" 2`] = `
+exports[`#getConfig > it accepts custom initialization options > sets a server with a prefix without a leading or trailing "/" 2`] = `
 {
   "clientComponents": "/Users/nickreese/repos/elderjs/elderjs/t/public/testing/_elderjs/svelte",
   "distElder": "/Users/nickreese/repos/elderjs/elderjs/t/public/testing/_elderjs",
@@ -517,6 +521,7 @@ exports[`#getConfig > it accepts custom initalization options > sets a server wi
     "routes": [],
     "server": [],
     "shortcodes": "",
+    "updateFiles": [Function],
   },
   "findComponent": [Function],
   "logPrefix": "[Elder.js]:",
@@ -613,7 +618,7 @@ exports[`#getConfig > it accepts custom initalization options > sets a server wi
 }
 `;
 
-exports[`#getConfig > it accepts custom initalization options > sets a server with a server.prefix with a leading "/" 1`] = `
+exports[`#getConfig > it accepts custom initialization options > sets a server with a server.prefix with a leading "/" 1`] = `
 {
   "build": false,
   "context": "server",
@@ -645,7 +650,7 @@ exports[`#getConfig > it accepts custom initalization options > sets a server wi
 }
 `;
 
-exports[`#getConfig > it accepts custom initalization options > sets a server with a server.prefix with a leading "/" 2`] = `
+exports[`#getConfig > it accepts custom initialization options > sets a server with a server.prefix with a leading "/" 2`] = `
 {
   "clientComponents": "/Users/nickreese/repos/elderjs/elderjs/t/public/testing/_elderjs/svelte",
   "distElder": "/Users/nickreese/repos/elderjs/elderjs/t/public/testing/_elderjs",
@@ -657,6 +662,7 @@ exports[`#getConfig > it accepts custom initalization options > sets a server wi
     "routes": [],
     "server": [],
     "shortcodes": "",
+    "updateFiles": [Function],
   },
   "findComponent": [Function],
   "logPrefix": "[Elder.js]:",
@@ -753,7 +759,7 @@ exports[`#getConfig > it accepts custom initalization options > sets a server wi
 }
 `;
 
-exports[`#getConfig > it accepts custom initalization options > sets a server with a server.prefix with a leading and trailing "/" 1`] = `
+exports[`#getConfig > it accepts custom initialization options > sets a server with a server.prefix with a leading and trailing "/" 1`] = `
 {
   "build": false,
   "context": "server",
@@ -785,7 +791,7 @@ exports[`#getConfig > it accepts custom initalization options > sets a server wi
 }
 `;
 
-exports[`#getConfig > it accepts custom initalization options > sets a server with a server.prefix with a leading and trailing "/" 2`] = `
+exports[`#getConfig > it accepts custom initialization options > sets a server with a server.prefix with a leading and trailing "/" 2`] = `
 {
   "clientComponents": "/Users/nickreese/repos/elderjs/elderjs/t/public/testing/_elderjs/svelte",
   "distElder": "/Users/nickreese/repos/elderjs/elderjs/t/public/testing/_elderjs",
@@ -797,6 +803,7 @@ exports[`#getConfig > it accepts custom initalization options > sets a server wi
     "routes": [],
     "server": [],
     "shortcodes": "",
+    "updateFiles": [Function],
   },
   "findComponent": [Function],
   "logPrefix": "[Elder.js]:",
@@ -893,7 +900,7 @@ exports[`#getConfig > it accepts custom initalization options > sets a server wi
 }
 `;
 
-exports[`#getConfig > it accepts custom initalization options > sets a server with a server.prefix with a trailing "/" 1`] = `
+exports[`#getConfig > it accepts custom initialization options > sets a server with a server.prefix with a trailing "/" 1`] = `
 {
   "build": false,
   "context": "server",
@@ -925,7 +932,7 @@ exports[`#getConfig > it accepts custom initalization options > sets a server wi
 }
 `;
 
-exports[`#getConfig > it accepts custom initalization options > sets a server with a server.prefix with a trailing "/" 2`] = `
+exports[`#getConfig > it accepts custom initialization options > sets a server with a server.prefix with a trailing "/" 2`] = `
 {
   "clientComponents": "/Users/nickreese/repos/elderjs/elderjs/t/public/testing/_elderjs/svelte",
   "distElder": "/Users/nickreese/repos/elderjs/elderjs/t/public/testing/_elderjs",
@@ -937,6 +944,7 @@ exports[`#getConfig > it accepts custom initalization options > sets a server wi
     "routes": [],
     "server": [],
     "shortcodes": "",
+    "updateFiles": [Function],
   },
   "findComponent": [Function],
   "logPrefix": "[Elder.js]:",
@@ -1033,7 +1041,7 @@ exports[`#getConfig > it accepts custom initalization options > sets a server wi
 }
 `;
 
-exports[`#getConfig > it accepts custom initalization options > sets a server with a server.prefix without leading or trailing "/" 1`] = `
+exports[`#getConfig > it accepts custom initialization options > sets a server with a server.prefix without leading or trailing "/" 1`] = `
 {
   "build": false,
   "context": "server",
@@ -1065,7 +1073,7 @@ exports[`#getConfig > it accepts custom initalization options > sets a server wi
 }
 `;
 
-exports[`#getConfig > it accepts custom initalization options > sets a server with a server.prefix without leading or trailing "/" 2`] = `
+exports[`#getConfig > it accepts custom initialization options > sets a server with a server.prefix without leading or trailing "/" 2`] = `
 {
   "clientComponents": "/Users/nickreese/repos/elderjs/elderjs/t/public/testing/_elderjs/svelte",
   "distElder": "/Users/nickreese/repos/elderjs/elderjs/t/public/testing/_elderjs",
@@ -1077,6 +1085,7 @@ exports[`#getConfig > it accepts custom initalization options > sets a server wi
     "routes": [],
     "server": [],
     "shortcodes": "",
+    "updateFiles": [Function],
   },
   "findComponent": [Function],
   "logPrefix": "[Elder.js]:",
@@ -1173,7 +1182,7 @@ exports[`#getConfig > it accepts custom initalization options > sets a server wi
 }
 `;
 
-exports[`#getConfig > it accepts custom initalization options > sets a server without a prefix 1`] = `
+exports[`#getConfig > it accepts custom initialization options > sets a server without a prefix 1`] = `
 {
   "build": false,
   "context": "server",
@@ -1205,7 +1214,7 @@ exports[`#getConfig > it accepts custom initalization options > sets a server wi
 }
 `;
 
-exports[`#getConfig > it accepts custom initalization options > sets a server without a prefix 2`] = `
+exports[`#getConfig > it accepts custom initialization options > sets a server without a prefix 2`] = `
 {
   "clientComponents": "/Users/nickreese/repos/elderjs/elderjs/t/public/_elderjs/svelte",
   "distElder": "/Users/nickreese/repos/elderjs/elderjs/t/public/_elderjs",
@@ -1217,6 +1226,7 @@ exports[`#getConfig > it accepts custom initalization options > sets a server wi
     "routes": [],
     "server": [],
     "shortcodes": "",
+    "updateFiles": [Function],
   },
   "findComponent": [Function],
   "logPrefix": "[Elder.js]:",
@@ -1313,7 +1323,7 @@ exports[`#getConfig > it accepts custom initalization options > sets a server wi
 }
 `;
 
-exports[`#getConfig > it accepts custom initalization options > sets build with default 1`] = `
+exports[`#getConfig > it accepts custom initialization options > sets build with default 1`] = `
 {
   "build": {
     "numberOfWorkers": -1,
@@ -1346,7 +1356,7 @@ exports[`#getConfig > it accepts custom initalization options > sets build with 
 }
 `;
 
-exports[`#getConfig > it accepts custom initalization options > sets build with default 2`] = `
+exports[`#getConfig > it accepts custom initialization options > sets build with default 2`] = `
 {
   "clientComponents": "/Users/nickreese/repos/elderjs/elderjs/t/public/_elderjs/svelte",
   "distElder": "/Users/nickreese/repos/elderjs/elderjs/t/public/_elderjs",
@@ -1358,6 +1368,7 @@ exports[`#getConfig > it accepts custom initalization options > sets build with 
     "routes": [],
     "server": [],
     "shortcodes": "",
+    "updateFiles": [Function],
   },
   "findComponent": [Function],
   "logPrefix": "[Elder.js]:",
