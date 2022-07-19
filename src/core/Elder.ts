@@ -83,6 +83,10 @@ class Elder {
       this.markSettingsComplete = resolve;
     });
 
+    if (initializationOptions.context === 'server') {
+      this.server = prepareServer({ bootstrapComplete: this.bootstrapComplete });
+    }
+
     this.uid = 'startup';
 
     // merge the given config with the project and defaults;
@@ -100,9 +104,6 @@ class Elder {
 
       this.markSettingsComplete(this.settings);
 
-      if (this.settings.context === 'server') {
-        this.server = prepareServer({ bootstrapComplete: this.bootstrapComplete });
-      }
       this.router = prepareRouter(this);
 
       perf(this, true);
