@@ -104,15 +104,15 @@ export type InitializationOptions = {
 };
 
 export interface UserOptions {
-  css: 'none' | 'file' | 'inline' | 'lazy';
+  css?: 'none' | 'file' | 'inline' | 'lazy';
   plugins?: {
     [key: string]: any;
   };
-  props: PropOptions;
-  hooks: {
+  props?: PropOptions;
+  hooks?: {
     disable?: string[];
   };
-  debug: DebugOptions;
+  debug?: DebugOptions;
   server?: ServerOptions;
   build?: BuildOptions;
   lang: string;
@@ -121,7 +121,7 @@ export interface UserOptions {
   srcDir: string;
   rootDir: string;
   origin: string;
-  shortcodes: {
+  shortcodes?: {
     openPattern: string;
     closePattern: string;
   };
@@ -132,12 +132,20 @@ export interface UserOptions {
 
 interface ISettingsOptionsBase extends UserOptions {
   version: string;
-
   prefix: string;
-
   $$internal: Internal;
   context?: string;
   worker?: boolean;
+  debug: DebugOptions;
+  shortcodes: {
+    openPattern: string;
+    closePattern: string;
+  };
+  hooks: {
+    disable?: string[];
+  };
+  props: PropOptions;
+  css: 'none' | 'file' | 'inline' | 'lazy';
 }
 
 export interface SettingsOptions extends ISettingsOptionsBase {
