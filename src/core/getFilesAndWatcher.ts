@@ -20,13 +20,13 @@ export function makeCssRelative({ file, distElder }: { file: string; distElder: 
   return file ? `/${path.relative(distElder, file)}` : '';
 }
 
-export function updateFiles({
+export function updateFilesFn({
   files,
   settings,
   paths,
 }: {
   files: Partial<InternalFiles>;
-  settings: TGetFilesAndWatcher;
+  settings: Pick<SettingsOptions, 'srcDir' | 'distDir' | 'ssrComponents' | 'clientComponents'>;
   paths: string[];
 }) {
   const all = fg.sync(paths).map(windowsPathFix);
@@ -47,7 +47,6 @@ export function updateFiles({
   files.shortcodes = shortcodeFile ? hashUrl(shortcodeFile) : '';
   // already hashed
   files.client = all.filter((f) => f.includes(settings.clientComponents));
-  files.updateFiles = () => updateFiles({ files, settings, paths });
 
   return files as InternalFiles;
 }
@@ -57,6 +56,7 @@ type TGetFilesAndWatcher = {
   ssrComponents: string;
   production: boolean;
   distElder: string;
+  configFiles: string[];
 } & Pick<SettingsOptions, 'server' | 'build' | 'srcDir' | 'rootDir' | 'distDir'>;
 
 export default function getFilesAndWatcher(settings: TGetFilesAndWatcher): {
@@ -68,12 +68,13 @@ export default function getFilesAndWatcher(settings: TGetFilesAndWatcher): {
     `${settings.srcDir}/**/*`,
     `${settings.ssrComponents}/**/*.js`,
     `${settings.clientComponents}/**/*.js`,
-    `${settings.rootDir}/elder.config.cjs`,
-    `${settings.rootDir}/elder.config.js`,
     `${settings.distDir}/**/*.css`,
+    ...settings.configFiles,
   ];
 
-  const files = updateFiles({ files: {}, settings, paths });
+  const files = {} as InternalFiles;
+  files.updateFiles = () => updateFilesFn({ settings, paths, files });
+  files.updateFiles();
 
   if (!settings.production && settings.server) {
     // todo: add in plugin folders for Elder.js
@@ -111,13 +112,16 @@ export default function getFilesAndWatcher(settings: TGetFilesAndWatcher): {
       } else if (file.includes(settings.ssrComponents)) {
         const idx = files.server.findIndex((f) => f.includes(fixedFile));
         files.server[idx] = hashUrl(fixedFile);
+        // console.log('changed server', hashUrl(fixedFile));
         watcher.emit('ssr', hashUrl(fixedFile));
       } else if (file.includes(settings.clientComponents)) {
         const withoutHash = fixedFile.split('.')[0];
         const idx = files.client.findIndex((f) => f.includes(withoutHash));
+        const old = files.client[idx];
         files.client[idx] = fixedFile;
+        console.log('changed client', fixedFile, old);
         watcher.emit('client', fixedFile);
-      } else if (file.endsWith(`elder.config.js`) || file.endsWith(`elder.config.cjs`)) {
+      } else if (settings.configFiles.some((f) => file === f)) {
         watcher.emit('elder.config', hashUrl(file));
         // } else if (file.endsWith('.css')) {
         // watcher.emit('otherCssFile', makeCssRelative({ file, distElder: settings.distDir }));

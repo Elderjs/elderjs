@@ -12,15 +12,8 @@ import getUniqueId from './getUniqueId.js';
 
 import { loadConfig } from 'unconfig';
 
-type TCheckCssFiles = {
-  cssFiles: string[];
-  assetPath: string;
-  config: Partial<SettingsOptions>;
-  serverPrefix: string;
-};
-
 export async function getElderConfig(cwd = process.cwd()) {
-  const { config } = await loadConfig({
+  const { config, sources } = await loadConfig({
     sources: [
       {
         files: 'elder.config',
@@ -31,11 +24,12 @@ export async function getElderConfig(cwd = process.cwd()) {
     cwd,
     merge: true,
   });
-  return config;
+  return { config, sources };
 }
 
 async function getConfig(initializationOptions: InitializationOptions = {}): Promise<SettingsOptions> {
-  let loadedConfig: InitializationOptions = (await getElderConfig()) || {};
+  let { config: loadedConfig = {}, sources: configFiles }: { config: InitializationOptions; sources: string[] } =
+    await getElderConfig();
 
   const config: SettingsOptions = defaultsDeep(initializationOptions, loadedConfig, getDefaultConfig());
 
@@ -80,6 +74,7 @@ async function getConfig(initializationOptions: InitializationOptions = {}): Pro
     clientComponents,
     ssrComponents,
     distElder,
+    configFiles,
   });
 
   config.$$internal = {
@@ -91,8 +86,7 @@ async function getConfig(initializationOptions: InitializationOptions = {}): Pro
     logPrefix: `[Elder.js]:`,
     serverPrefix,
     findComponent: prepareFindSvelteComponent({
-      clientComponents: files.client,
-      ssrComponents: files.server,
+      files,
       rootDir,
       srcDir: config.srcDir,
       production,

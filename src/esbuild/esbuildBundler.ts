@@ -122,6 +122,7 @@ const svelteHandler = async ({ settings, svelteConfig }: { settings: SettingsOpt
           !settings.$$internal.production && settings.server
             ? {
                 onRebuild(error) {
+                  console.log('rebuild');
                   if (error) console.error('client watch build failed:', error);
                 },
               }

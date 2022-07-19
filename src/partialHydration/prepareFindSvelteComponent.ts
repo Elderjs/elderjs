@@ -12,23 +12,14 @@ export const removeHash = (pathWithHash) => {
   return pathWithHash;
 };
 
-// const relSrcDir = windowsPathFix(path.relative(rootDir, srcDir));
-// const rootDirFixed = windowsPathFix(rootDir);
-// const ssrComponents = glob.sync(`${ssrFolder}/**/*.js`).map(windowsPathFix);
-// const clientComponents = glob
-//   .sync(`${clientFolder}/**/*.js`)
-//   .map((c) => windowsPathFix(`${path.sep}${path.relative(distDir, c)}`));
-
 const prepareFindSvelteComponent = ({
-  clientComponents,
-  ssrComponents,
   rootDir,
   srcDir,
   production,
   distDir,
+  files,
 }: {
-  clientComponents: string[];
-  ssrComponents: string[];
+  files: { client: string[]; server: string[] };
   rootDir: string;
   srcDir: string;
   production: boolean;
@@ -60,8 +51,8 @@ const prepareFindSvelteComponent = ({
         .replace('.svelte', '.js')
         .toLowerCase();
 
-      const ssr = ssrComponents.find((c) => c.toLowerCase().includes(rel));
-      const client = windowsPathFix(clientComponents.find((c) => removeHash(c).toLowerCase().endsWith(rel)));
+      const ssr = files.server.find((c) => c.toLowerCase().includes(rel));
+      const client = windowsPathFix(files.client.find((c) => removeHash(c).toLowerCase().endsWith(rel)));
 
       const out = { ssr, client: relative(client) };
       if (production) cache.set(cacheKey, out);
@@ -69,11 +60,11 @@ const prepareFindSvelteComponent = ({
     }
 
     // component name and folder only
-    const ssr = ssrComponents
+    const ssr = files.server
       .filter((c) => c.includes(folder))
       .find((c) => path.parse(c).name.toLowerCase() === name.replace('.svelte', '').toLowerCase());
     const client = windowsPathFix(
-      clientComponents
+      files.client
         .filter((c) => c.includes(folder))
         .find((c) => path.parse(removeHash(c)).name.toLowerCase() === name.replace('.svelte', '').toLowerCase()),
     );

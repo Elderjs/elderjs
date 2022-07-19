@@ -255,6 +255,23 @@ describe('#getElderConfig', () => {
   test('elder.config **', async () => {
     const config = await getElderConfig(path.resolve('./src/utils/__tests__/fixtures/'));
 
-    expect(config).toEqual({ json: true, cjs: true, mjs: true, js: true, ts: true });
+    expect(normalizeSnapshot(config)).toEqual(
+      normalizeSnapshot({
+        config: {
+          cjs: true,
+          js: true,
+          json: true,
+          mjs: true,
+          ts: true,
+        },
+        sources: [
+          '/Users/nickreese/repos/elderjs/elderjs/src/utils/__tests__/fixtures/elder.config.ts',
+          '/Users/nickreese/repos/elderjs/elderjs/src/utils/__tests__/fixtures/elder.config.js',
+          '/Users/nickreese/repos/elderjs/elderjs/src/utils/__tests__/fixtures/elder.config.mjs',
+          '/Users/nickreese/repos/elderjs/elderjs/src/utils/__tests__/fixtures/elder.config.cjs',
+          '/Users/nickreese/repos/elderjs/elderjs/src/utils/__tests__/fixtures/elder.config.json',
+        ],
+      }),
+    );
   });
 });

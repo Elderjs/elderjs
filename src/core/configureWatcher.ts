@@ -159,13 +159,14 @@ export default function configureWatcher(elder: Elder) {
     if (elder.settings.$$internal.status !== 'bootstrapped') return;
     elder.settings.$$internal.websocket.send({ type: 'publicCssChange', file });
   });
-  elder.settings.$$internal.watcher.on('client', async (file) => {
-    if (elder.settings.$$internal.status !== 'bootstrapped') return;
-    if (file.includes('components')) {
-      const relPrefix = windowsPathFix(`${path.join(elder.settings.$$internal.distElder, '/svelte/components/')}`);
-      elder.settings.$$internal.websocket.send({ type: 'componentChange', file: file.replace(relPrefix, '') });
-    }
-  });
+  // elder.settings.$$internal.watcher.on('client', async (file) => {
+  //   if (elder.settings.$$internal.status !== 'bootstrapped') return;
+  //   if (file.includes('components')) {
+  //     const relPrefix = windowsPathFix(`${path.join(elder.settings.$$internal.distElder, '/svelte/components/')}`);
+  //     console.log('changed', file.replace(relPrefix, ''));
+  //     elder.settings.$$internal.websocket.send({ type: 'componentChange', file: file.replace(relPrefix, '') });
+  //   }
+  // });
 
   elder.settings.$$internal.watcher.on('otherCssFile', async (file) => {
     if (elder.settings.$$internal.status !== 'bootstrapped') return;
@@ -175,9 +176,9 @@ export default function configureWatcher(elder: Elder) {
   elder.settings.$$internal.watcher.on('elder.config', async () => {
     if (elder.settings.$$internal.status !== 'bootstrapped') return;
     console.log(
-      `\n\n\n======== elder.config.js change =========\n\nYou need to restart Elder.js to pick up elder.config.js changes\n\n=========================================\n\n\n`,
+      `\n\n\n======== elder.config change =========\n\nYou need to restart Elder.js to pick up elder.config.js changes\n\n=========================================\n\n\n`,
     );
-    process.exit(0);
+    process.exit(1);
   });
 
   elder.settings.$$internal.watcher.on('helpers', async (file) => {

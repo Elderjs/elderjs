@@ -108,8 +108,13 @@ class Elder {
 
       perf(this, true);
 
-      bundle(this.settings).then(() => {
-        bootstrap(this).catch((error) => {
+      await bundle(this.settings);
+
+      bootstrap(this)
+        .then(() => {
+          configureWatcher(this);
+        })
+        .catch((error) => {
           console.error(error);
           this.settings.$$internal.status = 'errored';
           if (this.settings.$$internal.production || this.settings.build) {
@@ -118,9 +123,6 @@ class Elder {
             console.log(`Awaiting change to try and recover. \n\n\n`);
           }
         });
-      });
-
-      configureWatcher(this);
     });
   }
 

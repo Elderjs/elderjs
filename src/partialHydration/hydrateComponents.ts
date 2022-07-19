@@ -303,9 +303,13 @@ export default (page: Page) => {
           if(data.type === 'reload'){
             console.log('reloading');
             ejsWs.send(\`reloading \${window.document.location}\`);
-            location.reload();
-            return false;
+            setTimeout(()=>{
+              location.reload();
+              return false;
+            },400);
+            
           } else if (data.type === 'componentChange'){
+            ${page.settings.debug.reload ? 'console.log("componentChange", data.file);' : ''}
             swapComponents(data.file);
           } else if (data.type === 'publicCssChange'){
             const newCssId = "ejs-public-css-" + Date.now();
@@ -344,12 +348,3 @@ export default (page: Page) => {
     }
   }
 };
-
-// remove svelte child
-// while (temp0.firstChild) {
-//   temp0.removeChild(temp0.firstChild);
-// }
-
-// remount component with decompressed props.
-
-// remove style add updated stylesheet.

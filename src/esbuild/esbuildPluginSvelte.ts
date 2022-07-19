@@ -66,7 +66,27 @@ export interface IEsBuildPluginSvelte {
   startDevServer?: boolean;
 }
 
+export async function writeCss({ styles, sourceMap, outputLocation, elderConfig }) {
+  if (!elderConfig.$$internal.production) {
+    const sourceMapFileRel = `/${relative(
+      elderConfig.distDir,
+      resolve(elderConfig.$$internal.distElder, `${outputLocation}.map`),
+    )}`;
+    styles = `${styles}\n /*# sourceMappingURL=${sourceMapFileRel} */`;
+  }
+
+  del.sync(resolve(elderConfig.$$internal.distElder, `.${sep}assets${sep}/*.css`));
+
+  await fs.outputFile(outputLocation, styles);
+
+  if (sourceMap && !elderConfig.$$internal.production) {
+    await fs.outputFile(`${outputLocation}.map`, sourceMap.toString());
+  }
+}
+
 function esbuildPluginSvelte({ type, svelteConfig, elderConfig, sveltePackages = [] }: IEsBuildPluginSvelte): Plugin {
+  let c = 0;
+  const d = Date.now();
   return {
     name: 'esbuild-plugin-elderjs',
 
@@ -166,27 +186,23 @@ function esbuildPluginSvelte({ type, svelteConfig, elderConfig, sveltePackages =
         build.onEnd(async () => {
           if (type === 'ssr') {
             // const s = Date.now();
-            const r = await minifyCss('all', elderConfig);
 
-            const hash = md5(r.styles);
+            let { sourceMap, styles } = await minifyCss('all', elderConfig);
 
-            const svelteCss = resolve(elderConfig.$$internal.distElder, `.${sep}assets${sep}svelte-${hash}.css`);
+            const hash = md5(styles);
 
+            const outputLocation = resolve(elderConfig.$$internal.distElder, `.${sep}assets${sep}svelte-${hash}.css`);
+
+            await writeCss({
+              styles,
+              outputLocation,
+              sourceMap,
+              elderConfig,
+            });
+
+            c += 1;
+            console.log(c, d);
             // console.log(`>>>> css ${Date.now() - s}ms > ${svelteCss}`);
-
-            if (process.env.NODE_ENV !== 'production' || process.env.NODE_ENV !== 'production') {
-              const sourceMapFileRel = `/${relative(
-                elderConfig.distDir,
-                resolve(elderConfig.$$internal.distElder, `${svelteCss}.map`),
-              )}`;
-              r.styles = `${r.styles}\n /*# sourceMappingURL=${sourceMapFileRel} */`;
-            }
-
-            fs.outputFileSync(svelteCss, r.styles);
-
-            if (r.sourceMap) {
-              fs.outputFileSync(`${svelteCss}.map`, r.sourceMap.toString());
-            }
           }
         });
       } catch (e) {
