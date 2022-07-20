@@ -83,8 +83,6 @@ export async function writeCss({ styles, sourceMap, outputLocation, elderConfig 
 }
 
 function esbuildPluginSvelte({ type, svelteConfig, elderConfig, sveltePackages = [] }: IEsBuildPluginSvelte): Plugin {
-  let c = 0;
-  const d = Date.now();
   return {
     name: 'esbuild-plugin-elderjs',
 
@@ -195,9 +193,6 @@ function esbuildPluginSvelte({ type, svelteConfig, elderConfig, sveltePackages =
               sourceMap,
               elderConfig,
             });
-
-            c += 1;
-            console.log(c, d);
           }
         });
       } catch (e) {
