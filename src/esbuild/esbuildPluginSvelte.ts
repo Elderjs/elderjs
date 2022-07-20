@@ -75,8 +75,6 @@ export async function writeCss({ styles, sourceMap, outputLocation, elderConfig 
     styles = `${styles}\n /*# sourceMappingURL=${sourceMapFileRel} */`;
   }
 
-  del.sync(resolve(elderConfig.$$internal.distElder, `.${sep}assets${sep}/*.css`));
-
   await fs.outputFile(outputLocation, styles);
 
   if (sourceMap && !elderConfig.$$internal.production) {
@@ -92,7 +90,7 @@ function esbuildPluginSvelte({ type, svelteConfig, elderConfig, sveltePackages =
 
     setup(build) {
       try {
-        // clean out old css files
+        // clean out old files
         build.onStart(() => {
           if (type === 'ssr') {
             del.sync(elderConfig.$$internal.ssrComponents);
@@ -185,8 +183,6 @@ function esbuildPluginSvelte({ type, svelteConfig, elderConfig, sveltePackages =
 
         build.onEnd(async () => {
           if (type === 'ssr') {
-            // const s = Date.now();
-
             let { sourceMap, styles } = await minifyCss('all', elderConfig);
 
             const hash = md5(styles);
@@ -202,7 +198,6 @@ function esbuildPluginSvelte({ type, svelteConfig, elderConfig, sveltePackages =
 
             c += 1;
             console.log(c, d);
-            // console.log(`>>>> css ${Date.now() - s}ms > ${svelteCss}`);
           }
         });
       } catch (e) {

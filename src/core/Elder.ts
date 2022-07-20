@@ -327,7 +327,7 @@ export function displayElderPerfTimings(
 }
 
 export function makeImport($$internal: Pick<Internal, 'reloadHash' | 'production'>) {
-  return async function hotImport(toImport: string, metaUrl?: string): Promise<any> {
+  return async function hotImport<T = any>(toImport: string, metaUrl?: string): Promise<T> {
     let fullImport = toImport;
     if (!isAbsolute(toImport)) {
       if (!metaUrl)
@@ -339,6 +339,7 @@ export function makeImport($$internal: Pick<Internal, 'reloadHash' | 'production
 
     if ($$internal.production) {
       const imp = await import(fullImport);
+
       return imp.default || imp;
     } else {
       const imp = await import(`${fullImport}?hash=${$$internal.reloadHash}`);

@@ -117,9 +117,9 @@ export default function getFilesAndWatcher(settings: TGetFilesAndWatcher): {
       } else if (file.includes(settings.clientComponents)) {
         const withoutHash = fixedFile.split('.')[0];
         const idx = files.client.findIndex((f) => f.includes(withoutHash));
-        const old = files.client[idx];
+        // const old = files.client[idx];
         files.client[idx] = fixedFile;
-        console.log('changed client', fixedFile, old);
+        // console.log('changed client', fixedFile, old);
         watcher.emit('client', fixedFile);
       } else if (settings.configFiles.some((f) => file === f)) {
         watcher.emit('elder.config', hashUrl(file));
