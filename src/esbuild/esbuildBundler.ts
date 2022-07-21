@@ -23,17 +23,30 @@ export type TSvelteHandler = {
 };
 
 export async function getSvelteConfig(elderConfig: SettingsOptions): Promise<TPreprocess> {
-  const svelteConfigPath = path.resolve(elderConfig.rootDir, `./svelte.config.js`);
-  if (fs.existsSync(svelteConfigPath)) {
+	const svelteConfigFileExts = ['js', 'cjs', 'mjs'];
+	let svelteConfigPath = '';
+	let svelteConfigFileExt = '';
+	for (const extension of svelteConfigFileExts) {
+		const filePath = path.resolve(elderConfig.rootDir, `./svelte.config.${extension}`);
+		if (fs.existsSync(filePath)) {
+			svelteConfigFileExt = extension;
+			svelteConfigPath = filePath;
+			break;	
+		}
+	}
+
+  if (svelteConfigPath) {
     try {
       const req = await import(svelteConfigPath);
       if (req) {
-        return req;
+        return req.default;
       }
     } catch (err) {
       if (err.code === 'MODULE_NOT_FOUND') {
-        console.warn(`Unable to load svelte.config.js from ${svelteConfigPath}`, err);
-      }
+        console.warn(`Unable to load svelte.config.${svelteConfigFileExt} from ${svelteConfigPath}`, err);
+      } else {
+				console.error(`Error in svelte.config.${svelteConfigFileExt}`, err);
+			}
       return false;
     }
   }
