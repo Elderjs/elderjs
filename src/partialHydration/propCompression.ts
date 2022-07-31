@@ -58,6 +58,9 @@ export const getName = (num: number, counts: Map<string, number>, replacementCha
     // eslint-disable-next-line no-bitwise
     num = ~~(num / length) - 1;
   } while (num >= 0);
+	
+	// make sure prop key can't be NaN
+	if (name === 'NaN') name = 'Na_N';
 
   if (counts.has(name)) name = `${name}_`;
 
