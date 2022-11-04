@@ -16,13 +16,13 @@ export function escapeHtml(text: string): string {
 
 type InputParamsInlinePreprocessedSvelteComponent = {
   name?: string;
-  props?: any;
+  props?: string;
   options?: string;
 };
 
 export function inlinePreprocessedSvelteComponent({
   name = '',
-  props = {},
+  props = '',
   options = '',
 }: InputParamsInlinePreprocessedSvelteComponent): string {
   // FIXME: don't output default options into the component to reduce file size.

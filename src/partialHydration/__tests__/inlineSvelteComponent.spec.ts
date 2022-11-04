@@ -12,16 +12,14 @@ test('#inlinePreprocessedSvelteComponent', () => {
   expect(
     inlinePreprocessedSvelteComponent({
       name: 'Home',
-      props: {
-        welcomeText: 'Hello World',
-      },
+      props: '{welcomeText: "Hello World"}',
       options,
     }),
   ).toMatchInlineSnapshot(
-    `"<ejswrapper class=\\"ejs-component\\" data-ejs-component=\\"Home\\" data-ejs-props={JSON.stringify([object Object])} data-ejs-options={JSON.stringify({...{\\"loading\\":\\"lazy\\",\\"element\\":\\"div\\"}, ...{\\"loading\\":\\"lazy\\"}})} />"`,
+    `"<ejswrapper class=\\"ejs-component\\" data-ejs-component=\\"Home\\" data-ejs-props={JSON.stringify({welcomeText: \\"Hello World\\"})} data-ejs-options={JSON.stringify({...{\\"loading\\":\\"lazy\\",\\"element\\":\\"div\\"}, ...{\\"loading\\":\\"lazy\\"}})} />"`,
   );
   expect(inlinePreprocessedSvelteComponent({})).toMatchInlineSnapshot(
-    `"<ejswrapper class=\\"ejs-component\\" data-ejs-component=\\"\\" data-ejs-props={JSON.stringify([object Object])} data-ejs-options={JSON.stringify({\\"loading\\":\\"lazy\\",\\"element\\":\\"div\\"})} />"`,
+    `"<ejswrapper class=\\"ejs-component\\" data-ejs-component=\\"\\" data-ejs-props={JSON.stringify()} data-ejs-options={JSON.stringify({\\"loading\\":\\"lazy\\",\\"element\\":\\"div\\"})} />"`,
   );
 });
 
