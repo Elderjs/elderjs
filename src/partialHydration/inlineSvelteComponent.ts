@@ -16,18 +16,20 @@ export function escapeHtml(text: string): string {
 
 type InputParamsInlinePreprocessedSvelteComponent = {
   name?: string;
-  props?: any;
+  props?: string;
   options?: string;
 };
 
 export function inlinePreprocessedSvelteComponent({
   name = '',
-  props = {},
+  props = '',
   options = '',
 }: InputParamsInlinePreprocessedSvelteComponent): string {
-  const hydrationOptions =
-    options.length > 0 ? { ...defaultHydrationOptions, ...JSON.parse(options) } : defaultHydrationOptions;
-  const hydrationOptionsString = JSON.stringify(hydrationOptions);
+  // FIXME: don't output default options into the component to reduce file size.
+  const hydrationOptionsString =
+    options.length > 0
+      ? `{...${JSON.stringify(defaultHydrationOptions)}, ...${options}}`
+      : JSON.stringify(defaultHydrationOptions);
 
   const replacementAttrs = {
     class: '"ejs-component"',
@@ -39,7 +41,7 @@ export function inlinePreprocessedSvelteComponent({
     (out, [key, value]) => `${out} ${key}=${value}`,
     '',
   );
-  return `<${hydrationOptions.element}${replacementAttrsString} />`;
+  return `<ejswrapper${replacementAttrsString} />`;
 }
 
 type InputParamsInlineSvelteComponent = {
