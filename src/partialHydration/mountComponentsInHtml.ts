@@ -10,7 +10,7 @@ export const replaceSpecialCharacters = (str) =>
     .replace(/&#039;/gim, "'")
     .replace(/&amp;/gim, '&');
 
-export default function mountComponentsInHtml({ page, html }): string {
+export default function mountComponentsInHtml({ page, html, isHydrated = false }): string {
   let outputHtml = html;
   // sometimes svelte adds a class to our inlining.
   const matches = outputHtml.matchAll(
@@ -37,6 +37,7 @@ export default function mountComponentsInHtml({ page, html }): string {
       page,
       props: hydrateComponentProps,
       hydrateOptions: hydrateComponentOptions,
+      isHydrated,
     });
 
     outputHtml = outputHtml.replace(match[0], hydratedHtml);

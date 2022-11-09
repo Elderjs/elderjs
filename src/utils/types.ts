@@ -183,6 +183,7 @@ export interface ComponentPayload {
   page: Page;
   props: any;
   hydrateOptions?: HydrateOptions;
+  isHydrated?: boolean;
 }
 
 export interface RollupDevOptions {
