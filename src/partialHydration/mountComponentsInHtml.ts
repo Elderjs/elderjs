@@ -1,4 +1,5 @@
 import svelteComponent from '../utils/svelteComponent';
+import type { HydrateOptions } from '../utils/types';
 
 export const replaceSpecialCharacters = (str) =>
   str
@@ -9,7 +10,7 @@ export const replaceSpecialCharacters = (str) =>
     .replace(/&#039;/gim, "'")
     .replace(/&amp;/gim, '&');
 
-export default function mountComponentsInHtml({ page, html, hydrateOptions }): string {
+export default function mountComponentsInHtml({ page, html }): string {
   let outputHtml = html;
   // sometimes svelte adds a class to our inlining.
   const matches = outputHtml.matchAll(
@@ -18,8 +19,8 @@ export default function mountComponentsInHtml({ page, html, hydrateOptions }): s
 
   for (const match of matches) {
     const hydrateComponentName = match[2];
-    let hydrateComponentProps;
-    let hydrateComponentOptions;
+    let hydrateComponentProps: any;
+    let hydrateComponentOptions: HydrateOptions;
 
     try {
       hydrateComponentProps = JSON.parse(replaceSpecialCharacters(match[3]));
@@ -30,19 +31,6 @@ export default function mountComponentsInHtml({ page, html, hydrateOptions }): s
       hydrateComponentOptions = JSON.parse(replaceSpecialCharacters(match[4]));
     } catch (e) {
       throw new Error(`Failed to JSON.parse props for ${hydrateComponentName} ${replaceSpecialCharacters(match[4])}`);
-    }
-
-    if (hydrateOptions) {
-      throw new Error(
-        `Client side hydrated component is attempting to hydrate another sub component "${hydrateComponentName}." This isn't supported. \n
-             Debug: ${JSON.stringify({
-               hydrateOptions,
-               hydrateComponentName,
-               hydrateComponentProps,
-               hydrateComponentOptions,
-             })}
-            `,
-      );
     }
 
     const hydratedHtml = svelteComponent(hydrateComponentName)({

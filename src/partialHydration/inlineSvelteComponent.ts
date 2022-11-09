@@ -18,13 +18,18 @@ type InputParamsInlinePreprocessedSvelteComponent = {
   name?: string;
   props?: string;
   options?: string;
+  mode?: 'inline' | 'wrapper';
 };
 
 export function inlinePreprocessedSvelteComponent({
   name = '',
   props = '',
   options = '',
+  mode = 'wrapper',
 }: InputParamsInlinePreprocessedSvelteComponent): string {
+  if (mode === 'inline') {
+    return `<${name} {...${props}}/>`;
+  }
   // FIXME: don't output default options into the component to reduce file size.
   const hydrationOptionsString =
     options.length > 0

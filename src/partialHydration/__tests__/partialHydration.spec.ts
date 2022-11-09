@@ -1,4 +1,4 @@
-import partialHydration from '../partialHydration';
+import partialHydration, { partialHydrationClient } from '../partialHydration';
 
 describe('#partialHydration', () => {
   it('replaces as expected', async () => {
@@ -108,5 +108,17 @@ describe('#partialHydration', () => {
     ).toMatchInlineSnapshot(
       `"<ejswrapper class=\\"ejs-component\\" data-ejs-component=\\"Clock\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({...{\\"loading\\":\\"lazy\\",\\"element\\":\\"div\\"}, ...{ \\"loading\\": \\"eager\\", \\"preload\\": true }})} /><ejswrapper class=\\"ejs-component\\" data-ejs-component=\\"Block\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({...{\\"loading\\":\\"lazy\\",\\"element\\":\\"div\\"}, ...{ \\"loading\\": \\"lazy\\" }})} /><ejswrapper class=\\"ejs-component\\" data-ejs-component=\\"Alock\\" data-ejs-props={JSON.stringify({})} data-ejs-options={JSON.stringify({...{\\"loading\\":\\"lazy\\",\\"element\\":\\"div\\"}, ...{ \\"loading\\": \\"lazy\\" }})} />"`,
     );
+  });
+});
+
+describe('partialHydrationClient', () => {
+  it('replaces as expected', async () => {
+    expect(
+      (
+        await partialHydrationClient.markup({
+          content: '<DatePicker hydrate-client={{ a: "b" }} />',
+        })
+      ).code,
+    ).toMatchInlineSnapshot(`"<DatePicker {...{ a: \\"b\\" }}/>"`);
   });
 });

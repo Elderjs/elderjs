@@ -39,7 +39,6 @@ const svelteComponent =
       const innerHtml = mountComponentsInHtml({
         html: htmlOutput,
         page,
-        hydrateOptions,
       });
 
       // hydrateOptions.loading=none for server only rendered injected into html

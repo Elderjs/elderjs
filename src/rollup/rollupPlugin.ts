@@ -15,7 +15,7 @@ import del from 'del';
 import { fork, ChildProcess } from 'child_process';
 import chokidar from 'chokidar';
 
-import partialHydration from '../partialHydration/partialHydration';
+import partialHydration, { partialHydrationClient } from '../partialHydration/partialHydration';
 import windowsPathFix from '../utils/windowsPathFix';
 import { SettingsOptions } from '../utils/types';
 
@@ -87,11 +87,12 @@ export function transformFn({
   type: 'ssr' | 'client';
 }) {
   const compilerOptions = getCompilerOptions({ type });
+  const hydrationPreprocessor = type === 'ssr' ? partialHydration : partialHydrationClient;
 
   const preprocessors =
     svelteConfig && Array.isArray(svelteConfig.preprocess)
-      ? [...svelteConfig.preprocess, partialHydration]
-      : [partialHydration];
+      ? [...svelteConfig.preprocess, hydrationPreprocessor]
+      : [hydrationPreprocessor];
 
   return async (code, id) => {
     const extensions = (svelteConfig && svelteConfig.extensions) || ['.svelte'];
