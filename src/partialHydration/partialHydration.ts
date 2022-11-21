@@ -10,12 +10,12 @@ const extractHydrateOptions = (htmlString) => {
   return '';
 };
 
-const createReplacementString = ({ input, name, props }) => {
+const createReplacementString = ({ input, name, props, mode }) => {
   const options = extractHydrateOptions(input);
-  return inlinePreprocessedSvelteComponent({ name, props, options });
+  return inlinePreprocessedSvelteComponent({ name, props, options, mode });
 };
 
-export const preprocessSvelteContent = (content) => {
+export const preprocessSvelteContent = (content, mode = 'wrapper') => {
   // Note: this regex only supports self closing components.
   // Slots aren't supported for client hydration either.
   const hydrateableComponentPattern = /<([a-zA-Z\d]+)\b[^>]+\bhydrate-client={([^]*?})}[^/>]*\/>/gim;
@@ -23,7 +23,7 @@ export const preprocessSvelteContent = (content) => {
 
   const output = matches.reduce((out, match) => {
     const [wholeMatch, name, props] = match;
-    const replacement = createReplacementString({ input: wholeMatch, name, props });
+    const replacement = createReplacementString({ input: wholeMatch, name, props, mode });
     return out.replace(wholeMatch, replacement);
   }, content);
 
@@ -45,6 +45,12 @@ export const preprocessSvelteContent = (content) => {
 const partialHydration = {
   markup: async ({ content }) => {
     return { code: preprocessSvelteContent(content) };
+  },
+};
+
+export const partialHydrationClient = {
+  markup: async ({ content }) => {
+    return { code: preprocessSvelteContent(content, 'inline') };
   },
 };
 

@@ -76,7 +76,7 @@ const buildPage = async (page) => {
     await page.runHook('shortcodes', page);
 
     // shortcodes can add svelte components, so we have to process the resulting html accordingly.
-    page.layoutHtml = mountComponentsInHtml({ page, html: page.layoutHtml, hydrateOptions: false });
+    page.layoutHtml = mountComponentsInHtml({ page, html: page.layoutHtml });
 
     hydrateComponents(page);
 

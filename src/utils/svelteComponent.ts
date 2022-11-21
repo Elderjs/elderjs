@@ -13,7 +13,7 @@ export const getComponentName = (str) => {
 
 const svelteComponent =
   (componentName: String, folder: String = 'components') =>
-  ({ page, props, hydrateOptions }: ComponentPayload): string => {
+  ({ page, props, hydrateOptions, isHydrated = false }: ComponentPayload): string => {
     const { ssr, client } = page.settings.$$internal.findComponent(componentName, folder);
 
     const cleanComponentName = getComponentName(componentName);
@@ -39,11 +39,12 @@ const svelteComponent =
       const innerHtml = mountComponentsInHtml({
         html: htmlOutput,
         page,
-        hydrateOptions,
+        isHydrated: isHydrated || (hydrateOptions && hydrateOptions.loading !== 'none'),
       });
 
       // hydrateOptions.loading=none for server only rendered injected into html
-      if (!hydrateOptions || hydrateOptions.loading === 'none') {
+      if (isHydrated || !hydrateOptions || hydrateOptions.loading === 'none') {
+        // if parent component is hydrated or
         // if a component isn't hydrated we don't need to wrap it in a unique div.
         return innerHtml;
       }
