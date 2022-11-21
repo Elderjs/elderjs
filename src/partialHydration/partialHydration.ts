@@ -18,7 +18,7 @@ const createReplacementString = ({ input, name, props }) => {
 export const preprocessSvelteContent = (content) => {
   // Note: this regex only supports self closing components.
   // Slots aren't supported for client hydration either.
-  const hydrateableComponentPattern = /<([a-zA-Z]+)[^>]+hydrate-client={([^]*?})}[^/>]*\/>/gim;
+  const hydrateableComponentPattern = /<([a-zA-Z\d]+)\b[^>]+\bhydrate-client={([^]*?})}[^/>]*\/>/gim;
   const matches = [...content.matchAll(hydrateableComponentPattern)];
 
   const output = matches.reduce((out, match) => {
