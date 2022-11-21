@@ -13,6 +13,18 @@ describe('#partialHydration', () => {
     );
   });
 
+  it('allow numbers in the tag name', async () => {
+    expect(
+      (
+        await partialHydration.markup({
+          content: '<DatePicker2 hydrate-client={{ a: "b" }} />',
+        })
+      ).code,
+    ).toMatchInlineSnapshot(
+      `"<ejswrapper class=\\"ejs-component\\" data-ejs-component=\\"DatePicker2\\" data-ejs-props={JSON.stringify({ a: \\"b\\" })} data-ejs-options={JSON.stringify({\\"loading\\":\\"lazy\\",\\"element\\":\\"div\\"})} />"`,
+    );
+  });
+
   it('explicit lazy', async () => {
     expect(
       (
